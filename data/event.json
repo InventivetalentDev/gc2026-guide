@@ -1,0 +1,84 @@
+{
+  "name": "gamescom 2026",
+  "location": "Koelnmesse, Cologne",
+  "dates": "Aug 26–30, 2026",
+  "startDate": "2026-08-26",
+  "endDate": "2026-08-30",
+  "days": [
+    {
+      "date": "2026-08-26",
+      "label": "Wednesday",
+      "access": "trade & media only",
+      "hours": "Business 09:00–19:00, entertainment 13:00–19:00",
+      "note": "Public entry only with the €65.50 Wildcard ticket (from 13:00) — the quietest way to play popular demos before the weekend crush."
+    },
+    {
+      "date": "2026-08-27",
+      "label": "Thursday",
+      "access": "public",
+      "hours": "Entertainment 10:00–20:00",
+      "note": "Best full public day for hands-on demos — noticeably calmer than Fri–Sat."
+    },
+    {
+      "date": "2026-08-28",
+      "label": "Friday",
+      "access": "public",
+      "hours": "Entertainment 10:00–20:00",
+      "note": "Fills up over the day; mornings still workable for big booths. gamescom GDQ speedrun showcase starts (Congress Center North)."
+    },
+    {
+      "date": "2026-08-29",
+      "label": "Saturday",
+      "access": "public",
+      "hours": "Entertainment 09:00–20:00 (business area closed)",
+      "note": "Busiest and most expensive day, usually sells out — avoid for hands-on play if you can. City Festival in the evening."
+    },
+    {
+      "date": "2026-08-30",
+      "label": "Sunday",
+      "access": "public",
+      "hours": "Entertainment 09:00–20:00 (business area closed)",
+      "note": "Most relaxed public day; booths start winding down late afternoon. Free entry possible via completed gamescom epix quests."
+    }
+  ],
+  "onl": {
+    "date": "Tue, Aug 25",
+    "time": "20:00 CEST",
+    "note": "Hosted by Geoff Keighley, ~2 h show. Free stream on YouTube, Twitch and Steam. In-person tickets (€34.50) sold out."
+  },
+  "tickets": "Online-only via the official gamescom shop — no on-site box office. Day tickets: Thu/Fri/Sun €31.50 (discounted €22.50), Saturday €41.00; evening tickets from 16:00 €10.50–13.00; family ticket €69.50–86.00; Wednesday Wildcard €65.50. Opening Night Live tickets are sold out; Saturday historically sells out before the show. Day tickets include free VRS public transport in the Cologne region.",
+  "areas": [
+    { "name": "Entertainment area", "hall": "5–10", "description": "The consumer show: big publisher booths, playable demos, stages, giveaways." },
+    { "name": "Business area", "hall": "2–4", "description": "Trade & media only (Wed–Fri), West Entrance; closed Sat/Sun." },
+    { "name": "Event Arena", "hall": "1", "description": "Big stage shows, concerts and esports (incl. Prime League offline finals)." },
+    { "name": "Cosplay Village", "hall": "5.1", "description": "Cosplay contest, photo booths, workshops and the Artist Area." },
+    { "name": "Merchandise Area", "hall": "5", "description": "The only area where exhibitors may sell goods — main merch shopping halls." },
+    { "name": "Cards & Boards Area", "hall": "5.2", "description": "Card and board game communities and vendors." },
+    { "name": "Indie Area / Indie Arena Booth", "hall": "10.2", "description": "~200 indie games from 182 developers — see the Indie Arena Booth exhibitor entry." },
+    { "name": "Retro & Family Area", "hall": "10.2", "description": "50 years of gaming history plus family-friendly games." },
+    { "name": "Campus Area", "hall": "10.1", "description": "Universities, education and industry recruiting." },
+    { "name": "Signing Area", "hall": "11.1", "description": "Content creator autograph and meet-and-greet sessions." },
+    { "name": "gamescom epix", "hall": null, "description": "Free digital quest program (7 story chapters, started Aug 3) — on-site booth quests, collector cards, and free Sunday tickets for completing all chapters." },
+    { "name": "gamescom GDQ", "hall": null, "description": "New Games Done Quick speedrunning charity showcase, Aug 28–30, Congress Center North." },
+    { "name": "City Festival", "hall": null, "description": "Free open-air concerts and gaming zones in Cologne's city center (Ringe), Aug 29–30 evenings." }
+  ],
+  "crowdTips": [
+    "Saturday is the busiest, priciest day and usually sells out — do hands-on play Thursday or Sunday instead.",
+    "Wednesday with a Wildcard ticket (entry from 13:00) is the quietest way to play the hottest demos.",
+    "Arrive well before doors open and pick the entrance nearest your first must-play booth — big booths build 2–4 h queues within the first hour.",
+    "Pick 5–10 must-play booths in advance (official gamescom app + hall plan) and hit your single most-wanted booth right at opening.",
+    "Some large booths hand out time slots or fast-lane wristbands in the morning via their own apps — check exhibitors' socials the week before.",
+    "Take the train/tram to Koeln Messe/Deutz — day tickets include free VRS public transport; don't drive.",
+    "Evening tickets (from 16:00, €10.50–13) are a cheap second visit; queues shrink in the last 2–3 hours.",
+    "Do gamescom epix quests — completing all chapters can earn a free Sunday ticket."
+  ],
+  "sources": [
+    "https://www.gamescom.global/en/tickets",
+    "https://www.gamescom.global/en/info/hall-plan",
+    "https://mein-mmo.de/en/gamescom-2026-all-info-on-times-tickets-program-and-more,1578480/",
+    "https://www.gamesmarket.global/what-is-gamescom-everything-you-need-to-know-about-areas-side-events-and-show-specials/",
+    "https://www.invenglobal.com/articles/23310/gamescom-2026-opening-night-live-tickets-go-on-sale-and-sell-out-instantly",
+    "https://www.invenglobal.com/articles/24045/gamescom-2026-exhibitor-lineup-revealed-expected-to-be-largest-ever",
+    "https://gamingpartys.de/2069/2026/07/gamescom-epix-2026-alle-infos-zu-quests-sonntag-tickets-neuen-story-kapitel/"
+  ]
+}
