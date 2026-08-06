@@ -88,6 +88,7 @@ function esc(s) {
 }
 
 function locationBadge(ex) {
+  if ((ex.tags || []).includes("not exhibiting")) return `<span class="location unknown">✕ not at gamescom</span>`;
   if (!ex.hall) return `<span class="location unknown">📍 location TBA</span>`;
   const cls = ex.locationConfirmed ? "" : " unconfirmed";
   const label = `Hall ${esc(ex.hall)}${ex.booth ? " · " + esc(ex.booth) : ""}`;
@@ -312,6 +313,7 @@ async function main() {
     return;
   }
   $("#event-dates").textContent = `${state.event.location} · ${state.event.dates}`;
+  bindControls();
   renderCountdown();
   renderFreshness();
   renderFilters();

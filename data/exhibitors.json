@@ -1,0 +1,801 @@
+[
+  {
+    "id": "xbox",
+    "name": "Xbox (Microsoft)",
+    "type": "platform",
+    "hall": "7.1",
+    "booth": "A061/C060",
+    "locationConfirmed": true,
+    "description": "Xbox's biggest gamescom booth ever, celebrating 25 years of Xbox: 25 games on ~140 stations, a Fable live-demo theater, daily livestreams and an Xbox FanFest on Aug 26. Bethesda/Activision titles fold into this booth. Booth open Thu–Sun 9:00–20:00.",
+    "games": [
+      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"], "note": "First public 6v6 multiplayer hands-on — expected to be the single biggest queue of the show. 18+ wristband required." },
+      { "title": "Gears of War: E-Day", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "First public campaign hands-on ahead of the Oct 6, 2026 release." },
+      { "title": "Fable", "status": "confirmed", "playable": false, "platforms": ["Xbox Series X|S", "PC"], "note": "Live gameplay theater by Playground Games — not hands-on (reported release Feb 2027)." },
+      { "title": "Minecraft Dungeons II", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC", "Switch 2", "PS5"], "note": "First public playable build." },
+      { "title": "METRO 2039", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "First hands-on anywhere; also at Plaion's Hall 9 booth. 18+ likely." },
+      { "title": "Stranger Than Heaven", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "Sega/RGG Studio — also at SEGA's Hall 7 booth." },
+      { "title": "Halo: Campaign Evolved", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Campaign remaster hands-on." },
+      { "title": "Forza Horizon 6", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "Drift Attack mode demo." },
+      { "title": "Microsoft Flight Simulator 2024", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "National Championship Air Races content." },
+      { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Also at SEGA's booth — compare queues." },
+      { "title": "Alien Deathstorm", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Gameplay demo." },
+      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Rebel Wolves' vampire RPG — also at Bandai Namco's booth." },
+      { "title": "STAR WARS Zero Company", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Tactical strategy from Bit Reactor/Respawn." },
+      { "title": "Turok: Origins", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Saber's co-op dino shooter." },
+      { "title": "Castlevania: Belmont's Curse", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Also at Konami's Hall 7 booth." },
+      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Launches Aug 27 — mid-show." },
+      { "title": "Valor Mortis", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Napoleonic soulslike from One More Level." },
+      { "title": "Crowsworn", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Metroidvania demo." },
+      { "title": "Genigods: Nezha", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Action demo." },
+      { "title": "Terrible Lizards", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Demo at the booth." },
+      { "title": "Armatus", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "On the official Xbox Wire booth lineup." },
+      { "title": "Bad Magpie", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Indie title at the booth." },
+      { "title": "Unannounced titles (~3 slots)", "status": "rumored", "playable": null, "platforms": ["Xbox"], "note": "Xbox says 25 games but has named ~22 — reveals expected around Opening Night Live." }
+    ],
+    "tags": ["AAA", "console", "shooter", "playable demos", "25 years of Xbox"],
+    "crowd": 5,
+    "crowdNote": "Largest platform booth of the show; MW4, Gears E-Day and the Fable theater will draw 2–4 h queues.",
+    "visitAdvice": "Be at Hall 7 right at 9:00 opening Thu or Fri, head straight to CoD MW4 or Gears E-Day; do the Fable theater (higher throughput) mid-day. Avoid Saturday entirely.",
+    "sources": [
+      "https://news.xbox.com/en-us/2026/07/28/xbox-gamescom-2026/",
+      "https://insider-gaming.com/xbox-confirms-gamescom-2026-presence-and-playable-game-lineup/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "nintendo",
+    "name": "Nintendo",
+    "type": "platform",
+    "hall": "9.1",
+    "booth": "A010/B009",
+    "locationConfirmed": true,
+    "description": "Nintendo's traditional giant Hall 9 booth, all-in on Switch 2 with nine confirmed playable titles 'and more' — headlined by the first publicly playable Call of Duty on Nintendo hardware in over a decade (a native Switch 2 port).",
+    "games": [
+      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Native Switch 2 build (Infinity Ward + Digital Legends) — not cloud streaming." },
+      { "title": "007 First Light", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "IO Interactive's Bond game, hands-on all five days." },
+      { "title": "EA Sports FC 27", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Full FC experience on Switch 2." },
+      { "title": "Metaphor: ReFantazio", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Atlus RPG port hands-on." },
+      { "title": "Minecraft Dungeons 2", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Switch 2 version; also at the Xbox booth." },
+      { "title": "Nintendo Switch Sports Resort", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "First-party family title — big weekend draw." },
+      { "title": "Orbitals", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Hands-on demo." },
+      { "title": "Pokémon Pokopia (Expansion Pass)", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Expansion Pass content playable — expect huge Pokémon queues." },
+      { "title": "Splatoon Raiders", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "First-party spin-off hands-on." },
+      { "title": "Additional unannounced titles", "status": "expected", "playable": null, "platforms": ["Switch 2"], "note": "Nintendo's announcement explicitly says 'and more'." }
+    ],
+    "tags": ["Switch 2", "family-friendly", "console", "playable demos"],
+    "crowd": 5,
+    "crowdNote": "Historically the most-queued family destination at gamescom; MW4-on-Switch-2 novelty plus Pokémon and Splatoon mean 2 h+ waits, worst Sat/Sun.",
+    "visitAdvice": "Thu or Fri at opening; hit MW4 or 007 First Light first. Nintendo often runs virtual queue tickets via booth/app — grab a slot early. Avoid the weekend.",
+    "sources": [
+      "https://nintendoeverything.com/nintendo-announces-gamescom-2026-lineup/",
+      "https://www.techtimes.com/articles/323233/20260805/call-duty-arrives-nintendo-gamescom-2026-booth-native-switch-2-port.htm",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "playstation",
+    "name": "PlayStation (Sony)",
+    "type": "platform",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": true,
+    "description": "NOT exhibiting — Sony skips a consumer PlayStation booth for the seventh year running (last appearance 2019), favoring its own State of Play streams and Tokyo Game Show. PS5 titles are still playable at third-party booths (Blood of Dawnwalker, Turok, 007 First Light and more).",
+    "games": [],
+    "tags": ["not exhibiting"],
+    "crowd": 1,
+    "crowdNote": "No booth to queue for.",
+    "visitAdvice": "Don't look for PlayStation on the floor — play multi-platform PS5 titles at Xbox, Bandai Namco, SEGA and other publisher booths. A surprise ONL trailer is always possible.",
+    "sources": ["https://playfront.de/en/gamescom-2026-sony-playstation-sagt-auftritt-in-koeln-ab/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "google-play",
+    "name": "Google Play",
+    "type": "platform",
+    "hall": "7.1",
+    "booth": "A011/B010",
+    "locationConfirmed": true,
+    "description": "Officially listed in the 2026 exhibitor directory, near Xbox in Hall 7.1. Expect mobile and Google Play Games on PC partner titles, demo stations and giveaways; the specific lineup is still TBC.",
+    "games": [
+      { "title": "Partner mobile/PC titles", "status": "expected", "playable": true, "platforms": ["Android", "PC (Google Play Games)"], "note": "Directory notes 'feature of developer IP TBC' — lineup unannounced." }
+    ],
+    "tags": ["mobile", "platform"],
+    "crowd": 2,
+    "crowdNote": "Steady but modest traffic; queues mostly for merch and giveaways.",
+    "visitAdvice": "Easy walk-in most of the day — convenient to combine with the Xbox booth in the same hall.",
+    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "capcom",
+    "name": "Capcom",
+    "type": "publisher",
+    "hall": "9.1",
+    "booth": "A070/C079",
+    "locationConfirmed": true,
+    "description": "One of Hall 9's biggest footprints (~950 m², ~60 demo stations) with two world-first hands-ons — Dragon's Dogma 2: Dark Arisen and Mega Man: Dual Override — plus Onimusha a week before launch. Rocket Beans runs the stage program.",
+    "games": [
+      { "title": "Dragon's Dogma 2: Dark Arisen", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "World-first public hands-on of the expansion (launches Oct 9, 2026)." },
+      { "title": "Mega Man: Dual Override", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"], "note": "First playable demo of the 12th mainline Mega Man." },
+      { "title": "Onimusha: Way of the Sword", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Playable weeks before its late-September release — likely the booth's biggest draw." },
+      { "title": "Street Fighter 6", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "PS4", "Xbox Series X|S", "Switch 2"], "note": "Casual play stations and community matches." }
+    ],
+    "tags": ["AAA", "RPG", "action", "world premiere", "playable demos"],
+    "crowd": 5,
+    "crowdNote": "Two world-first demos plus near-launch Onimusha in the most congested hall — expect 1–3 h queues for Dark Arisen and Onimusha.",
+    "visitAdvice": "Go straight to Capcom at hall opening on a weekday: Dark Arisen first (fewest stations vs demand), then Onimusha. Street Fighter 6 queues stay short all day.",
+    "sources": [
+      "https://www.gematsu.com/2026/06/capcom-announces-gamescom-2026-lineup-including-playable-dragons-dogma-ii-dark-arisen-and-mega-man-dual-override",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "sega-atlus",
+    "name": "SEGA / Atlus",
+    "type": "publisher",
+    "hall": "7",
+    "booth": null,
+    "locationConfirmed": true,
+    "description": "Trademark themed booth in Hall 7: Alien: Isolation 2's European hands-on debut in a claustrophobic sci-fi set, Persona 4 Revival in a recreated Junes shopping center, and Stranger Than Heaven staged as an underground jazz club.",
+    "games": [
+      { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "European hands-on debut of the prologue; also at the Xbox booth — compare queues." },
+      { "title": "Persona 4 Revival", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First Western public hands-on, in a Junes-themed area." },
+      { "title": "Stranger Than Heaven", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First public hands-on of RGG Studio's new game; jazz-club themed area." },
+      { "title": "Crazy Taxi: World Tour", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"], "note": "Early hands-on with a brand-new city map." },
+      { "title": "Total War: Warhammer 40,000", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Hands-on debut with three Space Marine scenarios." },
+      { "title": "Sonic Racing: CrossWorlds", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"], "note": "Latest build incl. the TMNT pack." },
+      { "title": "Sonic Pico Park", "status": "confirmed", "playable": true, "platforms": ["TBC"], "note": "New co-op Sonic title." },
+      { "title": "Metaphor: ReFantazio (Switch 2)", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Also at Nintendo's Hall 9 booth." },
+      { "title": "Total War: Warhammer III – Lords of the End Times", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Expansion showcase." }
+    ],
+    "tags": ["AAA", "RPG", "horror", "world premiere", "playable demos"],
+    "crowd": 4,
+    "crowdNote": "Three first-time hands-ons — long individual queues but the load spreads across a big varied lineup.",
+    "visitAdvice": "Prioritize Alien: Isolation 2 or Persona 4 Revival first thing in the morning (Alien is also at Xbox — check both queues). Sonic and Crazy Taxi turn over fast and suit afternoons.",
+    "sources": [
+      "https://sega.prezly.com/sega-announces-huge-gamescom-2026-line-up",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "bandai-namco",
+    "name": "Bandai Namco",
+    "type": "publisher",
+    "hall": "6.1",
+    "booth": "A020/B021",
+    "locationConfirmed": true,
+    "description": "Fully playable lineup next to Ubisoft and EA in Hall 6, headlined by the world's first open hands-on of The Blood of Dawnwalker (out Sept 3) and the first playable Ace Combat 8, plus the usual spectacular photo-op builds.",
+    "games": [
+      { "title": "Ace Combat 8: Wings of Theve", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First-ever public hands-on; launches Oct 2, 2026." },
+      { "title": "Dragon Ball Xenoverse 3", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First playable in Europe; full release 2027." },
+      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "World-first open sessions days before its Sept 3 launch; also at the Xbox booth." },
+      { "title": "Elden Ring: Tarnished Edition", "status": "rumored", "playable": null, "platforms": ["Switch 2"], "note": "Releases Aug 28 mid-show; floated by German trade press, not in the announced lineup." },
+      { "title": "One Piece: Grand Gourmet", "status": "rumored", "playable": null, "platforms": ["TBC"], "note": "Oct 23 release makes it a candidate; unannounced for the booth." }
+    ],
+    "tags": ["AAA", "RPG", "anime", "world premiere", "playable demos"],
+    "crowd": 4,
+    "crowdNote": "Three first-time hands-ons incl. a hot RPG launching during show week — Dawnwalker queues among Hall 6's longest.",
+    "visitAdvice": "Hit The Blood of Dawnwalker at opening, or use the Xbox booth's stations in Hall 7 as overflow. Do Ace Combat 8 the morning after its ONL showing.",
+    "sources": [
+      "https://en.bandainamcoent.eu/events/news/bandai-namco-entertainment-details-fully-playable-gamescom-2026-line",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "konami",
+    "name": "Konami",
+    "type": "publisher",
+    "hall": "7.1",
+    "booth": "A021/B020",
+    "locationConfirmed": true,
+    "description": "Main Hall 7 booth with an immersive Silent Hill: Townfall walk-through experience (new trailer at ONL), playable Castlevania: Belmont's Curse and a Metal Gear photo spot — plus a separate Yu-Gi-Oh! TCG stand in Hall 5.2 (B021/A020).",
+    "games": [
+      { "title": "Silent Hill: Townfall", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Interactive walk-through experience, not a demo; new trailer at ONL Aug 25." },
+      { "title": "Castlevania: Belmont's Curse", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"], "note": "Playable throughout the show; also at the Xbox booth." },
+      { "title": "Metal Gear Solid: Master Collection Vol. 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Photo opportunity in front of a Metal Gear unit." },
+      { "title": "Yu-Gi-Oh! Trading Card Game", "status": "confirmed", "playable": true, "platforms": ["TCG", "Digital"], "note": "Learn-to-play sessions at the Hall 5.2 card-game stand." }
+    ],
+    "tags": ["AAA", "horror", "TCG", "photo ops"],
+    "crowd": 4,
+    "crowdNote": "The Townfall experience will queue like a theme-park attraction after its ONL trailer; Castlevania concentrates the demo demand.",
+    "visitAdvice": "Do the Silent Hill experience early Wednesday before ONL hype converts to foot traffic, or in the last hour of a day. Castlevania is also playable at Xbox — use the shorter queue.",
+    "sources": [
+      "https://www.konami.com/games/eu/en/topics/19215/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "ubisoft",
+    "name": "Ubisoft",
+    "type": "publisher",
+    "hall": "6.1",
+    "booth": "C011/B010",
+    "locationConfirmed": true,
+    "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Anno 117 and The Division 2.",
+    "games": [
+      { "title": "Rayman Legends Retold", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"], "note": "Demo: opening level, a new dragon-ride sequence and a classic musical level." },
+      { "title": "Assassin's Creed Black Flag Resynced", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Community Lounge showcase of the Black Flag remake." },
+      { "title": "Anno 117: Pax Romana", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Community Lounge sessions." },
+      { "title": "Rainbow Six Siege", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Community Lounge sessions rather than a demo queue." },
+      { "title": "The Division 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Live-service community sessions." }
+    ],
+    "tags": ["AAA", "platformer", "community", "playable demos"],
+    "crowd": 3,
+    "crowdNote": "One playable title plus a lounge format — moderate queues, no giant new AAA hands-on this year.",
+    "visitAdvice": "Rayman queues are manageable before noon on weekdays. Community Lounge sessions are schedule-based — check Ubisoft's channels for timings.",
+    "sources": [
+      "https://news.ubisoft.com/en-us/article/6c99kNuqSEWK74Ltt0FJND/ubisoft-at-gamescom-2026-rayman-legends-retold-community-lounge-returns",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "ea",
+    "name": "Electronic Arts",
+    "type": "publisher",
+    "hall": "6",
+    "booth": null,
+    "locationConfirmed": true,
+    "description": "Officially back as an exhibitor (confirmed late July) with a booth at the Hall 6 entrance next to Ubisoft — but the lineup is still unannounced. EA Sports FC 27, launching weeks after the show, is the near-certain centerpiece.",
+    "games": [
+      { "title": "EA Sports FC 27", "status": "expected", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"], "note": "Launches weeks after gamescom; Switch 2 version separately confirmed at Nintendo's booth." },
+      { "title": "Battlefield 6 (seasonal content)", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "German trade press says BF6 'may play a role' at the booth." },
+      { "title": "skate.", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "PS4", "Xbox"], "note": "Live-service title in active rollout; plausible but unannounced." }
+    ],
+    "tags": ["AAA", "sports", "shooter"],
+    "crowd": 3,
+    "crowdNote": "FC 27 stations traditionally draw steady but fast-moving queues; busy rather than overwhelming without a big reveal.",
+    "visitAdvice": "FC has many stations and short rotations — fine mid-day. If Battlefield content is playable you'll need the 18+ red wristband; grab it at the entrance first.",
+    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "square-enix",
+    "name": "Square Enix",
+    "type": "publisher",
+    "hall": "8",
+    "booth": null,
+    "locationConfirmed": true,
+    "description": "Late addition to the exhibitor list: a Final Fantasy-focused fan booth in Hall 8 with play stations, photo stops and a large merch range — a community/catalog showing, with Dragon Quest VII Reimagined the one genuinely new title.",
+    "games": [
+      { "title": "Dragon Quest VII Reimagined", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"], "note": "The booth's one new title — its only likely long queue." },
+      { "title": "Final Fantasy VII Rebirth", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Switch 2", "Xbox"], "note": "Play stations, likely new-platform versions." },
+      { "title": "Final Fantasy XIV", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox"], "note": "MMO community presence." },
+      { "title": "Final Fantasy X/X-2 HD Remaster", "status": "confirmed", "playable": true, "platforms": ["Multi"], "note": "Catalog play station." }
+    ],
+    "tags": ["AAA", "RPG", "merch", "photo ops"],
+    "crowd": 3,
+    "crowdNote": "Strong brand pull but no world premieres — steady traffic for photo ops and merch.",
+    "visitAdvice": "Merch sells out early in the show — buy on your first pass. Good midday stop; combine with CD Projekt Red in the same hall.",
+    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "cdpr",
+    "name": "CD Projekt Red",
+    "type": "publisher",
+    "hall": "8.1",
+    "booth": "B030/A031",
+    "locationConfirmed": true,
+    "description": "CDPR's first gamescom booth since 2019: extended theater presentations of The Witcher 3: Wild Hunt — Songs of the Past (the newly announced third expansion, due 2027), running Wed–Sun after its trailer debut at Opening Night Live.",
+    "games": [
+      { "title": "The Witcher 3: Songs of the Past", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Cinema-style presentation, not hands-on; first trailer at ONL Aug 25; releases 2027." }
+    ],
+    "tags": ["AAA", "RPG", "world premiere", "theater"],
+    "crowd": 4,
+    "crowdNote": "CDPR theaters historically generate multi-hour lines (see Cyberpunk 2077 in 2019); a new Witcher reveal right after ONL will be a hall-wide magnet.",
+    "visitAdvice": "Treat it like a timed show: queue at Hall 8 opening on Wed/Thu, or try the final showings late Sunday. Hall 8 sits at the North entrance — enter there, not via the Boulevard.",
+    "sources": [
+      "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "plaion",
+    "name": "Plaion (Deep Silver)",
+    "type": "publisher",
+    "hall": "9",
+    "booth": null,
+    "locationConfirmed": true,
+    "description": "One of Hall 9's largest booths, centered on METRO 2039 from in-house studio 4A Games — playable behind an 18+ wristband check, and additionally playable at the Xbox booth in Hall 7.",
+    "games": [
+      { "title": "METRO 2039", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Focus title; also at Xbox's Hall 7 stand. 18+ wristband likely required." }
+    ],
+    "tags": ["AAA", "shooter", "18+"],
+    "crowd": 3,
+    "crowdNote": "A single high-profile shooter concentrates demand, but dual-location availability splits the queues.",
+    "visitAdvice": "Get the red 18+ wristband at the entrance before queueing. Compare queues at Plaion (Hall 9) vs Xbox (Hall 7) — Xbox's 140 stations often move faster.",
+    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "krafton",
+    "name": "KRAFTON",
+    "type": "publisher",
+    "hall": "9",
+    "booth": null,
+    "locationConfirmed": true,
+    "description": "One of Hall 9's largest booths with five titles, headlined by a still-secret world-premiere FPS from PUBG STUDIOS (set in the Pacific Northwest) plus Neon Giant's cyber-noir shooter NO LAW. Interactive missions earn themed merch.",
+    "games": [
+      { "title": "Untitled PUBG STUDIOS project", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "World-premiere reveal of a new PUBG-universe FPS at the show." },
+      { "title": "NO LAW", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Open-world FPS from The Ascent developer Neon Giant — hands-on demo." },
+      { "title": "Project ZETA", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "Part of the five-title showcase." },
+      { "title": "Age Twisters", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "Part of the five-title showcase." },
+      { "title": "TARAE: The Unbound", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "Dark-fantasy action RPG." }
+    ],
+    "tags": ["shooter", "world premiere", "merch missions"],
+    "crowd": 4,
+    "crowdNote": "A PUBG-universe world premiere in the show's most congested hall guarantees heavy traffic once the reveal lands.",
+    "visitAdvice": "Visit Wednesday/Thursday morning before the PUBG premiere is fully publicized; do the merch mission circuit early before stock runs low.",
+    "sources": [
+      "https://www.invenglobal.com/articles/24454/krafton-unveils-5-titles-for-gamescom-2026",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "embark",
+    "name": "Embark Studios",
+    "type": "publisher",
+    "hall": "6",
+    "booth": null,
+    "locationConfirmed": true,
+    "description": "Riding ARC Raiders' breakout success, the Swedish studio booked a Hall 6 booth reportedly twice the size of EA's — a first-time flex centered on its extraction-shooter hit.",
+    "games": [
+      { "title": "ARC Raiders", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Booth focus; expect new-content showcases for the live-service hit." },
+      { "title": "THE FINALS", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Embark's other live title; not yet listed for the booth." }
+    ],
+    "tags": ["shooter", "live-service", "community"],
+    "crowd": 4,
+    "crowdNote": "Massive active player base and a first big booth — community turnout plus any new-season reveal will pack it.",
+    "visitAdvice": "Community events and creator meetups spike traffic unpredictably — check Embark's socials for the stage schedule and go during downtime.",
+    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "team17-astragon",
+    "name": "Team17 × astragon",
+    "type": "publisher",
+    "hall": "6",
+    "booth": "B060",
+    "locationConfirmed": true,
+    "description": "Shared group booth: Team17's creature-collector LumenTale and Silver Pines alongside astragon's simulator lineup (Bus Simulator 27, Construction Simulator Evolution, Firefighting Simulator: Ignite).",
+    "games": [
+      { "title": "LumenTale: Memories of Trey", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Team17's headline demo." },
+      { "title": "Silver Pines", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Second confirmed Team17 title." },
+      { "title": "Bus Simulator 27", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "astragon side; launches days after the show." },
+      { "title": "Construction Simulator Evolution", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "astragon simulator lineup." },
+      { "title": "Firefighting Simulator: Ignite", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "astragon simulator lineup." }
+    ],
+    "tags": ["indie", "simulation", "playable demos"],
+    "crowd": 2,
+    "crowdNote": "Indie-scale titles at a shared booth — queues short outside peak Saturday hours.",
+    "visitAdvice": "An easy low-queue stop while waiting out timed queues elsewhere in Hall 6.",
+    "sources": ["https://www.astragon.com/news/detail/astragon-and-team17-return-to-gamescom-2026-with-beloved-brands-and-exciting-newcomers"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "focus",
+    "name": "Focus Entertainment",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": false,
+    "description": "On the confirmed exhibitor list (added late July) but booth location and lineup are still unannounced. Its big release Resonance: A Plague Tale Legacy launches Aug 27 — mid-show — and is confirmed playable at the Xbox booth.",
+    "games": [
+      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Launches Aug 27; confirmed at Xbox's Hall 7 booth, likely also at Focus' own stand." },
+      { "title": "Edge of Memories", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "2026 JRPG-style title, plausible booth candidate." },
+      { "title": "Warhammer 40,000: Space Marine 3", "status": "rumored", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Too early for hands-on; trailer presence possible." }
+    ],
+    "tags": ["AA", "adventure"],
+    "crowd": 2,
+    "crowdNote": "No announced blockbuster hands-on at its own stand; Resonance demand mostly absorbed by the Xbox booth.",
+    "visitAdvice": "Queue for Resonance at the Xbox booth where it's confirmed. Watch Focus' channels — it was in Hall 6 in 2025 and its lineup usually lands late.",
+    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "hoyoverse",
+    "name": "HoYoverse",
+    "type": "publisher",
+    "hall": "6.1",
+    "booth": "B030",
+    "locationConfirmed": true,
+    "description": "One of the biggest Asian booths of the show (~660 m², plus a business booth in Hall 4.2): five titles across themed zones — a Snezhnaya-themed Genshin area, Honkai: Star Rail's Planarcadia, Zenless Zone Zero, and world-premiere hands-ons for Honkai: Nexus Anima and Petit Planet.",
+    "games": [
+      { "title": "Genshin Impact", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Mobile"], "note": "Snezhnaya-themed zone with railway and Statue of The Seven builds; exclusive merch." },
+      { "title": "Honkai: Star Rail", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Planarcadia-themed zone (Version 4.4 era)." },
+      { "title": "Zenless Zone Zero", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Mobile"], "note": "Dedicated exhibition area with latest content." },
+      { "title": "Honkai: Nexus Anima", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "World-premiere hands-on of the new creature-collecting strategy game." },
+      { "title": "Petit Planet", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "Cozy life-sim hands-on with world exploration." }
+    ],
+    "tags": ["gacha", "anime", "merch", "photo ops", "world premiere"],
+    "crowd": 5,
+    "crowdNote": "Historically among the longest queues at gamescom — limited-edition merch reliably produces 1–3 h lines and capacity-controlled entry, especially Sat/Sun.",
+    "visitAdvice": "Go at hall opening Thu/Fri and head straight for the merch counter or the Nexus Anima demo; photo zones are easier mid-afternoon. Budget half a day for demos plus merch.",
+    "sources": [
+      "https://www.hoyoverse.com/en-us/news/165264",
+      "https://finalweapon.net/2026/07/17/hoyoverse-gamescom-2026-lineup-honkai-nexus-anima-petit-planet/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "level-infinite",
+    "name": "Level Infinite (Tencent)",
+    "type": "publisher",
+    "hall": "6.1",
+    "booth": "C071/A070",
+    "locationConfirmed": true,
+    "description": "Tencent's global publishing brand, next door to HoYoverse, with a fully playable three-game lineup headlined by the world-first public hands-on of Remedy's CONTROL Resonant. Themed photo spaces, prize wheel, dev meet-and-greets and a Hunt: Showdown cosplay showcase.",
+    "games": [
+      { "title": "CONTROL Resonant", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S", "PC"], "note": "First time playable anywhere; launches Sept 24, 2026 — the booth's biggest draw." },
+      { "title": "Dune: Awakening (console)", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S"], "note": "First public hands-on of the console build." },
+      { "title": "Hunt: Showdown 1896", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Playable with devs present; new in-game event preview." }
+    ],
+    "tags": ["AAA", "world premiere", "playable demos"],
+    "crowd": 4,
+    "crowdNote": "CONTROL Resonant's world-first demo two months before launch will pull 60–120 min lines; adjacency to HoYoverse makes Hall 6.1 one of the most congested areas.",
+    "visitAdvice": "Queue for CONTROL Resonant first thing in the morning; Dune and Hunt stations move faster and are fine late afternoon.",
+    "sources": ["https://www.levelinfinite.com/news/level-infinite-gamescom-2026-lineup/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "tencent-worlds-of-play",
+    "name": "Tencent — Worlds of Play",
+    "type": "publisher",
+    "hall": null,
+    "booth": "Wassermannhalle (offsite)",
+    "locationConfirmed": true,
+    "description": "'Worlds of Play: The Game Art Exhibition' — a large art showcase spanning 40 game titles at the Wassermannhalle, Aug 27–29, with five themed zones, developer meet-and-greets and cosplay showcases. Not a hands-on booth; Tencent's playable games are at Level Infinite.",
+    "games": [
+      { "title": "Worlds of Play (40-title art exhibition)", "status": "confirmed", "playable": false, "platforms": [], "note": "Art exhibition Aug 27–29, off the main show floor." }
+    ],
+    "tags": ["art", "exhibition", "offsite"],
+    "crowd": 3,
+    "crowdNote": "Timed/curated and off the main floor — moderate queues; the real crowds gather at Level Infinite.",
+    "visitAdvice": "A calmer palate-cleanser between hall sessions; check whether entry needs free time-slot registration closer to the show.",
+    "sources": ["https://www.gameshub.com/news/news/tencent-worlds-of-play-game-art-exhibition-gamescom-2026-2887179/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "netease",
+    "name": "NetEase Games",
+    "type": "publisher",
+    "hall": "7.1",
+    "booth": null,
+    "locationConfirmed": false,
+    "description": "Officially bringing Marvel Rivals, Where Winds Meet and Sea of Remnants. The Hall 7.1 placement comes from community analysis of the published floor plan, not a NetEase press release — treat exact positions as provisional.",
+    "games": [
+      { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Multi-station 6v6 setups expected." },
+      { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Wuxia open-world RPG with a dedicated booth area." },
+      { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles"], "note": "Stylized pirate adventure RPG; demo status not yet detailed." }
+    ],
+    "tags": ["live-service", "shooter", "RPG"],
+    "crowd": 4,
+    "crowdNote": "Marvel Rivals is one of the biggest live-service shooters right now; 6v6 sessions cycle slowly — 45–90 min waits at peak.",
+    "visitAdvice": "Marvel Rivals seats 12 per cycle, so lines move in bursts — join right after a session starts. Where Winds Meet stations are usually much shorter.",
+    "sources": ["https://x.com/NetEaseGames_EN/status/2078511437178380513"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "pearl-abyss",
+    "name": "Pearl Abyss",
+    "type": "publisher",
+    "hall": "9.1",
+    "booth": "B020/C029",
+    "locationConfirmed": true,
+    "description": "Showcasing Crimson Desert (6M+ sales) in partnership with Samsung: 30 demo PCs on Samsung's new 6K Odyssey G8 monitors, plus stage events, giveaways and cosplay.",
+    "games": [
+      { "title": "Crimson Desert", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Current release build on 30 Samsung Odyssey G8 6K/165 Hz stations." }
+    ],
+    "tags": ["action", "RPG", "tech showcase"],
+    "crowd": 4,
+    "crowdNote": "30 stations give decent throughput, but the 6K showcase plus a hit game means steady 30–60 min lines, longer on the weekend.",
+    "visitAdvice": "The 30-station setup clears queues faster than most AAA booths — late morning Thu/Fri is a good window.",
+    "sources": ["https://www.invenglobal.com/articles/23511/pearl-abyss-to-showcase-crimson-desert-at-gamescom-in-partnership-with-samsung-electronics"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "ggg-poe2",
+    "name": "Grinding Gear Games",
+    "type": "publisher",
+    "hall": "6",
+    "booth": null,
+    "locationConfirmed": false,
+    "description": "Path of Exile 2 booth reported for Hall 6 with an event-exclusive special demo, an 'eerie display' photo op and exclusive merchandise. Exact booth number still TBA.",
+    "games": [
+      { "title": "Path of Exile 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Special demo exclusive to gamescom, post-'Return of the Ancients' era." }
+    ],
+    "tags": ["ARPG", "PC", "merch"],
+    "crowd": 4,
+    "crowdNote": "Very large, dedicated European PC-ARPG audience and a venue-exclusive demo — long, steady lines plus merch demand.",
+    "visitAdvice": "Hit it early on a weekday; ask staff whether merch has a separate line from the demo queue.",
+    "sources": ["https://www.pathofexile.com/forum/view-thread/3980614"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "eclipse-glow",
+    "name": "Eclipse Glow Games",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": false,
+    "description": "Chinese studio behind Arthurian action game Tides of Annihilation, confirmed to host a hands-on demo booth — one of the notable new Chinese single-player entrants. Hall/booth TBA.",
+    "games": [
+      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Public demo confirmed; location TBA." }
+    ],
+    "tags": ["action", "single-player"],
+    "crowd": 3,
+    "crowdNote": "High-profile trailer buzz but a single-title booth — moderate lines, spiking after any ONL appearance.",
+    "visitAdvice": "If it appears at Opening Night Live, queue early the next morning before word spreads.",
+    "sources": ["https://www.invenglobal.com/articles/23789/eclipse-glow-games-to-host-tides-of-annihilation-demo-booth-at-gamescom-2026"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "indie-arena-booth",
+    "name": "Indie Arena Booth",
+    "type": "indie",
+    "hall": "10.2",
+    "booth": null,
+    "locationConfirmed": true,
+    "description": "The world's biggest indie booth — 2026 theme 'Democratree: games for everyone': ~200 games from 182 developers across 41 countries, with publisher pods (11 bit, Fireshine, Headup, Wired Productions) and a Nintendo section with Switch/Switch 2 stations.",
+    "games": [
+      { "title": "Stronghold 4", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Firefly's castle-sim revival — a headline title of the booth." },
+      { "title": "Paralives", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Highly wishlisted life sim — expect one of the longer indie lines." },
+      { "title": "Moonlighter 2: The Endless Vault", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Shopkeeping/roguelite sequel." },
+      { "title": "Neon Abyss 2", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Punk action roguelite sequel." },
+      { "title": "Escape Academy 2: Back 2 School", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Co-op escape-room sequel." },
+      { "title": "Unrailed 2: Back on Track", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Chaotic co-op track-building." },
+      { "title": "Hidden Folks 2", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "Hand-drawn hidden-object sequel." },
+      { "title": "Dungeon Clawler", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "Claw-machine deckbuilder." },
+      { "title": "We Were Here Tomorrow", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Co-op puzzle series entry." },
+      { "title": "The 9th Dragon", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Voxel close-quarters action." },
+      { "title": "Crowded", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "City-builder where crows are the units." }
+    ],
+    "tags": ["indie", "playable demos", "meet the devs"],
+    "crowd": 2,
+    "crowdNote": "Busy but far more bearable than AAA halls; short rotating lines per station, worst Saturday afternoon.",
+    "visitAdvice": "Thu/Fri morning is ideal. Browse the lineup on indiearena.org or the IAB Steam curator page beforehand and pick targets — devs are at their stations, so it's the best place to actually talk to the people making the games. Combine with the Retro & Family area in the same hall.",
+    "sources": [
+      "https://indiearena.org/",
+      "https://www.gamesmarket.global/indie-arena-booth-full-gamescom-2026-lineup/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "korea-pavilion",
+    "name": "Korea Pavilion (KOCCA)",
+    "type": "indie",
+    "hall": "10.2",
+    "booth": null,
+    "locationConfirmed": false,
+    "description": "Umbrella pavilion organized by the Korea Creative Content Agency, bundling small and mid-size Korean studios in the indie area (plus a B2B zone) — the best single stop for discovering Korean PC/mobile titles beyond Krafton and Pearl Abyss.",
+    "games": [
+      { "title": "Various Korean indie/mobile titles", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "Rotating multi-studio showcase; individual titles announced closer to the show." }
+    ],
+    "tags": ["indie", "discovery"],
+    "crowd": 2,
+    "crowdNote": "Pavilion format spreads visitors across many small stands — walk-up friendly.",
+    "visitAdvice": "Browse any time of day; a good low-queue option even on the weekend.",
+    "sources": ["https://www.invenglobal.com/articles/24045/gamescom-2026-exhibitor-lineup-revealed-expected-to-be-largest-ever"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "bilibili",
+    "name": "Bilibili",
+    "type": "publisher",
+    "hall": "10.1",
+    "booth": "A090",
+    "locationConfirmed": true,
+    "description": "Chinese video/community platform and game publisher, confirmed in the official directory with a booth in the indie-focused Hall 10.1. Its 2026 game lineup hasn't been announced yet.",
+    "games": [
+      { "title": "Bilibili-published titles (lineup TBA)", "status": "expected", "playable": null, "platforms": ["PC", "Mobile"], "note": "Expect an indie-scale showcase similar to prior years." }
+    ],
+    "tags": ["mobile", "indie"],
+    "crowd": 2,
+    "crowdNote": "Modest indie-area booth; short waits except during signing/creator events.",
+    "visitAdvice": "Easy walk-up while touring the indie hall; check the app on-site for stage or giveaway schedules.",
+    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "lego",
+    "name": "LEGO Games",
+    "type": "publisher",
+    "hall": "9.1",
+    "booth": "A040/B029",
+    "locationConfirmed": true,
+    "description": "Multi-stand block in Hall 9.1 next to Nintendo, confirmed returning for 2026. The lineup is TBC — the 2025 booth featured Batman, One Piece and Super Mario activations, so expect current LEGO video games plus set photo-ops.",
+    "games": [
+      { "title": "LEGO video game lineup (TBC)", "status": "expected", "playable": true, "platforms": ["Multi"], "note": "LEGO historically reveals new games at gamescom/ONL; 2026 titles unannounced." }
+    ],
+    "tags": ["family-friendly", "photo ops"],
+    "crowd": 4,
+    "crowdNote": "Family magnet in the same hall as Nintendo — photo-op and demo lines get long on the weekend.",
+    "visitAdvice": "Weekday mornings; weekends are dominated by families.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://bricksfanz.com/lego-games-returning-for-gamescom-2026/"
+    ],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "asus-rog",
+    "name": "ASUS ROG",
+    "type": "hardware",
+    "hall": "8.1",
+    "booth": "B041/C040",
+    "locationConfirmed": true,
+    "description": "Large Hall 8.1 presence plus an outdoor activation at Hall 8 North: ROG laptops, monitors and the ROG Xbox Ally handheld family playable on-site.",
+    "games": [],
+    "tags": ["hardware", "handheld", "PC"],
+    "crowd": 3,
+    "crowdNote": "ROG handheld try-out stations build 15–45 min lines; the rest flows freely.",
+    "visitAdvice": "Morning visit if you want hands-on time with the ROG Ally handhelds.",
+    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "samsung",
+    "name": "Samsung Odyssey",
+    "type": "hardware",
+    "hall": "9.1",
+    "booth": "B010/C011",
+    "locationConfirmed": true,
+    "description": "Large presence next to Nintendo in Hall 9.1 — Odyssey gaming monitors and SSDs with partner-game demo stations (also powering Pearl Abyss' Crimson Desert booth).",
+    "games": [],
+    "tags": ["hardware", "monitors"],
+    "crowd": 3,
+    "crowdNote": "Big footprint and Hall 9 foot traffic keep it busy, but station turnover is fast.",
+    "visitAdvice": "Combine with your Nintendo Hall 9 visit; no need to rush it at opening.",
+    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "razer",
+    "name": "Razer",
+    "type": "hardware",
+    "hall": "10.2",
+    "booth": "E020/D021",
+    "locationConfirmed": true,
+    "description": "Two official locations (Hall 10.2 consumer + Hall 2.2 business). Hands-on with the 2026 peripheral line following its big CES slate, esports activations and merch drops.",
+    "games": [],
+    "tags": ["hardware", "peripherals", "merch"],
+    "crowd": 3,
+    "crowdNote": "Solid fan traffic for limited merch and giveaway drops, but nothing like platform-holder queues.",
+    "visitAdvice": "For limited merch, go early on the first public day; otherwise any weekday afternoon.",
+    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "logitech",
+    "name": "Logitech G",
+    "type": "hardware",
+    "hall": "8.1",
+    "booth": "A065",
+    "locationConfirmed": true,
+    "description": "Official directory listing under Logitech and Logitech G (second stand in Hall 10.1): gaming mice, keyboards, headsets and sim-racing rigs with try-before-you-buy stations.",
+    "games": [],
+    "tags": ["hardware", "peripherals", "sim racing"],
+    "crowd": 2,
+    "crowdNote": "Browse-through booth; only sim-racing rigs generate short waits.",
+    "visitAdvice": "Any time works; sim rigs are quietest weekday mornings.",
+    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "aoc-agon",
+    "name": "AGON by AOC",
+    "type": "hardware",
+    "hall": "8.1",
+    "booth": "C060",
+    "locationConfirmed": true,
+    "description": "AOC's gaming-monitor brand with its latest high-refresh OLED and Mini-LED monitors on demo stations.",
+    "games": [],
+    "tags": ["hardware", "monitors"],
+    "crowd": 2,
+    "crowdNote": "Low-queue browse stop.",
+    "visitAdvice": "Walk in anytime; pairs well with Logitech and ASUS in the same hall.",
+    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "wargaming",
+    "name": "Wargaming",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": false,
+    "description": "No 2026 show-floor booth announced yet (it took over the Hall 1 Event Arena in 2025). Confirmed instead: the offsite Wargaming Community Party on Aug 28 at HERBRAND's Ehrenfeld (~€10, Eventbrite) covering WoT, WoWs, Blitz and World of Tanks: HEAT.",
+    "games": [
+      { "title": "World of Tanks / Warships / HEAT", "status": "expected", "playable": null, "platforms": ["PC", "Consoles", "Mobile"], "note": "Floor presence expected based on 2025 but unconfirmed; community party Aug 28 is confirmed offsite." }
+    ],
+    "tags": ["live-service", "offsite event"],
+    "crowd": 2,
+    "crowdNote": "If a booth materializes it draws big but efficiently-managed crowds; the party is ticketed and capped.",
+    "visitAdvice": "Grab Community Party tickets on Eventbrite early if you're a Wargaming player; re-check for a booth announcement before planning floor time.",
+    "sources": ["https://www.eventbrite.co.uk/e/wargaming-community-party-cologne-2026-tickets-1991050336153"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "kuro-games",
+    "name": "Kuro Games",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": false,
+    "description": "Wuthering Waves developer exhibited in 2024 and 2025 but has made no gamescom 2026 announcement — attendance looks doubtful; its current focus is the WuWa 3.6 broadcast and the new Elysium anime.",
+    "games": [
+      { "title": "Wuthering Waves", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Mobile"], "note": "Expected only from past-year patterns; no 2026 booth confirmed." }
+    ],
+    "tags": ["gacha", "unconfirmed"],
+    "crowd": 1,
+    "crowdNote": "Nothing confirmed to queue for; if a booth materializes expect HoYoverse-style merch crowds.",
+    "visitAdvice": "Don't plan around Kuro Games; re-check the official directory and @Wuthering_Waves socials in the final two weeks.",
+    "sources": ["https://wutheringwaves.kurogames.com/en/main"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "take-two",
+    "name": "Take-Two / Rockstar (GTA 6)",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": false,
+    "description": "No booth confirmed, and playable GTA 6 at the show is considered extremely unlikely. The GTA 6 moment happens off-site: an 'Extended Look' premieres on Netflix on Thursday Aug 27 (YouTube six hours later), deliberately timed to gamescom week. GTA 6 launches Nov 19, 2026.",
+    "games": [
+      { "title": "Grand Theft Auto VI — Extended Look", "status": "confirmed", "playable": false, "platforms": ["PS5", "Xbox Series X|S"], "note": "Streaming showcase on Netflix Aug 27, 3pm ET — not at the show." },
+      { "title": "NBA 2K27 / 2K catalog", "status": "rumored", "playable": null, "platforms": ["Multi"], "note": "2K exhibited in 2025 but has made no 2026 announcement." }
+    ],
+    "tags": ["not exhibiting", "GTA 6"],
+    "crowd": 1,
+    "crowdNote": "No confirmed physical presence.",
+    "visitAdvice": "Watch the GTA 6 Extended Look on Netflix/YouTube on Aug 27 during the show; keep an eye on late exhibitor updates in case 2K books space.",
+    "sources": ["https://variety.com/2026/gaming/news/gta-6-trailer-netflix-youtube-aug-27-1236789693/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "thq-nordic",
+    "name": "THQ Nordic",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": true,
+    "description": "NOT attending — officially cancelled its gamescom 2026 presence (July 8), citing a lack of showcase-ready titles; hopes to return 2027. Its Digital Showcase on Aug 7 (Titan Quest II, Wreckfest 2, Gothic Remake) replaces the physical showing.",
+    "games": [
+      { "title": "Titan Quest II / Wreckfest 2 / Gothic Remake", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Digital Showcase (streamed Aug 7) only — no gamescom booth." }
+    ],
+    "tags": ["not exhibiting"],
+    "crowd": 1,
+    "crowdNote": "No booth.",
+    "visitAdvice": "Watch the THQ Nordic Digital Showcase stream instead; partner titles may still surface at other booths.",
+    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-thq-nordic-absage-080726/"],
+    "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "paradox-urban",
+    "name": "Paradox / Urban Games",
+    "type": "publisher",
+    "hall": "8",
+    "booth": null,
+    "locationConfirmed": false,
+    "description": "No classic solo booth: Paradox co-presents Transport Fever 3 with Urban Games in Hall 8 — complete with a London double-decker bus as the eye-catcher — and may also appear within Tencent's Hall 6 area.",
+    "games": [
+      { "title": "Transport Fever 3", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Shown with Urban Games in Hall 8; double-decker photo op." },
+      { "title": "Paradox grand-strategy catalog", "status": "rumored", "playable": null, "platforms": ["PC"], "note": "Possible presence in the Tencent area; nothing specific announced." }
+    ],
+    "tags": ["simulation", "strategy", "PC"],
+    "crowd": 2,
+    "crowdNote": "Niche-but-devoted audience — steady sim fans rather than mass queues.",
+    "visitAdvice": "Queues reasonable even at peak; combine with CDPR and Square Enix in the same hall.",
+    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/"],
+    "lastUpdated": "2026-08-06"
+  }
+]
