@@ -41,7 +41,8 @@ This document is the playbook for refreshing the data — written so a scheduled
   - `confirmed`: exhibitor or gamescom officially announced it for the show
   - `expected`: strongly implied (e.g. publisher confirmed + game launches in Sept/Oct)
   - `rumored`: our inference only — press speculation, past-year patterns
-- `locationConfirmed: false` + a hall value means "best guess (often from 2025 placement)". The UI renders it amber with an "(unconfirmed)" suffix.
+- `locationConfirmed: false` + a hall value means "best guess (often from 2025 placement)". The UI marks the hall block amber and suffixes the booth with "· unconf."
+- `platforms` is rendered on each game row as short codes (`XSX`, `SW2`, `PS5`…). Unknown values fall back to the uppercased string, so keep them short and consistent — see `PLATFORM_CODES` in `js/app.js` to add a new mapping.
 - Crowd scale: 1 calm · 2 light · 3 moderate · 4 busy (30–90 min queues) · 5 extreme (2 h+ queues, may cap lines early).
 - Don't remove the `sources` history; append.
 
@@ -111,6 +112,40 @@ This document is the playbook for refreshing the data — written so a scheduled
   }
 ]
 ```
+
+## Refreshing the webfonts
+
+Fonts are self-hosted in `fonts/` so no visitor request reaches a third party. They
+only need regenerating if a family changes or you add one. From the repo root:
+
+```sh
+python3 - <<'PY'
+import re, subprocess, os, pathlib
+SPECS = [("Archivo", "Archivo:wght@400..700", "archivo"),
+         ("Archivo Narrow", "Archivo+Narrow:wght@600..700", "archivo-narrow"),
+         ("JetBrains Mono", "JetBrains+Mono:wght@400..700", "jetbrains-mono"),
+         ("Anton", "Anton", "anton")]
+UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+KEEP = {"latin", "latin-ext"}          # German umlauts live in latin
+os.makedirs("fonts", exist_ok=True)
+out = ["/* Generated — see docs/UPDATING.md. Licences in fonts/LICENSE.md. */\n"]
+for family, spec, slug in SPECS:
+    css = subprocess.run(["curl","-sA",UA,
+        f"https://fonts.googleapis.com/css2?family={spec}&display=swap"],
+        capture_output=True, text=True).stdout
+    for subset, block in re.findall(r"/\* (\S+) \*/\s*(@font-face \{.*?\})", css, re.S):
+        if subset not in KEEP: continue
+        url = re.search(r"url\((https://[^)]+)\)", block).group(1)
+        fname = f"{slug}-{subset}.woff2"
+        subprocess.run(["curl","-sA",UA,url,"-o",f"fonts/{fname}"], check=True)
+        out.append(f"/* {family} — {subset} */\n{block.replace(url, f'../fonts/{fname}')}\n")
+pathlib.Path("css/fonts.css").write_text("\n".join(out))
+PY
+```
+
+The Chrome user-agent matters — Google serves `.ttf` to unknown clients and the far
+smaller `woff2` (and the variable-weight files) only to modern browsers. Re-check
+`fonts/LICENSE.md` if you add a family; everything shipped must be OFL or equivalent.
 
 ## Suggested routine prompt
 

@@ -4,51 +4,84 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning.">
+  <meta name="color-scheme" content="dark">
   <title>gamescom 2026 Guide</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preload" href="fonts/anton-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/archivo-narrow-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23ff4d17'/><text x='50' y='72' font-size='58' font-family='monospace' font-weight='700' text-anchor='middle' fill='%230c0c0d'>26</text></svg>">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
   <header class="site-header">
     <div class="wrap header-inner">
-      <div class="brand">
-        <span class="brand-mark">GC</span>
-        <div class="brand-text">
-          <h1>gamescom 2026 <span class="accent">Guide</span></h1>
-          <p class="tagline" id="event-dates">Cologne · Aug 26–30, 2026</p>
-        </div>
+      <a class="brand" href="#exhibitors">
+        <span class="brand-mark" aria-hidden="true">26</span>
+        <span class="brand-text">
+          <span class="brand-kicker">Unofficial visitor guide</span>
+          <span class="brand-title">gamescom <span class="brand-year">2026</span></span>
+        </span>
+      </a>
+      <div class="header-meta">
+        <p class="meta-line" id="event-dates">Koelnmesse, Cologne · Aug 26–30, 2026</p>
+        <p class="countdown" id="countdown" aria-live="polite"></p>
       </div>
-      <div class="countdown" id="countdown" aria-live="polite"></div>
     </div>
-    <nav class="wrap tabs" role="tablist">
-      <button class="tab active" role="tab" aria-selected="true" data-view="exhibitors">Exhibitors</button>
-      <button class="tab" role="tab" aria-selected="false" data-view="planner">Visit Planner</button>
-      <button class="tab" role="tab" aria-selected="false" data-view="event">Event Info</button>
-      <button class="tab" role="tab" aria-selected="false" data-view="updates">Updates</button>
+    <nav class="tabs-outer" aria-label="Sections">
+      <div class="wrap tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true" data-view="exhibitors"><span class="tab-index">01</span> Exhibitors</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="planner"><span class="tab-index">02</span> Visit planner</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="event"><span class="tab-index">03</span> Event info</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="updates"><span class="tab-index">04</span> Updates</button>
+      </div>
     </nav>
   </header>
 
-  <main class="wrap">
+  <main class="wrap" id="main">
     <!-- ============ Exhibitors view ============ -->
     <section id="view-exhibitors" class="view active">
-      <div class="controls">
-        <div class="search-row">
-          <input type="search" id="search" placeholder="Search exhibitors, games, tags…" autocomplete="off" aria-label="Search exhibitors and games">
-          <select id="sort" aria-label="Sort exhibitors">
-            <option value="crowd-desc">Sort: Crowd (busiest first)</option>
-            <option value="crowd-asc">Sort: Crowd (calmest first)</option>
-            <option value="name">Sort: Name A–Z</option>
-            <option value="hall">Sort: Hall</option>
-          </select>
+      <h2 class="sr-only">Exhibitors</h2>
+      <div class="toolbar">
+        <div class="toolbar-row toolbar-search">
+          <label class="field field-search">
+            <span class="field-label">Search</span>
+            <input type="search" id="search" placeholder="Exhibitor, game or tag…" autocomplete="off">
+          </label>
+          <label class="field field-sort">
+            <span class="field-label">Sort by</span>
+            <select id="sort">
+              <option value="crowd-desc">Crowd — busiest first</option>
+              <option value="crowd-asc">Crowd — calmest first</option>
+              <option value="name">Name A–Z</option>
+              <option value="hall">Hall number</option>
+            </select>
+          </label>
         </div>
-        <div class="filter-row" id="type-filters" aria-label="Filter by category"></div>
-        <div class="filter-row secondary">
-          <div class="hall-filter" id="hall-filters" aria-label="Filter by hall"></div>
-          <label class="toggle"><input type="checkbox" id="playable-only"> Playable demos only</label>
-          <label class="toggle"><input type="checkbox" id="confirmed-only"> Confirmed locations only</label>
-        </div>
-        <p class="result-count" id="result-count"></p>
+        <details class="toolbar-more" id="toolbar-more">
+          <summary class="toolbar-summary">
+            <span class="row-label">Filters</span>
+            <span class="filter-summary" id="filter-summary"></span>
+            <span class="result-count" id="result-count"></span>
+          </summary>
+          <div class="toolbar-row">
+            <span class="row-label">Category</span>
+            <div class="filter-row" id="type-filters"></div>
+          </div>
+          <div class="toolbar-row">
+            <span class="row-label">Hall</span>
+            <div class="filter-row" id="hall-filters"></div>
+          </div>
+          <div class="toolbar-row toolbar-foot">
+            <span class="row-label">Only show</span>
+            <label class="toggle"><input type="checkbox" id="playable-only"> Playable demos</label>
+            <label class="toggle"><input type="checkbox" id="confirmed-only"> Confirmed locations</label>
+            <button class="reset hidden" id="reset-filters" type="button">Clear filters</button>
+          </div>
+        </details>
       </div>
       <div class="grid" id="exhibitor-grid"></div>
       <p class="empty hidden" id="no-results">Nothing matches — try clearing filters.</p>
@@ -56,42 +89,53 @@
 
     <!-- ============ Planner view ============ -->
     <section id="view-planner" class="view">
-      <div class="planner-intro card">
+      <div class="lede">
         <h2>When to visit what</h2>
-        <p>Rough strategy based on expected crowd levels. High-demand booths (crowd 4–5) mean long queues — hit those first thing in the morning or accept a wait. Calm booths (1–2) are good afternoon fillers.</p>
+        <p>Rough strategy based on expected crowd levels. High-demand booths (queue index 4–5) mean long waits — hit those first thing in the morning or accept the queue. Calm booths are good afternoon fillers.</p>
       </div>
-      <div id="day-guide"></div>
-      <h2 class="section-title">Queue priority — busiest booths first</h2>
-      <p class="section-sub">If a booth below matters to you, make it your first stop of the day.</p>
-      <div id="priority-list"></div>
-      <h2 class="section-title">General crowd tips</h2>
-      <ul class="tips" id="crowd-tips"></ul>
+
+      <h3 class="section-title"><span class="section-num">01</span> The five days</h3>
+      <div id="day-guide" class="day-board"></div>
+
+      <h3 class="section-title"><span class="section-num">02</span> Queue priority</h3>
+      <p class="section-sub">Busiest booths first. If one below matters to you, make it your first stop of the day.</p>
+      <div id="priority-list" class="priority-table"></div>
+
+      <h3 class="section-title"><span class="section-num">03</span> General crowd tips</h3>
+      <ol class="tips" id="crowd-tips"></ol>
     </section>
 
     <!-- ============ Event info view ============ -->
     <section id="view-event" class="view">
+      <h2 class="sr-only">Event info</h2>
       <div id="event-info"></div>
     </section>
 
     <!-- ============ Updates view ============ -->
     <section id="view-updates" class="view">
-      <div class="planner-intro card">
+      <div class="lede">
         <h2>Data updates</h2>
         <p>This guide is refreshed every few days until the show as exhibitors announce lineups and booth locations. What changed in each revision:</p>
       </div>
-      <div id="changelog"></div>
+      <div id="changelog" class="timeline"></div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <div class="wrap">
-      <p>Unofficial fan-made guide. Not affiliated with gamescom, Koelnmesse or game AG.</p>
-      <p id="data-freshness"></p>
-      <p class="legend">
-        Game status: <span class="badge status-confirmed">confirmed</span> officially announced for gamescom ·
-        <span class="badge status-expected">expected</span> strongly implied ·
-        <span class="badge status-rumored">rumored</span> our guess — unverified.
-      </p>
+    <div class="wrap footer-inner">
+      <div class="footer-col">
+        <p class="footer-strong">Unofficial fan-made guide.</p>
+        <p>Not affiliated with gamescom, Koelnmesse or game AG.</p>
+        <p class="mono-note" id="data-freshness"></p>
+      </div>
+      <div class="footer-col">
+        <p class="row-label">Game status key</p>
+        <ul class="legend">
+          <li><span class="dot" data-status="confirmed"></span> <b>Confirmed</b> — officially announced for gamescom</li>
+          <li><span class="dot" data-status="expected"></span> <b>Expected</b> — strongly implied, not announced</li>
+          <li><span class="dot" data-status="rumored"></span> <b>Rumored</b> — our guess, unverified</li>
+        </ul>
+      </div>
     </div>
   </footer>
 

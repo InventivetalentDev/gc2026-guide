@@ -25,9 +25,40 @@ python3 -m http.server 8000
 
 Any static host works. For GitHub Pages: repo **Settings → Pages → Source: GitHub Actions** — the included workflow (`.github/workflows/pages.yml`) deploys on every push to `main`.
 
+## Design
+
+**"Hall Signage"** — trade-fair wayfinding crossed with print. The hall number is
+what you actually read while walking a show floor, so it gets a solid orange plate
+and the largest type on the card (amber when the location is still a guess, grey
+when it's TBA). Exhibitors are discrete panels with hard, unblurred offset shadows
+rather than cells sharing hairlines. One signal colour, near-square corners, no
+gradients, no emoji, no blurred elevation.
+
+Two details that look like mistakes but aren't:
+
+- **The card offset shadow is lighter than the ground, not darker.** A black shadow
+  is invisible on a near-black page; offsetting in a lighter tone (`--plate-shadow`)
+  gives the same "printed second layer" read as ink on paper, inverted.
+- **Anton is used for structural headings only** — page and section titles, weekday
+  labels, the wordmark — and for exactly one element inside a card, the tilted
+  `N PLAYABLE` stamp. Exhibitor names stay on Archivo Narrow, and the per-game
+  badges stay quiet outlines: repeating either treatment down a 23-game lineup turns
+  emphasis into noise.
+
+Everything is driven by the tokens at the top of `css/style.css`. Two earlier
+directions — a light "Fanzine" and an all-monospace "Console" — were built on the
+same tokens and dropped when this one was picked; `css/themes.css` is recoverable
+from git history if you ever want to compare again.
+
+Typefaces are **self-hosted** in `fonts/` (Archivo, Archivo Narrow, JetBrains Mono,
+Anton — all OFL). Embedding Google Fonts by URL sends every visitor's IP to Google,
+which German courts have treated as a GDPR violation, and this guide's audience is
+overwhelmingly German. To refresh them, re-run the download step in
+[`docs/UPDATING.md`](docs/UPDATING.md#refreshing-the-webfonts).
+
 ## Architecture
 
-All content lives in `data/` as JSON; the app (`index.html`, `js/app.js`, `css/style.css`) is a thin renderer. **Updating the guide never requires code changes — only edit the JSON files.**
+All content lives in `data/` as JSON; the app (`index.html`, `js/app.js`, `css/`) is a thin renderer. **Updating the guide never requires code changes — only edit the JSON files.**
 
 | File | Contents |
 |---|---|
