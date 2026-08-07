@@ -27,28 +27,28 @@ Any static host works. For GitHub Pages: repo **Settings → Pages → Source: G
 
 ## Design
 
-The site ships **three visual directions on identical markup and content**, switchable
-from the footer (the choice is remembered in `localStorage`). They exist so one can be
-picked and the other two deleted:
+**"Hall Signage"** — trade-fair wayfinding crossed with print. The hall number is
+what you actually read while walking a show floor, so it gets a solid orange plate
+and the largest type on the card (amber when the location is still a guess, grey
+when it's TBA). Exhibitors are discrete panels with hard, unblurred offset shadows
+rather than cells sharing hairlines. One signal colour, near-square corners, no
+gradients, no emoji, no blurred elevation.
 
-| Direction | Idea | Trade-off |
-|---|---|---|
-| **Signage** (default) | Dark trade-fair wayfinding crossed with print: hall numbers on solid orange plates, cards as discrete panels with hard offset shadows, Anton for structural headings, one signal colour | Loses some density to the card gaps |
-| **Fanzine** | The same print language on paper — newsprint ground, black ink, two spot colours | The only light direction, so the only one that stays readable in the sunlit halls |
-| **Console** | Terminal readout — all monospace, full-width rows sharing hairlines, amber on near-black | Best density-per-screen, least welcoming to a first-timer |
+Two details that look like mistakes but aren't:
 
-Two details worth keeping if you edit the default direction:
-
-- **The offset shadow is lighter than the ground, not darker.** A black shadow is
-  invisible on a near-black page; offsetting in a lighter tone (`--plate-shadow`)
-  gives the same "printed second layer" effect as ink-on-paper, inverted.
+- **The card offset shadow is lighter than the ground, not darker.** A black shadow
+  is invisible on a near-black page; offsetting in a lighter tone (`--plate-shadow`)
+  gives the same "printed second layer" read as ink on paper, inverted.
 - **Anton is used for structural headings only** — page and section titles, weekday
-  labels. Exhibitor names stay on Archivo Narrow so 38 cards don't all shout at once.
+  labels, the wordmark — and for exactly one element inside a card, the tilted
+  `N PLAYABLE` stamp. Exhibitor names stay on Archivo Narrow, and the per-game
+  badges stay quiet outlines: repeating either treatment down a 23-game lineup turns
+  emphasis into noise.
 
-`css/style.css` holds the tokens, layout and components with the Signage values baked
-into `:root`. `css/themes.css` re-declares only colour, type and shape under
-`[data-theme="zine"]` / `[data-theme="console"]`. To commit to one direction: delete
-`themes.css`, its `<link>`, and the footer's `.theme-switch` block.
+Everything is driven by the tokens at the top of `css/style.css`. Two earlier
+directions — a light "Fanzine" and an all-monospace "Console" — were built on the
+same tokens and dropped when this one was picked; `css/themes.css` is recoverable
+from git history if you ever want to compare again.
 
 Typefaces are **self-hosted** in `fonts/` (Archivo, Archivo Narrow, JetBrains Mono,
 Anton — all OFL). Embedding Google Fonts by URL sends every visitor's IP to Google,

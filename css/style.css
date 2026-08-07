@@ -1,12 +1,16 @@
 /* ============================================================
-   gamescom 2026 guide
-   Direction 01 — "Hall Signage"
+   gamescom 2026 guide — "Hall Signage"
 
    Trade-fair wayfinding crossed with print. Typography and hard
    edges do the work: no gradients, no blurred elevation, no
    rounded pill soup. Hall numbers are set on solid plates because
    that is the one thing you actually read while walking, and each
    exhibitor is a discrete panel rather than a cell of one table.
+
+   Two earlier directions (a light "Fanzine" and a monospace
+   "Console") were built on these same tokens and dropped once
+   this one was chosen; recover them from css/themes.css in the
+   history if you ever want to compare again.
    ============================================================ */
 
 :root {
@@ -754,8 +758,8 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .site-footer { border-top: 1px solid var(--rule); padding: 32px 0 48px; }
 .footer-inner {
   display: grid;
-  grid-template-columns: 1.3fr 1.2fr 1fr;
-  gap: 32px;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 48px;
   align-items: start;
 }
 .footer-col { display: flex; flex-direction: column; gap: 6px; font-size: .82rem; color: var(--ink-dim); }
@@ -769,19 +773,6 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .dot[data-status="confirmed"] { background: var(--ok); }
 .dot[data-status="expected"]  { background: var(--warn); }
 .dot[data-status="rumored"]   { background: var(--neutral); }
-
-.theme-switch { display: flex; gap: 0; margin-top: 6px; border: var(--border); border-radius: var(--radius-sm); width: fit-content; }
-.theme-btn {
-  background: none; border: none; border-right: 1px solid var(--rule);
-  color: var(--ink-mid);
-  font-family: var(--font-mono);
-  font-size: .68rem; letter-spacing: .08em; text-transform: uppercase;
-  padding: 6px 11px; cursor: pointer;
-}
-.theme-btn:last-child { border-right: none; }
-.theme-btn:hover { color: var(--ink); }
-.theme-btn.active { background: var(--signal); color: var(--signal-ink); }
-.theme-note { font-size: .72rem; line-height: 1.5; margin-top: 8px; }
 
 .empty { text-align: center; color: var(--ink-dim); padding: 70px 0; font-size: .9rem; }
 .empty code { font-family: var(--font-mono); color: var(--ink); }

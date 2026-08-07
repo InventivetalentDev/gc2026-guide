@@ -59,8 +59,6 @@ const PLATFORM_CODES = {
 };
 
 const VIEWS = ["exhibitors", "planner", "event", "updates"];
-const THEMES = ["signage", "zine", "console"];
-const THEME_KEY = "gc26-theme";
 
 async function loadData() {
   const bust = `?v=${Date.now()}`;
@@ -454,7 +452,7 @@ function renderFreshness() {
   $("#data-freshness").textContent = `Data updated ${m.lastUpdated} · rev ${m.revision}. ${m.note || ""}`;
 }
 
-/* ---------- views & theme ---------- */
+/* ---------- views ---------- */
 
 function showView(name, { push = true } = {}) {
   if (!VIEWS.includes(name)) name = VIEWS[0];
@@ -466,17 +464,6 @@ function showView(name, { push = true } = {}) {
   $$(".view").forEach((v) => v.classList.remove("active"));
   $(`#view-${name}`).classList.add("active");
   if (push && location.hash.slice(1) !== name) history.replaceState(null, "", `#${name}`);
-}
-
-function applyTheme(name) {
-  if (!THEMES.includes(name)) name = THEMES[0];
-  document.documentElement.dataset.theme = name;
-  $$(".theme-btn").forEach((b) => b.classList.toggle("active", b.dataset.theme === name));
-  try {
-    localStorage.setItem(THEME_KEY, name);
-  } catch (_) {
-    /* private mode — theme just won't persist */
-  }
 }
 
 function bindControls() {
@@ -510,23 +497,9 @@ function bindControls() {
 
   $$(".tab").forEach((tab) => tab.addEventListener("click", () => showView(tab.dataset.view)));
   window.addEventListener("hashchange", () => showView(location.hash.slice(1), { push: false }));
-
-  $$(".theme-btn").forEach((btn) => btn.addEventListener("click", () => applyTheme(btn.dataset.theme)));
-}
-
-/* Theme is applied before data loads so there is no flash of the wrong direction. */
-function initTheme() {
-  let saved = null;
-  try {
-    saved = localStorage.getItem(THEME_KEY);
-  } catch (_) {
-    /* ignore */
-  }
-  applyTheme(saved || document.documentElement.dataset.theme || THEMES[0]);
 }
 
 async function main() {
-  initTheme();
   try {
     await loadData();
   } catch (err) {
