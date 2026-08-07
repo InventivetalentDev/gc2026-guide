@@ -37,15 +37,13 @@
 
   --font-display: "Anton", "Archivo Narrow", system-ui, sans-serif;
 
+  --grain: #c9c1b0;              /* the base halftone, inked for paper */
+
   --radius: 0px;
   --radius-sm: 0px;
+  --plate-shadow:       5px 5px 0 var(--ink);
+  --plate-shadow-hover: 8px 8px 0 var(--ink);
   color-scheme: light;
-}
-
-[data-theme="zine"] body {
-  /* faint halftone — a paper texture, not a gradient */
-  background-image: radial-gradient(var(--rule-soft) .5px, transparent .5px);
-  background-size: 4px 4px;
 }
 
 [data-theme="zine"] .brand-title,
@@ -68,17 +66,18 @@
 [data-theme="zine"] .tabs-outer { border-top: 1px solid var(--ink); }
 [data-theme="zine"] .brand-mark { box-shadow: 3px 3px 0 var(--ink); }
 
-/* hard offset instead of hairline separation */
-[data-theme="zine"] .grid { gap: 16px; background: none; border: none; overflow: visible; }
-[data-theme="zine"] .card { border: 2px solid var(--ink); box-shadow: 5px 5px 0 var(--ink); }
-[data-theme="zine"] .card:hover { background: var(--ground-3); transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink); }
+[data-theme="zine"] .card { border-width: 2px; }
+[data-theme="zine"] .card:hover { background: var(--ground-3); }
+/* the whole head is the colour plate here, not just the hall block */
 [data-theme="zine"] .exh-head { border-bottom: 2px solid var(--ink); background: var(--signal); color: var(--signal-ink); }
+[data-theme="zine"] .hall-marker { background: none; color: inherit; }
+[data-theme="zine"] .hall-marker[data-state="tba"],
+[data-theme="zine"] .hall-marker[data-state="absent"] { background: none; color: inherit; }
 [data-theme="zine"] .exh-head .overline,
 [data-theme="zine"] .exh-head .hall-kicker,
 [data-theme="zine"] .exh-head .hall-booth { color: rgba(247, 243, 234, .75); }
 [data-theme="zine"] .hall-marker { border-right: 2px solid var(--signal-ink); }
-[data-theme="zine"] .hall-marker::before { display: none; }
-[data-theme="zine"] .hall-marker[data-state="unconfirmed"] .hall-booth { color: #ffd9a0; }
+[data-theme="zine"] .hall-marker[data-state="unconfirmed"] .hall-booth { color: #ffd9a0; opacity: 1; }
 [data-theme="zine"] .card-foot { background: rgba(23, 20, 15, .06); border-top: 2px solid var(--ink); }
 
 [data-theme="zine"] .badge-playable {
@@ -90,6 +89,7 @@
 [data-theme="zine"] .toolbar,
 [data-theme="zine"] .day-board,
 [data-theme="zine"] .priority-table { border: 2px solid var(--ink); }
+[data-theme="zine"] .toolbar { box-shadow: var(--plate-shadow); }
 [data-theme="zine"] .lede { border-left-width: 6px; }
 [data-theme="zine"] .section-title,
 [data-theme="zine"] .info-block > h2 { border-bottom: 3px solid var(--ink); }
@@ -128,6 +128,9 @@
 
   --font-ui:      "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-display: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-poster:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --grain: transparent;          /* the scanline below is texture enough */
 
   --radius: 0px;
   --radius-sm: 0px;
@@ -147,9 +150,24 @@
 [data-theme="console"] .brand-title::before { content: "> "; color: var(--signal); }
 [data-theme="console"] .brand-mark { border: 1px solid var(--signal); background: none; color: var(--signal); }
 
-/* one column of dense rows — the whole point of this direction */
-[data-theme="console"] .grid { grid-template-columns: 1fr; }
-[data-theme="console"] .card { flex-direction: column; }
+/* one column of dense rows sharing hairlines — the whole point of this
+   direction is rows-per-screen, so the plate gaps go away again */
+[data-theme="console"] .grid {
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--rule);
+  border: var(--border);
+  overflow: hidden;
+}
+[data-theme="console"] .card { flex-direction: column; border: none; box-shadow: none; }
+[data-theme="console"] .card:hover { transform: none; box-shadow: none; }
+[data-theme="console"] .hall-marker {
+  background: none; color: inherit;
+  border-left: 3px solid var(--signal);
+}
+[data-theme="console"] .hall-marker[data-state="unconfirmed"] { border-left-color: var(--warn); }
+[data-theme="console"] .hall-marker[data-state="tba"],
+[data-theme="console"] .hall-marker[data-state="absent"] { background: none; border-left-color: var(--rule); }
 [data-theme="console"] .exh-head { align-items: stretch; }
 [data-theme="console"] .hall-marker { flex-basis: 130px; }
 [data-theme="console"] .hall-num { font-size: 1.4rem; }

@@ -2,17 +2,18 @@
    gamescom 2026 guide
    Direction 01 — "Hall Signage"
 
-   Trade-fair wayfinding, not a landing page. Typography and
-   hairline rules do the work: no gradients, no drop shadows, no
-   rounded pill soup. Hall numbers are set like signage because
-   that is the one thing you actually read while walking.
+   Trade-fair wayfinding crossed with print. Typography and hard
+   edges do the work: no gradients, no blurred elevation, no
+   rounded pill soup. Hall numbers are set on solid plates because
+   that is the one thing you actually read while walking, and each
+   exhibitor is a discrete panel rather than a cell of one table.
    ============================================================ */
 
 :root {
   /* ---- ground & ink (warm neutral, deliberately not navy) ---- */
-  --ground:    #0c0c0d;
-  --ground-2:  #131315;
-  --ground-3:  #191a1c;
+  --ground:    #09090a;
+  --ground-2:  #141416;
+  --ground-3:  #1c1c1f;
   --rule:      #2b2c30;
   --rule-soft: #1f2023;
   --ink:       #f2efe9;
@@ -21,8 +22,9 @@
 
   /* ---- one signal colour, used sparingly ---- */
   --signal:     #ff4d17;
-  --signal-ink: #0c0c0d;
+  --signal-ink: #0b0b0c;
   --signal-wash: rgba(255, 77, 23, .12);
+  --grain:       rgba(255, 255, 255, .025);
 
   /* ---- status ---- */
   --ok:      #2fbf85;
@@ -34,12 +36,21 @@
   --font-ui:      "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Archivo Narrow", "Archivo", system-ui, sans-serif;
   --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* poster weight, used only for structural headings — exhibitor names stay on
+     --font-display so 38 cards don't all shout at once */
+  --font-poster:  "Anton", "Archivo Narrow", system-ui, sans-serif;
 
   /* ---- shape: near-square, signage-like ---- */
-  --radius:   3px;
+  --radius:   2px;
   --radius-sm: 2px;
   --border:   1px solid var(--rule);
   --wrap:     1200px;
+
+  /* Hard offset, never blurred. On a near-black ground a black shadow is
+     invisible, so the offset is LIGHTER than the ground — same printed
+     second-layer effect as ink-on-paper, inverted. */
+  --plate-shadow:       5px 5px 0 #212125;
+  --plate-shadow-hover: 8px 8px 0 #2c2c31;
 
   font-size: 16px;
   color-scheme: dark;
@@ -59,6 +70,9 @@ body {
   display: flex;
   flex-direction: column;
   -webkit-font-smoothing: antialiased;
+  /* barely-there halftone; gives the ground a printed grain instead of flat ink */
+  background-image: radial-gradient(var(--grain) .5px, transparent .5px);
+  background-size: 4px 4px;
 }
 
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; width: 100%; }
@@ -139,11 +153,12 @@ body {
 }
 .brand-text { display: flex; flex-direction: column; gap: 1px; }
 .brand-title {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: var(--font-poster);
+  font-size: 1.6rem;
+  font-weight: 400;
   line-height: 1.05;
-  letter-spacing: -.01em;
+  letter-spacing: .005em;
+  text-transform: uppercase;
 }
 .brand-year { color: var(--ink-dim); font-weight: 600; }
 
@@ -201,13 +216,20 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 }
 
 .lede { border-left: 3px solid var(--signal); padding: 2px 0 2px 18px; margin-bottom: 32px; max-width: 68ch; }
-.lede h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+.lede h2 {
+  font-family: var(--font-poster);
+  font-size: 2rem; font-weight: 400;
+  text-transform: uppercase; letter-spacing: .005em; line-height: 1.05;
+  margin-bottom: 8px;
+}
 .lede p { color: var(--ink-mid); }
 
 .section-title {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-family: var(--font-poster);
+  font-size: 1.35rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: .01em;
   margin: 40px 0 4px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--rule);
@@ -339,69 +361,69 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 /* ============================================================
    exhibitor cards
    ============================================================ */
+/* Cards are discrete printed plates, not cells of one table: real gaps plus a
+   hard un-blurred offset shadow. Blurred shadows read as generic material
+   elevation; a hard offset reads as something laid on top of the page. */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 1px;
-  background: var(--rule);
-  border: var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
+  gap: 20px;
 }
 
 .card {
   background: var(--ground-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--plate-shadow);
   padding: 0;
   display: flex;
   flex-direction: column;
-  transition: background .12s;
+  transition: background .12s, box-shadow .12s, transform .12s;
 }
-.card:hover { background: var(--ground-3); }
+.card:hover {
+  background: var(--ground-3);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--plate-shadow-hover);
+}
 
-/* --- head: hall marker set as wayfinding --- */
+/* --- head: the hall number as a signage plate --- */
 .exh-head { display: flex; gap: 0; border-bottom: 1px solid var(--rule-soft); }
 
 .hall-marker {
-  flex: 0 0 104px;
+  flex: 0 0 108px;
   padding: 14px 12px;
-  border-right: 1px solid var(--rule-soft);
+  background: var(--signal);
+  color: var(--signal-ink);
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 2px;
-  position: relative;
 }
-.hall-marker::before {
-  content: "";
-  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: var(--signal);
-}
-.hall-marker[data-state="unconfirmed"]::before { background: var(--warn); }
-.hall-marker[data-state="tba"]::before,
-.hall-marker[data-state="absent"]::before { background: var(--rule); }
+.hall-marker[data-state="unconfirmed"] { background: var(--warn); }
+.hall-marker[data-state="tba"],
+.hall-marker[data-state="absent"] { background: var(--ground-3); color: var(--ink-dim); }
 
 .hall-kicker {
   font-family: var(--font-mono);
   font-size: .58rem; letter-spacing: .16em; text-transform: uppercase;
-  color: var(--ink-dim);
+  color: inherit; opacity: .7;
 }
 .hall-num {
   font-family: var(--font-mono);
-  font-size: 1.7rem;
+  font-size: 1.75rem;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -.04em;
   font-variant-numeric: tabular-nums;
 }
 .hall-marker[data-state="tba"] .hall-num,
-.hall-marker[data-state="absent"] .hall-num { font-size: 1rem; color: var(--ink-dim); letter-spacing: 0; }
+.hall-marker[data-state="absent"] .hall-num { font-size: 1rem; letter-spacing: 0; }
 .hall-booth {
   font-family: var(--font-mono);
   font-size: .68rem;
-  color: var(--ink-dim);
+  color: inherit; opacity: .78;
   word-break: break-all;
 }
-.hall-marker[data-state="unconfirmed"] .hall-booth { color: var(--warn); }
 
 .exh-id { padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; justify-content: center; min-width: 0; }
 .exh-id h3 {
@@ -552,9 +574,9 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 
 .day-when { display: flex; flex-direction: column; }
 .day-dow {
-  font-family: var(--font-display);
-  font-size: 1.25rem; font-weight: 700; line-height: 1;
-  text-transform: uppercase; letter-spacing: .02em;
+  font-family: var(--font-poster);
+  font-size: 1.45rem; font-weight: 400; line-height: 1;
+  text-transform: uppercase; letter-spacing: .01em;
 }
 .day-date {
   font-family: var(--font-mono);
@@ -627,8 +649,9 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
    ============================================================ */
 .info-block { margin-bottom: 34px; }
 .info-block > h2 {
-  font-family: var(--font-display);
-  font-size: 1.2rem; font-weight: 700;
+  font-family: var(--font-poster);
+  font-size: 1.35rem; font-weight: 400;
+  text-transform: uppercase; letter-spacing: .01em;
   padding-bottom: 8px; margin-bottom: 14px;
   border-bottom: 1px solid var(--rule);
   display: flex; align-items: baseline; gap: 12px;
@@ -641,8 +664,9 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .info-block a:hover { color: var(--signal); }
 
 .info-block .headline-fact {
-  font-family: var(--font-display);
-  font-size: 1.9rem; font-weight: 700; line-height: 1.15;
+  font-family: var(--font-poster);
+  font-size: 2.1rem; font-weight: 400; line-height: 1.1;
+  text-transform: uppercase; letter-spacing: .005em;
   color: var(--ink);
   margin-bottom: 6px;
 }

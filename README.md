@@ -33,9 +33,17 @@ picked and the other two deleted:
 
 | Direction | Idea | Trade-off |
 |---|---|---|
-| **Signage** (default) | Trade-fair wayfinding — hall numbers set like Koelnmesse signage, hairline rules, one signal colour, no gradients or shadows | Calm and dense; the least "loud" of the three |
-| **Fanzine** | Photocopied show handout — newsprint ground, poster-weight display type, hard offset shadows, two spot colours | The only light direction, so the only one that stays readable in the sunlit halls |
-| **Console** | Terminal readout — all monospace, full-width dense rows, amber on near-black | Best density-per-screen, least welcoming to a first-timer |
+| **Signage** (default) | Dark trade-fair wayfinding crossed with print: hall numbers on solid orange plates, cards as discrete panels with hard offset shadows, Anton for structural headings, one signal colour | Loses some density to the card gaps |
+| **Fanzine** | The same print language on paper — newsprint ground, black ink, two spot colours | The only light direction, so the only one that stays readable in the sunlit halls |
+| **Console** | Terminal readout — all monospace, full-width rows sharing hairlines, amber on near-black | Best density-per-screen, least welcoming to a first-timer |
+
+Two details worth keeping if you edit the default direction:
+
+- **The offset shadow is lighter than the ground, not darker.** A black shadow is
+  invisible on a near-black page; offsetting in a lighter tone (`--plate-shadow`)
+  gives the same "printed second layer" effect as ink-on-paper, inverted.
+- **Anton is used for structural headings only** — page and section titles, weekday
+  labels. Exhibitor names stay on Archivo Narrow so 38 cards don't all shout at once.
 
 `css/style.css` holds the tokens, layout and components with the Signage values baked
 into `:root`. `css/themes.css` re-declares only colour, type and shape under
