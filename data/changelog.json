@@ -1,0 +1,20 @@
+[
+  {
+    "date": "2026-08-07",
+    "revision": 2,
+    "changes": [
+      "Added this changelog — every data refresh now records what changed here.",
+      "Site is now live on the custom domain; data updates push straight to main every ~3 days."
+    ]
+  },
+  {
+    "date": "2026-08-06",
+    "revision": 1,
+    "changes": [
+      "Initial dataset: 38 exhibitors with games, hall/booth locations, crowd forecasts and visit advice.",
+      "Confirmed lineups for Xbox (Hall 7.1), Nintendo (Hall 9.1), Capcom, SEGA/Atlus, Bandai Namco, Konami, HoYoverse, Level Infinite, Krafton, Pearl Abyss and more.",
+      "Recorded notable absences: PlayStation, THQ Nordic, Blizzard, TikTok; GTA 6 'Extended Look' streams on Netflix Aug 27 instead of a booth.",
+      "Event info: dates, hours, ticket status (Saturday sold out), Opening Night Live details, special areas and crowd tips."
+    ]
+  }
+]

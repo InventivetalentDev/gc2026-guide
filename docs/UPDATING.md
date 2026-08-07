@@ -25,11 +25,14 @@ This document is the playbook for refreshing the data — written so a scheduled
    - Refresh each touched exhibitor's `lastUpdated` and append new `sources`.
 4. **Update `data/event.json`** if hours/tickets/areas/ONL details changed (e.g. days selling out — that raises crowd levels too).
 5. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date), increment `revision`, adjust `note` if warranted.
-6. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
+6. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
+   human-readable bullet per meaningful change — this renders on the site's Updates tab.
+   Skip trivia; write for visitors ("Ubisoft booth confirmed: Hall 6 B010"), not diffs.
+7. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
    ```sh
-   node -e "['exhibitors','event','meta'].forEach(f=>JSON.parse(require('fs').readFileSync('data/'+f+'.json')))"
+   node -e "['exhibitors','event','meta','changelog'].forEach(f=>JSON.parse(require('fs').readFileSync('data/'+f+'.json')))"
    ```
-7. **Commit & push** with a message summarizing what changed, e.g.
+8. **Commit & push to `main`** with a message summarizing what changed, e.g.
    `data: Ubisoft booth confirmed Hall 6 B010; add Anno 118 as playable; bump rev 7`.
 
 ## Editorial rules
@@ -95,6 +98,18 @@ This document is the playbook for refreshing the data — written so a scheduled
 
 ```jsonc
 { "lastUpdated": "2026-08-06", "revision": 1, "note": "shown in the footer" }
+```
+
+### `data/changelog.json` — array, newest first:
+
+```jsonc
+[
+  {
+    "date": "2026-08-07",
+    "revision": 2,
+    "changes": ["One bullet per meaningful change, visitor-readable."]
+  }
+]
 ```
 
 ## Suggested routine prompt

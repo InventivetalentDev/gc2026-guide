@@ -213,6 +213,15 @@ main { flex: 1; padding: 24px 20px 60px; }
 .info-block .area-hall { color: var(--accent-2); font-weight: 700; }
 .info-block a { color: var(--accent); }
 
+/* ---------- changelog ---------- */
+.rev-tag {
+  font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--accent); background: rgba(124,92,255,.12);
+  padding: 2px 8px; border-radius: 999px; vertical-align: middle; margin-left: 6px;
+}
+.changelog-entry ul { margin-top: 6px; }
+.changelog-entry li { margin-bottom: 4px; }
+
 /* ---------- footer ---------- */
 .site-footer {
   border-top: 1px solid var(--border);

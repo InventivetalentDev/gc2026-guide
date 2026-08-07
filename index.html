@@ -25,6 +25,7 @@
       <button class="tab active" role="tab" aria-selected="true" data-view="exhibitors">Exhibitors</button>
       <button class="tab" role="tab" aria-selected="false" data-view="planner">Visit Planner</button>
       <button class="tab" role="tab" aria-selected="false" data-view="event">Event Info</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="updates">Updates</button>
     </nav>
   </header>
 
@@ -70,6 +71,15 @@
     <!-- ============ Event info view ============ -->
     <section id="view-event" class="view">
       <div id="event-info"></div>
+    </section>
+
+    <!-- ============ Updates view ============ -->
+    <section id="view-updates" class="view">
+      <div class="planner-intro card">
+        <h2>Data updates</h2>
+        <p>This guide is refreshed every few days until the show as exhibitors announce lineups and booth locations. What changed in each revision:</p>
+      </div>
+      <div id="changelog"></div>
     </section>
   </main>
 

@@ -34,6 +34,7 @@ All content lives in `data/` as JSON; the app (`index.html`, `js/app.js`, `css/s
 | `data/exhibitors.json` | Array of exhibitors: location, games, tags, crowd forecast |
 | `data/event.json` | Event meta: dates, hours, tickets, areas, crowd tips |
 | `data/meta.json` | `lastUpdated`, `revision`, freshness note |
+| `data/changelog.json` | Per-revision change notes, shown on the Updates tab |
 
 See [`docs/UPDATING.md`](docs/UPDATING.md) for the data schema and the periodic-refresh playbook (designed to be run by a scheduled Claude Code routine).
 

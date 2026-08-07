@@ -29,14 +29,16 @@ const CROWD_LABELS = ["", "Calm", "Light", "Moderate", "Busy", "Extreme"];
 
 async function loadData() {
   const bust = `?v=${Date.now()}`;
-  const [exhibitors, event, meta] = await Promise.all([
+  const [exhibitors, event, meta, changelog] = await Promise.all([
     fetch(`data/exhibitors.json${bust}`).then((r) => r.json()),
     fetch(`data/event.json${bust}`).then((r) => r.json()),
     fetch(`data/meta.json${bust}`).then((r) => r.json()),
+    fetch(`data/changelog.json${bust}`).then((r) => r.json()).catch(() => []),
   ]);
   state.exhibitors = exhibitors;
   state.event = event;
   state.meta = meta;
+  state.changelog = changelog;
 }
 
 /* ---------- filtering & sorting ---------- */
@@ -258,6 +260,20 @@ function renderEvent() {
     </div>`;
 }
 
+/* ---------- changelog ---------- */
+
+function renderChangelog() {
+  const entries = [...(state.changelog || [])].sort((a, b) => b.revision - a.revision);
+  $("#changelog").innerHTML = entries
+    .map(
+      (e) => `<div class="info-block changelog-entry">
+        <h2>${esc(e.date)} <span class="rev-tag">rev ${esc(e.revision)}</span></h2>
+        <ul>${(e.changes || []).map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
+      </div>`
+    )
+    .join("");
+}
+
 /* ---------- misc ---------- */
 
 function renderCountdown() {
@@ -320,6 +336,7 @@ async function main() {
   renderExhibitors();
   renderPlanner();
   renderEvent();
+  renderChangelog();
 }
 
 main();
