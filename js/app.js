@@ -226,7 +226,7 @@ function card(ex) {
               <div class="block-head">
                 <span>Lineup</span>
                 <span>${games.length} title${games.length === 1 ? "" : "s"}${
-                  playableCount ? ` · ${playableCount} playable` : ""
+                  playableCount ? `<span class="stamp">${playableCount} playable</span>` : ""
                 }</span>
               </div>
               <ul class="games">${shown.map(gameRow).join("")}</ul>

@@ -194,6 +194,7 @@
 [data-theme="console"] .block-head span:last-child { order: 3; }
 [data-theme="console"] .section-title { border-bottom: none; align-items: center; }
 
+[data-theme="console"] .stamp { transform: none; box-shadow: none; }
 [data-theme="console"] .meter i { width: 14px; height: 12px; border-radius: 0; }
 [data-theme="console"] .chip { text-transform: uppercase; font-size: .7rem; letter-spacing: .04em; }
 [data-theme="console"] .tab { text-transform: uppercase; font-size: .8rem; letter-spacing: .02em; }

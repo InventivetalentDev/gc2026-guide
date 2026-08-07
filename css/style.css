@@ -493,6 +493,25 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   border: 1px solid transparent;
 }
 .badge-playable { color: var(--signal); border-color: var(--signal-wash); background: var(--signal-wash); }
+
+/* The one hand-applied element in the layout, and deliberately the only one:
+   once per card it reads as a stamp, but repeated down every game row the
+   tilts land at different x positions and read as jitter. */
+.stamp {
+  display: inline-block;
+  margin-left: 9px;
+  background: var(--signal);
+  color: var(--signal-ink);
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  transform: rotate(-2.5deg);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, .45);
+}
 .badge-status[data-status="expected"] { color: var(--warn); border-color: rgba(232,163,58,.25); }
 .badge-status[data-status="rumored"]  { color: var(--neutral); border-color: var(--rule); }
 
