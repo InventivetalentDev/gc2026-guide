@@ -2,10 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning.">
   <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#09090a">
   <title>gamescom 2026 Guide</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="gc 2026">
+  <meta name="application-name" content="gc 2026">
   <link rel="preload" href="fonts/anton-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/archivo-narrow-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -29,6 +37,8 @@
       <div class="header-meta">
         <p class="meta-line" id="event-dates">Koelnmesse, Cologne · Aug 26–30, 2026</p>
         <p class="countdown" id="countdown" aria-live="polite"></p>
+        <p class="offline-flag">Offline · showing saved data</p>
+        <button class="install-btn" id="install-app" type="button" hidden>Install app</button>
       </div>
     </div>
     <nav class="tabs-outer" aria-label="Sections">
@@ -147,6 +157,13 @@
     </div>
   </footer>
 
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden>
+    <span class="toast-text" id="toast-text"></span>
+    <button class="toast-action" id="toast-action" type="button" hidden></button>
+    <button class="toast-dismiss" id="toast-dismiss" type="button" aria-label="Dismiss">×</button>
+  </div>
+
   <script src="js/app.js"></script>
+  <script src="js/pwa.js" defer></script>
 </body>
 </html>
