@@ -37,6 +37,13 @@
   ],
   "shortcuts": [
     {
+      "name": "Saved list",
+      "short_name": "Saved",
+      "description": "The booths and games you saved, and nothing else",
+      "url": "./#saved",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
       "name": "Visit planner",
       "short_name": "Planner",
       "description": "Day-by-day advice and the queue-priority list",

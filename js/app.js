@@ -12,6 +12,7 @@ const state = {
   confirmedOnly: false,
   savedOnly: false,
   prioritySavedOnly: false,
+  view: "exhibitors",
   sort: "crowd-desc",
   expanded: new Set(),
   /* replaced from localStorage in main() — see loadBookmarks() */
@@ -632,10 +633,38 @@ function renderFreshness() {
   $("#data-freshness").textContent = `Data updated ${m.lastUpdated} · rev ${m.revision}. ${m.note || ""}`;
 }
 
-/* ---------- views ---------- */
+/* ---------- views ----------
 
-function showView(name, { push = true } = {}) {
+   Routes are the four view names plus "saved" — the exhibitor list with the
+   saved-only filter on. It's a route rather than only a checkbox so the
+   installed app can put a launcher shortcut straight on your list, and so the
+   filtered list can be linked and survives a reload. */
+
+const SAVED_ROUTE = "saved";
+
+const routeFor = (view) => (view === "exhibitors" && state.savedOnly ? SAVED_ROUTE : view);
+
+function syncHash() {
+  const target = routeFor(state.view);
+  if (location.hash.slice(1) !== target) history.replaceState(null, "", `#${target}`);
+}
+
+function setSavedOnly(on) {
+  if (state.savedOnly === on) return;
+  state.savedOnly = on;
+  $("#saved-only").checked = on;
+  renderExhibitors();
+}
+
+function showView(route, { push = true } = {}) {
+  const wantsSaved = route === SAVED_ROUTE;
+  let name = wantsSaved ? "exhibitors" : route;
   if (!VIEWS.includes(name)) name = VIEWS[0];
+  state.view = name;
+  /* On the exhibitor list the URL owns the filter, so landing on #saved turns
+     it on and landing on #exhibitors clears it. The tabs route through
+     routeFor(), so switching away and back keeps whatever you had set. */
+  if (name === "exhibitors") setSavedOnly(wantsSaved);
   $$(".tab").forEach((t) => {
     const on = t.dataset.view === name;
     t.classList.toggle("active", on);
@@ -643,7 +672,7 @@ function showView(name, { push = true } = {}) {
   });
   $$(".view").forEach((v) => v.classList.remove("active"));
   $(`#view-${name}`).classList.add("active");
-  if (push && location.hash.slice(1) !== name) history.replaceState(null, "", `#${name}`);
+  if (push) syncHash();
 }
 
 function bindControls() {
@@ -664,8 +693,8 @@ function bindControls() {
     renderExhibitors();
   });
   $("#saved-only").addEventListener("change", (e) => {
-    state.savedOnly = e.target.checked;
-    renderExhibitors();
+    setSavedOnly(e.target.checked);
+    syncHash();
   });
   $("#priority-saved-only").addEventListener("change", (e) => {
     state.prioritySavedOnly = e.target.checked;
@@ -710,13 +739,16 @@ function bindControls() {
     $("#saved-only").checked = false;
     renderFilters();
     renderExhibitors();
+    syncHash();
   });
 
   /* Desktop has room to keep the filters open; a phone does not. */
   $("#toolbar-more").open = window.matchMedia("(min-width: 760px)").matches;
 
-  $$(".tab").forEach((tab) => tab.addEventListener("click", () => showView(tab.dataset.view)));
-  window.addEventListener("hashchange", () => showView(location.hash.slice(1), { push: false }));
+  $$(".tab").forEach((tab) => tab.addEventListener("click", () => showView(routeFor(tab.dataset.view))));
+  /* push:true here so an unknown or now-stale hash gets rewritten to the route
+     actually on screen rather than being left lying in the address bar. */
+  window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
 }
 
 async function main() {

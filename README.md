@@ -88,6 +88,15 @@ worker cache in a dead-reception hall, the list still renders, both saved-only f
 still work, and anything saved while offline persists. That is the case it is for —
 you build the list at home and read it on the show floor.
 
+Which is also why the filtered list is a route, `#saved`, and not only a checkbox: the
+installed app carries a **Saved** launcher shortcut straight to it, so your list is one
+long-press from the home screen instead of three taps into a filter drawer. It is
+listed first of the four shortcuts because launchers truncate — if anything gets cut it
+should be Updates, not this. On the exhibitor list the URL owns the filter: `#saved`
+turns it on, `#exhibitors` clears it, and the tabs route through whichever you had set,
+so switching to the planner and back keeps your filter. A `#saved` link survives a
+reload and can be shared.
+
 Games are keyed by **title**, not by booth. Eight titles this year are shown at two
 booths at once — Alien: Isolation 2 sits at both Xbox and SEGA — and someone who saved
 the game wants to see every booth running it so they can walk to the shorter queue.
