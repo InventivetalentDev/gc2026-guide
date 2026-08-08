@@ -9,6 +9,24 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - Search across exhibitors, games and tags; filters by category, hall, playable demos
 - Crowd forecasts (1–5) per exhibitor and a **Visit Planner** with queue-priority list and day-by-day advice
 - Event info: dates, hours, tickets, special areas, Opening Night Live
+- **Installable and offline-capable** — add it to your home screen and the whole guide
+  stays readable in a hall with no reception
+
+## Install / offline
+
+The guide is a PWA. Chrome, Edge and Samsung Internet offer an **Install app** button
+in the masthead; iOS Safari gets the same button pointing at *Share → Add to Home
+Screen*. Installed or not, `sw.js` caches the shell and the data on first visit, which
+is the point of the whole thing: Koelnmesse's halls eat mobile reception, and the
+guide is most needed exactly where the network is worst.
+
+Freshness is not traded away for it. Exhibitor data is served network-first and only
+falls back to the last good copy when the network fails — the masthead says
+**Offline · showing saved data** when that happens. A new deploy offers a Reload
+prompt rather than swapping the page out from under you.
+
+Serve it over HTTPS (or `localhost`); service workers are inert on `file://` and on
+plain HTTP.
 
 ## Running locally
 
@@ -58,7 +76,7 @@ overwhelmingly German. To refresh them, re-run the download step in
 
 ## Architecture
 
-All content lives in `data/` as JSON; the app (`index.html`, `js/app.js`, `css/`) is a thin renderer. **Updating the guide never requires code changes — only edit the JSON files.**
+All content lives in `data/` as JSON; the app (`index.html`, `js/app.js`, `css/`) is a thin renderer. **Updating the guide never requires code changes — only edit the JSON files.** `js/pwa.js` (install, update and offline state) and `sw.js` (caching) are separate from the renderer and untouched by data work.
 
 | File | Contents |
 |---|---|
