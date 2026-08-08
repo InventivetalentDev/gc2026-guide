@@ -778,6 +778,97 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .empty code { font-family: var(--font-mono); color: var(--ink); }
 
 /* ============================================================
+   installed-app chrome — install button, offline flag, toast
+   ============================================================ */
+
+/* Reads as a stamped label rather than a call-to-action button: it sits in
+   the masthead next to the countdown and must not out-shout the hall plates. */
+.install-btn {
+  align-self: flex-end;
+  margin-top: 6px;
+  background: none;
+  border: 1px solid var(--signal);
+  color: var(--signal);
+  border-radius: var(--radius-sm);
+  padding: 3px 10px;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+}
+.install-btn:hover { background: var(--signal); color: var(--signal-ink); }
+
+/* Only meaningful while the network is gone, so it is absent — not merely
+   dimmed — the rest of the time. */
+.offline-flag {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--warn);
+}
+html[data-offline="true"] .offline-flag { display: block; }
+
+.toast {
+  position: fixed;
+  left: 24px;
+  right: 24px;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  z-index: 100;
+  margin: 0 auto;
+  max-width: 460px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--ground-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--signal);
+  border-radius: var(--radius);
+  box-shadow: var(--plate-shadow);
+  padding: 12px 14px;
+  font-size: .84rem;
+  color: var(--ink);
+}
+.toast[hidden] { display: none; }
+.toast-text { flex: 1; }
+.toast-action {
+  flex: 0 0 auto;
+  background: var(--signal);
+  border: none;
+  color: var(--signal-ink);
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.toast-dismiss {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: var(--ink-dim);
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0 2px;
+  cursor: pointer;
+}
+.toast-dismiss:hover { color: var(--ink); }
+
+/* Standalone has no browser chrome to sit under, so the app has to keep
+   itself clear of the notch and the home indicator on its own. */
+html[data-standalone="true"] body { padding-top: env(safe-area-inset-top); }
+html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe-area-inset-bottom)); }
+.wrap { padding-left: max(24px, env(safe-area-inset-left)); padding-right: max(24px, env(safe-area-inset-right)); }
+
+/* ============================================================
    responsive
    ============================================================ */
 @media (max-width: 860px) {
@@ -787,8 +878,10 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 }
 
 @media (max-width: 620px) {
-  .wrap { padding: 0 16px; }
+  .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
   .tabs { padding: 0 16px; }
+  .toast { left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); }
+  .install-btn { align-self: flex-start; }
   /* the full masthead is ~290px on a phone — far too much to pin above a
      long scrolling list, so it scrolls away here instead */
   .site-header { position: static; }

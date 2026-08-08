@@ -1,0 +1,61 @@
+{
+  "name": "gamescom 2026 Guide",
+  "short_name": "gc 2026",
+  "description": "Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning.",
+  "id": "/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#09090a",
+  "theme_color": "#09090a",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["travel", "entertainment", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    {
+      "src": "icons/screenshot-narrow.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Exhibitor list with hall numbers, lineups and queue forecasts"
+    },
+    {
+      "src": "icons/screenshot-wide.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Exhibitor list with search, hall filters and queue forecasts"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Visit planner",
+      "short_name": "Planner",
+      "description": "Day-by-day advice and the queue-priority list",
+      "url": "./#planner",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Event info",
+      "short_name": "Event",
+      "description": "Dates, hours, tickets, halls and special areas",
+      "url": "./#event",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Updates",
+      "short_name": "Updates",
+      "description": "What changed in each data revision",
+      "url": "./#updates",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

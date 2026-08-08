@@ -113,6 +113,26 @@ This document is the playbook for refreshing the data — written so a scheduled
 ]
 ```
 
+## The offline cache
+
+The guide is an installable PWA and `sw.js` caches the data files, so a data-only
+refresh needs nothing done here: JSON is served network-first, and an online visitor
+always gets the new revision on their next load. Installed copies re-check for a new
+service worker when the window is brought back to the foreground, at most hourly.
+
+`VERSION` at the top of `sw.js` only needs bumping to **discard** every cached copy —
+for example if a data file is renamed or removed. Changes to `css/`, `js/` and the
+data files propagate on their own.
+
+Icons and manifest screenshots are generated, not hand-drawn, and only go stale if
+the design changes:
+
+```sh
+pip install pillow fonttools brotli && python3 tools/make-icons.py
+# screenshots (optional; needs playwright and the site served locally)
+node tools/make-screenshots.mjs
+```
+
 ## Refreshing the webfonts
 
 Fonts are self-hosted in `fonts/` so no visitor request reaches a third party. They
