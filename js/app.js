@@ -10,8 +10,12 @@ const state = {
   hall: "all",
   playableOnly: false,
   confirmedOnly: false,
+  savedOnly: false,
+  prioritySavedOnly: false,
   sort: "crowd-desc",
   expanded: new Set(),
+  /* replaced from localStorage in main() — see loadBookmarks() */
+  bookmarks: { exhibitors: new Set(), games: new Set() },
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -74,6 +78,136 @@ async function loadData() {
   state.changelog = changelog;
 }
 
+/* ---------- saved list (bookmarks) ----------
+
+   Two independent sets: exhibitor ids, and games keyed by normalised title
+   rather than by booth. Eight titles this year are shown at two booths at once
+   (Alien: Isolation 2 sits at both Xbox and SEGA), and someone saving a game
+   wants to see every booth running it so they can pick the shorter queue. */
+
+const BM_KEY = "gc2026.saved.v1";
+
+const gameKey = (title) => String(title).trim().toLowerCase().replace(/\s+/g, " ");
+
+function loadBookmarks() {
+  const empty = { exhibitors: new Set(), games: new Set() };
+  try {
+    const raw = JSON.parse(localStorage.getItem(BM_KEY) || "{}");
+    return {
+      exhibitors: new Set(Array.isArray(raw.exhibitors) ? raw.exhibitors : []),
+      games: new Set(Array.isArray(raw.games) ? raw.games : []),
+    };
+  } catch {
+    /* corrupt entry, or storage blocked entirely (Safari private mode) */
+    return empty;
+  }
+}
+
+function persistBookmarks() {
+  try {
+    localStorage.setItem(
+      BM_KEY,
+      JSON.stringify({
+        exhibitors: [...state.bookmarks.exhibitors],
+        games: [...state.bookmarks.games],
+      })
+    );
+  } catch {
+    /* out of quota or storage denied — the list still works for this session */
+  }
+}
+
+const bmSet = (kind) => (kind === "game" ? state.bookmarks.games : state.bookmarks.exhibitors);
+const isSaved = (kind, key) => bmSet(kind).has(key);
+const savedGames = (ex) => (ex.games || []).filter((g) => isSaved("game", gameKey(g.title)));
+const savedCount = () => state.bookmarks.exhibitors.size + state.bookmarks.games.size;
+
+/* An exhibitor counts as saved if you saved the booth itself *or* any game
+   they're showing — the publisher is how you actually get to the game. */
+const hasSaved = (ex) => isSaved("exhibitor", ex.id) || savedGames(ex).length > 0;
+
+/* The "+" adds to the list and the "−" takes it back off — same language as the
+   "+ 4 more" / "− Show fewer" control, so no icon is needed. The saved state is
+   carried by the filled plate, not by the glyph. */
+function bmButton(kind, key, name, { wide = false } = {}) {
+  const saved = isSaved(kind, key);
+  const label = bmLabel(kind, name, saved);
+  return `<button class="bm${wide ? " bm-wide" : ""}" type="button"
+      data-bm-kind="${kind}" data-bm-key="${esc(key)}" data-bm-name="${esc(name)}"
+      aria-pressed="${saved}" title="${esc(label)}" aria-label="${esc(label)}">
+    <span class="bm-mark" aria-hidden="true">${saved ? "−" : "+"}</span>${
+      wide ? `<span class="bm-text" aria-hidden="true">${saved ? "Saved" : "Save"}</span>` : ""
+    }</button>`;
+}
+
+function bmLabel(kind, name, saved) {
+  const what = kind === "game" ? name : `the ${name} booth`;
+  return saved ? `Remove ${what} from your saved list` : `Save ${what} to your list`;
+}
+
+function toggleBookmark(kind, key) {
+  const set = bmSet(kind);
+  set.has(key) ? set.delete(key) : set.add(key);
+  persistBookmarks();
+  onBookmarksChanged();
+}
+
+function onBookmarksChanged() {
+  /* Re-rendering the whole grid on every toggle would pull the button you just
+     clicked out from under the pointer, so patch the buttons in place and only
+     rebuild when a saved-only filter is deciding what's on screen. */
+  if (state.savedOnly) renderExhibitors();
+  else syncBookmarkUI();
+  renderSavedControls();
+  renderPriority();
+}
+
+/* Bring already-rendered buttons and their rows back in sync with the sets,
+   without touching the surrounding markup. */
+function syncBookmarkUI() {
+  $$("[data-bm-kind]").forEach((btn) => {
+    const { bmKind: kind, bmKey: key, bmName: name } = btn.dataset;
+    const saved = isSaved(kind, key);
+    const label = bmLabel(kind, name, saved);
+    btn.setAttribute("aria-pressed", String(saved));
+    btn.setAttribute("aria-label", label);
+    btn.setAttribute("title", label);
+    btn.querySelector(".bm-mark").textContent = saved ? "−" : "+";
+    const text = btn.querySelector(".bm-text");
+    if (text) text.textContent = saved ? "Saved" : "Save";
+    const row = btn.closest(".game");
+    if (row) row.dataset.saved = String(saved);
+  });
+  $$("#exhibitor-grid .card").forEach((el) => {
+    const ex = state.exhibitors.find((e) => e.id === el.dataset.id);
+    if (ex) el.dataset.saved = String(hasSaved(ex));
+  });
+}
+
+/* Re-rendering a list with innerHTML destroys the button that was just pressed,
+   which drops keyboard focus back to the top of the page. Put it back on the
+   equivalent button whenever one survives the re-render. */
+function keepingFocus(container, render) {
+  const el = document.activeElement;
+  const inside = el && container.contains(el);
+  const sel = !inside
+    ? null
+    : el.dataset.bmKey
+      ? `.bm[data-bm-kind="${el.dataset.bmKind}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
+      : el.classList.contains("more-games")
+        ? `.more-games[data-id="${CSS.escape(el.dataset.id)}"]`
+        : null;
+  render();
+  if (sel) container.querySelector(sel)?.focus();
+}
+
+function renderSavedControls() {
+  const n = savedCount();
+  $("#saved-count").textContent = n ? `(${n})` : "";
+  $("#priority-saved-count").textContent = n ? `(${n})` : "";
+  $("#clear-saved").classList.toggle("hidden", n === 0);
+}
+
 /* ---------- filtering & sorting ---------- */
 
 function matchesQuery(ex, q) {
@@ -100,7 +234,8 @@ function filtersActive() {
     state.type !== "all" ||
     state.hall !== "all" ||
     state.playableOnly ||
-    state.confirmedOnly
+    state.confirmedOnly ||
+    state.savedOnly
   );
 }
 
@@ -110,6 +245,7 @@ function filtered() {
     if (state.hall !== "all" && String(ex.hall) !== state.hall) return false;
     if (state.playableOnly && !(ex.games || []).some((g) => g.playable)) return false;
     if (state.confirmedOnly && !ex.locationConfirmed) return false;
+    if (state.savedOnly && !hasSaved(ex)) return false;
     return matchesQuery(ex, state.query);
   });
 
@@ -184,13 +320,15 @@ function gameRow(g) {
     status === "confirmed"
       ? `<span class="sr-only">Confirmed</span>`
       : `<span class="badge badge-status" data-status="${esc(status)}">${esc(status)}</span>`;
-  return `<li class="game" data-status="${esc(status)}">
+  const key = gameKey(g.title);
+  return `<li class="game" data-status="${esc(status)}" data-saved="${isSaved("game", key)}">
     <span class="game-main">
       <span class="game-title">${esc(g.title)}</span>
       ${statusLabel}
       ${g.playable ? `<span class="badge badge-playable">playable</span>` : ""}
     </span>
     ${plat ? `<span class="game-plat">${esc(plat)}</span>` : "<span></span>"}
+    ${bmButton("game", key, g.title)}
     ${g.note ? `<span class="game-note">${esc(g.note)}</span>` : ""}
   </li>`;
 }
@@ -198,23 +336,28 @@ function gameRow(g) {
 function card(ex) {
   const games = ex.games || [];
   const isOpen = state.expanded.has(ex.id);
-  const shown = isOpen ? games : games.slice(0, 4);
+  /* A saved game never hides behind "+ 12 more" — the whole point of saving it
+     is not having to go looking for it again. */
+  const tail = isOpen ? [] : games.slice(4).filter((g) => isSaved("game", gameKey(g.title)));
+  const shown = isOpen ? games : [...games.slice(0, 4), ...tail];
+  const hidden = games.length - shown.length;
   const moreBtn =
-    games.length > 4
+    games.length > 4 && (isOpen || hidden > 0)
       ? `<button class="more-games" type="button" data-id="${esc(ex.id)}">${
-          isOpen ? "− Show fewer" : `+ ${games.length - 4} more`
+          isOpen ? "− Show fewer" : `+ ${hidden} more`
         }</button>`
       : "";
   const crowd = ex.crowd || 0;
   const playableCount = games.filter((g) => g.playable).length;
 
-  return `<article class="card">
+  return `<article class="card" data-id="${esc(ex.id)}" data-saved="${hasSaved(ex)}">
     <div class="exh-head">
       ${hallMarker(ex)}
       <div class="exh-id">
         <span class="overline">${esc(TYPE_LABELS[ex.type] || ex.type)}</span>
         <h3>${esc(ex.name)}</h3>
       </div>
+      ${bmButton("exhibitor", ex.id, ex.name, { wide: true })}
     </div>
     <div class="card-body">
       <p class="desc">${esc(ex.description)}</p>
@@ -249,9 +392,15 @@ function card(ex) {
 
 function renderExhibitors() {
   const list = filtered();
-  $("#exhibitor-grid").innerHTML = list.map(card).join("");
+  keepingFocus($("#exhibitor-grid"), () => {
+    $("#exhibitor-grid").innerHTML = list.map(card).join("");
+  });
   $("#exhibitor-grid").classList.toggle("hidden", list.length === 0);
   $("#no-results").classList.toggle("hidden", list.length > 0);
+  $("#no-results").textContent =
+    state.savedOnly && savedCount() === 0
+      ? "Nothing saved yet — hit + on a booth or on any game in its lineup to start a list."
+      : "Nothing matches — try clearing filters.";
   $("#reset-filters").classList.toggle("hidden", !filtersActive());
 
   const total = state.exhibitors.length;
@@ -276,6 +425,7 @@ function renderFilterSummary() {
   if (state.hall !== "all") parts.push(`Hall ${state.hall}`);
   if (state.playableOnly) parts.push("playable only");
   if (state.confirmedOnly) parts.push("confirmed only");
+  if (state.savedOnly) parts.push("saved only");
   if (state.query) parts.push(`“${state.query}”`);
   const el = $("#filter-summary");
   el.textContent = parts.length ? parts.join(" · ") : "All categories, all halls";
@@ -342,21 +492,51 @@ function renderPlanner() {
     })
     .join("");
 
+  renderPriority();
+
+  $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
+}
+
+function renderPriority() {
   const busiest = [...state.exhibitors]
     .filter((e) => (e.crowd || 0) >= 4)
     .sort((a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name));
-  $("#priority-list").innerHTML = busiest
-    .map(
-      (e, i) => `<div class="priority-item">
-        <span class="priority-rank">${String(i + 1).padStart(2, "0")}</span>
+  /* Ranks come from the unfiltered order: "07" has to keep meaning "seventh
+     worst queue of the show", not "seventh row you happen to be looking at". */
+  const list = state.prioritySavedOnly ? busiest.filter(hasSaved) : busiest;
+
+  const rows = list
+    .map((e) => {
+      const mine = savedGames(e);
+      return `<div class="priority-item" data-saved="${hasSaved(e)}">
+        <span class="priority-rank">${String(busiest.indexOf(e) + 1).padStart(2, "0")}</span>
         <span class="priority-name">${esc(e.name)}</span>
         <span class="priority-loc">${e.hall ? `Hall ${esc(e.hall)}` : "TBA"}</span>
         <span class="priority-advice">${esc(e.visitAdvice || e.crowdNote || "")}</span>
-      </div>`
-    )
+        ${bmButton("exhibitor", e.id, e.name)}
+        ${
+          mine.length
+            ? `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
+                .map((g) => `<span class="priority-game">${esc(g.title)}</span>`)
+                .join("")}</span>`
+            : ""
+        }
+      </div>`;
+    })
     .join("");
+  keepingFocus($("#priority-list"), () => {
+    $("#priority-list").innerHTML = rows;
+  });
 
-  $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
+  $("#priority-list").classList.toggle("hidden", list.length === 0);
+  $("#priority-empty").classList.toggle("hidden", list.length > 0);
+  $("#priority-empty").textContent = savedCount()
+    ? "Nothing you saved is in the high-queue group — good news, those booths should be closer to a walk-up."
+    : "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab.";
+  $("#priority-count").textContent =
+    list.length === busiest.length
+      ? `${busiest.length} high-queue booths`
+      : `${list.length} / ${busiest.length} high-queue booths`;
 }
 
 /* ---------- event info ---------- */
@@ -483,11 +663,51 @@ function bindControls() {
     state.confirmedOnly = e.target.checked;
     renderExhibitors();
   });
+  $("#saved-only").addEventListener("change", (e) => {
+    state.savedOnly = e.target.checked;
+    renderExhibitors();
+  });
+  $("#priority-saved-only").addEventListener("change", (e) => {
+    state.prioritySavedOnly = e.target.checked;
+    renderPriority();
+  });
+  $("#clear-saved").addEventListener("click", () => {
+    const n = savedCount();
+    if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"}? This can't be undone.`)) return;
+    state.bookmarks = { exhibitors: new Set(), games: new Set() };
+    persistBookmarks();
+    renderExhibitors();
+    renderSavedControls();
+    renderPriority();
+  });
+  /* One delegated listener covers every + button in both views, including the
+     ones that get re-rendered underneath it. */
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-bm-kind]");
+    if (btn) toggleBookmark(btn.dataset.bmKind, btn.dataset.bmKey);
+  });
+  /* Same list, second tab: keep them from overwriting each other. */
+  window.addEventListener("storage", (e) => {
+    if (e.key !== null && e.key !== BM_KEY) return;
+    state.bookmarks = loadBookmarks();
+    renderExhibitors();
+    renderSavedControls();
+    renderPriority();
+  });
+
   $("#reset-filters").addEventListener("click", () => {
-    Object.assign(state, { query: "", type: "all", hall: "all", playableOnly: false, confirmedOnly: false });
+    Object.assign(state, {
+      query: "",
+      type: "all",
+      hall: "all",
+      playableOnly: false,
+      confirmedOnly: false,
+      savedOnly: false,
+    });
     $("#search").value = "";
     $("#playable-only").checked = false;
     $("#confirmed-only").checked = false;
+    $("#saved-only").checked = false;
     renderFilters();
     renderExhibitors();
   });
@@ -506,10 +726,12 @@ async function main() {
     $("#exhibitor-grid").innerHTML = `<p class="empty">Failed to load data (${esc(err.message)}). If you opened this file directly, serve it instead: <code>python3 -m http.server</code></p>`;
     return;
   }
+  state.bookmarks = loadBookmarks();
   $("#event-dates").textContent = `${state.event.location} · ${state.event.dates}`;
   bindControls();
   renderCountdown();
   renderFreshness();
+  renderSavedControls();
   renderFilters();
   renderExhibitors();
   renderPlanner();
