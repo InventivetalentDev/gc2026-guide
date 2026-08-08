@@ -92,6 +92,8 @@
             <span class="row-label">Only show</span>
             <label class="toggle"><input type="checkbox" id="playable-only"> Playable demos</label>
             <label class="toggle"><input type="checkbox" id="confirmed-only"> Confirmed locations</label>
+            <label class="toggle"><input type="checkbox" id="saved-only"> Saved <span class="saved-count" id="saved-count"></span></label>
+            <button class="reset hidden" id="clear-saved" type="button">Clear saved list</button>
             <button class="reset hidden" id="reset-filters" type="button">Clear filters</button>
           </div>
         </details>
@@ -112,7 +114,12 @@
 
       <h3 class="section-title"><span class="section-num">02</span> Queue priority</h3>
       <p class="section-sub">Busiest booths first. If one below matters to you, make it your first stop of the day.</p>
+      <div class="priority-controls">
+        <label class="toggle"><input type="checkbox" id="priority-saved-only"> Saved only <span class="saved-count" id="priority-saved-count"></span></label>
+        <span class="result-count" id="priority-count"></span>
+      </div>
       <div id="priority-list" class="priority-table"></div>
+      <p class="empty hidden" id="priority-empty"></p>
 
       <h3 class="section-title"><span class="section-num">03</span> General crowd tips</h3>
       <ol class="tips" id="crowd-tips"></ol>
@@ -139,6 +146,7 @@
       <div class="footer-col">
         <p class="footer-strong">Unofficial fan-made guide.</p>
         <p>Not affiliated with gamescom, Koelnmesse or game AG.</p>
+        <p>Your saved list stays in this browser — no account, no server, nothing leaves the device.</p>
         <p class="mono-note" id="data-freshness"></p>
       </div>
       <div class="footer-col">

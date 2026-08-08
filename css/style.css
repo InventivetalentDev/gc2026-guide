@@ -455,7 +455,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .games { list-style: none; display: flex; flex-direction: column; }
 .game {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   gap: 2px 10px;
   padding: 7px 0 7px 14px;
   border-top: 1px solid var(--rule-soft);
@@ -529,6 +529,70 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   cursor: pointer;
 }
 .more-games:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ============================================================
+   saved list
+   ------------------------------------------------------------
+   The visitor's own emphasis, so it takes the signal colour when set — that is
+   what the one accent is for. No icon and no emoji: "+" puts something on the
+   list and "−" takes it back off, the same language as "+ 4 more" above.
+   ============================================================ */
+.bm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color .12s, border-color .12s, background .12s, opacity .12s;
+}
+.bm:hover { color: var(--ink); border-color: var(--ink-dim); }
+.bm[aria-pressed="true"] {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--signal-ink);
+}
+.bm[aria-pressed="true"]:hover { background: #ff6b3b; border-color: #ff6b3b; color: var(--signal-ink); }
+.bm-mark { font-size: .9rem; line-height: 1; }
+
+/* card head: a plate on the right edge, bracketing the hall plate on the left */
+.bm-wide { width: auto; height: auto; padding: 0 15px; }
+.exh-head .bm {
+  align-self: stretch;
+  margin-left: auto;
+  border: none;
+  border-left: 1px solid var(--rule-soft);
+  border-radius: 0;
+}
+.card[data-saved="true"] { border-color: var(--signal); }
+
+/* Repeated down a 23-game lineup the buttons would out-shout the titles, so
+   they sit back until you reach for one — or until they're set. */
+.game .bm { width: 18px; height: 18px; align-self: center; opacity: .45; }
+.game:hover .bm,
+.game .bm:focus-visible,
+.game .bm[aria-pressed="true"] { opacity: 1; }
+.game[data-saved="true"] .game-title { color: var(--signal); }
+
+.saved-count {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+.toggle input:checked ~ .saved-count { color: var(--signal); }
 
 .tag-row { display: flex; gap: 5px; flex-wrap: wrap; }
 .tag {
@@ -621,15 +685,48 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 /* ============================================================
    planner — priority table
    ============================================================ */
+.priority-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.priority-controls .result-count { margin-left: auto; }
+
 .priority-table { border: var(--border); border-radius: var(--radius); overflow: hidden; }
 .priority-item {
   display: grid;
-  grid-template-columns: 40px minmax(150px, 1.1fr) 96px 2fr;
+  grid-template-columns: 40px minmax(150px, 1.1fr) 96px 2fr auto;
   gap: 0 16px;
   align-items: baseline;
   padding: 12px 18px;
   border-bottom: 1px solid var(--rule-soft);
   background: var(--ground-2);
+}
+/* the last column in either layout, so no override is needed on a phone */
+.priority-item .bm { grid-column: -2 / -1; grid-row: 1; align-self: center; }
+.priority-item[data-saved="true"] { box-shadow: inset 3px 0 0 var(--signal); }
+
+/* Which of your saved games this booth is actually running — the reason a
+   publisher row is on your list at all. */
+.priority-saved {
+  grid-column: 2 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+.priority-saved .row-label { color: var(--signal); flex: 0 0 auto; }
+.priority-game {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--ink);
+  border: 1px solid var(--signal-wash);
+  background: var(--signal-wash);
+  padding: 1px 7px;
+  border-radius: var(--radius-sm);
 }
 .priority-item:last-child { border-bottom: none; }
 .priority-item:hover { background: var(--ground-3); }
@@ -873,8 +970,8 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
    ============================================================ */
 @media (max-width: 860px) {
   .footer-inner { grid-template-columns: 1fr 1fr; }
-  .priority-item { grid-template-columns: 34px 1fr; row-gap: 4px; }
-  .priority-loc, .priority-advice { grid-column: 2; }
+  .priority-item { grid-template-columns: 34px 1fr auto; row-gap: 4px; }
+  .priority-loc, .priority-advice { grid-column: 2 / -1; }
 }
 
 @media (max-width: 620px) {

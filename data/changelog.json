@@ -1,5 +1,15 @@
 [
   {
+    "date": "2026-08-08",
+    "revision": 3,
+    "changes": [
+      "New: save the booths and games you actually care about with the + button, then tick “Saved” to filter the exhibitor list down to just those.",
+      "The queue-priority list on the Visit planner filters the same way, and counts a publisher as saved when you've saved any game they're showing — save Fable and Xbox stays in your list, with the matching titles named on the row.",
+      "Saving a game saves it at every booth showing it, so you can compare queues for the titles that appear twice (Alien: Isolation 2, Modern Warfare 4 and six others).",
+      "Your list lives in this browser only — no account, nothing sent anywhere."
+    ]
+  },
+  {
     "date": "2026-08-07",
     "revision": 2,
     "changes": [

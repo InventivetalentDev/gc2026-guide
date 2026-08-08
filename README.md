@@ -7,6 +7,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - Overview of exhibitors with their announced (or rumored) games and products
 - Hall & booth locations where known — clearly marked when unconfirmed
 - Search across exhibitors, games and tags; filters by category, hall, playable demos
+- **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
 - Crowd forecasts (1–5) per exhibitor and a **Visit Planner** with queue-priority list and day-by-day advice
 - Event info: dates, hours, tickets, special areas, Opening Night Live
 - **Installable and offline-capable** — add it to your home screen and the whole guide
@@ -73,6 +74,41 @@ Anton — all OFL). Embedding Google Fonts by URL sends every visitor's IP to Go
 which German courts have treated as a GDPR violation, and this guide's audience is
 overwhelmingly German. To refresh them, re-run the download step in
 [`docs/UPDATING.md`](docs/UPDATING.md#refreshing-the-webfonts).
+
+## The saved list
+
+The `+` on a card head saves a booth; the `+` on a lineup row saves a single game.
+Both are kept in `localStorage` under `gc2026.saved.v1` — no account, no server, and
+nothing leaves the device. Two tabs of the guide stay in sync via the `storage` event,
+and if storage is blocked altogether (Safari private mode) the list still works for
+the session instead of throwing.
+
+It is entirely local, so it needs no network: with the app running off the service
+worker cache in a dead-reception hall, the list still renders, both saved-only filters
+still work, and anything saved while offline persists. That is the case it is for —
+you build the list at home and read it on the show floor.
+
+Which is also why the filtered list is a route, `#saved`, and not only a checkbox: the
+installed app carries a **Saved** launcher shortcut straight to it, so your list is one
+long-press from the home screen instead of three taps into a filter drawer. It is
+listed first of the four shortcuts because launchers truncate — if anything gets cut it
+should be Updates, not this. On the exhibitor list the URL owns the filter: `#saved`
+turns it on, `#exhibitors` clears it, and the tabs route through whichever you had set,
+so switching to the planner and back keeps your filter. A `#saved` link survives a
+reload and can be shared.
+
+Games are keyed by **title**, not by booth. Eight titles this year are shown at two
+booths at once — Alien: Isolation 2 sits at both Xbox and SEGA — and someone who saved
+the game wants to see every booth running it so they can walk to the shorter queue.
+The same rule drives both saved-only filters: an exhibitor counts as saved if you
+saved the booth itself *or* any game they are showing, so saving *Fable* is enough to
+keep Xbox in your filtered queue-priority list. That list also names which of your
+games each booth is running, and keeps its ranks absolute — `04` still means "fourth
+worst queue of the show", not "fourth row you happen to be looking at".
+
+One consequence for data edits: renaming a game in `data/exhibitors.json` orphans that
+game in anyone's saved list. See the editorial rules in
+[`docs/UPDATING.md`](docs/UPDATING.md#editorial-rules).
 
 ## Architecture
 

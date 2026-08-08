@@ -25,17 +25,24 @@
       "sizes": "540x1170",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Exhibitor list with hall numbers, lineups and queue forecasts"
+      "label": "Exhibitor list with hall numbers, lineups, queue forecasts and per-game saving"
     },
     {
       "src": "icons/screenshot-wide.png",
       "sizes": "1280x800",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Exhibitor list with search, hall filters and queue forecasts"
+      "label": "Exhibitor list with search, hall filters, queue forecasts and a saved-only filter"
     }
   ],
   "shortcuts": [
+    {
+      "name": "Saved list",
+      "short_name": "Saved",
+      "description": "The booths and games you saved, and nothing else",
+      "url": "./#saved",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
     {
       "name": "Visit planner",
       "short_name": "Planner",
