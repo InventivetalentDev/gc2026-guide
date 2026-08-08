@@ -47,15 +47,26 @@ const DATA = [
   "data/changelog.json",
 ];
 
+/* cache.add() would otherwise be answered by the browser's own HTTP cache,
+   which is where the previous version of every file still lives — the install
+   would faithfully copy the bytes it exists to replace. "no-cache" revalidates
+   instead of blindly refetching, so the fonts (which only ever change by
+   filename) cost a 304 each rather than a fresh megabyte on every update.
+
+   Overwriting in place like this is also why VERSION does not need bumping to
+   recover from a poisoned cache: every entry is rewritten on install, and an
+   entry whose fetch fails keeps the copy it had, which a bump would delete. */
+const fresh = (url) => new Request(url, { cache: "no-cache" });
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
       const shell = await caches.open(SHELL_CACHE);
       /* addAll is all-or-nothing; one 404 would leave the install with no
          cache at all, so each entry is allowed to fail on its own. */
-      await Promise.all(SHELL.map((url) => shell.add(url).catch(() => {})));
+      await Promise.all(SHELL.map((url) => shell.add(fresh(url)).catch(() => {})));
       const data = await caches.open(DATA_CACHE);
-      await Promise.all(DATA.map((url) => data.add(url).catch(() => {})));
+      await Promise.all(DATA.map((url) => data.add(fresh(url)).catch(() => {})));
     })()
   );
 });
@@ -107,19 +118,44 @@ async function fromCacheFirst(request, cacheName) {
   return response;
 }
 
-async function staleWhileRevalidate(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-  const network = fetch(request)
-    .then((response) => {
-      if (response.ok) cache.put(request, response.clone());
+/* Two things here are load-bearing, and this went out without either:
+
+   event.waitUntil() — respondWith() resolves the instant the cached copy is
+   handed over, and the worker may be killed the moment it does. A bare
+   fire-and-forget fetch loses that race far more often than it wins, so the
+   revalidation half of "stale-while-revalidate" would mostly never happen and
+   a deployed CSS/JS change could sit unseen indefinitely. waitUntil keeps the
+   worker alive until the put lands.
+
+   cache: "no-cache" — the revalidation must reach the server. The host serves
+   these with max-age=600, so a plain fetch() is answered by the HTTP cache and
+   rewrites the same stale bytes back into the SW cache. This forces a
+   conditional request instead; an unchanged file costs one 304. */
+function staleWhileRevalidate(event, cacheName) {
+  const { request } = event;
+
+  const network = fetch(new Request(request, { cache: "no-cache" }))
+    .then(async (response) => {
+      if (response.ok) {
+        const cache = await caches.open(cacheName);
+        await cache.put(request, response.clone());
+      }
       return response;
     })
     .catch(() => null);
-  if (cached) return cached;
-  const response = await network;
-  if (response) return response;
-  throw new Error("offline and not cached");
+
+  /* Called synchronously while the fetch event is still active — deferring it
+     behind an await is what silently makes it a no-op. */
+  event.waitUntil(network);
+
+  return (async () => {
+    const cache = await caches.open(cacheName);
+    const cached = await cache.match(request);
+    if (cached) return cached;
+    const response = await network;
+    if (response) return response;
+    throw new Error("offline and not cached");
+  })();
 }
 
 /* Race the network against the clock: on a hall's worth of contended 4G an
@@ -129,7 +165,9 @@ async function handleNavigation(request) {
   const cache = await caches.open(SHELL_CACHE);
   try {
     const response = await Promise.race([
-      fetch(request),
+      /* network-first is only meaningful if it reaches the network; the host
+         serves index.html with max-age too. A 304 keeps this cheap. */
+      fetch(new Request(request, { cache: "no-cache" })),
       new Promise((_, reject) => setTimeout(() => reject(new Error("slow")), NAV_TIMEOUT)),
     ]);
     if (response.ok) cache.put("./", response.clone());
@@ -160,5 +198,5 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(fromCacheFirst(request, SHELL_CACHE));
     return;
   }
-  event.respondWith(staleWhileRevalidate(request, SHELL_CACHE));
+  event.respondWith(staleWhileRevalidate(event, SHELL_CACHE));
 });
