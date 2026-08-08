@@ -83,6 +83,11 @@ nothing leaves the device. Two tabs of the guide stay in sync via the `storage` 
 and if storage is blocked altogether (Safari private mode) the list still works for
 the session instead of throwing.
 
+It is entirely local, so it needs no network: with the app running off the service
+worker cache in a dead-reception hall, the list still renders, both saved-only filters
+still work, and anything saved while offline persists. That is the case it is for —
+you build the list at home and read it on the show floor.
+
 Games are keyed by **title**, not by booth. Eight titles this year are shown at two
 booths at once — Alien: Isolation 2 sits at both Xbox and SEGA — and someone who saved
 the game wants to see every booth running it so they can walk to the shorter queue.
