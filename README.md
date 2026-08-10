@@ -9,6 +9,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - Search across exhibitors, games and tags; filters by category, hall, playable demos
 - **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
 - Crowd forecasts (1–5) per exhibitor and a **Visit Planner** with queue-priority list and day-by-day advice
+- **Itinerary builder** — assign saved booths and games to a day, see that day's hours and crowd advice inline, then export the plan to a calendar
 - Event info: dates, hours, tickets, special areas, Opening Night Live
 - **Installable and offline-capable** — add it to your home screen and the whole guide
   stays readable in a hall with no reception
@@ -82,6 +83,11 @@ Both are kept in `localStorage` under `gc2026.saved.v1` — no account, no serve
 nothing leaves the device. Two tabs of the guide stay in sync via the `storage` event,
 and if storage is blocked altogether (Safari private mode) the list still works for
 the session instead of throwing.
+
+The Visit Planner turns those bookmarks into a day-by-day itinerary. Assignments are
+kept separately under `gc2026.itinerary.v1`, follow the same booth and game keys, and
+stay on this device too. You can see each day's hours and crowd advice beside its stops
+or export the assigned days to a calendar file.
 
 It is entirely local, so it needs no network: with the app running off the service
 worker cache in a dead-reception hall, the list still renders, both saved-only filters
