@@ -10,7 +10,7 @@
       "label": "Wednesday",
       "access": "trade & media only",
       "hours": "Business 09:00–19:00, entertainment 13:00–19:00",
-      "note": "Public entry only with the €65.50 Wildcard ticket (from 13:00) — the quietest way to play popular demos before the weekend crush."
+      "note": "Public entry was only via the €65.50 Wildcard ticket (from 13:00) — it sold out Aug 5, so Wednesday is now trade/media only unless you already bought one."
     },
     {
       "date": "2026-08-27",
@@ -46,7 +46,7 @@
     "time": "20:00 CEST",
     "note": "Hosted by Geoff Keighley, ~2 h show. Free stream on YouTube, Twitch and Steam. In-person tickets (€34.50) sold out."
   },
-  "tickets": "Online-only via the official gamescom shop — no on-site box office. Day tickets: Thu/Fri/Sun €31.50 (discounted €22.50), Saturday €41.00; evening tickets from 16:00 €10.50–13.00; family ticket €69.50–86.00; Wednesday Wildcard €65.50. Opening Night Live tickets are sold out; Saturday historically sells out before the show. Day tickets include free VRS public transport in the Cologne region.",
+  "tickets": "Online-only via the official gamescom shop — no on-site box office. Day tickets: Thu/Fri/Sun €31.50 (discounted €22.50), Saturday €41.00; evening tickets from 16:00 €10.50–13.00; family ticket €69.50–86.00; Wednesday Wildcard €65.50 (sold out Aug 5, 2026). Opening Night Live tickets are sold out; Saturday historically sells out before the show. Day tickets include free VRS public transport in the Cologne region.",
   "areas": [
     { "name": "Entertainment area", "hall": "5–10", "description": "The consumer show: big publisher booths, playable demos, stages, giveaways." },
     { "name": "Business area", "hall": "2–4", "description": "Trade & media only (Wed–Fri), West Entrance; closed Sat/Sun." },
@@ -64,7 +64,7 @@
   ],
   "crowdTips": [
     "Saturday is the busiest, priciest day and usually sells out — do hands-on play Thursday or Sunday instead.",
-    "Wednesday with a Wildcard ticket (entry from 13:00) is the quietest way to play the hottest demos.",
+    "Wednesday's Wildcard ticket (entry from 13:00) was the quietest way to play the hottest demos — it's now sold out, so Thursday morning is the next-best low-crowd option if you don't already have one.",
     "Arrive well before doors open and pick the entrance nearest your first must-play booth — big booths build 2–4 h queues within the first hour.",
     "Pick 5–10 must-play booths in advance (official gamescom app + hall plan) and hit your single most-wanted booth right at opening.",
     "Some large booths hand out time slots or fast-lane wristbands in the morning via their own apps — check exhibitors' socials the week before.",
@@ -79,6 +79,7 @@
     "https://www.gamesmarket.global/what-is-gamescom-everything-you-need-to-know-about-areas-side-events-and-show-specials/",
     "https://www.invenglobal.com/articles/23310/gamescom-2026-opening-night-live-tickets-go-on-sale-and-sell-out-instantly",
     "https://www.invenglobal.com/articles/24045/gamescom-2026-exhibitor-lineup-revealed-expected-to-be-largest-ever",
-    "https://gamingpartys.de/2069/2026/07/gamescom-epix-2026-alle-infos-zu-quests-sonntag-tickets-neuen-story-kapitel/"
+    "https://gamingpartys.de/2069/2026/07/gamescom-epix-2026-alle-infos-zu-quests-sonntag-tickets-neuen-story-kapitel/",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-tickets-privatbesucher-preise-040326/"
   ]
 }
