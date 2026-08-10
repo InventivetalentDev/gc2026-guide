@@ -388,7 +388,7 @@
     "hall": null,
     "booth": null,
     "locationConfirmed": false,
-    "description": "On the confirmed exhibitor list (added late July) but booth location and lineup are still unannounced. Its big release Resonance: A Plague Tale Legacy launches Aug 27 — mid-show — and is confirmed playable at the Xbox booth.",
+    "description": "On the confirmed exhibitor list (added late July) but booth location and lineup are still unannounced. Notably, GamesWirtschaft's regularly-updated Hall 6 exhibitor tracker no longer lists Focus at all as of its Aug 5 update — unlike 2025, when it held a Hall 6 stand — so a Hall 6 return isn't a safe assumption this year. Its big release Resonance: A Plague Tale Legacy launches Aug 27 — mid-show — and is confirmed playable at the Xbox booth.",
     "games": [
       { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Launches Aug 27; confirmed at Xbox's Hall 7 booth, likely also at Focus' own stand." },
       { "title": "Edge of Memories", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "2026 JRPG-style title, plausible booth candidate." },
@@ -397,9 +397,9 @@
     "tags": ["AA", "adventure"],
     "crowd": 2,
     "crowdNote": "No announced blockbuster hands-on at its own stand; Resonance demand mostly absorbed by the Xbox booth.",
-    "visitAdvice": "Queue for Resonance at the Xbox booth where it's confirmed. Watch Focus' channels — it was in Hall 6 in 2025 and its lineup usually lands late.",
-    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/"],
-    "lastUpdated": "2026-08-06"
+    "visitAdvice": "Queue for Resonance at the Xbox booth where it's confirmed. Focus' own location is still unpublished and, unlike 2025, isn't currently showing up in Hall 6 listings — check the official exhibitor directory and Focus' channels closer to the show.",
+    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/", "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"],
+    "lastUpdated": "2026-08-10"
   },
   {
     "id": "hoyoverse",
@@ -524,19 +524,19 @@
     "id": "eclipse-glow",
     "name": "Eclipse Glow Games",
     "type": "publisher",
-    "hall": null,
+    "hall": "6",
     "booth": null,
     "locationConfirmed": false,
-    "description": "Chinese studio behind Arthurian action game Tides of Annihilation, confirmed to host a hands-on demo booth — one of the notable new Chinese single-player entrants. Hall/booth TBA.",
+    "description": "Chinese studio behind Arthurian action game Tides of Annihilation, confirmed to host a hands-on demo booth — one of the notable new Chinese single-player entrants. GamesWirtschaft's Hall 6 exhibitor tracker now places it in Hall 6; exact booth number not yet officially published.",
     "games": [
-      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Public demo confirmed; location TBA." }
+      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Public demo confirmed; Hall 6 per trade-press tracker, exact booth TBA." }
     ],
     "tags": ["action", "single-player"],
     "crowd": 3,
     "crowdNote": "High-profile trailer buzz but a single-title booth — moderate lines, spiking after any ONL appearance.",
     "visitAdvice": "If it appears at Opening Night Live, queue early the next morning before word spreads.",
-    "sources": ["https://www.invenglobal.com/articles/23789/eclipse-glow-games-to-host-tides-of-annihilation-demo-booth-at-gamescom-2026"],
-    "lastUpdated": "2026-08-06"
+    "sources": ["https://www.invenglobal.com/articles/23789/eclipse-glow-games-to-host-tides-of-annihilation-demo-booth-at-gamescom-2026", "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"],
+    "lastUpdated": "2026-08-10"
   },
   {
     "id": "indie-arena-booth",
@@ -713,16 +713,16 @@
     "hall": null,
     "booth": null,
     "locationConfirmed": false,
-    "description": "No 2026 show-floor booth announced yet (it took over the Hall 1 Event Arena in 2025). Confirmed instead: the offsite Wargaming Community Party on Aug 28 at HERBRAND's Ehrenfeld (~€10, Eventbrite) covering WoT, WoWs, Blitz and World of Tanks: HEAT.",
+    "description": "Confirmed NOT exhibiting on the show floor for 2026 — GamesWirtschaft's exhibitor ticker lists Wargaming under cancellations, dropping the Hall 1 Event Arena presence it had in 2025. The only confirmed 2026 presence is the offsite Wargaming Community Party on Aug 28 at HERBRAND's Ehrenfeld (~€10, Eventbrite) covering WoT, WoWs, Blitz and World of Tanks: HEAT.",
     "games": [
-      { "title": "World of Tanks / Warships / HEAT", "status": "expected", "playable": null, "platforms": ["PC", "Consoles", "Mobile"], "note": "Floor presence expected based on 2025 but unconfirmed; community party Aug 28 is confirmed offsite." }
+      { "title": "World of Tanks / Warships / HEAT", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles", "Mobile"], "note": "No show-floor demo booth in 2026 — appearing only at the offsite Community Party (Aug 28), not the official Entertainment Area." }
     ],
-    "tags": ["live-service", "offsite event"],
-    "crowd": 2,
-    "crowdNote": "If a booth materializes it draws big but efficiently-managed crowds; the party is ticketed and capped.",
-    "visitAdvice": "Grab Community Party tickets on Eventbrite early if you're a Wargaming player; re-check for a booth announcement before planning floor time.",
-    "sources": ["https://www.eventbrite.co.uk/e/wargaming-community-party-cologne-2026-tickets-1991050336153"],
-    "lastUpdated": "2026-08-06"
+    "tags": ["live-service", "offsite event", "not exhibiting"],
+    "crowd": 1,
+    "crowdNote": "No show-floor booth in 2026, so nothing to queue for on-site; the offsite party is ticketed and capped separately.",
+    "visitAdvice": "Skip the show floor for Wargaming — grab Community Party tickets on Eventbrite early if you're a player, since it's capped.",
+    "sources": ["https://www.eventbrite.co.uk/e/wargaming-community-party-cologne-2026-tickets-1991050336153", "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/"],
+    "lastUpdated": "2026-08-10"
   },
   {
     "id": "kuro-games",
