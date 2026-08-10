@@ -901,6 +901,135 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 }
 
 /* ============================================================
+   share saved list
+   ============================================================ */
+.share-dialog {
+  width: min(540px, calc(100vw - 32px));
+  max-height: min(760px, calc(100vh - 32px));
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  background: var(--ground-2);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--plate-shadow-hover);
+}
+.share-dialog::backdrop { background: rgba(0, 0, 0, .78); }
+
+.share-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--rule);
+}
+.share-dialog-head h2 {
+  margin-top: 2px;
+  font-family: var(--font-poster);
+  font-size: 1.65rem;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: .005em;
+  text-transform: uppercase;
+}
+.share-dialog-close {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  color: var(--ink-dim);
+  font: inherit;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.share-dialog-close:hover { border-color: var(--ink-dim); color: var(--ink); }
+
+.share-dialog-body { padding: 20px; }
+.share-count { margin-bottom: 14px; color: var(--ink-mid); font-size: .88rem; }
+
+.share-link-field {
+  display: block;
+  background: var(--ground);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+}
+.share-link-field .field-label { display: block; padding: 8px 12px 0; }
+#share-link {
+  display: block;
+  width: 100%;
+  padding: 4px 12px 10px;
+  background: none;
+  border: none;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: .74rem;
+  line-height: 1.5;
+}
+#share-link:focus-visible { outline-offset: -2px; }
+#share-link::selection { background: var(--signal); color: var(--signal-ink); }
+
+.share-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.share-action {
+  padding: 7px 13px;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .12s, border-color .12s, color .12s;
+}
+.share-action:hover { border-color: var(--ink-dim); }
+.share-action-primary {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--signal-ink);
+}
+.share-action-primary:hover { background: #ff6b3b; border-color: #ff6b3b; }
+.share-action[hidden] { display: none; }
+.share-status {
+  margin-top: 10px;
+  min-height: 1.2em;
+  color: var(--ink-mid);
+  font-size: .8rem;
+}
+
+.share-qr {
+  display: grid;
+  grid-template-columns: minmax(180px, 250px) 1fr;
+  align-items: center;
+  gap: 18px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule-soft);
+}
+.share-qr[hidden], .share-qr-fallback[hidden] { display: none; }
+.share-qr-image {
+  width: 100%;
+  padding: 8px;
+  background: #fff;
+  color: #000;
+  line-height: 0;
+}
+.share-qr-image svg { display: block; width: 100%; height: auto; }
+.share-qr p, .share-qr-fallback { color: var(--ink-dim); font-size: .8rem; }
+.share-qr-fallback {
+  margin-top: 20px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--warn);
+  background: rgba(232, 163, 58, .08);
+}
+
+/* ============================================================
    installed-app chrome — install button, offline flag, toast
    ============================================================ */
 
@@ -1027,6 +1156,11 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .toolbar-search { flex-direction: column; align-items: stretch; }
   .result-count { margin-left: 0; flex-basis: 100%; }
   .area-list li { grid-template-columns: 1fr; row-gap: 2px; }
+  .share-dialog { width: calc(100vw - 24px); max-height: calc(100vh - 24px); }
+  .share-dialog-head, .share-dialog-body { padding: 16px; }
+  .share-qr { grid-template-columns: 1fr; }
+  .share-qr-image { max-width: 280px; margin: 0 auto; }
+  .share-qr p { text-align: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {

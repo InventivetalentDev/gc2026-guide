@@ -30,6 +30,7 @@ const SHELL = [
   "css/fonts.css",
   "css/style.css",
   "js/app.js",
+  "js/qr.js",
   "js/pwa.js",
   "manifest.webmanifest",
   "icons/icon-192.png",
