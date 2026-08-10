@@ -283,22 +283,61 @@ function parseHash() {
   };
 }
 
-function takeIncomingList() {
-  const { route, params } = parseHash();
-  if (route !== SAVED_ROUTE || !params.has("l")) return null;
-
-  /* Consume the payload before any rendering can synchronise the route. This
-     also makes refresh safe: a shared list is offered exactly once. */
-  history.replaceState(null, "", "#saved");
-
+function resolveTokens(payload) {
   const incoming = { exhibitors: new Set(), games: new Set(), unresolved: 0 };
-  const tokens = new Set((params.get("l") || "").split(".").filter(Boolean));
+  const tokens = new Set(String(payload).split(".").filter(Boolean));
   tokens.forEach((token) => {
     if (shareCodes.exhibitorIds.has(token)) incoming.exhibitors.add(token);
     else if (shareCodes.codeToGame.has(token)) incoming.games.add(shareCodes.codeToGame.get(token));
     else incoming.unresolved += 1;
   });
   return incoming;
+}
+
+/* The address bar stops being the copy of the link the moment the payload is
+   consumed, so this tab keeps its own until the offer has been answered.
+   Dismissing the prompt then costs a reload rather than the whole list, and
+   the copy dies with the tab — it can never haunt a later visit. */
+const PENDING_KEY = "gc2026.share.pending";
+
+function rememberPending(payload) {
+  try {
+    sessionStorage.setItem(PENDING_KEY, payload);
+  } catch {
+    /* storage denied — the offer simply won't survive a reload */
+  }
+}
+
+function forgetPending() {
+  try {
+    sessionStorage.removeItem(PENDING_KEY);
+  } catch {
+    /* nothing was stored in the first place */
+  }
+}
+
+function takeIncomingList() {
+  const { route, params } = parseHash();
+  if (route !== SAVED_ROUTE || !params.has("l")) return null;
+
+  const payload = params.get("l") || "";
+  rememberPending(payload);
+  /* Consume the payload before any rendering can synchronise the route, so a
+     refresh cannot import twice and the link is not left lying in the bar. */
+  history.replaceState(null, "", "#saved");
+  return resolveTokens(payload);
+}
+
+/* An offer this tab was made but never answered — a dismissed prompt, or a
+   reload before the visitor decided. */
+function pendingIncomingList() {
+  let payload = null;
+  try {
+    payload = sessionStorage.getItem(PENDING_KEY);
+  } catch {
+    /* storage denied */
+  }
+  return payload === null ? null : resolveTokens(payload);
 }
 
 const incomingCount = (incoming) => incoming.exhibitors.size + incoming.games.size;
@@ -324,6 +363,9 @@ function applyIncoming(incoming) {
   incoming.games.forEach((key) => state.bookmarks.games.add(key));
   persistBookmarks();
   renderBookmarkViews();
+  /* Answered. Undo is a correction to a decision already made, not a reason to
+     put the offer back on the table. */
+  forgetPending();
   return before;
 }
 
@@ -340,6 +382,7 @@ function restoreBookmarks(snapshot) {
 function offerIncoming(incoming) {
   const total = incomingCount(incoming);
   if (total === 0) {
+    forgetPending();
     showToast("That shared list is out of date — nothing left to add.", null, null, {
       priority: true,
     });
@@ -364,6 +407,16 @@ function offerIncoming(incoming) {
   const newCount =
     [...incoming.exhibitors].filter((id) => !state.bookmarks.exhibitors.has(id)).length +
     [...incoming.games].filter((key) => !state.bookmarks.games.has(key)).length;
+  /* Someone re-opening a link they already imported, or the other half of a
+     phone/desktop pair that is already in sync. There is nothing to add, so
+     offering the button would only produce an import of nothing. */
+  if (newCount === 0) {
+    forgetPending();
+    showToast(`You already have everything in this shared link.${stale}`, null, null, {
+      priority: true,
+    });
+    return;
+  }
   showToast(
     `A shared link has ${itemLabel(total)} — ${newCount} new to you.${stale}`,
     "Add to my list",
@@ -1087,6 +1140,9 @@ async function main() {
   }
   state.bookmarks = loadBookmarks();
   const incoming = takeIncomingList();
+  /* Only a link in the address bar moves the visitor to their list; a leftover
+     offer is repeated where they already were. */
+  const offer = incoming || pendingIncomingList();
   $("#event-dates").textContent = `${state.event.location} · ${state.event.dates}`;
   bindControls();
   renderCountdown();
@@ -1098,7 +1154,7 @@ async function main() {
   renderEvent();
   renderChangelog();
   showView(incoming ? SAVED_ROUTE : parseHash().route || VIEWS[0], { push: false });
-  if (incoming) offerIncoming(incoming);
+  if (offer) offerIncoming(offer);
 }
 
 main();

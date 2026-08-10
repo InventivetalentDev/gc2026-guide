@@ -88,7 +88,10 @@ Shared links encode guide identifiers only — exhibitor IDs and compact game co
 link and its QR code are built entirely in your browser, so no saved-list data is
 uploaded or sent anywhere by the guide. Opening one never replaces an existing list:
 it asks before adding to a non-empty list, while an empty list imports immediately with
-an Undo option.
+an Undo option. Opening the link consumes it — it does not stay in the address bar to be
+forwarded on — so until the question is answered the tab keeps its own copy: dismissing
+the prompt costs a reload rather than the whole list. Answer it, or close the tab, and
+the copy is gone.
 
 It is entirely local, so it needs no network: with the app running off the service
 worker cache in a dead-reception hall, the list still renders, both saved-only filters
