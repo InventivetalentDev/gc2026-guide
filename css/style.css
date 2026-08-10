@@ -683,6 +683,83 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .day-note { color: var(--ink-mid); font-size: .85rem; }
 
 /* ============================================================
+   planner — itinerary
+   ============================================================ */
+.itinerary-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px 0 12px;
+}
+
+.it-board { border: var(--border); border-radius: var(--radius); overflow: hidden; }
+.it-group + .it-group { border-top: 1px solid var(--rule); }
+.it-group-head {
+  display: grid;
+  grid-template-columns: 92px 130px 1fr;
+  gap: 0 18px;
+  align-items: baseline;
+  padding: 11px 18px;
+  background: var(--ground-3);
+  border-bottom: 1px solid var(--rule);
+}
+.it-group-head.unassigned { display: block; }
+.it-group-title {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+}
+
+.it-item {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.1fr) minmax(180px, 1.35fr) auto 20px;
+  gap: 0 16px;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--rule-soft);
+  background: var(--ground-2);
+}
+.it-item:last-child { border-bottom: none; }
+.it-item:hover { background: var(--ground-3); }
+.it-main { display: flex; flex-direction: column; min-width: 0; }
+.it-kind {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.it-name { font-weight: 700; font-size: .95rem; }
+.it-loc {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums;
+}
+.it-days { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+.day-chip {
+  background: none;
+  border: 1px solid var(--rule);
+  color: var(--ink-mid);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color .12s, border-color .12s, background .12s;
+}
+.day-chip:hover { color: var(--ink); border-color: var(--ink-dim); }
+.day-chip.active { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
+.day-chip[data-trade="true"]:not(.active) { border-style: dashed; color: var(--ink-dim); }
+.it-item .bm { grid-column: -2 / -1; grid-row: 1; align-self: center; }
+
+/* ============================================================
    planner — priority table
    ============================================================ */
 .priority-controls {
@@ -996,6 +1073,12 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .day-row { grid-template-columns: 76px 1fr; row-gap: 8px; }
   .day-access { grid-column: 2; }
   .day-detail { grid-column: 1 / -1; }
+  .it-group-head { grid-template-columns: 76px 1fr; row-gap: 8px; }
+  .it-group-head .day-access { grid-column: 2; }
+  .it-group-head .day-detail { grid-column: 1 / -1; }
+  .it-group-head.unassigned { display: block; }
+  .it-item { grid-template-columns: minmax(110px, 1fr) minmax(0, 1.2fr) 20px; row-gap: 9px; }
+  .it-days { grid-column: 1 / -1; justify-content: flex-start; }
   .toolbar-row .row-label { flex-basis: 100%; }
   /* let the summary text take a full line instead of squeezing into a column */
   .toolbar-summary { flex-wrap: wrap; row-gap: 4px; }

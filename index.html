@@ -112,7 +112,15 @@
       <h3 class="section-title"><span class="section-num">01</span> The five days</h3>
       <div id="day-guide" class="day-board"></div>
 
-      <h3 class="section-title"><span class="section-num">02</span> Queue priority</h3>
+      <h3 class="section-title"><span class="section-num">02</span> Your itinerary</h3>
+      <p class="section-sub">Give each saved booth and game a day. Unassigned items sit at the top until you place them.</p>
+      <div class="itinerary-controls">
+        <button class="reset hidden" id="export-ics" type="button">Export to calendar (.ics)</button>
+      </div>
+      <div id="itinerary" class="it-board"></div>
+      <p class="empty hidden" id="itinerary-empty"></p>
+
+      <h3 class="section-title"><span class="section-num">03</span> Queue priority</h3>
       <p class="section-sub">Busiest booths first. If one below matters to you, make it your first stop of the day.</p>
       <div class="priority-controls">
         <label class="toggle"><input type="checkbox" id="priority-saved-only"> Saved only <span class="saved-count" id="priority-saved-count"></span></label>
@@ -121,7 +129,7 @@
       <div id="priority-list" class="priority-table"></div>
       <p class="empty hidden" id="priority-empty"></p>
 
-      <h3 class="section-title"><span class="section-num">03</span> General crowd tips</h3>
+      <h3 class="section-title"><span class="section-num">04</span> General crowd tips</h3>
       <ol class="tips" id="crowd-tips"></ol>
     </section>
 

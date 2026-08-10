@@ -17,6 +17,8 @@ const state = {
   expanded: new Set(),
   /* replaced from localStorage in main() — see loadBookmarks() */
   bookmarks: { exhibitors: new Set(), games: new Set() },
+  /* item-key → ISO day date; replaced from localStorage in main() */
+  itinerary: { exhibitors: new Map(), games: new Map() },
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -87,6 +89,7 @@ async function loadData() {
    wants to see every booth running it so they can pick the shorter queue. */
 
 const BM_KEY = "gc2026.saved.v1";
+const IT_KEY = "gc2026.itinerary.v1";
 
 const gameKey = (title) => String(title).trim().toLowerCase().replace(/\s+/g, " ");
 
@@ -150,6 +153,7 @@ function toggleBookmark(kind, key) {
   const set = bmSet(kind);
   set.has(key) ? set.delete(key) : set.add(key);
   persistBookmarks();
+  pruneItinerary();
   onBookmarksChanged();
 }
 
@@ -161,6 +165,7 @@ function onBookmarksChanged() {
   else syncBookmarkUI();
   renderSavedControls();
   renderPriority();
+  renderItinerary();
 }
 
 /* Bring already-rendered buttons and their rows back in sync with the sets,
@@ -193,7 +198,9 @@ function keepingFocus(container, render) {
   const inside = el && container.contains(el);
   const sel = !inside
     ? null
-    : el.dataset.bmKey
+    : el.dataset.itDay
+      ? `[data-it-kind="${CSS.escape(el.dataset.itKind)}"][data-it-key="${CSS.escape(el.dataset.itKey)}"][data-it-day="${CSS.escape(el.dataset.itDay)}"]`
+      : el.dataset.bmKey
       ? `.bm[data-bm-kind="${el.dataset.bmKind}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
       : el.classList.contains("more-games")
         ? `.more-games[data-id="${CSS.escape(el.dataset.id)}"]`
@@ -207,6 +214,69 @@ function renderSavedControls() {
   $("#saved-count").textContent = n ? `(${n})` : "";
   $("#priority-saved-count").textContent = n ? `(${n})` : "";
   $("#clear-saved").classList.toggle("hidden", n === 0);
+}
+
+/* ---------- itinerary ---------- */
+
+function loadItinerary() {
+  const empty = { exhibitors: new Map(), games: new Map() };
+  try {
+    const raw = JSON.parse(localStorage.getItem(IT_KEY) || "{}");
+    const validDays = new Set((state.event?.days || []).map((d) => d.date));
+    const entries = (kind) => {
+      const source =
+        raw && raw[kind] && typeof raw[kind] === "object" && !Array.isArray(raw[kind]) ? raw[kind] : {};
+      const saved = state.bookmarks[kind];
+      return Object.entries(source).filter(([key, date]) => saved.has(key) && validDays.has(date));
+    };
+    return {
+      exhibitors: new Map(entries("exhibitors")),
+      games: new Map(entries("games")),
+    };
+  } catch {
+    /* corrupt entry, or storage blocked entirely — assignments stay in-session */
+    return empty;
+  }
+}
+
+function persistItinerary() {
+  try {
+    localStorage.setItem(
+      IT_KEY,
+      JSON.stringify({
+        exhibitors: Object.fromEntries(state.itinerary.exhibitors),
+        games: Object.fromEntries(state.itinerary.games),
+      })
+    );
+  } catch {
+    /* out of quota or storage denied — assignments still work for this session */
+  }
+}
+
+const itMap = (kind) => (kind === "game" ? state.itinerary.games : state.itinerary.exhibitors);
+const assignedDay = (kind, key) => itMap(kind).get(key) || null;
+
+function assignToDay(kind, key, date) {
+  const map = itMap(kind);
+  map.get(key) === date ? map.delete(key) : map.set(key, date);
+  persistItinerary();
+  onItineraryChanged();
+}
+
+function pruneItinerary() {
+  let changed = false;
+  for (const kind of ["exhibitors", "games"]) {
+    for (const key of state.itinerary[kind].keys()) {
+      if (state.bookmarks[kind].has(key)) continue;
+      state.itinerary[kind].delete(key);
+      changed = true;
+    }
+  }
+  if (changed) persistItinerary();
+}
+
+function onItineraryChanged() {
+  renderItinerary();
 }
 
 /* ---------- filtering & sorting ---------- */
@@ -473,6 +543,136 @@ function renderFilters() {
 
 /* ---------- planner ---------- */
 
+function itineraryItems() {
+  const exhibitors = [...state.bookmarks.exhibitors]
+    .map((key) => {
+      const ex = state.exhibitors.find((item) => item.id === key);
+      return ex ? { kind: "exhibitor", key, name: ex.name, ex } : null;
+    })
+    .filter(Boolean);
+
+  const games = [...state.bookmarks.games].map((key) => {
+    let name = "";
+    const at = state.exhibitors.filter((ex) =>
+      (ex.games || []).some((g) => {
+        const matches = gameKey(g.title) === key;
+        if (matches && !name) name = g.title;
+        return matches;
+      })
+    );
+    return { kind: "game", key, name: name || key, at };
+  });
+
+  return [...exhibitors, ...games];
+}
+
+function itineraryLocation(ex, { booth = true } = {}) {
+  if ((ex.tags || []).includes("not exhibiting")) return "Absent — no booth";
+  if (!ex.hall) return "Hall TBA";
+  return `Hall ${ex.hall}${booth && ex.booth ? ` · ${ex.booth}` : ""}`;
+}
+
+function itineraryCrowd(item) {
+  return item.kind === "exhibitor"
+    ? item.ex.crowd || 0
+    : Math.max(0, ...item.at.map((ex) => ex.crowd || 0));
+}
+
+function compareItineraryItems(a, b) {
+  return itineraryCrowd(b) - itineraryCrowd(a) || a.name.localeCompare(b.name);
+}
+
+function itineraryItemLocation(item) {
+  if (item.kind === "game") {
+    return item.at.length
+      ? item.at.map((ex) => `${ex.name} — ${itineraryLocation(ex, { booth: false })}`).join(" · ")
+      : "Booth TBA";
+  }
+  const crowd = item.ex.crowd || 0;
+  return `${itineraryLocation(item.ex)} · Queue ${crowd ? `${crowd}/5 ${CROWD_LABELS[crowd] || "?"}` : "unknown"}`;
+}
+
+function itineraryDayChips(item) {
+  const current = assignedDay(item.kind, item.key);
+  const label = `Assign ${item.name} to a day`;
+  return `<span class="it-days" role="group" aria-label="${esc(label)}">${(state.event.days || [])
+    .map((d) => {
+      const active = current === d.date;
+      const trade = /trade|media|business/i.test(d.access);
+      const action = active ? `Remove from ${d.label}` : `Assign to ${d.label}`;
+      const title = trade ? `${action} (trade & media only)` : action;
+      return `<button class="day-chip${active ? " active" : ""}" type="button"
+        data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-it-day="${esc(d.date)}"
+        data-trade="${esc(String(trade))}" aria-pressed="${esc(String(active))}"
+        title="${esc(title)}" aria-label="${esc(title)}">${esc(d.label.slice(0, 3))}</button>`;
+    })
+    .join("")}</span>`;
+}
+
+function itineraryItem(item) {
+  const kindLabel = item.kind === "game" ? "Game" : "Booth";
+  return `<div class="it-item" data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}">
+    <span class="it-main">
+      <span class="it-kind">${esc(kindLabel)}</span>
+      <span class="it-name">${esc(item.name)}</span>
+    </span>
+    <span class="it-loc">${esc(itineraryItemLocation(item))}</span>
+    ${itineraryDayChips(item)}
+    ${bmButton(item.kind, item.key, item.name)}
+  </div>`;
+}
+
+function itineraryDayHeader(d) {
+  const isTrade = /trade|media|business/i.test(d.access);
+  const [, month, day] = d.date.split("-");
+  return `<div class="it-group-head">
+    <span class="day-when">
+      <span class="day-dow">${esc(d.label.slice(0, 3))}</span>
+      <span class="day-date">${esc(day)}.${esc(month)}</span>
+    </span>
+    <span class="day-access ${isTrade ? "trade" : "public"}">${esc(d.access)}</span>
+    <span class="day-detail">
+      ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
+      ${d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
+    </span>
+  </div>`;
+}
+
+function renderItinerary() {
+  const items = itineraryItems();
+  const validDays = new Set((state.event.days || []).map((d) => d.date));
+  const unassigned = items
+    .filter((item) => !validDays.has(assignedDay(item.kind, item.key)))
+    .sort(compareItineraryItems);
+  const groups = [];
+
+  if (unassigned.length) {
+    groups.push(`<div class="it-group">
+      <div class="it-group-head unassigned"><span class="it-group-title">Unassigned</span></div>
+      ${unassigned.map(itineraryItem).join("")}
+    </div>`);
+  }
+  for (const d of state.event.days || []) {
+    const dayItems = items
+      .filter((item) => assignedDay(item.kind, item.key) === d.date)
+      .sort(compareItineraryItems);
+    if (!dayItems.length) continue;
+    groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
+      ${itineraryDayHeader(d)}
+      ${dayItems.map(itineraryItem).join("")}
+    </div>`);
+  }
+
+  const board = $("#itinerary");
+  keepingFocus(board, () => {
+    board.innerHTML = groups.join("");
+  });
+  board.classList.toggle("hidden", items.length === 0);
+  $("#itinerary-empty").classList.toggle("hidden", items.length > 0);
+  $("#itinerary-empty").textContent =
+    "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.";
+}
+
 function renderPlanner() {
   const ev = state.event;
   $("#day-guide").innerHTML = (ev.days || [])
@@ -493,6 +693,7 @@ function renderPlanner() {
     })
     .join("");
 
+  renderItinerary();
   renderPriority();
 
   $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
@@ -702,26 +903,39 @@ function bindControls() {
   });
   $("#clear-saved").addEventListener("click", () => {
     const n = savedCount();
-    if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"}? This can't be undone.`)) return;
+    if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"} and their day assignments? This can't be undone.`)) return;
     state.bookmarks = { exhibitors: new Set(), games: new Set() };
+    state.itinerary = { exhibitors: new Map(), games: new Map() };
     persistBookmarks();
+    persistItinerary();
     renderExhibitors();
     renderSavedControls();
     renderPriority();
+    renderItinerary();
   });
-  /* One delegated listener covers every + button in both views, including the
-     ones that get re-rendered underneath it. */
+  /* One delegated listener covers every bookmark and day button, including
+     the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
+    const day = e.target.closest("[data-it-day]");
+    if (day) {
+      assignToDay(day.dataset.itKind, day.dataset.itKey, day.dataset.itDay);
+      return;
+    }
     const btn = e.target.closest("[data-bm-kind]");
     if (btn) toggleBookmark(btn.dataset.bmKind, btn.dataset.bmKey);
   });
   /* Same list, second tab: keep them from overwriting each other. */
   window.addEventListener("storage", (e) => {
-    if (e.key !== null && e.key !== BM_KEY) return;
-    state.bookmarks = loadBookmarks();
-    renderExhibitors();
-    renderSavedControls();
-    renderPriority();
+    if (e.key !== null && e.key !== BM_KEY && e.key !== IT_KEY) return;
+    if (e.key === null || e.key === BM_KEY) state.bookmarks = loadBookmarks();
+    if (e.key === null || e.key === IT_KEY) state.itinerary = loadItinerary();
+    pruneItinerary();
+    if (e.key === null || e.key === BM_KEY) {
+      renderExhibitors();
+      renderSavedControls();
+      renderPriority();
+    }
+    renderItinerary();
   });
 
   $("#reset-filters").addEventListener("click", () => {
@@ -759,6 +973,7 @@ async function main() {
     return;
   }
   state.bookmarks = loadBookmarks();
+  state.itinerary = loadItinerary();
   $("#event-dates").textContent = `${state.event.location} · ${state.event.dates}`;
   bindControls();
   renderCountdown();
