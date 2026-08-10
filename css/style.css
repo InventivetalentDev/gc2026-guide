@@ -874,6 +874,13 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .empty { text-align: center; color: var(--ink-dim); padding: 70px 0; font-size: .9rem; }
 .empty code { font-family: var(--font-mono); color: var(--ink); }
 
+.subtle-link {
+  color: var(--ink-dim);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+}
+
 /* ============================================================
    installed-app chrome — install button, offline flag, toast
    ============================================================ */
