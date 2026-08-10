@@ -671,6 +671,10 @@ function renderItinerary() {
   $("#itinerary-empty").classList.toggle("hidden", items.length > 0);
   $("#itinerary-empty").textContent =
     "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.";
+  $("#export-ics").classList.toggle(
+    "hidden",
+    !items.some((item) => assignedDay(item.kind, item.key))
+  );
 }
 
 function renderPlanner() {
@@ -739,6 +743,116 @@ function renderPriority() {
     list.length === busiest.length
       ? `${busiest.length} high-queue booths`
       : `${list.length} / ${busiest.length} high-queue booths`;
+}
+
+/* ---------- calendar export ---------- */
+
+function icsEscape(s) {
+  return String(s ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\r/g, "")
+    .replace(/\n/g, "\\n");
+}
+
+function icsFold(line) {
+  const encoder = new TextEncoder();
+  const folded = [];
+  let part = "";
+  let bytes = 0;
+  let limit = 75;
+
+  for (const char of String(line)) {
+    const size = encoder.encode(char).length;
+    if (part && bytes + size > limit) {
+      folded.push(part);
+      part = char;
+      bytes = size;
+      /* The leading space on a continuation line also counts as an octet. */
+      limit = 74;
+    } else {
+      part += char;
+      bytes += size;
+    }
+  }
+  folded.push(part);
+  return folded.join("\r\n ");
+}
+
+function icsDateTimeUTC(d) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(
+    d.getUTCHours()
+  )}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
+}
+
+function icsDescription(item) {
+  if (item.kind === "exhibitor") {
+    const crowd = item.ex.crowd || 0;
+    return `${item.name} — ${itineraryLocation(item.ex).replace(" · ", ", booth ")} (queue ${
+      crowd ? `${crowd}/5` : "unknown"
+    })`;
+  }
+  const booths = item.at
+    .map((ex) => `${ex.name} (${itineraryLocation(ex, { booth: false })})`)
+    .join(", ");
+  return `${item.name} — ${booths ? `at ${booths}` : "booth not listed"}`;
+}
+
+function buildICS() {
+  const items = itineraryItems();
+  const stamp = icsDateTimeUTC(new Date());
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//gc2026-guide//gamescom 2026 itinerary//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+  ];
+
+  for (const d of state.event.days || []) {
+    const dayItems = items
+      .filter((item) => assignedDay(item.kind, item.key) === d.date)
+      .sort(compareItineraryItems);
+    if (!dayItems.length) continue;
+
+    lines.push("BEGIN:VEVENT", `UID:gc2026-${d.date}@gc2026-guide`, `DTSTAMP:${stamp}`);
+
+    const start = d.open ? new Date(`${d.date}T${d.open}:00+02:00`) : null;
+    const end = d.close ? new Date(`${d.date}T${d.close}:00+02:00`) : null;
+    if (start && end && !Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
+      lines.push(`DTSTART:${icsDateTimeUTC(start)}`, `DTEND:${icsDateTimeUTC(end)}`);
+    } else {
+      const date = String(d.date).replace(/-/g, "");
+      const next = new Date(`${d.date}T00:00:00Z`);
+      next.setUTCDate(next.getUTCDate() + 1);
+      lines.push(`DTSTART;VALUE=DATE:${date}`, `DTEND;VALUE=DATE:${icsDateTimeUTC(next).slice(0, 8)}`);
+    }
+
+    lines.push(
+      `SUMMARY:${icsEscape(`gamescom — ${d.label} plan (${dayItems.length} stop${dayItems.length === 1 ? "" : "s"})`)}`,
+      `LOCATION:${icsEscape(state.event.location || "Koelnmesse, Cologne")}`,
+      `DESCRIPTION:${icsEscape(dayItems.map(icsDescription).join("\n"))}`,
+      "END:VEVENT"
+    );
+  }
+
+  lines.push("END:VCALENDAR");
+  return `${lines.map(icsFold).join("\r\n")}\r\n`;
+}
+
+function downloadICS() {
+  const blob = new Blob([buildICS()], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "gamescom-2026-itinerary.ics";
+  link.hidden = true;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 /* ---------- event info ---------- */
@@ -913,6 +1027,7 @@ function bindControls() {
     renderPriority();
     renderItinerary();
   });
+  $("#export-ics").addEventListener("click", downloadICS);
   /* One delegated listener covers every bookmark and day button, including
      the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
