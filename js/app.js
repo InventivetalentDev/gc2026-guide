@@ -243,50 +243,25 @@ function renderSavedControls() {
 
 /* ---------- filtering & sorting ---------- */
 
-const reEscape = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-function adultTitleAliases(title) {
-  const clean = String(title).replace(/\s*\([^)]*\)/g, "").trim();
-  const candidates = [clean, clean.replace(/^the\s+/i, ""), clean.replace(/\s+\d+$/, "")];
-  candidates.slice().forEach((candidate) => {
-    if (!candidate.includes(":")) return;
-    candidates.push(
-      ...candidate
-        .split(":")
-        .map((part) => part.trim())
-        .filter((part) => part.includes(" "))
-    );
-  });
-  return [...new Set(candidates.map((alias) => alias.toLowerCase()))]
-    .filter((alias) => alias.length >= 4)
-    .sort((a, b) => b.length - a.length);
-}
-
-function searchableDescription(ex) {
-  const description = String(ex.description || "");
-  if (state.age !== "hide") return description;
-  /* Headline descriptions often repeat a game using a shortened title (for
-     example "Call of Duty" rather than its full subtitle). Remove those actual
-     title mentions without suppressing unrelated words that happen to occur in
-     a title, such as "content". */
-  const aliases = [...state.exhibitors.flatMap(adultGames), ...adultGames(ex)]
-    .flatMap((g) => adultTitleAliases(g.title));
-  return [...new Set(aliases)].reduce(
-    (text, alias) => text.replace(new RegExp(`\\b${reEscape(alias)}\\b`, "gi"), " "),
-    description
-  );
-}
-
+/* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
+   deliberately not a content filter. It hides lineup rows, not prose: an earlier
+   pass regex-scrubbed adult titles out of the searchable description, which made
+   the grid render a name it would then refuse to find, and could never be
+   complete anyway (visitAdvice says "hit MW4 or 007 First Light first", and
+   Plaion carries an "18+" tag). A leaky content filter reads as a guarantee it
+   cannot keep, so descriptions stay exactly as written and stay searchable. */
 function matchesQuery(ex, q) {
   if (!q) return true;
   const hay = [
     ex.name,
-    searchableDescription(ex),
+    ex.description,
     ex.hall ? `hall ${ex.hall}` : "",
     ex.booth || "",
     ...(ex.tags || []),
     ...visibleGames(ex).map((g) => g.title),
-    hasAdult(ex) ? "18+" : "",
+    /* Searching "18+" while hiding 18+ would return exactly the booths whose
+       gated titles are currently hidden. */
+    hasAdult(ex) && state.age !== "hide" ? "18+" : "",
   ]
     .join(" ")
     .toLowerCase();
@@ -394,8 +369,14 @@ function ageBadge(status = "expected", label = "18+", extraClass = "") {
       title="${esc(title)}"><span aria-hidden="true">${esc(label)}</span><span class="sr-only">${esc(title)}</span></span>`;
 }
 
+/* A booth-wide `ageRestricted` is a hand-written editorial assertion that the
+   zone is gated — per docs/UPDATING.md it is only set when a source supports it,
+   so it counts as confirmed. A per-game flag inferred from the title's rating
+   does not, and stays "expected". */
 const boothAgeStatus = (ex) =>
-  adultGames(ex).some((g) => g.ageStatus === "confirmed") ? "confirmed" : "expected";
+  ex.ageRestricted === true || adultGames(ex).some((g) => g.ageStatus === "confirmed")
+    ? "confirmed"
+    : "expected";
 
 function gameRow(g) {
   const status = g.status || "expected";
@@ -608,6 +589,10 @@ function renderPlanner() {
   $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
 }
 
+/* Deliberately independent of state.age: the planner does not inherit the
+   exhibitor grid's filters (prioritySavedOnly is a separate toggle from
+   savedOnly for the same reason), and this section exists for the visitor who
+   wants the wristband, not the one browsing without it. */
 function renderWristband() {
   const container = $("#wristband-list");
   const section = $("#wristband-section");
@@ -631,11 +616,16 @@ function renderWristband() {
         e.booth ? esc(e.booth) : "booth TBA"
       }`;
       const expected = boothAgeStatus(e) !== "confirmed";
+      /* The "expected" marker sits inside the titles cell rather than in a column
+         of its own: every row is its own grid, so a column that only some rows
+         fill sizes those rows' fr tracks differently and breaks the alignment
+         down the list. */
       return `<div class="priority-item wristband-item" data-saved="${hasSaved(e)}">
         <span class="wristband-name">${esc(e.name)}</span>
         <span class="wristband-loc">${location}</span>
-        <span class="wristband-games">${games}</span>
-        ${expected ? ageBadge("expected", "18+ expected", "wristband-status") : ""}
+        <span class="wristband-games">${games}${
+          expected ? ` ${ageBadge("expected", "18+ expected", "wristband-status")}` : ""
+        }</span>
         ${bmButton("exhibitor", e.id, e.name)}
       </div>`;
     })

@@ -754,10 +754,14 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .priority-advice,
 .wristband-games { color: var(--ink-mid); font-size: .84rem; }
 
-/* Same row language as queue priority, without the rank column. */
+/* Same row language as queue priority, without the rank column. Four tracks, and
+   every row fills all four — the "18+ expected" marker rides inside the titles
+   cell, because each row is its own grid and a column only some rows fill would
+   size their fr tracks differently. */
 .wristband-item {
-  grid-template-columns: minmax(150px, 1.1fr) minmax(130px, .8fr) minmax(200px, 2fr) auto auto;
+  grid-template-columns: minmax(150px, 1.1fr) minmax(130px, .8fr) minmax(200px, 2fr) auto;
 }
+.wristband-status { margin-left: 4px; vertical-align: baseline; }
 
 /* ============================================================
    planner — tips
@@ -996,8 +1000,7 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .priority-loc, .priority-advice { grid-column: 2 / -1; }
   .wristband-item { grid-template-columns: 1fr auto; }
   .wristband-loc,
-  .wristband-games,
-  .wristband-status { grid-column: 1 / -1; justify-self: start; }
+  .wristband-games { grid-column: 1 / -1; justify-self: start; }
 }
 
 @media (max-width: 620px) {

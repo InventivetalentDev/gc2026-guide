@@ -278,3 +278,39 @@ Manual pass (no test suite in the repo — the project is plain static files):
     cursor is removed.
 
 Line numbers refer to the files as of the commit that added this plan.
+
+## Amendments after review
+
+Two items above were specified wrongly and were corrected in the review pass that
+followed the implementation. Kept here rather than silently rewritten, because
+the reason matters more than the instruction.
+
+**The plan never decided what "Hide 18+" *is*.** It persisted the choice like a
+safety preference but cleared it like a browsing filter, and specified the search
+and planner behaviour inconsistently on top of that. It is a **browsing filter** —
+"don't show me demos I can't play". This site cannot deliver a content filter:
+suppressing a title would mean regex-rewriting editorial prose (the alias list
+contains bare `"metro"` and `"battlefield"`), and it still could not reach
+`visitAdvice` ("hit MW4 or 007 First Light first" — `MW4` matches no alias),
+`crowdNote`, Plaion's `18+` tag, or the planner. A filter that leaky reads as a
+guarantee it cannot keep.
+
+Consequently:
+
+- **Search.** The instruction *"appends `"18+"` when `hasAdult(ex)`"* made
+  searching `18+` under "Hide 18+" return precisely the five booths whose gated
+  titles had just been hidden. The token is now gated on `state.age !== "hide"`.
+  The implementation's `searchableDescription()` — which scrubbed adult titles
+  from the haystack but not from the rendered card — was removed with its alias
+  machinery: descriptions render and match identically again.
+- **Planner.** The wristband section stays independent of `state.age`, as the
+  plan had it, but for a stated reason: the planner does not inherit the grid's
+  filters (`prioritySavedOnly` is already a separate toggle from `savedOnly`),
+  and the section exists for the visitor who *wants* the wristband.
+- **`ageRestricted`.** `boothAgeStatus()` read only the per-game flags, so a
+  booth-wide gate could never render as confirmed. It is a hand-written
+  assertion, so it now counts as confirmed.
+- **Wristband rows.** The status badge had its own grid column that only some
+  rows filled; since each row is its own grid, those rows sized their `fr` tracks
+  differently. The marker now rides inside the titles cell and the grid is four
+  even tracks.
