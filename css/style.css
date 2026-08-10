@@ -1075,6 +1075,9 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   /* the full masthead is ~290px on a phone — far too much to pin above a
      long scrolling list, so it scrolls away here instead */
   .site-header { position: static; }
+  /* …and with nothing pinned on top, the sticky-header scroll offset would
+     just strand the route heading 140px down the screen */
+  #route-section { scroll-margin-top: 16px; }
   .header-inner { flex-direction: column; align-items: flex-start; gap: 12px; padding-bottom: 14px; }
   .header-meta { text-align: left; }
   .grid { grid-template-columns: 1fr; }

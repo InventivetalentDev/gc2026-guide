@@ -190,8 +190,11 @@ function syncBookmarkUI() {
 
 /* Re-rendering a list with innerHTML destroys the button that was just pressed,
    which drops keyboard focus back to the top of the page. Put it back on the
-   equivalent button whenever one survives the re-render. */
-function keepingFocus(container, render) {
+   equivalent button whenever one survives the re-render. When the whole row is
+   gone instead (unsaving in a saved-only list removes it), land on the nearest
+   remaining button — or the caller's fallback element — so keyboard users stay
+   in context rather than dropping to <body>. */
+function keepingFocus(container, render, fallback) {
   const el = document.activeElement;
   const inside = el && container.contains(el);
   const sel = !inside
@@ -201,8 +204,14 @@ function keepingFocus(container, render) {
       : el.classList.contains("more-games")
         ? `.more-games[data-id="${CSS.escape(el.dataset.id)}"]`
         : null;
+  const index = sel ? [...container.querySelectorAll(".bm")].indexOf(el) : -1;
   render();
-  if (sel) container.querySelector(sel)?.focus();
+  if (!sel) return;
+  const again = container.querySelector(sel);
+  if (again) return again.focus();
+  if (index < 0) return;
+  const buttons = [...container.querySelectorAll(".bm")];
+  (buttons[Math.min(index, buttons.length - 1)] || fallback)?.focus();
 }
 
 function renderSavedControls() {
@@ -210,10 +219,19 @@ function renderSavedControls() {
   $("#saved-count").textContent = n ? `(${n})` : "";
   $("#priority-saved-count").textContent = n ? `(${n})` : "";
   $("#clear-saved").classList.toggle("hidden", n === 0);
-  $("#goto-route").classList.toggle("hidden", n === 0);
+  $("#goto-route")?.classList.toggle("hidden", n === 0);
 }
 
 /* ---------- filtering & sorting ---------- */
+
+/* Shared orderings. Crowd-desc is the house default wherever booths rank;
+   hall order approximates a sensible walk through the entertainment halls —
+   decimal halls are upper levels, so parseFloat keeps 6.1 after 6 and before
+   7, and missing halls sort last. If verified venue routing ever lands,
+   hallRank is the single seam to replace with an explicit order: the grid's
+   hall sort and the planner's route both read through it. */
+const byCrowdDesc = (a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name);
+const hallRank = (hall) => (hall ? parseFloat(hall) : Infinity);
 
 function matchesQuery(ex, q) {
   if (!q) return true;
@@ -255,14 +273,10 @@ function filtered() {
   });
 
   const bySort = {
-    "crowd-desc": (a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name),
+    "crowd-desc": byCrowdDesc,
     "crowd-asc": (a, b) => (a.crowd || 0) - (b.crowd || 0) || a.name.localeCompare(b.name),
     name: (a, b) => a.name.localeCompare(b.name),
-    hall: (a, b) => {
-      const ha = a.hall ? parseFloat(a.hall) : 99;
-      const hb = b.hall ? parseFloat(b.hall) : 99;
-      return ha - hb || a.name.localeCompare(b.name);
-    },
+    hall: (a, b) => hallRank(a.hall) - hallRank(b.hall) || a.name.localeCompare(b.name),
   };
   return list.sort(bySort[state.sort] || bySort["crowd-desc"]);
 }
@@ -503,36 +517,41 @@ function renderPlanner() {
   $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
 }
 
+/* The "Saved here" chip row is shared by the queue-priority table and the
+   route board — one helper so the markup can't drift apart. */
+function savedHereChips(ex) {
+  const mine = savedGames(ex);
+  if (!mine.length) return "";
+  return `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
+    .map((g) => `<span class="priority-game">${esc(g.title)}</span>`)
+    .join("")}</span>`;
+}
+
 function renderPriority() {
-  const busiest = [...state.exhibitors]
-    .filter((e) => (e.crowd || 0) >= 4)
-    .sort((a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name));
+  const busiest = [...state.exhibitors].filter((e) => (e.crowd || 0) >= 4).sort(byCrowdDesc);
   /* Ranks come from the unfiltered order: "07" has to keep meaning "seventh
      worst queue of the show", not "seventh row you happen to be looking at". */
   const list = state.prioritySavedOnly ? busiest.filter(hasSaved) : busiest;
 
   const rows = list
-    .map((e) => {
-      const mine = savedGames(e);
-      return `<div class="priority-item" data-saved="${hasSaved(e)}">
+    .map(
+      (e) => `<div class="priority-item" data-saved="${hasSaved(e)}">
         <span class="priority-rank">${String(busiest.indexOf(e) + 1).padStart(2, "0")}</span>
         <span class="priority-name">${esc(e.name)}</span>
         <span class="priority-loc">${e.hall ? `Hall ${esc(e.hall)}` : "TBA"}</span>
         <span class="priority-advice">${esc(e.visitAdvice || e.crowdNote || "")}</span>
         ${bmButton("exhibitor", e.id, e.name)}
-        ${
-          mine.length
-            ? `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
-                .map((g) => `<span class="priority-game">${esc(g.title)}</span>`)
-                .join("")}</span>`
-            : ""
-        }
-      </div>`;
-    })
+        ${savedHereChips(e)}
+      </div>`
+    )
     .join("");
-  keepingFocus($("#priority-list"), () => {
-    $("#priority-list").innerHTML = rows;
-  });
+  keepingFocus(
+    $("#priority-list"),
+    () => {
+      $("#priority-list").innerHTML = rows;
+    },
+    $("#priority-saved-only")
+  );
 
   $("#priority-list").classList.toggle("hidden", list.length === 0);
   $("#priority-empty").classList.toggle("hidden", list.length > 0);
@@ -546,12 +565,6 @@ function renderPriority() {
 }
 
 /* ---------- route by hall ---------- */
-
-/* Hall-number order approximates a sensible walk through the entertainment
-   halls. Decimal halls are upper levels, so parseFloat naturally keeps 6.1
-   after 6 and before 7. If verified venue routing lands later, this is the
-   single seam to replace with an explicit order. */
-const hallRank = (hall) => (hall ? parseFloat(hall) : Infinity);
 
 const isAbsent = (ex) => (ex.tags || []).includes("not exhibiting");
 const isOffsite = (ex) => (ex.tags || []).includes("offsite");
@@ -576,19 +589,24 @@ function routeGroups() {
     .filter((key) => key !== "offsite" && key !== "tba")
     .sort((a, b) => hallRank(a) - hallRank(b) || a.localeCompare(b));
   const keys = [...numbered, ...["offsite", "tba"].filter((key) => buckets.has(key))];
-  const byCrowd = (a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name);
 
   return {
     groups: keys.map((key) => ({
       key,
       label: key === "offsite" ? "Offsite" : key === "tba" ? "Location TBA" : `Hall ${key}`,
-      items: buckets.get(key).sort(byCrowd),
+      items: buckets.get(key).sort(byCrowdDesc),
     })),
     absent: absent.sort((a, b) => a.localeCompare(b)),
   };
 }
 
 function renderRoute() {
+  /* The service worker caches index.html and app.js independently, so on a
+     flaky network this file can briefly run against a one-version-older shell
+     that has no route section yet (see handleNavigation in sw.js). Bail out
+     instead of letting a null lookup abort the whole boot. */
+  const routeList = $("#route-list");
+  if (!routeList) return;
   const { groups, absent } = routeGroups();
   const stopCount = groups.reduce((total, group) => total + group.items.length, 0);
   const hallCount = groups.filter((group) => group.key !== "offsite" && group.key !== "tba").length;
@@ -598,7 +616,6 @@ function renderRoute() {
       const number = group.key === "offsite" ? "Offsite" : group.key === "tba" ? "TBA" : group.key;
       const rows = group.items
         .map((ex) => {
-          const mine = savedGames(ex);
           const baseLocation = ex.booth ? ex.booth : ex.hall ? "booth TBA" : "location TBA";
           const loc = baseLocation + (ex.hall && !ex.locationConfirmed ? " · unconf." : "");
           const crowd = ex.crowd || 0;
@@ -607,13 +624,7 @@ function renderRoute() {
             <span class="route-booth">${esc(loc)}</span>
             <span class="route-crowd" data-level="${esc(crowd)}">Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}</span>
             ${bmButton("exhibitor", ex.id, ex.name)}
-            ${
-              mine.length
-                ? `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
-                    .map((game) => `<span class="priority-game">${esc(game.title)}</span>`)
-                    .join("")}</span>`
-                : ""
-            }
+            ${savedHereChips(ex)}
           </div>`;
         })
         .join("");
@@ -626,17 +637,13 @@ function renderRoute() {
     })
     .join("");
 
-  const routeList = $("#route-list");
-  const focusedIndex = [...routeList.querySelectorAll(".bm")].indexOf(document.activeElement);
-  keepingFocus(routeList, () => {
-    routeList.innerHTML = html;
-  });
-  /* Removing a booth-only stop leaves no equivalent button to restore. Keep
-     keyboard users in context on the next stop, the previous one, or heading. */
-  if (focusedIndex >= 0 && !routeList.contains(document.activeElement)) {
-    const buttons = [...routeList.querySelectorAll(".bm")];
-    (buttons[Math.min(focusedIndex, buttons.length - 1)] || $("#route-title")).focus();
-  }
+  keepingFocus(
+    routeList,
+    () => {
+      routeList.innerHTML = html;
+    },
+    $("#route-title")
+  );
   routeList.classList.toggle("hidden", stopCount === 0);
   $("#route-empty").classList.toggle("hidden", stopCount > 0 || absent.length > 0);
   $("#route-empty").textContent = savedCount()
@@ -809,7 +816,9 @@ function bindControls() {
     state.prioritySavedOnly = e.target.checked;
     renderPriority();
   });
-  $("#goto-route").addEventListener("click", () => {
+  /* Optional-chained like the other #route-* lookups: absent on a stale
+     cached shell — see the note in renderRoute. */
+  $("#goto-route")?.addEventListener("click", () => {
     showView("planner");
     $("#route-section").scrollIntoView();
     $("#route-title").focus({ preventScroll: true });
