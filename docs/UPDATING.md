@@ -21,6 +21,7 @@ This document is the playbook for refreshing the data — written so a scheduled
    - Upgrade game `status` (`rumored` → `expected` → `confirmed`) as info firms up; **never downgrade silently** — remove a game only if it's officially not coming, and note why in the commit message.
    - Fill in `hall`/`booth` and flip `locationConfirmed` to `true` when officially published.
    - Set `playable` when hands-on demos are confirmed.
+   - Re-check show-floor age gates: set numeric game `age` and `ageStatus`, or booth-wide `ageRestricted`, only when a source supports the restriction.
    - Re-evaluate `crowd`, `crowdNote` and `visitAdvice` when new info (booth size, lineup hype, ticket sellouts) changes the picture.
    - Refresh each touched exhibitor's `lastUpdated` and append new `sources`.
 4. **Update `data/event.json`** if hours/tickets/areas/ONL details changed (e.g. days selling out — that raises crowd levels too).
@@ -42,6 +43,7 @@ This document is the playbook for refreshing the data — written so a scheduled
   - `expected`: strongly implied (e.g. publisher confirmed + game launches in Sept/Oct)
   - `rumored`: our inference only — press speculation, past-year patterns
 - `locationConfirmed: false` + a hall value means "best guess (often from 2025 placement)". The UI marks the hall block amber and suffixes the booth with "· unconf."
+- `age` is the minimum age for an interactive demo **on the show floor**, not the USK or PEGI rating of the finished game. `ageStatus: "confirmed"` needs an exhibitor statement or official listing; a restriction inferred from the game's rating stays `"expected"`. Keep `age` numeric so lower gates remain expressible, but the current UI only filters and badges values `>= 18`. Use exhibitor-level `ageRestricted: true` only for a gated zone with no single game to attach it to.
 - `platforms` is rendered on each game row as short codes (`XSX`, `SW2`, `PS5`…). Unknown values fall back to the uppercased string, so keep them short and consistent — see `PLATFORM_CODES` in `js/app.js` to add a new mapping.
 - Crowd scale: 1 calm · 2 light · 3 moderate · 4 busy (30–90 min queues) · 5 extreme (2 h+ queues, may cap lines early).
 - Don't remove the `sources` history; append.
@@ -65,12 +67,15 @@ This document is the playbook for refreshing the data — written so a scheduled
   "hall": "8",                     // string or null (halls can be "4.1" style)
   "booth": "B010",                 // string or null
   "locationConfirmed": false,      // true only when officially published for 2026
+  "ageRestricted": true,           // optional: booth-wide age gate when no game fits
   "description": "1–2 sentences on what they're showing.",
   "games": [
     {
       "title": "Fable",
       "status": "confirmed",       // confirmed | expected | rumored
       "playable": true,            // true | false | null (unknown)
+      "age": 18,                   // optional: minimum age for this show-floor demo
+      "ageStatus": "confirmed",   // optional: confirmed | expected (default expected)
       "platforms": ["Xbox Series X|S", "PC"],
       "note": "one-line context (optional)"
     }
