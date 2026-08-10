@@ -93,7 +93,9 @@
             <label class="toggle"><input type="checkbox" id="playable-only"> Playable demos</label>
             <label class="toggle"><input type="checkbox" id="confirmed-only"> Confirmed locations</label>
             <label class="toggle"><input type="checkbox" id="saved-only"> Saved <span class="saved-count" id="saved-count"></span></label>
+            <label class="toggle"><input type="checkbox" id="hide-played"> Hide played <span class="saved-count" id="played-count"></span></label>
             <button class="reset hidden" id="clear-saved" type="button">Clear saved list</button>
+            <button class="reset hidden" id="clear-played" type="button">Clear played</button>
             <button class="reset hidden" id="reset-filters" type="button">Clear filters</button>
           </div>
         </details>
@@ -116,6 +118,7 @@
       <p class="section-sub">Busiest booths first. If one below matters to you, make it your first stop of the day.</p>
       <div class="priority-controls">
         <label class="toggle"><input type="checkbox" id="priority-saved-only"> Saved only <span class="saved-count" id="priority-saved-count"></span></label>
+        <label class="toggle"><input type="checkbox" id="priority-hide-played"> Hide played</label>
         <span class="result-count" id="priority-count"></span>
       </div>
       <div id="priority-list" class="priority-table"></div>

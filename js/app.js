@@ -11,12 +11,16 @@ const state = {
   playableOnly: false,
   confirmedOnly: false,
   savedOnly: false,
+  hidePlayed: false,
   prioritySavedOnly: false,
   view: "exhibitors",
   sort: "crowd-desc",
   expanded: new Set(),
-  /* replaced from localStorage in main() — see loadBookmarks() */
-  bookmarks: { exhibitors: new Set(), games: new Set() },
+  /* replaced from localStorage in main() — see loadMarks() */
+  marks: {
+    saved: { exhibitors: new Set(), games: new Set() },
+    played: { exhibitors: new Set(), games: new Set() },
+  },
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -79,21 +83,23 @@ async function loadData() {
   state.changelog = changelog;
 }
 
-/* ---------- saved list (bookmarks) ----------
+/* ---------- saved & played marks ----------
 
    Two independent sets: exhibitor ids, and games keyed by normalised title
    rather than by booth. Eight titles this year are shown at two booths at once
-   (Alien: Isolation 2 sits at both Xbox and SEGA), and someone saving a game
-   wants to see every booth running it so they can pick the shorter queue. */
+   (Alien: Isolation 2 sits at both Xbox and SEGA), so a game mark applies at
+   every booth showing the same title. */
 
-const BM_KEY = "gc2026.saved.v1";
+const MARK_KEYS = { saved: "gc2026.saved.v1", played: "gc2026.played.v1" };
 
 const gameKey = (title) => String(title).trim().toLowerCase().replace(/\s+/g, " ");
 
-function loadBookmarks() {
+function loadMarks(mark) {
   const empty = { exhibitors: new Set(), games: new Set() };
+  if (mark === "played") state.hidePlayed = false;
   try {
-    const raw = JSON.parse(localStorage.getItem(BM_KEY) || "{}");
+    const raw = JSON.parse(localStorage.getItem(MARK_KEYS[mark]) || "{}");
+    if (mark === "played") state.hidePlayed = raw.hidePlayed === true;
     return {
       exhibitors: new Set(Array.isArray(raw.exhibitors) ? raw.exhibitors : []),
       games: new Set(Array.isArray(raw.games) ? raw.games : []),
@@ -104,84 +110,108 @@ function loadBookmarks() {
   }
 }
 
-function persistBookmarks() {
+function persistMarks(mark) {
   try {
+    const marks = state.marks[mark];
+    const payload = {
+      exhibitors: [...marks.exhibitors],
+      games: [...marks.games],
+    };
+    if (mark === "played") payload.hidePlayed = state.hidePlayed;
     localStorage.setItem(
-      BM_KEY,
-      JSON.stringify({
-        exhibitors: [...state.bookmarks.exhibitors],
-        games: [...state.bookmarks.games],
-      })
+      MARK_KEYS[mark],
+      JSON.stringify(payload)
     );
   } catch {
-    /* out of quota or storage denied — the list still works for this session */
+    /* out of quota or storage denied — marks still work for this session */
   }
 }
 
-const bmSet = (kind) => (kind === "game" ? state.bookmarks.games : state.bookmarks.exhibitors);
-const isSaved = (kind, key) => bmSet(kind).has(key);
+const markSet = (mark, kind) => (kind === "game" ? state.marks[mark].games : state.marks[mark].exhibitors);
+const isMarked = (mark, kind, key) => markSet(mark, kind).has(key);
+const isSaved = (kind, key) => isMarked("saved", kind, key);
+const isPlayed = (kind, key) => isMarked("played", kind, key);
 const savedGames = (ex) => (ex.games || []).filter((g) => isSaved("game", gameKey(g.title)));
-const savedCount = () => state.bookmarks.exhibitors.size + state.bookmarks.games.size;
+const playedGames = (ex) => (ex.games || []).filter((g) => isPlayed("game", gameKey(g.title)));
+const markCount = (mark) => state.marks[mark].exhibitors.size + state.marks[mark].games.size;
+const savedCount = () => markCount("saved");
+const playedCount = () => markCount("played");
 
 /* An exhibitor counts as saved if you saved the booth itself *or* any game
    they're showing — the publisher is how you actually get to the game. */
 const hasSaved = (ex) => isSaved("exhibitor", ex.id) || savedGames(ex).length > 0;
 
+/* A booth is done when marked directly, or when every game saved there is done.
+   An unsaved booth with some incidentally played games does not count as done. */
+const hasPlayed = (ex) => {
+  const mine = savedGames(ex);
+  return isPlayed("exhibitor", ex.id) ||
+    (mine.length > 0 && mine.every((g) => isPlayed("game", gameKey(g.title))));
+};
+
 /* The "+" adds to the list and the "−" takes it back off — same language as the
    "+ 4 more" / "− Show fewer" control, so no icon is needed. The saved state is
-   carried by the filled plate, not by the glyph. */
-function bmButton(kind, key, name, { wide = false } = {}) {
-  const saved = isSaved(kind, key);
-  const label = bmLabel(kind, name, saved);
+   carried by the filled plate, not by the glyph. Played always uses a check;
+   its muted filled plate carries that state. */
+function markButton(mark, kind, key, name, { wide = false } = {}) {
+  const marked = isMarked(mark, kind, key);
+  const label = markLabel(mark, kind, name, marked);
+  const glyph = mark === "played" ? "✓" : marked ? "−" : "+";
   return `<button class="bm${wide ? " bm-wide" : ""}" type="button"
-      data-bm-kind="${kind}" data-bm-key="${esc(key)}" data-bm-name="${esc(name)}"
-      aria-pressed="${saved}" title="${esc(label)}" aria-label="${esc(label)}">
-    <span class="bm-mark" aria-hidden="true">${saved ? "−" : "+"}</span>${
-      wide ? `<span class="bm-text" aria-hidden="true">${saved ? "Saved" : "Save"}</span>` : ""
+      data-mark="${mark}" data-bm-kind="${kind}" data-bm-key="${esc(key)}" data-bm-name="${esc(name)}"
+      aria-pressed="${marked}" title="${esc(label)}" aria-label="${esc(label)}">
+    <span class="bm-mark" aria-hidden="true">${glyph}</span>${
+      wide
+        ? `<span class="bm-text" aria-hidden="true">${mark === "saved" ? (marked ? "Saved" : "Save") : "Played"}</span>`
+        : ""
     }</button>`;
 }
 
-function bmLabel(kind, name, saved) {
+function markLabel(mark, kind, name, marked) {
   const what = kind === "game" ? name : `the ${name} booth`;
-  return saved ? `Remove ${what} from your saved list` : `Save ${what} to your list`;
+  if (mark === "played") return `Mark ${what} as ${marked ? "not played" : "played"}`;
+  return marked ? `Remove ${what} from your saved list` : `Save ${what} to your list`;
 }
 
-function toggleBookmark(kind, key) {
-  const set = bmSet(kind);
+function toggleMark(mark, kind, key) {
+  const set = markSet(mark, kind);
   set.has(key) ? set.delete(key) : set.add(key);
-  persistBookmarks();
-  onBookmarksChanged();
+  persistMarks(mark);
+  onMarksChanged();
 }
 
-function onBookmarksChanged() {
+function onMarksChanged() {
   /* Re-rendering the whole grid on every toggle would pull the button you just
      clicked out from under the pointer, so patch the buttons in place and only
-     rebuild when a saved-only filter is deciding what's on screen. */
-  if (state.savedOnly) renderExhibitors();
-  else syncBookmarkUI();
-  renderSavedControls();
+     rebuild when a mark-dependent filter is deciding what's on screen. */
+  if (state.savedOnly || state.hidePlayed) renderExhibitors();
+  else syncMarkUI();
+  renderMarkControls();
   renderPriority();
 }
 
 /* Bring already-rendered buttons and their rows back in sync with the sets,
    without touching the surrounding markup. */
-function syncBookmarkUI() {
-  $$("[data-bm-kind]").forEach((btn) => {
-    const { bmKind: kind, bmKey: key, bmName: name } = btn.dataset;
-    const saved = isSaved(kind, key);
-    const label = bmLabel(kind, name, saved);
-    btn.setAttribute("aria-pressed", String(saved));
+function syncMarkUI() {
+  $$('[data-mark]').forEach((btn) => {
+    const { mark, bmKind: kind, bmKey: key, bmName: name } = btn.dataset;
+    const marked = isMarked(mark, kind, key);
+    const label = markLabel(mark, kind, name, marked);
+    btn.setAttribute("aria-pressed", String(marked));
     btn.setAttribute("aria-label", label);
     btn.setAttribute("title", label);
-    btn.querySelector(".bm-mark").textContent = saved ? "−" : "+";
+    btn.querySelector(".bm-mark").textContent = mark === "played" ? "✓" : marked ? "−" : "+";
     const text = btn.querySelector(".bm-text");
-    if (text) text.textContent = saved ? "Saved" : "Save";
+    if (text) text.textContent = mark === "saved" ? (marked ? "Saved" : "Save") : "Played";
     const row = btn.closest(".game");
-    if (row) row.dataset.saved = String(saved);
+    if (row) row.dataset[mark] = String(marked);
   });
   $$("#exhibitor-grid .card").forEach((el) => {
     const ex = state.exhibitors.find((e) => e.id === el.dataset.id);
-    if (ex) el.dataset.saved = String(hasSaved(ex));
+    if (ex) {
+      el.dataset.saved = String(hasSaved(ex));
+      el.dataset.played = String(hasPlayed(ex));
+    }
   });
 }
 
@@ -193,8 +223,8 @@ function keepingFocus(container, render) {
   const inside = el && container.contains(el);
   const sel = !inside
     ? null
-    : el.dataset.bmKey
-      ? `.bm[data-bm-kind="${el.dataset.bmKind}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
+    : el.dataset.mark && el.dataset.bmKey
+      ? `.bm[data-mark="${CSS.escape(el.dataset.mark)}"][data-bm-kind="${CSS.escape(el.dataset.bmKind)}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
       : el.classList.contains("more-games")
         ? `.more-games[data-id="${CSS.escape(el.dataset.id)}"]`
         : null;
@@ -202,11 +232,16 @@ function keepingFocus(container, render) {
   if (sel) container.querySelector(sel)?.focus();
 }
 
-function renderSavedControls() {
-  const n = savedCount();
-  $("#saved-count").textContent = n ? `(${n})` : "";
-  $("#priority-saved-count").textContent = n ? `(${n})` : "";
-  $("#clear-saved").classList.toggle("hidden", n === 0);
+function renderMarkControls() {
+  const saved = savedCount();
+  const played = playedCount();
+  $("#saved-count").textContent = saved ? `(${saved})` : "";
+  $("#priority-saved-count").textContent = saved ? `(${saved})` : "";
+  $("#played-count").textContent = played ? `(${played})` : "";
+  $("#clear-saved").classList.toggle("hidden", saved === 0);
+  $("#clear-played").classList.toggle("hidden", played === 0);
+  $("#hide-played").checked = state.hidePlayed;
+  $("#priority-hide-played").checked = state.hidePlayed;
 }
 
 /* ---------- filtering & sorting ---------- */
@@ -236,7 +271,8 @@ function filtersActive() {
     state.hall !== "all" ||
     state.playableOnly ||
     state.confirmedOnly ||
-    state.savedOnly
+    state.savedOnly ||
+    state.hidePlayed
   );
 }
 
@@ -247,6 +283,7 @@ function filtered() {
     if (state.playableOnly && !(ex.games || []).some((g) => g.playable)) return false;
     if (state.confirmedOnly && !ex.locationConfirmed) return false;
     if (state.savedOnly && !hasSaved(ex)) return false;
+    if (state.hidePlayed && hasPlayed(ex)) return false;
     return matchesQuery(ex, state.query);
   });
 
@@ -322,14 +359,15 @@ function gameRow(g) {
       ? `<span class="sr-only">Confirmed</span>`
       : `<span class="badge badge-status" data-status="${esc(status)}">${esc(status)}</span>`;
   const key = gameKey(g.title);
-  return `<li class="game" data-status="${esc(status)}" data-saved="${isSaved("game", key)}">
+  return `<li class="game" data-status="${esc(status)}" data-saved="${isSaved("game", key)}" data-played="${isPlayed("game", key)}">
     <span class="game-main">
       <span class="game-title">${esc(g.title)}</span>
       ${statusLabel}
       ${g.playable ? `<span class="badge badge-playable">playable</span>` : ""}
     </span>
     ${plat ? `<span class="game-plat">${esc(plat)}</span>` : "<span></span>"}
-    ${bmButton("game", key, g.title)}
+    ${markButton("played", "game", key, g.title)}
+    ${markButton("saved", "game", key, g.title)}
     ${g.note ? `<span class="game-note">${esc(g.note)}</span>` : ""}
   </li>`;
 }
@@ -351,14 +389,15 @@ function card(ex) {
   const crowd = ex.crowd || 0;
   const playableCount = games.filter((g) => g.playable).length;
 
-  return `<article class="card" data-id="${esc(ex.id)}" data-saved="${hasSaved(ex)}">
+  return `<article class="card" data-id="${esc(ex.id)}" data-saved="${hasSaved(ex)}" data-played="${hasPlayed(ex)}">
     <div class="exh-head">
       ${hallMarker(ex)}
       <div class="exh-id">
         <span class="overline">${esc(TYPE_LABELS[ex.type] || ex.type)}</span>
         <h3>${esc(ex.name)}</h3>
       </div>
-      ${bmButton("exhibitor", ex.id, ex.name, { wide: true })}
+      ${markButton("played", "exhibitor", ex.id, ex.name)}
+      ${markButton("saved", "exhibitor", ex.id, ex.name, { wide: true })}
     </div>
     <div class="card-body">
       <p class="desc">${esc(ex.description)}</p>
@@ -427,6 +466,7 @@ function renderFilterSummary() {
   if (state.playableOnly) parts.push("playable only");
   if (state.confirmedOnly) parts.push("confirmed only");
   if (state.savedOnly) parts.push("saved only");
+  if (state.hidePlayed) parts.push("played hidden");
   if (state.query) parts.push(`“${state.query}”`);
   const el = $("#filter-summary");
   el.textContent = parts.length ? parts.join(" · ") : "All categories, all halls";
@@ -504,17 +544,23 @@ function renderPriority() {
     .sort((a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name));
   /* Ranks come from the unfiltered order: "07" has to keep meaning "seventh
      worst queue of the show", not "seventh row you happen to be looking at". */
-  const list = state.prioritySavedOnly ? busiest.filter(hasSaved) : busiest;
+  const scoped = state.prioritySavedOnly ? busiest.filter(hasSaved) : busiest;
+  const played = scoped.filter(hasPlayed).length;
+  const list = state.hidePlayed ? scoped.filter((e) => !hasPlayed(e)) : [...scoped];
+  list.sort((a, b) => hasPlayed(a) - hasPlayed(b));
 
   const rows = list
     .map((e) => {
       const mine = savedGames(e);
-      return `<div class="priority-item" data-saved="${hasSaved(e)}">
+      return `<div class="priority-item" data-saved="${hasSaved(e)}" data-played="${hasPlayed(e)}">
         <span class="priority-rank">${String(busiest.indexOf(e) + 1).padStart(2, "0")}</span>
         <span class="priority-name">${esc(e.name)}</span>
         <span class="priority-loc">${e.hall ? `Hall ${esc(e.hall)}` : "TBA"}</span>
         <span class="priority-advice">${esc(e.visitAdvice || e.crowdNote || "")}</span>
-        ${bmButton("exhibitor", e.id, e.name)}
+        <span class="row-actions">
+          ${markButton("played", "exhibitor", e.id, e.name)}
+          ${markButton("saved", "exhibitor", e.id, e.name)}
+        </span>
         ${
           mine.length
             ? `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
@@ -531,13 +577,16 @@ function renderPriority() {
 
   $("#priority-list").classList.toggle("hidden", list.length === 0);
   $("#priority-empty").classList.toggle("hidden", list.length > 0);
-  $("#priority-empty").textContent = savedCount()
-    ? "Nothing you saved is in the high-queue group — good news, those booths should be closer to a walk-up."
-    : "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab.";
-  $("#priority-count").textContent =
+  $("#priority-empty").textContent = state.hidePlayed && scoped.length > 0 && list.length === 0
+    ? "Everything on your list in the high-queue group is played — nice work."
+    : savedCount()
+      ? "Nothing you saved is in the high-queue group — good news, those booths should be closer to a walk-up."
+      : "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab.";
+  const count =
     list.length === busiest.length
       ? `${busiest.length} high-queue booths`
       : `${list.length} / ${busiest.length} high-queue booths`;
+  $("#priority-count").textContent = `${count}${played ? ` · ${played} played` : ""}`;
 }
 
 /* ---------- event info ---------- */
@@ -656,6 +705,15 @@ function setSavedOnly(on) {
   renderExhibitors();
 }
 
+function setHidePlayed(on) {
+  state.hidePlayed = on;
+  $("#hide-played").checked = on;
+  $("#priority-hide-played").checked = on;
+  persistMarks("played");
+  renderExhibitors();
+  renderPriority();
+}
+
 function showView(route, { push = true } = {}) {
   const wantsSaved = route === SAVED_ROUTE;
   let name = wantsSaved ? "exhibitors" : route;
@@ -696,31 +754,43 @@ function bindControls() {
     setSavedOnly(e.target.checked);
     syncHash();
   });
+  $("#hide-played").addEventListener("change", (e) => {
+    setHidePlayed(e.target.checked);
+  });
   $("#priority-saved-only").addEventListener("change", (e) => {
     state.prioritySavedOnly = e.target.checked;
     renderPriority();
   });
+  $("#priority-hide-played").addEventListener("change", (e) => {
+    setHidePlayed(e.target.checked);
+  });
   $("#clear-saved").addEventListener("click", () => {
     const n = savedCount();
     if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"}? This can't be undone.`)) return;
-    state.bookmarks = { exhibitors: new Set(), games: new Set() };
-    persistBookmarks();
-    renderExhibitors();
-    renderSavedControls();
-    renderPriority();
+    state.marks.saved = { exhibitors: new Set(), games: new Set() };
+    persistMarks("saved");
+    onMarksChanged();
   });
-  /* One delegated listener covers every + button in both views, including the
+  $("#clear-played").addEventListener("click", () => {
+    const n = playedCount();
+    if (!confirm(`Forget all ${n} played mark${n === 1 ? "" : "s"}? This can't be undone.`)) return;
+    state.marks.played = { exhibitors: new Set(), games: new Set() };
+    persistMarks("played");
+    onMarksChanged();
+  });
+  /* One delegated listener covers every + and ✓ button in both views, including the
      ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-bm-kind]");
-    if (btn) toggleBookmark(btn.dataset.bmKind, btn.dataset.bmKey);
+    const btn = e.target.closest("[data-mark]");
+    if (btn) toggleMark(btn.dataset.mark, btn.dataset.bmKind, btn.dataset.bmKey);
   });
-  /* Same list, second tab: keep them from overwriting each other. */
+  /* Same marks, second tab: keep them from overwriting each other. */
   window.addEventListener("storage", (e) => {
-    if (e.key !== null && e.key !== BM_KEY) return;
-    state.bookmarks = loadBookmarks();
+    if (e.key !== null && !Object.values(MARK_KEYS).includes(e.key)) return;
+    if (e.key === null || e.key === MARK_KEYS.saved) state.marks.saved = loadMarks("saved");
+    if (e.key === null || e.key === MARK_KEYS.played) state.marks.played = loadMarks("played");
     renderExhibitors();
-    renderSavedControls();
+    renderMarkControls();
     renderPriority();
   });
 
@@ -732,13 +802,17 @@ function bindControls() {
       playableOnly: false,
       confirmedOnly: false,
       savedOnly: false,
+      hidePlayed: false,
     });
     $("#search").value = "";
     $("#playable-only").checked = false;
     $("#confirmed-only").checked = false;
     $("#saved-only").checked = false;
+    persistMarks("played");
+    renderMarkControls();
     renderFilters();
     renderExhibitors();
+    renderPriority();
     syncHash();
   });
 
@@ -758,12 +832,13 @@ async function main() {
     $("#exhibitor-grid").innerHTML = `<p class="empty">Failed to load data (${esc(err.message)}). If you opened this file directly, serve it instead: <code>python3 -m http.server</code></p>`;
     return;
   }
-  state.bookmarks = loadBookmarks();
+  state.marks.saved = loadMarks("saved");
+  state.marks.played = loadMarks("played");
   $("#event-dates").textContent = `${state.event.location} · ${state.event.dates}`;
   bindControls();
   renderCountdown();
   renderFreshness();
-  renderSavedControls();
+  renderMarkControls();
   renderFilters();
   renderExhibitors();
   renderPlanner();
