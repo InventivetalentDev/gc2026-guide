@@ -77,6 +77,7 @@ async function loadData() {
   state.event = event;
   state.meta = meta;
   state.changelog = changelog;
+  buildShareCodeMap();
 }
 
 /* ---------- saved list (bookmarks) ----------
@@ -204,9 +205,313 @@ function keepingFocus(container, render) {
 
 function renderSavedControls() {
   const n = savedCount();
+  const shareable = encodedSavedTokens().length;
   $("#saved-count").textContent = n ? `(${n})` : "";
   $("#priority-saved-count").textContent = n ? `(${n})` : "";
   $("#clear-saved").classList.toggle("hidden", n === 0);
+  $("#share-list").classList.toggle("hidden", shareable === 0);
+}
+
+/* ---------- sharing ----------
+
+   A shared URL contains only stable exhibitor ids and short hashes of the
+   normalised game titles. Both maps are rebuilt from the guide data, so the
+   link needs no server and works from the offline cache. */
+
+const shareCodes = {
+  exhibitorIds: new Set(),
+  gameToCode: new Map(),
+  codeToGame: new Map(),
+};
+
+function hash32(s) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h;
+}
+
+function buildShareCodeMap() {
+  shareCodes.exhibitorIds = new Set(state.exhibitors.map((ex) => ex.id));
+  shareCodes.gameToCode.clear();
+  shareCodes.codeToGame.clear();
+
+  const gameKeys = [
+    ...new Set(state.exhibitors.flatMap((ex) => (ex.games || []).map((game) => gameKey(game.title)))),
+  ].sort();
+  const taken = new Set(shareCodes.exhibitorIds);
+
+  gameKeys.forEach((key) => {
+    let salt = 0;
+    let code;
+    do {
+      code = hash32(salt ? `${key}#${salt}` : key).toString(36);
+      salt += 1;
+    } while (taken.has(code));
+    taken.add(code);
+    shareCodes.gameToCode.set(key, code);
+    shareCodes.codeToGame.set(code, key);
+  });
+}
+
+function encodedSavedTokens() {
+  const exhibitors = [...state.bookmarks.exhibitors]
+    .filter((id) => shareCodes.exhibitorIds.has(id))
+    .sort();
+  const games = [...state.bookmarks.games]
+    .map((key) => shareCodes.gameToCode.get(key))
+    .filter(Boolean)
+    .sort();
+  return [...exhibitors, ...games];
+}
+
+function buildShareLink() {
+  /* Search params are not part of the guide state and can contain referral or
+     campaign data that should not hitch a ride in somebody else's link. */
+  const base = `${location.origin}${location.pathname}`;
+  return `${base}#saved?l=${encodedSavedTokens().join(".")}`;
+}
+
+function parseHash() {
+  const raw = location.hash.slice(1);
+  const i = raw.indexOf("?");
+  return {
+    route: i === -1 ? raw : raw.slice(0, i),
+    params: new URLSearchParams(i === -1 ? "" : raw.slice(i + 1)),
+  };
+}
+
+function resolveTokens(payload) {
+  const incoming = { exhibitors: new Set(), games: new Set(), unresolved: 0 };
+  const tokens = new Set(String(payload).split(".").filter(Boolean));
+  tokens.forEach((token) => {
+    if (shareCodes.exhibitorIds.has(token)) incoming.exhibitors.add(token);
+    else if (shareCodes.codeToGame.has(token)) incoming.games.add(shareCodes.codeToGame.get(token));
+    else incoming.unresolved += 1;
+  });
+  return incoming;
+}
+
+/* The address bar stops being the copy of the link the moment the payload is
+   consumed, so this tab keeps its own until the offer has been answered.
+   Dismissing the prompt then costs a reload rather than the whole list, and
+   the copy dies with the tab — it can never haunt a later visit. */
+const PENDING_KEY = "gc2026.share.pending";
+
+function rememberPending(payload) {
+  try {
+    sessionStorage.setItem(PENDING_KEY, payload);
+  } catch {
+    /* storage denied — the offer simply won't survive a reload */
+  }
+}
+
+function forgetPending() {
+  try {
+    sessionStorage.removeItem(PENDING_KEY);
+  } catch {
+    /* nothing was stored in the first place */
+  }
+}
+
+function takeIncomingList() {
+  const { route, params } = parseHash();
+  if (route !== SAVED_ROUTE || !params.has("l")) return null;
+
+  const payload = params.get("l") || "";
+  rememberPending(payload);
+  /* Consume the payload before any rendering can synchronise the route, so a
+     refresh cannot import twice and the link is not left lying in the bar. */
+  history.replaceState(null, "", "#saved");
+  return resolveTokens(payload);
+}
+
+/* An offer this tab was made but never answered — a dismissed prompt, or a
+   reload before the visitor decided. */
+function pendingIncomingList() {
+  let payload = null;
+  try {
+    payload = sessionStorage.getItem(PENDING_KEY);
+  } catch {
+    /* storage denied */
+  }
+  return payload === null ? null : resolveTokens(payload);
+}
+
+const incomingCount = (incoming) => incoming.exhibitors.size + incoming.games.size;
+const itemLabel = (n) => `${n} saved item${n === 1 ? "" : "s"}`;
+
+function unresolvedNote(n) {
+  if (!n) return "";
+  return ` ${n === 1 ? "1 isn't" : `${n} aren't`} in the guide any more.`;
+}
+
+function renderBookmarkViews() {
+  renderExhibitors();
+  renderSavedControls();
+  renderPriority();
+}
+
+function applyIncoming(incoming) {
+  const before = {
+    exhibitors: new Set(state.bookmarks.exhibitors),
+    games: new Set(state.bookmarks.games),
+  };
+  incoming.exhibitors.forEach((id) => state.bookmarks.exhibitors.add(id));
+  incoming.games.forEach((key) => state.bookmarks.games.add(key));
+  persistBookmarks();
+  renderBookmarkViews();
+  /* Answered. Undo is a correction to a decision already made, not a reason to
+     put the offer back on the table. */
+  forgetPending();
+  return before;
+}
+
+function restoreBookmarks(snapshot) {
+  state.bookmarks = {
+    exhibitors: new Set(snapshot.exhibitors),
+    games: new Set(snapshot.games),
+  };
+  persistBookmarks();
+  renderBookmarkViews();
+  showToast("Shared list import undone.", null, null, { priority: true, replace: true });
+}
+
+function offerIncoming(incoming) {
+  const total = incomingCount(incoming);
+  if (total === 0) {
+    forgetPending();
+    showToast("That shared list is out of date — nothing left to add.", null, null, {
+      priority: true,
+    });
+    return;
+  }
+
+  const stale = unresolvedNote(incoming.unresolved);
+  /* Old localStorage entries can outlive a renamed/removed guide item. They
+     remain stored in case the data returns, but do not make the visible local
+     list count as non-empty for import decisions. */
+  if (encodedSavedTokens().length === 0) {
+    const before = applyIncoming(incoming);
+    showToast(
+      `Loaded ${itemLabel(total)} from a shared link.${stale}`,
+      "Undo",
+      () => restoreBookmarks(before),
+      { priority: true }
+    );
+    return;
+  }
+
+  const newCount =
+    [...incoming.exhibitors].filter((id) => !state.bookmarks.exhibitors.has(id)).length +
+    [...incoming.games].filter((key) => !state.bookmarks.games.has(key)).length;
+  /* Someone re-opening a link they already imported, or the other half of a
+     phone/desktop pair that is already in sync. There is nothing to add, so
+     offering the button would only produce an import of nothing. */
+  if (newCount === 0) {
+    forgetPending();
+    showToast(`You already have everything in this shared link.${stale}`, null, null, {
+      priority: true,
+    });
+    return;
+  }
+  showToast(
+    `A shared link has ${itemLabel(total)} — ${newCount} new to you.${stale}`,
+    "Add to my list",
+    () => {
+      const before = applyIncoming(incoming);
+      showToast(
+        `Added ${itemLabel(newCount)} from the shared link.${stale}`,
+        "Undo",
+        () => restoreBookmarks(before),
+        { priority: true, replace: true }
+      );
+    },
+    { priority: true }
+  );
+}
+
+function renderShareDialog() {
+  const link = buildShareLink();
+  const input = $("#share-link");
+  input.value = link;
+  const shareable = encodedSavedTokens().length;
+  const unavailable = savedCount() - shareable;
+  $("#share-count").textContent = unavailable
+    ? `${itemLabel(shareable)} ready to share. ${unavailable} older item${
+        unavailable === 1 ? " is" : "s are"
+      } no longer in the guide.`
+    : itemLabel(shareable);
+
+  const nativeShare = $("#native-share");
+  nativeShare.hidden = typeof navigator.share !== "function";
+
+  const hasEncoder = typeof window.qrSvg === "function";
+  const svg = hasEncoder ? window.qrSvg(link) : null;
+  $("#share-qr").hidden = !svg;
+  $("#share-qr-image").innerHTML = svg || "";
+  const fallback = $("#share-qr-fallback");
+  fallback.textContent = hasEncoder
+    ? "This list is too long for a QR code — send the link instead."
+    : "The QR code could not be loaded — send the link instead.";
+  fallback.hidden = Boolean(svg);
+
+  const status = $("#share-status");
+  status.textContent = "";
+}
+
+function showShareStatus(message) {
+  const status = $("#share-status");
+  status.textContent = message;
+}
+
+function bindShareDialog() {
+  const dialog = $("#share-dialog");
+  const input = $("#share-link");
+
+  $("#share-list").addEventListener("click", () => {
+    renderShareDialog();
+    dialog.showModal();
+  });
+  input.addEventListener("focus", () => input.select());
+  $("#close-share").addEventListener("click", () => dialog.close());
+
+  /* Backdrop clicks target the dialog itself. Check the coordinates as well,
+     so a click on padding inside the panel does not dismiss it. */
+  dialog.addEventListener("click", (event) => {
+    if (event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    const inside =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+    if (!inside) dialog.close();
+  });
+
+  $("#copy-share-link").addEventListener("click", async () => {
+    try {
+      if (typeof navigator.clipboard?.writeText !== "function") throw new Error("clipboard unavailable");
+      await navigator.clipboard.writeText(input.value);
+      showShareStatus("Link copied.");
+    } catch {
+      input.focus();
+      input.select();
+      showShareStatus("Press ⌘C / Ctrl+C to copy.");
+    }
+  });
+
+  $("#native-share").addEventListener("click", async () => {
+    try {
+      await navigator.share({ title: "gamescom 2026 saved list", url: input.value });
+    } catch (err) {
+      if (err?.name !== "AbortError") {
+        showShareStatus("Sharing failed — copy the link instead.");
+      }
+    }
+  });
 }
 
 /* ---------- filtering & sorting ---------- */
@@ -617,6 +922,76 @@ function renderChangelog() {
 
 /* ---------- misc ---------- */
 
+const toast = $("#toast");
+let activeToast = null;
+const toastQueue = [];
+
+function renderToast(notification) {
+  activeToast = notification;
+  $("#toast-text").textContent = notification.message;
+  const btn = $("#toast-action");
+  if (notification.actionLabel) {
+    btn.textContent = notification.actionLabel;
+    btn.hidden = false;
+    btn.onclick = notification.onAction;
+  } else {
+    btn.hidden = true;
+    btn.onclick = null;
+  }
+  toast.hidden = false;
+}
+
+function queueToast(notification) {
+  if (!notification.priority) {
+    toastQueue.push(notification);
+    return;
+  }
+  const before = toastQueue.findIndex((queued) => !queued.priority);
+  toastQueue.splice(before === -1 ? toastQueue.length : before, 0, notification);
+}
+
+/* Import prompts are priority notifications because their payload has already
+   been removed from the address bar. PWA and install messages queue behind
+   them instead of destroying the only Add/Undo action. */
+function showToast(message, actionLabel, onAction, options = {}) {
+  if (!toast) return null;
+  const notification = {
+    message,
+    actionLabel,
+    onAction,
+    priority: Boolean(options.priority),
+  };
+  if (toast.hidden || !activeToast || options.replace) {
+    renderToast(notification);
+  } else if (notification.priority && !activeToast.priority) {
+    queueToast(activeToast);
+    renderToast(notification);
+  } else if (options.queue !== false) {
+    queueToast(notification);
+  } else {
+    return null;
+  }
+  return notification;
+}
+
+function hideToast(notification) {
+  if (!toast) return;
+  if (notification && notification !== activeToast) {
+    const queued = toastQueue.indexOf(notification);
+    if (queued !== -1) toastQueue.splice(queued, 1);
+    return;
+  }
+  const next = toastQueue.shift();
+  if (next) renderToast(next);
+  else {
+    activeToast = null;
+    toast.hidden = true;
+  }
+}
+
+if (toast) $("#toast-dismiss").addEventListener("click", () => hideToast());
+window.gcToast = { show: showToast, hide: hideToast };
+
 function renderCountdown() {
   const start = new Date(state.event.startDate + "T10:00:00+02:00");
   const now = new Date();
@@ -709,6 +1084,7 @@ function bindControls() {
     renderSavedControls();
     renderPriority();
   });
+  bindShareDialog();
   /* One delegated listener covers every + button in both views, including the
      ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
@@ -748,7 +1124,11 @@ function bindControls() {
   $$(".tab").forEach((tab) => tab.addEventListener("click", () => showView(routeFor(tab.dataset.view))));
   /* push:true here so an unknown or now-stale hash gets rewritten to the route
      actually on screen rather than being left lying in the address bar. */
-  window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
+  window.addEventListener("hashchange", () => {
+    const incoming = takeIncomingList();
+    showView(incoming ? SAVED_ROUTE : parseHash().route);
+    if (incoming) offerIncoming(incoming);
+  });
 }
 
 async function main() {
@@ -759,6 +1139,10 @@ async function main() {
     return;
   }
   state.bookmarks = loadBookmarks();
+  const incoming = takeIncomingList();
+  /* Only a link in the address bar moves the visitor to their list; a leftover
+     offer is repeated where they already were. */
+  const offer = incoming || pendingIncomingList();
   $("#event-dates").textContent = `${state.event.location} · ${state.event.dates}`;
   bindControls();
   renderCountdown();
@@ -769,7 +1153,8 @@ async function main() {
   renderPlanner();
   renderEvent();
   renderChangelog();
-  showView(location.hash.slice(1) || VIEWS[0], { push: false });
+  showView(incoming ? SAVED_ROUTE : parseHash().route || VIEWS[0], { push: false });
+  if (offer) offerIncoming(offer);
 }
 
 main();

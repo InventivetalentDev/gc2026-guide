@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-10",
+    "revision": 5,
+    "changes": [
+      "New: share your saved booths and games as a link, with a scannable QR code for moving a plan from desktop to phone.",
+      "Opening a shared link never replaces your list: an empty list loads immediately with Undo, while an existing list asks before adding only the new items.",
+      "Shared links are built entirely in the browser and contain guide identifiers only — exhibitor IDs and compact game codes — so nothing is uploaded or sent anywhere unless you share the link yourself.",
+      "Link sharing and QR generation work offline; the QR encoder is dependency-free and included in the app cache."
+    ]
+  },
+  {
+    "date": "2026-08-10",
     "revision": 4,
     "changes": [
       "Wargaming will NOT have a gamescom show-floor booth this year — only the offsite Community Party (Aug 28, HERBRAND's Ehrenfeld) is confirmed for World of Tanks/Warships/HEAT.",
