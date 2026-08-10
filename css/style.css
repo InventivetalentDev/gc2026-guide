@@ -745,6 +745,89 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .priority-advice { color: var(--ink-mid); font-size: .84rem; }
 
 /* ============================================================
+   planner — route by hall
+   ============================================================ */
+.route-controls {
+  display: flex;
+  align-items: center;
+  min-height: 18px;
+  margin-bottom: 12px;
+}
+.route-controls .result-count { margin-left: auto; }
+#route-section { scroll-margin-top: 140px; }
+
+.route-board { border: var(--border); border-radius: var(--radius); overflow: hidden; }
+.route-hall {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--rule-soft);
+  background: var(--ground-3);
+}
+.route-hall-kicker {
+  font-family: var(--font-mono);
+  font-size: .64rem;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.route-hall-num {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.route-hall-count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.route-item {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.2fr) minmax(110px, 1fr) auto auto;
+  gap: 0 16px;
+  align-items: baseline;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--rule-soft);
+  background: var(--ground-2);
+}
+.route-item:last-child { border-bottom: none; }
+.route-item:hover { background: var(--ground-3); }
+.route-item[data-saved="true"] { box-shadow: inset 3px 0 0 var(--signal); }
+.route-item .bm { grid-column: -2 / -1; grid-row: 1; align-self: center; }
+.route-item .priority-saved { grid-column: 1 / -1; }
+.route-name { font-weight: 700; font-size: .95rem; }
+.route-booth {
+  font-family: var(--font-mono);
+  font-size: .76rem;
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums;
+}
+.route-crowd {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--ink-mid);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.route-crowd[data-level="4"] { color: var(--warn); }
+.route-crowd[data-level="5"] { color: var(--alert); }
+.route-absent {
+  margin-top: 12px;
+  color: var(--ink-dim);
+  font-size: .82rem;
+}
+
+/* ============================================================
    planner — tips
    ============================================================ */
 .tips { list-style: none; counter-reset: tip; border-top: 1px solid var(--rule); }
@@ -979,6 +1062,9 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .footer-inner { grid-template-columns: 1fr 1fr; }
   .priority-item { grid-template-columns: 34px 1fr auto; row-gap: 4px; }
   .priority-loc, .priority-advice { grid-column: 2 / -1; }
+  .route-item { grid-template-columns: 1fr auto auto; row-gap: 4px; }
+  .route-booth { grid-column: 1 / -1; grid-row: 2; }
+  .route-crowd { grid-column: 2; grid-row: 1; }
 }
 
 @media (max-width: 620px) {

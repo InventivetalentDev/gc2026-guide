@@ -42,6 +42,7 @@ This document is the playbook for refreshing the data — written so a scheduled
   - `expected`: strongly implied (e.g. publisher confirmed + game launches in Sept/Oct)
   - `rumored`: our inference only — press speculation, past-year patterns
 - `locationConfirmed: false` + a hall value means "best guess (often from 2025 placement)". The UI marks the hall block amber and suffixes the booth with "· unconf."
+- The tags `not exhibiting` and `offsite` are load-bearing for the planner's route view. Use those exact strings: `not exhibiting` excludes an entry from the route and lists it in the absent footnote only; `offsite` puts it in the Offsite bucket and uses `booth` as its location text.
 - `platforms` is rendered on each game row as short codes (`XSX`, `SW2`, `PS5`…). Unknown values fall back to the uppercased string, so keep them short and consistent — see `PLATFORM_CODES` in `js/app.js` to add a new mapping.
 - Crowd scale: 1 calm · 2 light · 3 moderate · 4 busy (30–90 min queues) · 5 extreme (2 h+ queues, may cap lines early).
 - Don't remove the `sources` history; append.

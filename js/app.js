@@ -161,6 +161,9 @@ function onBookmarksChanged() {
   else syncBookmarkUI();
   renderSavedControls();
   renderPriority();
+  /* A bookmark toggle can add or remove whole stops, so the route cannot use
+     the grid's patch-in-place shortcut. keepingFocus() restores its buttons. */
+  renderRoute();
 }
 
 /* Bring already-rendered buttons and their rows back in sync with the sets,
@@ -207,6 +210,7 @@ function renderSavedControls() {
   $("#saved-count").textContent = n ? `(${n})` : "";
   $("#priority-saved-count").textContent = n ? `(${n})` : "";
   $("#clear-saved").classList.toggle("hidden", n === 0);
+  $("#goto-route").classList.toggle("hidden", n === 0);
 }
 
 /* ---------- filtering & sorting ---------- */
@@ -494,6 +498,7 @@ function renderPlanner() {
     .join("");
 
   renderPriority();
+  renderRoute();
 
   $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
 }
@@ -538,6 +543,110 @@ function renderPriority() {
     list.length === busiest.length
       ? `${busiest.length} high-queue booths`
       : `${list.length} / ${busiest.length} high-queue booths`;
+}
+
+/* ---------- route by hall ---------- */
+
+/* Hall-number order approximates a sensible walk through the entertainment
+   halls. Decimal halls are upper levels, so parseFloat naturally keeps 6.1
+   after 6 and before 7. If verified venue routing lands later, this is the
+   single seam to replace with an explicit order. */
+const hallRank = (hall) => (hall ? parseFloat(hall) : Infinity);
+
+const isAbsent = (ex) => (ex.tags || []).includes("not exhibiting");
+const isOffsite = (ex) => (ex.tags || []).includes("offsite");
+
+function routeGroups() {
+  const buckets = new Map();
+  const absent = [];
+
+  state.exhibitors.filter(hasSaved).forEach((ex) => {
+    /* Absence wins over offsite: entries such as Wargaming mention an offsite
+       event but still have no show-floor stop. */
+    if (isAbsent(ex)) {
+      absent.push(ex.name);
+      return;
+    }
+    const key = isOffsite(ex) ? "offsite" : ex.hall ? String(ex.hall) : "tba";
+    if (!buckets.has(key)) buckets.set(key, []);
+    buckets.get(key).push(ex);
+  });
+
+  const numbered = [...buckets.keys()]
+    .filter((key) => key !== "offsite" && key !== "tba")
+    .sort((a, b) => hallRank(a) - hallRank(b) || a.localeCompare(b));
+  const keys = [...numbered, ...["offsite", "tba"].filter((key) => buckets.has(key))];
+  const byCrowd = (a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name);
+
+  return {
+    groups: keys.map((key) => ({
+      key,
+      label: key === "offsite" ? "Offsite" : key === "tba" ? "Location TBA" : `Hall ${key}`,
+      items: buckets.get(key).sort(byCrowd),
+    })),
+    absent: absent.sort((a, b) => a.localeCompare(b)),
+  };
+}
+
+function renderRoute() {
+  const { groups, absent } = routeGroups();
+  const stopCount = groups.reduce((total, group) => total + group.items.length, 0);
+  const hallCount = groups.filter((group) => group.key !== "offsite" && group.key !== "tba").length;
+  const html = groups
+    .map((group) => {
+      const kicker = group.key === "offsite" || group.key === "tba" ? "Location" : "Hall";
+      const number = group.key === "offsite" ? "Offsite" : group.key === "tba" ? "TBA" : group.key;
+      const rows = group.items
+        .map((ex) => {
+          const mine = savedGames(ex);
+          const baseLocation = ex.booth ? ex.booth : ex.hall ? "booth TBA" : "location TBA";
+          const loc = baseLocation + (ex.hall && !ex.locationConfirmed ? " · unconf." : "");
+          const crowd = ex.crowd || 0;
+          return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}">
+            <span class="route-name">${esc(ex.name)}</span>
+            <span class="route-booth">${esc(loc)}</span>
+            <span class="route-crowd" data-level="${esc(crowd)}">Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}</span>
+            ${bmButton("exhibitor", ex.id, ex.name)}
+            ${
+              mine.length
+                ? `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
+                    .map((game) => `<span class="priority-game">${esc(game.title)}</span>`)
+                    .join("")}</span>`
+                : ""
+            }
+          </div>`;
+        })
+        .join("");
+      const countLabel = `${group.items.length} stop${group.items.length === 1 ? "" : "s"}`;
+      return `<h4 class="route-hall" aria-label="${esc(`${group.label}, ${countLabel}`)}">
+        <span class="route-hall-kicker">${esc(kicker)}</span>
+        <span class="route-hall-num">${esc(number)}</span>
+        <span class="route-hall-count">${esc(countLabel)}</span>
+      </h4>${rows}`;
+    })
+    .join("");
+
+  const routeList = $("#route-list");
+  const focusedIndex = [...routeList.querySelectorAll(".bm")].indexOf(document.activeElement);
+  keepingFocus(routeList, () => {
+    routeList.innerHTML = html;
+  });
+  /* Removing a booth-only stop leaves no equivalent button to restore. Keep
+     keyboard users in context on the next stop, the previous one, or heading. */
+  if (focusedIndex >= 0 && !routeList.contains(document.activeElement)) {
+    const buttons = [...routeList.querySelectorAll(".bm")];
+    (buttons[Math.min(focusedIndex, buttons.length - 1)] || $("#route-title")).focus();
+  }
+  routeList.classList.toggle("hidden", stopCount === 0);
+  $("#route-empty").classList.toggle("hidden", stopCount > 0 || absent.length > 0);
+  $("#route-empty").textContent = savedCount()
+    ? "No current stops match your saved list — the exhibitor data may have changed."
+    : "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall.";
+  $("#route-count").textContent = `${stopCount} stop${stopCount === 1 ? "" : "s"} · ${hallCount} hall${hallCount === 1 ? "" : "s"}`;
+  $("#route-absent").classList.toggle("hidden", absent.length === 0);
+  $("#route-absent").textContent = absent.length
+    ? `On your list but not on the show floor: ${absent.join(", ")}.`
+    : "";
 }
 
 /* ---------- event info ---------- */
@@ -700,6 +809,11 @@ function bindControls() {
     state.prioritySavedOnly = e.target.checked;
     renderPriority();
   });
+  $("#goto-route").addEventListener("click", () => {
+    showView("planner");
+    $("#route-section").scrollIntoView();
+    $("#route-title").focus({ preventScroll: true });
+  });
   $("#clear-saved").addEventListener("click", () => {
     const n = savedCount();
     if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"}? This can't be undone.`)) return;
@@ -708,6 +822,7 @@ function bindControls() {
     renderExhibitors();
     renderSavedControls();
     renderPriority();
+    renderRoute();
   });
   /* One delegated listener covers every + button in both views, including the
      ones that get re-rendered underneath it. */
@@ -722,6 +837,7 @@ function bindControls() {
     renderExhibitors();
     renderSavedControls();
     renderPriority();
+    renderRoute();
   });
 
   $("#reset-filters").addEventListener("click", () => {

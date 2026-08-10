@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-08-10",
+    "revision": 5,
+    "changes": [
+      "New: Route by hall on the Visit planner groups your saved stops in hall-number order, with offsite and unannounced locations — plus absent exhibitors — called out separately."
+    ]
+  },
+  {
+    "date": "2026-08-10",
     "revision": 4,
     "changes": [
       "Wargaming will NOT have a gamescom show-floor booth this year — only the offsite Community Party (Aug 28, HERBRAND's Ehrenfeld) is confirmed for World of Tanks/Warships/HEAT.",
