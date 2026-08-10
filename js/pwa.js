@@ -13,31 +13,6 @@
 
   if (standalone) document.documentElement.dataset.standalone = "true";
 
-  /* ---------- toast ---------- */
-
-  const toast = $("#toast");
-
-  function showToast(message, actionLabel, onAction) {
-    if (!toast) return;
-    $("#toast-text").textContent = message;
-    const btn = $("#toast-action");
-    if (actionLabel) {
-      btn.textContent = actionLabel;
-      btn.hidden = false;
-      btn.onclick = onAction;
-    } else {
-      btn.hidden = true;
-      btn.onclick = null;
-    }
-    toast.hidden = false;
-  }
-
-  function hideToast() {
-    if (toast) toast.hidden = true;
-  }
-
-  if (toast) $("#toast-dismiss").addEventListener("click", hideToast);
-
   /* ---------- service worker ---------- */
 
   /* Reload only when the user asked for the update. A first visit also fires
@@ -46,8 +21,8 @@
   let updateAccepted = false;
 
   function offerUpdate(worker) {
-    showToast("A newer version of the guide is ready.", "Reload", () => {
-      hideToast();
+    window.gcToast?.show("A newer version of the guide is ready.", "Reload", () => {
+      window.gcToast?.hide();
       updateAccepted = true;
       worker.postMessage("skip-waiting");
     });
@@ -125,15 +100,15 @@
         if (outcome !== "accepted") showInstallButton("Install app");
         return;
       }
-      showToast("In Safari, tap Share, then “Add to Home Screen”.");
+      window.gcToast?.show("In Safari, tap Share, then “Add to Home Screen”.");
     });
   }
 
   window.addEventListener("appinstalled", () => {
     deferredPrompt = null;
     if (installBtn) installBtn.hidden = true;
-    showToast("Installed. The guide now works offline.");
-    setTimeout(hideToast, 6000);
+    const notice = window.gcToast?.show("Installed. The guide now works offline.");
+    if (notice) setTimeout(() => window.gcToast?.hide(notice), 6000);
   });
 
   if (iOSSafari) showInstallButton("Add to Home Screen");
