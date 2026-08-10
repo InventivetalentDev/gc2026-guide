@@ -46,8 +46,10 @@ This document is the playbook for refreshing the data — written so a scheduled
 - Crowd scale: 1 calm · 2 light · 3 moderate · 4 busy (30–90 min queues) · 5 extreme (2 h+ queues, may cap lines early).
 - Don't remove the `sources` history; append.
 - **A game `title` is a user-facing key, so treat it like `id`.** Visitors save games to
-  their own list, and that list is keyed on the lowercased title — rename *Fable* to
-  *Fable (2026)* and everyone who saved it silently loses it, on every booth showing it.
+  their own list, and both that list and their day assignments are keyed on the lowercased
+  title — rename *Fable* to *Fable (2026)* and everyone who saved it silently loses it,
+  on every booth showing it. The rename also orphans its assignment in
+  `gc2026.itinerary.v1`, which deliberately follows the same key rule as bookmarks.
   Correct an outright wrong title, but don't re-punctuate, re-subtitle or "tidy" one that
   already works. The same key is why a title spelled identically at two booths (Alien:
   Isolation 2 at both Xbox and SEGA) is saved at both at once — which is the intent, so
@@ -93,7 +95,17 @@ This document is the playbook for refreshing the data — written so a scheduled
   "dates": "Aug 26–30, 2026",
   "startDate": "2026-08-26",       // used for the countdown
   "endDate": "2026-08-30",
-  "days": [ { "date": "2026-08-26", "label": "Wednesday", "access": "trade & media only", "hours": "09:00–19:00", "note": "..." } ],
+  "days": [
+    {
+      "date": "2026-08-26",
+      "label": "Wednesday",
+      "access": "trade & media only",
+      "hours": "Business 09:00–19:00, entertainment 13:00–19:00",
+      "open": "13:00",             // entertainment-area opening, HH:MM
+      "close": "19:00",            // entertainment-area closing, HH:MM
+      "note": "..."
+    }
+  ],
   "onl": { "date": "Tue, Aug 25", "time": "20:00 CEST", "note": "..." },
   "tickets": "summary incl. sold-out status",
   "areas": [ { "name": "Indie Arena Booth", "hall": "10.2", "description": "..." } ],
