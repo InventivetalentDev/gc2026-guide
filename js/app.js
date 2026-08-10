@@ -543,6 +543,23 @@ function renderFilters() {
 
 /* ---------- planner ---------- */
 
+const isTradeDay = (d) => /trade|media|business/i.test(d.access);
+
+/* Shared by the day board (section 01) and the itinerary group headers, so
+   the two renderings of a day can never drift apart. */
+function dayHeaderInner(d) {
+  const [, month, day] = d.date.split("-");
+  return `<span class="day-when">
+      <span class="day-dow">${esc(d.label.slice(0, 3))}</span>
+      <span class="day-date">${esc(day)}.${esc(month)}</span>
+    </span>
+    <span class="day-access ${isTradeDay(d) ? "trade" : "public"}">${esc(d.access)}</span>
+    <span class="day-detail">
+      ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
+      ${d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
+    </span>`;
+}
+
 function itineraryItems() {
   const exhibitors = [...state.bookmarks.exhibitors]
     .map((key) => {
@@ -552,15 +569,11 @@ function itineraryItems() {
     .filter(Boolean);
 
   const games = [...state.bookmarks.games].map((key) => {
-    let name = "";
     const at = state.exhibitors.filter((ex) =>
-      (ex.games || []).some((g) => {
-        const matches = gameKey(g.title) === key;
-        if (matches && !name) name = g.title;
-        return matches;
-      })
+      (ex.games || []).some((g) => gameKey(g.title) === key)
     );
-    return { kind: "game", key, name: name || key, at };
+    const name = at.length ? at[0].games.find((g) => gameKey(g.title) === key).title : key;
+    return { kind: "game", key, name, at };
   });
 
   return [...exhibitors, ...games];
@@ -598,7 +611,7 @@ function itineraryDayChips(item) {
   return `<span class="it-days" role="group" aria-label="${esc(label)}">${(state.event.days || [])
     .map((d) => {
       const active = current === d.date;
-      const trade = /trade|media|business/i.test(d.access);
+      const trade = isTradeDay(d);
       const action = active ? `Remove from ${d.label}` : `Assign to ${d.label}`;
       const title = trade ? `${action} (trade & media only)` : action;
       return `<button class="day-chip${active ? " active" : ""}" type="button"
@@ -622,22 +635,6 @@ function itineraryItem(item) {
   </div>`;
 }
 
-function itineraryDayHeader(d) {
-  const isTrade = /trade|media|business/i.test(d.access);
-  const [, month, day] = d.date.split("-");
-  return `<div class="it-group-head">
-    <span class="day-when">
-      <span class="day-dow">${esc(d.label.slice(0, 3))}</span>
-      <span class="day-date">${esc(day)}.${esc(month)}</span>
-    </span>
-    <span class="day-access ${isTrade ? "trade" : "public"}">${esc(d.access)}</span>
-    <span class="day-detail">
-      ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
-      ${d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
-    </span>
-  </div>`;
-}
-
 function renderItinerary() {
   const items = itineraryItems();
   const validDays = new Set((state.event.days || []).map((d) => d.date));
@@ -658,7 +655,7 @@ function renderItinerary() {
       .sort(compareItineraryItems);
     if (!dayItems.length) continue;
     groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
-      ${itineraryDayHeader(d)}
+      <div class="it-group-head">${dayHeaderInner(d)}</div>
       ${dayItems.map(itineraryItem).join("")}
     </div>`);
   }
@@ -669,32 +666,21 @@ function renderItinerary() {
   });
   board.classList.toggle("hidden", items.length === 0);
   $("#itinerary-empty").classList.toggle("hidden", items.length > 0);
-  $("#itinerary-empty").textContent =
-    "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.";
+  /* Saved-but-empty happens when every saved id fell out of a data refresh —
+     "nothing saved yet" would be a lie next to a visible saved counter. */
+  $("#itinerary-empty").textContent = savedCount()
+    ? "Nothing you saved is in the current lineup anymore — exhibitors come and go between data updates."
+    : "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.";
   $("#export-ics").classList.toggle(
     "hidden",
-    !items.some((item) => assignedDay(item.kind, item.key))
+    !items.some((item) => validDays.has(assignedDay(item.kind, item.key)))
   );
 }
 
 function renderPlanner() {
   const ev = state.event;
   $("#day-guide").innerHTML = (ev.days || [])
-    .map((d) => {
-      const isTrade = /trade|media|business/i.test(d.access);
-      const [, month, day] = d.date.split("-");
-      return `<div class="day-row">
-        <span class="day-when">
-          <span class="day-dow">${esc(d.label.slice(0, 3))}</span>
-          <span class="day-date">${esc(day)}.${esc(month)}</span>
-        </span>
-        <span class="day-access ${isTrade ? "trade" : "public"}">${esc(d.access)}</span>
-        <span class="day-detail">
-          ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
-          ${d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
-        </span>
-      </div>`;
-    })
+    .map((d) => `<div class="day-row">${dayHeaderInner(d)}</div>`)
     .join("");
 
   renderItinerary();
@@ -756,15 +742,16 @@ function icsEscape(s) {
     .replace(/\n/g, "\\n");
 }
 
+const icsEncoder = new TextEncoder();
+
 function icsFold(line) {
-  const encoder = new TextEncoder();
   const folded = [];
   let part = "";
   let bytes = 0;
   let limit = 75;
 
   for (const char of String(line)) {
-    const size = encoder.encode(char).length;
+    const size = icsEncoder.encode(char).length;
     if (part && bytes + size > limit) {
       folded.push(part);
       part = char;

@@ -1074,9 +1074,6 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .day-access { grid-column: 2; }
   .day-detail { grid-column: 1 / -1; }
   .it-group-head { grid-template-columns: 76px 1fr; row-gap: 8px; }
-  .it-group-head .day-access { grid-column: 2; }
-  .it-group-head .day-detail { grid-column: 1 / -1; }
-  .it-group-head.unassigned { display: block; }
   .it-item { grid-template-columns: minmax(110px, 1fr) minmax(0, 1.2fr) 20px; row-gap: 9px; }
   .it-days { grid-column: 1 / -1; justify-content: flex-start; }
   .toolbar-row .row-label { flex-basis: 100%; }
