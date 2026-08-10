@@ -8,18 +8,18 @@
     "locationConfirmed": true,
     "description": "Xbox's biggest gamescom booth ever, celebrating 25 years of Xbox: 25 games on ~140 stations, a Fable live-demo theater, daily livestreams and an Xbox FanFest on Aug 26. Bethesda/Activision titles fold into this booth. Booth open Thu–Sun 9:00–20:00.",
     "games": [
-      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"], "note": "First public 6v6 multiplayer hands-on — expected to be the single biggest queue of the show. 18+ wristband required." },
-      { "title": "Gears of War: E-Day", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "First public campaign hands-on ahead of the Oct 6, 2026 release." },
+      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "confirmed", "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"], "note": "First public 6v6 multiplayer hands-on — expected to be the single biggest queue of the show." },
+      { "title": "Gears of War: E-Day", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"], "note": "First public campaign hands-on ahead of the Oct 6, 2026 release." },
       { "title": "Fable", "status": "confirmed", "playable": false, "platforms": ["Xbox Series X|S", "PC"], "note": "Live gameplay theater by Playground Games — not hands-on (reported release Feb 2027)." },
       { "title": "Minecraft Dungeons II", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC", "Switch 2", "PS5"], "note": "First public playable build." },
-      { "title": "METRO 2039", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "First hands-on anywhere; also at Plaion's Hall 9 booth. 18+ likely." },
+      { "title": "METRO 2039", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"], "note": "First hands-on anywhere; also at Plaion's Hall 9 booth." },
       { "title": "Stranger Than Heaven", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "Sega/RGG Studio — also at SEGA's Hall 7 booth." },
       { "title": "Halo: Campaign Evolved", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Campaign remaster hands-on." },
       { "title": "Forza Horizon 6", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "Drift Attack mode demo." },
       { "title": "Microsoft Flight Simulator 2024", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "National Championship Air Races content." },
       { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Also at SEGA's booth — compare queues." },
       { "title": "Alien Deathstorm", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Gameplay demo." },
-      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Rebel Wolves' vampire RPG — also at Bandai Namco's booth." },
+      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Rebel Wolves' vampire RPG — also at Bandai Namco's booth." },
       { "title": "STAR WARS Zero Company", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Tactical strategy from Bit Reactor/Respawn." },
       { "title": "Turok: Origins", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Saber's co-op dino shooter." },
       { "title": "Castlevania: Belmont's Curse", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Also at Konami's Hall 7 booth." },
@@ -38,10 +38,14 @@
     "visitAdvice": "Be at Hall 7 right at 9:00 opening Thu or Fri, head straight to CoD MW4 or Gears E-Day; do the Fable theater (higher throughput) mid-day. Avoid Saturday entirely.",
     "sources": [
       "https://news.xbox.com/en-us/2026/07/28/xbox-gamescom-2026/",
+      "https://www.activision.com/de/games",
+      "https://www.xbox.com/de-DE/games/store/gears-of-war-e-day/9N4PT8HGCDHQ/0010",
+      "https://en.bandainamcoent.eu/dawnwalker/the-blood-of-dawnwalker",
+      "https://www.gamescom.global/en/info/gamescom-cares",
       "https://insider-gaming.com/xbox-confirms-gamescom-2026-presence-and-playable-game-lineup/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-10"
   },
   {
     "id": "nintendo",
@@ -52,7 +56,7 @@
     "locationConfirmed": true,
     "description": "Nintendo's traditional giant Hall 9 booth, all-in on Switch 2 with nine confirmed playable titles 'and more' — headlined by the first publicly playable Call of Duty on Nintendo hardware in over a decade (a native Switch 2 port).",
     "games": [
-      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Native Switch 2 build (Infinity Ward + Digital Legends) — not cloud streaming." },
+      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Switch 2"], "note": "Native Switch 2 build (Infinity Ward + Digital Legends) — not cloud streaming." },
       { "title": "007 First Light", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "IO Interactive's Bond game, hands-on all five days." },
       { "title": "EA Sports FC 27", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Full FC experience on Switch 2." },
       { "title": "Metaphor: ReFantazio", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Atlus RPG port hands-on." },
@@ -70,9 +74,11 @@
     "sources": [
       "https://nintendoeverything.com/nintendo-announces-gamescom-2026-lineup/",
       "https://www.techtimes.com/articles/323233/20260805/call-duty-arrives-nintendo-gamescom-2026-booth-native-switch-2-port.htm",
+      "https://www.activision.com/de/games",
+      "https://www.gamescom.global/en/info/gamescom-cares",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-10"
   },
   {
     "id": "playstation",
@@ -172,7 +178,7 @@
     "games": [
       { "title": "Ace Combat 8: Wings of Theve", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First-ever public hands-on; launches Oct 2, 2026." },
       { "title": "Dragon Ball Xenoverse 3", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First playable in Europe; full release 2027." },
-      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "World-first open sessions days before its Sept 3 launch; also at the Xbox booth." },
+      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "World-first open sessions days before its Sept 3 launch; also at the Xbox booth." },
       { "title": "Elden Ring: Tarnished Edition", "status": "rumored", "playable": null, "platforms": ["Switch 2"], "note": "Releases Aug 28 mid-show; floated by German trade press, not in the announced lineup." },
       { "title": "One Piece: Grand Gourmet", "status": "rumored", "playable": null, "platforms": ["TBC"], "note": "Oct 23 release makes it a candidate; unannounced for the booth." }
     ],
@@ -182,9 +188,11 @@
     "visitAdvice": "Hit The Blood of Dawnwalker at opening, or use the Xbox booth's stations in Hall 7 as overflow. Do Ace Combat 8 the morning after its ONL showing.",
     "sources": [
       "https://en.bandainamcoent.eu/events/news/bandai-namco-entertainment-details-fully-playable-gamescom-2026-line",
+      "https://en.bandainamcoent.eu/dawnwalker/the-blood-of-dawnwalker",
+      "https://www.gamescom.global/en/info/gamescom-cares",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-10"
   },
   {
     "id": "konami",
@@ -245,15 +253,15 @@
     "description": "Officially back as an exhibitor (confirmed late July) with a booth at the Hall 6 entrance next to Ubisoft — but the lineup is still unannounced. EA Sports FC 27, launching weeks after the show, is the near-certain centerpiece.",
     "games": [
       { "title": "EA Sports FC 27", "status": "expected", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"], "note": "Launches weeks after gamescom; Switch 2 version separately confirmed at Nintendo's booth." },
-      { "title": "Battlefield 6 (seasonal content)", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "German trade press says BF6 'may play a role' at the booth." },
+      { "title": "Battlefield 6 (seasonal content)", "status": "rumored", "playable": null, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "German trade press says BF6 'may play a role' at the booth." },
       { "title": "skate.", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "PS4", "Xbox"], "note": "Live-service title in active rollout; plausible but unannounced." }
     ],
     "tags": ["AAA", "sports", "shooter"],
     "crowd": 3,
     "crowdNote": "FC 27 stations traditionally draw steady but fast-moving queues; busy rather than overwhelming without a big reveal.",
-    "visitAdvice": "FC has many stations and short rotations — fine mid-day. If Battlefield content is playable you'll need the 18+ red wristband; grab it at the entrance first.",
+    "visitAdvice": "FC has many stations and short rotations — fine mid-day.",
     "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-10"
   },
   {
     "id": "square-enix",
@@ -304,16 +312,16 @@
     "hall": "9",
     "booth": null,
     "locationConfirmed": true,
-    "description": "One of Hall 9's largest booths, centered on METRO 2039 from in-house studio 4A Games — playable behind an 18+ wristband check, and additionally playable at the Xbox booth in Hall 7.",
+    "description": "One of Hall 9's largest booths, centered on METRO 2039 from in-house studio 4A Games — additionally playable at the Xbox booth in Hall 7.",
     "games": [
-      { "title": "METRO 2039", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Focus title; also at Xbox's Hall 7 stand. 18+ wristband likely required." }
+      { "title": "METRO 2039", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Focus title; also at Xbox's Hall 7 stand." }
     ],
     "tags": ["AAA", "shooter", "18+"],
     "crowd": 3,
     "crowdNote": "A single high-profile shooter concentrates demand, but dual-location availability splits the queues.",
-    "visitAdvice": "Get the red 18+ wristband at the entrance before queueing. Compare queues at Plaion (Hall 9) vs Xbox (Hall 7) — Xbox's 140 stations often move faster.",
+    "visitAdvice": "Compare queues at Plaion (Hall 9) vs Xbox (Hall 7) — Xbox's 140 stations often move faster.",
     "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-10"
   },
   {
     "id": "krafton",
@@ -437,14 +445,18 @@
     "games": [
       { "title": "CONTROL Resonant", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S", "PC"], "note": "First time playable anywhere; launches Sept 24, 2026 — the booth's biggest draw." },
       { "title": "Dune: Awakening (console)", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S"], "note": "First public hands-on of the console build." },
-      { "title": "Hunt: Showdown 1896", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Playable with devs present; new in-game event preview." }
+      { "title": "Hunt: Showdown 1896", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Playable with devs present; new in-game event preview." }
     ],
     "tags": ["AAA", "world premiere", "playable demos"],
     "crowd": 4,
     "crowdNote": "CONTROL Resonant's world-first demo two months before launch will pull 60–120 min lines; adjacency to HoYoverse makes Hall 6.1 one of the most congested areas.",
     "visitAdvice": "Queue for CONTROL Resonant first thing in the morning; Dune and Hunt stations move faster and are fine late afternoon.",
-    "sources": ["https://www.levelinfinite.com/news/level-infinite-gamescom-2026-lineup/"],
-    "lastUpdated": "2026-08-06"
+    "sources": [
+      "https://www.levelinfinite.com/news/level-infinite-gamescom-2026-lineup/",
+      "https://usk.de/en/usktitle/55381/",
+      "https://www.gamescom.global/en/info/gamescom-cares"
+    ],
+    "lastUpdated": "2026-08-10"
   },
   {
     "id": "tencent-worlds-of-play",

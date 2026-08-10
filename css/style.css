@@ -335,7 +335,8 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .chip:hover { color: var(--ink); border-color: var(--ink-dim); }
 .chip.active { background: var(--ink); border-color: var(--ink); color: var(--ground); }
 .chip.hall-chip { font-family: var(--font-mono); font-weight: 500; font-size: .75rem; }
-.chip.hall-chip.active { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
+.chip.hall-chip.active,
+.chip.age-chip.active { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
 
 .toggle {
   display: inline-flex; align-items: center; gap: 8px;
@@ -497,6 +498,11 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   border: 1px solid transparent;
 }
 .badge-playable { color: var(--signal); border-color: var(--signal-wash); background: var(--signal-wash); }
+.badge-age { background: transparent; }
+.badge-age[data-age-status="confirmed"] { color: var(--alert); border-color: var(--alert); }
+.badge-age[data-age-status="expected"] { color: var(--warn); border-color: var(--warn); }
+.block-head .badge-age { margin-left: 9px; }
+.exh-id h3 .badge-age { margin-left: 6px; vertical-align: .2em; }
 
 /* The one hand-applied element in the layout, and deliberately the only one:
    once per card it reads as a stamp, but repeated down every game row the
@@ -736,13 +742,26 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   color: var(--signal);
   font-variant-numeric: tabular-nums;
 }
-.priority-name { font-weight: 700; font-size: .95rem; }
-.priority-loc {
+.priority-name,
+.wristband-name { font-weight: 700; font-size: .95rem; }
+.priority-name .badge-age { margin-left: 6px; vertical-align: .1em; }
+.priority-loc,
+.wristband-loc {
   font-family: var(--font-mono);
   font-size: .76rem; color: var(--ink-mid);
   font-variant-numeric: tabular-nums;
 }
-.priority-advice { color: var(--ink-mid); font-size: .84rem; }
+.priority-advice,
+.wristband-games { color: var(--ink-mid); font-size: .84rem; }
+
+/* Same row language as queue priority, without the rank column. Four tracks, and
+   every row fills all four — the "18+ expected" marker rides inside the titles
+   cell, because each row is its own grid and a column only some rows fill would
+   size their fr tracks differently. */
+.wristband-item {
+  grid-template-columns: minmax(150px, 1.1fr) minmax(130px, .8fr) minmax(200px, 2fr) auto;
+}
+.wristband-status { margin-left: 4px; vertical-align: baseline; }
 
 /* ============================================================
    planner — tips
@@ -1108,6 +1127,9 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .footer-inner { grid-template-columns: 1fr 1fr; }
   .priority-item { grid-template-columns: 34px 1fr auto; row-gap: 4px; }
   .priority-loc, .priority-advice { grid-column: 2 / -1; }
+  .wristband-item { grid-template-columns: 1fr auto; }
+  .wristband-loc,
+  .wristband-games { grid-column: 1 / -1; justify-self: start; }
 }
 
 @media (max-width: 620px) {

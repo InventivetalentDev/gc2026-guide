@@ -8,6 +8,7 @@ const state = {
   query: "",
   type: "all",
   hall: "all",
+  age: "all",
   playableOnly: false,
   confirmedOnly: false,
   savedOnly: false,
@@ -32,6 +33,7 @@ const TYPE_LABELS = {
 };
 
 const CROWD_LABELS = ["Unknown", "Calm", "Light", "Moderate", "Busy", "Extreme"];
+const AGE_FILTERS = [["all", "All"], ["hide", "Hide 18+"], ["only", "18+ only"]];
 
 /* Long platform names blow out a dense card — show signage-style short codes.
    Keys are matched after lowercasing and stripping any parenthetical. */
@@ -88,6 +90,7 @@ async function loadData() {
    wants to see every booth running it so they can pick the shorter queue. */
 
 const BM_KEY = "gc2026.saved.v1";
+const PREFS_KEY = "gc2026.prefs.v1";
 
 const gameKey = (title) => String(title).trim().toLowerCase().replace(/\s+/g, " ");
 
@@ -119,6 +122,25 @@ function persistBookmarks() {
   }
 }
 
+function loadPrefs() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
+    const age = AGE_FILTERS.some(([value]) => value === raw.age) ? raw.age : "all";
+    return { age };
+  } catch {
+    /* corrupt entry, or storage blocked entirely (Safari private mode) */
+    return { age: "all" };
+  }
+}
+
+function persistPrefs() {
+  try {
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ age: state.age }));
+  } catch {
+    /* out of quota or storage denied — the choice still works for this session */
+  }
+}
+
 const bmSet = (kind) => (kind === "game" ? state.bookmarks.games : state.bookmarks.exhibitors);
 const isSaved = (kind, key) => bmSet(kind).has(key);
 const savedGames = (ex) => (ex.games || []).filter((g) => isSaved("game", gameKey(g.title)));
@@ -127,6 +149,15 @@ const savedCount = () => state.bookmarks.exhibitors.size + state.bookmarks.games
 /* An exhibitor counts as saved if you saved the booth itself *or* any game
    they're showing — the publisher is how you actually get to the game. */
 const hasSaved = (ex) => isSaved("exhibitor", ex.id) || savedGames(ex).length > 0;
+
+const AGE_GATE = 18;
+const isAdult = (g) => Number(g.age) >= AGE_GATE;
+const adultGames = (ex) => (ex.games || []).filter(isAdult);
+const hasAdult = (ex) => ex.ageRestricted === true || adultGames(ex).length > 0;
+/* One place decides which rows exist under the current age filter — the card,
+   the query haystack and the playable check must all agree. */
+const visibleGames = (ex) =>
+  state.age === "hide" ? (ex.games || []).filter((g) => !isAdult(g)) : (ex.games || []);
 
 /* The "+" adds to the list and the "−" takes it back off — same language as the
    "+ 4 more" / "− Show fewer" control, so no icon is needed. The saved state is
@@ -162,6 +193,7 @@ function onBookmarksChanged() {
   else syncBookmarkUI();
   renderSavedControls();
   renderPriority();
+  renderWristband();
 }
 
 /* Bring already-rendered buttons and their rows back in sync with the sets,
@@ -516,6 +548,13 @@ function bindShareDialog() {
 
 /* ---------- filtering & sorting ---------- */
 
+/* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
+   deliberately not a content filter. It hides lineup rows, not prose: an earlier
+   pass regex-scrubbed adult titles out of the searchable description, which made
+   the grid render a name it would then refuse to find, and could never be
+   complete anyway (visitAdvice says "hit MW4 or 007 First Light first", and
+   Plaion carries an "18+" tag). A leaky content filter reads as a guarantee it
+   cannot keep, so descriptions stay exactly as written and stay searchable. */
 function matchesQuery(ex, q) {
   if (!q) return true;
   const hay = [
@@ -524,7 +563,10 @@ function matchesQuery(ex, q) {
     ex.hall ? `hall ${ex.hall}` : "",
     ex.booth || "",
     ...(ex.tags || []),
-    ...(ex.games || []).map((g) => g.title),
+    ...visibleGames(ex).map((g) => g.title),
+    /* Searching "18+" while hiding 18+ would return exactly the booths whose
+       gated titles are currently hidden. */
+    hasAdult(ex) && state.age !== "hide" ? "18+" : "",
   ]
     .join(" ")
     .toLowerCase();
@@ -539,6 +581,7 @@ function filtersActive() {
     state.query !== "" ||
     state.type !== "all" ||
     state.hall !== "all" ||
+    state.age !== "all" ||
     state.playableOnly ||
     state.confirmedOnly ||
     state.savedOnly
@@ -549,7 +592,12 @@ function filtered() {
   const list = state.exhibitors.filter((ex) => {
     if (state.type !== "all" && ex.type !== state.type) return false;
     if (state.hall !== "all" && String(ex.hall) !== state.hall) return false;
-    if (state.playableOnly && !(ex.games || []).some((g) => g.playable)) return false;
+    if (state.age === "only" && !hasAdult(ex)) return false;
+    if (state.age === "hide") {
+      if (ex.ageRestricted === true) return false;
+      if ((ex.games || []).length && !visibleGames(ex).length) return false;
+    }
+    if (state.playableOnly && !visibleGames(ex).some((g) => g.playable)) return false;
     if (state.confirmedOnly && !ex.locationConfirmed) return false;
     if (state.savedOnly && !hasSaved(ex)) return false;
     return matchesQuery(ex, state.query);
@@ -617,6 +665,24 @@ function hallMarker(ex) {
   </div>`;
 }
 
+function ageBadge(status = "expected", label = "18+", extraClass = "") {
+  const ageStatus = status === "confirmed" ? "confirmed" : "expected";
+  const title = ageStatus === "confirmed"
+    ? "18+ wristband required"
+    : "18+ expected — not confirmed";
+  return `<span class="badge badge-age${extraClass ? ` ${extraClass}` : ""}" data-age-status="${ageStatus}"
+      title="${esc(title)}"><span aria-hidden="true">${esc(label)}</span><span class="sr-only">${esc(title)}</span></span>`;
+}
+
+/* A booth-wide `ageRestricted` is a hand-written editorial assertion that the
+   zone is gated — per docs/UPDATING.md it is only set when a source supports it,
+   so it counts as confirmed. A per-game flag inferred from the title's rating
+   does not, and stays "expected". */
+const boothAgeStatus = (ex) =>
+  ex.ageRestricted === true || adultGames(ex).some((g) => g.ageStatus === "confirmed")
+    ? "confirmed"
+    : "expected";
+
 function gameRow(g) {
   const status = g.status || "expected";
   const plat = platformCodes(g.platforms);
@@ -632,6 +698,7 @@ function gameRow(g) {
       <span class="game-title">${esc(g.title)}</span>
       ${statusLabel}
       ${g.playable ? `<span class="badge badge-playable">playable</span>` : ""}
+      ${isAdult(g) ? ageBadge(g.ageStatus) : ""}
     </span>
     ${plat ? `<span class="game-plat">${esc(plat)}</span>` : "<span></span>"}
     ${bmButton("game", key, g.title)}
@@ -640,7 +707,7 @@ function gameRow(g) {
 }
 
 function card(ex) {
-  const games = ex.games || [];
+  const games = visibleGames(ex);
   const isOpen = state.expanded.has(ex.id);
   /* A saved game never hides behind "+ 12 more" — the whole point of saving it
      is not having to go looking for it again. */
@@ -661,7 +728,7 @@ function card(ex) {
       ${hallMarker(ex)}
       <div class="exh-id">
         <span class="overline">${esc(TYPE_LABELS[ex.type] || ex.type)}</span>
-        <h3>${esc(ex.name)}</h3>
+        <h3>${esc(ex.name)}${hasAdult(ex) && !games.length && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</h3>
       </div>
       ${bmButton("exhibitor", ex.id, ex.name, { wide: true })}
     </div>
@@ -674,7 +741,7 @@ function card(ex) {
                 <span>Lineup</span>
                 <span>${games.length} title${games.length === 1 ? "" : "s"}${
                   playableCount ? `<span class="stamp">${playableCount} playable</span>` : ""
-                }</span>
+                }${hasAdult(ex) && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</span>
               </div>
               <ul class="games">${shown.map(gameRow).join("")}</ul>
               ${moreBtn}
@@ -729,6 +796,8 @@ function renderFilterSummary() {
   const parts = [];
   if (state.type !== "all") parts.push(TYPE_LABELS[state.type] || state.type);
   if (state.hall !== "all") parts.push(`Hall ${state.hall}`);
+  if (state.age === "hide") parts.push("hide 18+");
+  if (state.age === "only") parts.push("18+ only");
   if (state.playableOnly) parts.push("playable only");
   if (state.confirmedOnly) parts.push("confirmed only");
   if (state.savedOnly) parts.push("saved only");
@@ -774,6 +843,27 @@ function renderFilters() {
       renderExhibitors();
     })
   );
+
+  const ageFilters = $("#age-filters");
+  if (!ageFilters) return; // a cached pre-age-filter index.html may briefly pair with this JS
+  ageFilters.innerHTML = AGE_FILTERS
+    .map(
+      ([value, label]) =>
+        `<button class="chip age-chip ${state.age === value ? "active" : ""}" type="button"
+          data-age="${value}" aria-pressed="${state.age === value}">${label}</button>`
+    )
+    .join("");
+  ageFilters.closest(".toolbar-row")?.classList.remove("hidden");
+  $$("#age-filters .chip").forEach((chip) =>
+    chip.addEventListener("click", () => {
+      const age = chip.dataset.age;
+      state.age = age;
+      persistPrefs();
+      renderFilters();
+      renderExhibitors();
+      $(`#age-filters [data-age="${CSS.escape(age)}"]`)?.focus();
+    })
+  );
 }
 
 /* ---------- planner ---------- */
@@ -799,8 +889,57 @@ function renderPlanner() {
     .join("");
 
   renderPriority();
+  renderWristband();
 
   $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
+}
+
+/* Deliberately independent of state.age: the planner does not inherit the
+   exhibitor grid's filters (prioritySavedOnly is a separate toggle from
+   savedOnly for the same reason), and this section exists for the visitor who
+   wants the wristband, not the one browsing without it. */
+function renderWristband() {
+  const container = $("#wristband-list");
+  const section = $("#wristband-section");
+  if (!container || !section) return; // tolerate a cached pre-wristband index.html
+
+  const list = state.exhibitors
+    .filter(hasAdult)
+    .sort((a, b) => {
+      const ha = a.hall ? parseFloat(a.hall) : 99;
+      const hb = b.hall ? parseFloat(b.hall) : 99;
+      return ha - hb || a.name.localeCompare(b.name);
+    });
+
+  const rows = list
+    .map((e) => {
+      const titles = adultGames(e);
+      const games = titles.length
+        ? titles.map((g) => esc(g.title)).join(" · ")
+        : "Booth-wide age-restricted zone";
+      const location = `${e.hall ? `Hall ${esc(e.hall)}` : "Hall TBA"} · ${
+        e.booth ? esc(e.booth) : "booth TBA"
+      }`;
+      const expected = boothAgeStatus(e) !== "confirmed";
+      /* The "expected" marker sits inside the titles cell rather than in a column
+         of its own: every row is its own grid, so a column that only some rows
+         fill sizes those rows' fr tracks differently and breaks the alignment
+         down the list. */
+      return `<div class="priority-item wristband-item" data-saved="${hasSaved(e)}">
+        <span class="wristband-name">${esc(e.name)}</span>
+        <span class="wristband-loc">${location}</span>
+        <span class="wristband-games">${games}${
+          expected ? ` ${ageBadge("expected", "18+ expected", "wristband-status")}` : ""
+        }</span>
+        ${bmButton("exhibitor", e.id, e.name)}
+      </div>`;
+    })
+    .join("");
+
+  keepingFocus(container, () => {
+    container.innerHTML = rows;
+  });
+  section.classList.toggle("hidden", list.length === 0);
 }
 
 function renderPriority() {
@@ -816,7 +955,7 @@ function renderPriority() {
       const mine = savedGames(e);
       return `<div class="priority-item" data-saved="${hasSaved(e)}">
         <span class="priority-rank">${String(busiest.indexOf(e) + 1).padStart(2, "0")}</span>
-        <span class="priority-name">${esc(e.name)}</span>
+        <span class="priority-name">${esc(e.name)}${hasAdult(e) ? ageBadge(boothAgeStatus(e)) : ""}</span>
         <span class="priority-loc">${e.hall ? `Hall ${esc(e.hall)}` : "TBA"}</span>
         <span class="priority-advice">${esc(e.visitAdvice || e.crowdNote || "")}</span>
         ${bmButton("exhibitor", e.id, e.name)}
@@ -1083,6 +1222,7 @@ function bindControls() {
     renderExhibitors();
     renderSavedControls();
     renderPriority();
+    renderWristband();
   });
   bindShareDialog();
   /* One delegated listener covers every + button in both views, including the
@@ -1093,11 +1233,14 @@ function bindControls() {
   });
   /* Same list, second tab: keep them from overwriting each other. */
   window.addEventListener("storage", (e) => {
-    if (e.key !== null && e.key !== BM_KEY) return;
-    state.bookmarks = loadBookmarks();
+    if (e.key !== null && e.key !== BM_KEY && e.key !== PREFS_KEY) return;
+    if (e.key === null || e.key === BM_KEY) state.bookmarks = loadBookmarks();
+    if (e.key === null || e.key === PREFS_KEY) Object.assign(state, loadPrefs());
+    renderFilters();
     renderExhibitors();
     renderSavedControls();
     renderPriority();
+    renderWristband();
   });
 
   $("#reset-filters").addEventListener("click", () => {
@@ -1105,6 +1248,7 @@ function bindControls() {
       query: "",
       type: "all",
       hall: "all",
+      age: "all",
       playableOnly: false,
       confirmedOnly: false,
       savedOnly: false,
@@ -1113,6 +1257,7 @@ function bindControls() {
     $("#playable-only").checked = false;
     $("#confirmed-only").checked = false;
     $("#saved-only").checked = false;
+    persistPrefs();
     renderFilters();
     renderExhibitors();
     syncHash();
@@ -1139,6 +1284,7 @@ async function main() {
     return;
   }
   state.bookmarks = loadBookmarks();
+  Object.assign(state, loadPrefs());
   const incoming = takeIncomingList();
   /* Only a link in the address bar moves the visitor to their list; a leftover
      offer is repeated where they already were. */

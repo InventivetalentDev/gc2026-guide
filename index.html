@@ -88,6 +88,10 @@
             <span class="row-label">Hall</span>
             <div class="filter-row" id="hall-filters"></div>
           </div>
+          <div class="toolbar-row hidden" id="age-filter-row">
+            <span class="row-label" id="age-filter-label">Age</span>
+            <div class="filter-row" id="age-filters" role="group" aria-labelledby="age-filter-label"></div>
+          </div>
           <div class="toolbar-row toolbar-foot">
             <span class="row-label">Only show</span>
             <label class="toggle"><input type="checkbox" id="playable-only"> Playable demos</label>
@@ -122,7 +126,13 @@
       <div id="priority-list" class="priority-table"></div>
       <p class="empty hidden" id="priority-empty"></p>
 
-      <h3 class="section-title"><span class="section-num">03</span> General crowd tips</h3>
+      <section id="wristband-section" class="hidden">
+        <h3 class="section-title"><span class="section-num">03</span> 18+ wristband</h3>
+        <p class="section-sub">Booths with 18+ demos check ID and hand out a red wristband — get it on arrival, not at the front of the queue.</p>
+        <div id="wristband-list" class="priority-table"></div>
+      </section>
+
+      <h3 class="section-title"><span class="section-num">04</span> General crowd tips</h3>
       <ol class="tips" id="crowd-tips"></ol>
     </section>
 
@@ -157,6 +167,7 @@
           <li><span class="dot" data-status="confirmed"></span> <b>Confirmed</b> — officially announced for gamescom</li>
           <li><span class="dot" data-status="expected"></span> <b>Expected</b> — strongly implied, not announced</li>
           <li><span class="dot" data-status="rumored"></span> <b>Rumored</b> — our guess, unverified</li>
+          <li><span class="badge badge-age" data-age-status="confirmed">18+</span> — demo is age-gated, ID and red wristband needed</li>
         </ul>
       </div>
     </div>
