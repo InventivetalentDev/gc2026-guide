@@ -132,7 +132,6 @@ const isMarked = (mark, kind, key) => markSet(mark, kind).has(key);
 const isSaved = (kind, key) => isMarked("saved", kind, key);
 const isPlayed = (kind, key) => isMarked("played", kind, key);
 const savedGames = (ex) => (ex.games || []).filter((g) => isSaved("game", gameKey(g.title)));
-const playedGames = (ex) => (ex.games || []).filter((g) => isPlayed("game", gameKey(g.title)));
 const markCount = (mark) => state.marks[mark].exhibitors.size + state.marks[mark].games.size;
 const savedCount = () => markCount("saved");
 const playedCount = () => markCount("played");
@@ -142,7 +141,10 @@ const playedCount = () => markCount("played");
 const hasSaved = (ex) => isSaved("exhibitor", ex.id) || savedGames(ex).length > 0;
 
 /* A booth is done when marked directly, or when every game saved there is done.
-   An unsaved booth with some incidentally played games does not count as done. */
+   An unsaved booth with some incidentally played games does not count as done —
+   which is why this reads off savedGames() and there is deliberately no
+   playedGames() mirroring it. The two marks are not symmetric here: saving is
+   what scopes a booth to you, and only then can playing everything finish it. */
 const hasPlayed = (ex) => {
   const mine = savedGames(ex);
   return isPlayed("exhibitor", ex.id) ||
@@ -180,11 +182,16 @@ function toggleMark(mark, kind, key) {
   onMarksChanged();
 }
 
-function onMarksChanged() {
+/* rebuild:true is for the bulk clears. Patching in place is only right when a
+   pointer is resting on the button that was just pressed; a clear has no such
+   button, and it changes which lineup rows belong on screen at all — a saved
+   game is rendered out of the "+ N more" tail, so leaving the markup alone
+   strands that row with no control to collapse it again. */
+function onMarksChanged({ rebuild = false } = {}) {
   /* Re-rendering the whole grid on every toggle would pull the button you just
      clicked out from under the pointer, so patch the buttons in place and only
      rebuild when a mark-dependent filter is deciding what's on screen. */
-  if (state.savedOnly || state.hidePlayed) renderExhibitors();
+  if (rebuild || state.savedOnly || state.hidePlayed) renderExhibitors();
   else syncMarkUI();
   renderMarkControls();
   renderPriority();
@@ -769,14 +776,14 @@ function bindControls() {
     if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"}? This can't be undone.`)) return;
     state.marks.saved = { exhibitors: new Set(), games: new Set() };
     persistMarks("saved");
-    onMarksChanged();
+    onMarksChanged({ rebuild: true });
   });
   $("#clear-played").addEventListener("click", () => {
     const n = playedCount();
     if (!confirm(`Forget all ${n} played mark${n === 1 ? "" : "s"}? This can't be undone.`)) return;
     state.marks.played = { exhibitors: new Set(), games: new Set() };
     persistMarks("played");
-    onMarksChanged();
+    onMarksChanged({ rebuild: true });
   });
   /* One delegated listener covers every + and ✓ button in both views, including the
      ones that get re-rendered underneath it. */
