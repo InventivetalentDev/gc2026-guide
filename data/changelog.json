@@ -1,12 +1,30 @@
 [
   {
-    "date": "2026-08-10",
-    "revision": 5,
+    "date": "2026-08-11",
+    "revision": 7,
     "changes": [
       "New: assign each saved booth or game to a specific gamescom day, with unassigned picks kept together until you're ready to place them.",
       "Each itinerary day shows its opening hours, access rules and crowd advice inline, so the plan stays useful while you move through the halls.",
       "Export the assigned day plan as a calendar (.ics) file, with each day's stops collected into one event.",
-      "Your itinerary stays in this browser only, alongside your saved list — no account, nothing sent anywhere."
+      "Your itinerary stays in this browser only, alongside your saved list — day assignments are not part of shared links, and nothing is sent anywhere."
+    ]
+  },
+  {
+    "date": "2026-08-10",
+    "revision": 6,
+    "changes": [
+      "New: hide 18+ demos or show only age-gated booths, with badges distinguishing confirmed wristband checks from expected restrictions.",
+      "The Visit Planner now groups booths with adult demos into a wristband checklist, so you can collect the red band before queueing."
+    ]
+  },
+  {
+    "date": "2026-08-10",
+    "revision": 5,
+    "changes": [
+      "New: share your saved booths and games as a link, with a scannable QR code for moving a plan from desktop to phone.",
+      "Opening a shared link never replaces your list: an empty list loads immediately with Undo, while an existing list asks before adding only the new items.",
+      "Shared links are built entirely in the browser and contain guide identifiers only — exhibitor IDs and compact game codes — so nothing is uploaded or sent anywhere unless you share the link yourself.",
+      "Link sharing and QR generation work offline; the QR encoder is dependency-free and included in the app cache."
     ]
   },
   {
