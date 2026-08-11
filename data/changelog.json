@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-10",
+    "revision": 7,
+    "changes": [
+      "Tick ✓ on a game once you've played it — the row dims, and the same title is marked at every booth showing it.",
+      "A booth counts as played when you tick it directly or finish every game you saved there; save another game and it becomes active again.",
+      "Played booths sink below the rest of the queue-priority list without losing their original rank, and the new “Hide played” switch removes them altogether.",
+      "Your played history and hide preference live in this browser only, work offline and never leave your device."
+    ]
+  },
+  {
+    "date": "2026-08-10",
     "revision": 6,
     "changes": [
       "New: hide 18+ demos or show only age-gated booths, with badges distinguishing confirmed wristband checks from expected restrictions.",
