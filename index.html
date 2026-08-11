@@ -88,11 +88,16 @@
             <span class="row-label">Hall</span>
             <div class="filter-row" id="hall-filters"></div>
           </div>
+          <div class="toolbar-row hidden" id="age-filter-row">
+            <span class="row-label" id="age-filter-label">Age</span>
+            <div class="filter-row" id="age-filters" role="group" aria-labelledby="age-filter-label"></div>
+          </div>
           <div class="toolbar-row toolbar-foot">
             <span class="row-label">Only show</span>
             <label class="toggle"><input type="checkbox" id="playable-only"> Playable demos</label>
             <label class="toggle"><input type="checkbox" id="confirmed-only"> Confirmed locations</label>
             <label class="toggle"><input type="checkbox" id="saved-only"> Saved <span class="saved-count" id="saved-count"></span></label>
+            <button class="reset hidden" id="share-list" type="button">Share list</button>
             <button class="reset hidden" id="clear-saved" type="button">Clear saved list</button>
             <button class="reset hidden" id="goto-route" type="button">Route by hall →</button>
             <button class="reset hidden" id="reset-filters" type="button">Clear filters</button>
@@ -133,7 +138,13 @@
       <div id="priority-list" class="priority-table"></div>
       <p class="empty hidden" id="priority-empty"></p>
 
-      <h3 class="section-title"><span class="section-num">04</span> General crowd tips</h3>
+      <section id="wristband-section" class="hidden">
+        <h3 class="section-title"><span class="section-num">04</span> 18+ wristband</h3>
+        <p class="section-sub">Booths with 18+ demos check ID and hand out a red wristband — get it on arrival, not at the front of the queue.</p>
+        <div id="wristband-list" class="priority-table"></div>
+      </section>
+
+      <h3 class="section-title"><span class="section-num">05</span> General crowd tips</h3>
       <ol class="tips" id="crowd-tips"></ol>
     </section>
 
@@ -158,7 +169,7 @@
       <div class="footer-col">
         <p class="footer-strong">Unofficial fan-made guide.</p>
         <p>Not affiliated with gamescom, Koelnmesse or game AG.</p>
-        <p>Your saved list stays in this browser — no account, no server, nothing leaves the device.</p>
+        <p>Your saved list stays in this browser — no account, no server; nothing leaves the device unless you share a link yourself.</p>
         <p>Created by <a class="subtle-link" href="https://inventivetalent.org">inventivetalent</a> with Claude Code. <a class="subtle-link" href="https://github.com/InventivetalentDev/gc2026-guide">Open Source</a></p>
         <p class="mono-note" id="data-freshness"></p>
       </div>
@@ -168,10 +179,38 @@
           <li><span class="dot" data-status="confirmed"></span> <b>Confirmed</b> — officially announced for gamescom</li>
           <li><span class="dot" data-status="expected"></span> <b>Expected</b> — strongly implied, not announced</li>
           <li><span class="dot" data-status="rumored"></span> <b>Rumored</b> — our guess, unverified</li>
+          <li><span class="badge badge-age" data-age-status="confirmed">18+</span> — demo is age-gated, ID and red wristband needed</li>
         </ul>
       </div>
     </div>
   </footer>
+
+  <dialog class="share-dialog" id="share-dialog" aria-labelledby="share-dialog-title" aria-describedby="share-count">
+    <div class="share-dialog-head">
+      <div>
+        <span class="overline">Your plan</span>
+        <h2 id="share-dialog-title">Share saved list</h2>
+      </div>
+      <button class="share-dialog-close" id="close-share" type="button" aria-label="Close share dialog">×</button>
+    </div>
+    <div class="share-dialog-body">
+      <p class="share-count" id="share-count"></p>
+      <label class="share-link-field" for="share-link">
+        <span class="field-label">Share link</span>
+        <input id="share-link" type="text" readonly spellcheck="false">
+      </label>
+      <div class="share-actions">
+        <button class="share-action share-action-primary" id="copy-share-link" type="button">Copy link</button>
+        <button class="share-action" id="native-share" type="button" hidden>Share…</button>
+      </div>
+      <p class="share-status" id="share-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div class="share-qr" id="share-qr">
+        <div class="share-qr-image" id="share-qr-image"></div>
+        <p>Scan to open this list on another device.</p>
+      </div>
+      <p class="share-qr-fallback" id="share-qr-fallback" hidden>This list is too long for a QR code — send the link instead.</p>
+    </div>
+  </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden>
     <span class="toast-text" id="toast-text"></span>
@@ -180,6 +219,7 @@
   </div>
 
   <script src="js/app.js"></script>
+  <script src="js/qr.js" defer></script>
   <script src="js/pwa.js" defer></script>
 </body>
 </html>
