@@ -1,12 +1,22 @@
 [
   {
     "date": "2026-08-11",
-    "revision": 7,
+    "revision": 8,
     "changes": [
       "New: assign each saved booth or game to a specific gamescom day, with unassigned picks kept together until you're ready to place them.",
       "Each itinerary day shows its opening hours, access rules and crowd advice inline, so the plan stays useful while you move through the halls.",
       "Export the assigned day plan as a calendar (.ics) file, with each day's stops collected into one event.",
       "Your itinerary stays in this browser only, alongside your saved list — day assignments are not part of shared links, and nothing is sent anywhere."
+    ]
+  },
+  {
+    "date": "2026-08-10",
+    "revision": 7,
+    "changes": [
+      "Tick ✓ on a game once you've played it — the row dims, and the same title is marked at every booth showing it.",
+      "A booth counts as played when you tick it directly or finish every game you saved there; save another game and it becomes active again.",
+      "Played booths sink below the rest of the queue-priority list without losing their original rank, and the new “Hide played” switch removes them altogether.",
+      "Your played history and hide preference live in this browser only, work offline and never leave your device."
     ]
   },
   {

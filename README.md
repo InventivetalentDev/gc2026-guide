@@ -127,6 +127,27 @@ One consequence for data edits: renaming a game in `data/exhibitors.json` orphan
 game in anyone's saved list. See the editorial rules in
 [`docs/UPDATING.md`](docs/UPDATING.md#editorial-rules).
 
+### Played tracking
+
+The `✓` beside every game and booth records what you have already played. A booth
+counts as played when you tick it directly, or when every game you saved there has
+been played. Save another game at a booth that was complete that way and the booth
+becomes active again until you play the new addition.
+
+Played rows use a muted filled plate and dim in place rather than taking the orange
+signal colour: saved things need attention, while played things should recede. In the
+queue-priority list, played booths sink below the unplayed ones without changing their
+absolute ranks, and **Hide played** removes them altogether.
+
+Played marks live in a second local-only storage entry, `gc2026.played.v1`, separate
+from the saved list; **Hide played** is a view preference rather than a mark, so it
+sits in `gc2026.prefs.v1` next to the age filter. All of it works offline, stays in
+sync between tabs, and never leaves the device.
+
+Played marks are deliberately **not** part of a shared link. A shared list is a plan
+you hand to someone else, and your progress through it is not theirs — `?l=` carries
+saved booths and games only.
+
 ## Architecture
 
 All content lives in `data/` as JSON; the app (`index.html`, `js/app.js`, `css/`) is a thin renderer. **Updating the guide never requires code changes — only edit the JSON files.** `js/pwa.js` (install, update and offline state) and `sw.js` (caching) are separate from the renderer and untouched by data work.

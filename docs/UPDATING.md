@@ -48,15 +48,15 @@ This document is the playbook for refreshing the data — written so a scheduled
 - `platforms` is rendered on each game row as short codes (`XSX`, `SW2`, `PS5`…). Unknown values fall back to the uppercased string, so keep them short and consistent — see `PLATFORM_CODES` in `js/app.js` to add a new mapping.
 - Crowd scale: 1 calm · 2 light · 3 moderate · 4 busy (30–90 min queues) · 5 extreme (2 h+ queues, may cap lines early).
 - Don't remove the `sources` history; append.
-- **A game `title` is a user-facing key, so treat it like `id`.** Visitors save games to
-  their own list, and both that list and their day assignments are keyed on the lowercased
-  title — rename *Fable* to *Fable (2026)* and everyone who saved it silently loses it,
-  on every booth showing it. The rename also orphans its assignment in
-  `gc2026.itinerary.v1`, which deliberately follows the same key rule as bookmarks.
-  Correct an outright wrong title, but don't re-punctuate, re-subtitle or "tidy" one that
-  already works. The same key is why a title spelled identically at two booths (Alien:
-  Isolation 2 at both Xbox and SEGA) is saved at both at once — which is the intent, so
-  keep shared titles spelled the same across exhibitors.
+- **A game `title` is a user-facing key, so treat it like `id`.** Visitors save games and
+  mark them played by lowercased title, and day assignments in `gc2026.itinerary.v1`
+  deliberately follow the same key — rename *Fable* to *Fable (2026)* and everyone who
+  saved or played it silently loses that mark, on every booth showing it, and the rename
+  also orphans its day assignment. Correct an outright wrong title, but don't
+  re-punctuate, re-subtitle or "tidy" one that already works. The same key is why a title
+  spelled identically at two booths (Alien: Isolation 2 at both Xbox and SEGA) is saved
+  and marked played at both at once — which is the intent, so keep shared titles spelled
+  the same across exhibitors.
 
 ## Schema
 
