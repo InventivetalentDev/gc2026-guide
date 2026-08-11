@@ -1065,6 +1065,7 @@ const isOffsite = (ex) => (ex.tags || []).includes("offsite");
 function routeGroups() {
   const buckets = new Map();
   const absent = [];
+  let played = 0;
 
   state.exhibitors.filter(hasSaved).forEach((ex) => {
     /* Absence wins over offsite: entries such as Wargaming mention an offsite
@@ -1072,6 +1073,10 @@ function routeGroups() {
     if (isAbsent(ex)) {
       absent.push(ex.name);
       return;
+    }
+    if (hasPlayed(ex)) {
+      played += 1;
+      if (state.hidePlayed) return;
     }
     const key = isOffsite(ex) ? "offsite" : ex.hall ? String(ex.hall) : "tba";
     if (!buckets.has(key)) buckets.set(key, []);
@@ -1087,9 +1092,15 @@ function routeGroups() {
     groups: keys.map((key) => ({
       key,
       label: key === "offsite" ? "Offsite" : key === "tba" ? "Location TBA" : `Hall ${key}`,
-      items: buckets.get(key).sort(byCrowdDesc),
+      /* Crowd-desc, then played stops sink to the end of their hall — same
+         stable two-pass sort as the priority table. */
+      items: buckets
+        .get(key)
+        .sort(byCrowdDesc)
+        .sort((a, b) => hasPlayed(a) - hasPlayed(b)),
     })),
     absent: absent.sort((a, b) => a.localeCompare(b)),
+    played,
   };
 }
 
@@ -1100,7 +1111,7 @@ function renderRoute() {
      instead of letting a null lookup abort the whole boot. */
   const routeList = $("#route-list");
   if (!routeList) return;
-  const { groups, absent } = routeGroups();
+  const { groups, absent, played } = routeGroups();
   const stopCount = groups.reduce((total, group) => total + group.items.length, 0);
   const hallCount = groups.filter((group) => group.key !== "offsite" && group.key !== "tba").length;
   const html = groups
@@ -1112,11 +1123,14 @@ function renderRoute() {
           const baseLocation = ex.booth ? ex.booth : ex.hall ? "booth TBA" : "location TBA";
           const loc = baseLocation + (ex.hall && !ex.locationConfirmed ? " · unconf." : "");
           const crowd = ex.crowd || 0;
-          return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}">
+          return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}">
             <span class="route-name">${esc(ex.name)}</span>
             <span class="route-booth">${esc(loc)}</span>
             <span class="route-crowd" data-level="${esc(crowd)}">Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}</span>
-            ${markButton("saved", "exhibitor", ex.id, ex.name)}
+            <span class="row-actions">
+              ${markButton("played", "exhibitor", ex.id, ex.name)}
+              ${markButton("saved", "exhibitor", ex.id, ex.name)}
+            </span>
             ${savedHereChips(ex)}
           </div>`;
         })
@@ -1139,10 +1153,14 @@ function renderRoute() {
   );
   routeList.classList.toggle("hidden", stopCount === 0);
   $("#route-empty").classList.toggle("hidden", stopCount > 0 || absent.length > 0);
-  $("#route-empty").textContent = savedCount()
-    ? "No current stops match your saved list — the exhibitor data may have changed."
-    : "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall.";
-  $("#route-count").textContent = `${stopCount} stop${stopCount === 1 ? "" : "s"} · ${hallCount} hall${hallCount === 1 ? "" : "s"}`;
+  $("#route-empty").textContent = state.hidePlayed && played > 0 && stopCount === 0
+    ? "Every stop on your route is played — nice work."
+    : savedCount()
+      ? "No current stops match your saved list — the exhibitor data may have changed."
+      : "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall.";
+  $("#route-count").textContent =
+    `${stopCount} stop${stopCount === 1 ? "" : "s"} · ${hallCount} hall${hallCount === 1 ? "" : "s"}` +
+    (played ? ` · ${played} played` : "");
   $("#route-absent").classList.toggle("hidden", absent.length === 0);
   $("#route-absent").textContent = absent.length
     ? `On your list but not on the show floor: ${absent.join(", ")}.`
@@ -1339,9 +1357,12 @@ function setHidePlayed(on) {
   state.hidePlayed = on;
   $("#hide-played").checked = on;
   $("#priority-hide-played").checked = on;
-  persistMarks("played");
+  /* The lens is a preference, not a mark — persistMarks here would rewrite the
+     unchanged played sets and lose the toggle on the next reload. */
+  persistPrefs();
   renderExhibitors();
   renderPriority();
+  renderRoute();
 }
 
 function showView(route, { push = true } = {}) {

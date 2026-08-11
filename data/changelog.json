@@ -3,7 +3,8 @@
     "date": "2026-08-11",
     "revision": 8,
     "changes": [
-      "New: Route by hall on the Visit planner groups your saved stops in hall-number order, with offsite and unannounced locations — plus absent exhibitors — called out separately."
+      "New: Route by hall on the Visit planner groups your saved stops in hall-number order, with offsite and unannounced locations — plus absent exhibitors — called out separately.",
+      "Route stops carry the played tick too: a played stop dims, drops to the end of its hall, and respects the Hide played toggle."
     ]
   },
   {
