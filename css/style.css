@@ -376,6 +376,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 }
 
 .card {
+  min-width: 0;
   background: var(--ground-2);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
@@ -456,7 +457,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .games { list-style: none; display: flex; flex-direction: column; }
 .game {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   gap: 2px 10px;
   padding: 7px 0 7px 14px;
   border-top: 1px solid var(--rule-soft);
@@ -537,11 +538,12 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .more-games:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ============================================================
-   saved list
+   saved & played marks
    ------------------------------------------------------------
-   The visitor's own emphasis, so it takes the signal colour when set — that is
-   what the one accent is for. No icon and no emoji: "+" puts something on the
-   list and "−" takes it back off, the same language as "+ 4 more" above.
+   Saved is the visitor's own emphasis, so it takes the signal colour when set —
+   that is what the one accent is for. Its "+" and "−" use the same language as
+   "+ 4 more" above. Played deliberately does not take the signal colour: done
+   is the opposite of emphasis, so its set plate and related content stay muted.
    ============================================================ */
 .bm {
   display: inline-flex;
@@ -571,18 +573,29 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   color: var(--signal-ink);
 }
 .bm[aria-pressed="true"]:hover { background: #ff6b3b; border-color: #ff6b3b; color: var(--signal-ink); }
+.bm[data-mark="played"][aria-pressed="true"],
+.bm[data-mark="played"][aria-pressed="true"]:hover {
+  background: var(--ink-dim);
+  border-color: var(--ink-dim);
+  color: var(--ground);
+}
 .bm-mark { font-size: .9rem; line-height: 1; }
 
 /* card head: a plate on the right edge, bracketing the hall plate on the left */
 .bm-wide { width: auto; height: auto; padding: 0 15px; }
 .exh-head .bm {
   align-self: stretch;
+  height: auto;
   margin-left: auto;
   border: none;
   border-left: 1px solid var(--rule-soft);
   border-radius: 0;
 }
+.exh-head .bm:not(.bm-wide) { width: 28px; }
+.exh-head .bm + .bm { margin-left: 0; }
 .card[data-saved="true"] { border-color: var(--signal); }
+.card[data-played="true"] { border-color: var(--rule); }
+.card[data-played="true"] .card-body { opacity: .62; }
 
 /* Repeated down a 23-game lineup the buttons would out-shout the titles, so
    they sit back until you reach for one — or until they're set. */
@@ -591,6 +604,9 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .game .bm:focus-visible,
 .game .bm[aria-pressed="true"] { opacity: 1; }
 .game[data-saved="true"] .game-title { color: var(--signal); }
+.game[data-played="true"] .game-title,
+.game[data-played="true"] .game-plat { color: var(--ink-dim); }
+.game[data-played="true"]::before { background: var(--neutral); }
 
 .saved-count {
   font-family: var(--font-mono);
@@ -711,8 +727,17 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   background: var(--ground-2);
 }
 /* the last column in either layout, so no override is needed on a phone */
-.priority-item .bm { grid-column: -2 / -1; grid-row: 1; align-self: center; }
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.priority-item .row-actions { grid-column: -2 / -1; grid-row: 1; align-self: center; }
 .priority-item[data-saved="true"] { box-shadow: inset 3px 0 0 var(--signal); }
+.priority-item[data-played="true"] {
+  opacity: .62;
+  box-shadow: inset 3px 0 0 var(--ink-dim);
+}
 
 /* Which of your saved games this booth is actually running — the reason a
    publisher row is on your list at all. */
