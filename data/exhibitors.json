@@ -275,14 +275,18 @@
       { "title": "Dragon Quest VII Reimagined", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"], "note": "The booth's one new title — its only likely long queue." },
       { "title": "Final Fantasy VII Rebirth", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Switch 2", "Xbox"], "note": "Play stations, likely new-platform versions." },
       { "title": "Final Fantasy XIV", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox"], "note": "MMO community presence." },
-      { "title": "Final Fantasy X/X-2 HD Remaster", "status": "confirmed", "playable": true, "platforms": ["Multi"], "note": "Catalog play station." }
+      { "title": "Final Fantasy X/X-2 HD Remaster", "status": "confirmed", "playable": true, "platforms": ["Multi"], "note": "Catalog play station." },
+      { "title": "Final Fantasy VII Revelation", "status": "confirmed", "playable": false, "platforms": ["TBA"], "note": "'New Look' presentation at Opening Night Live (Aug 25) led by director Naoki Hamaguchi, with new footage — an ONL reveal segment, not a confirmed show-floor demo." }
     ],
     "tags": ["AAA", "RPG", "merch", "photo ops"],
     "crowd": 3,
-    "crowdNote": "Strong brand pull but no world premieres — steady traffic for photo ops and merch.",
+    "crowdNote": "Strong brand pull but no world premieres on the show floor — steady traffic for photo ops and merch; the ONL FF7 Revelation reveal (Aug 25) may bring extra attention the next morning.",
     "visitAdvice": "Merch sells out early in the show — buy on your first pass. Good midday stop; combine with CD Projekt Red in the same hall.",
-    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/"],
-    "lastUpdated": "2026-08-06"
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
+      "https://nintendowire.com/news/2026/08/10/square-enix-is-bringing-final-fantasy-vii-revelation-to-gamescom-opening-night-live-for-a-new-look/"
+    ],
+    "lastUpdated": "2026-08-11"
   },
   {
     "id": "cdpr",
@@ -327,10 +331,10 @@
     "id": "krafton",
     "name": "KRAFTON",
     "type": "publisher",
-    "hall": "9",
-    "booth": null,
+    "hall": "9.1",
+    "booth": "B050/C051",
     "locationConfirmed": true,
-    "description": "One of Hall 9's largest booths with five titles, headlined by a still-secret world-premiere FPS from PUBG STUDIOS (set in the Pacific Northwest) plus Neon Giant's cyber-noir shooter NO LAW. Interactive missions earn themed merch.",
+    "description": "One of Hall 9's largest booths with five titles, headlined by a still-secret world-premiere FPS from PUBG STUDIOS (set in the Pacific Northwest) plus Neon Giant's cyber-noir shooter NO LAW. Interactive missions earn themed merch. Booth number (B050/C051, with an adjoining B040 stand) comes from a single fan-tracker (nat-games.de, Aug 11) and isn't yet cross-confirmed — GamesWirtschaft's own Hall 9 tracker (updated Aug 5) still gives no stand number, so treat the exact number as provisional.",
     "games": [
       { "title": "Untitled PUBG STUDIOS project", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "World-premiere reveal of a new PUBG-universe FPS at the show." },
       { "title": "NO LAW", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Open-world FPS from The Ascent developer Neon Giant — hands-on demo." },
@@ -344,9 +348,10 @@
     "visitAdvice": "Visit Wednesday/Thursday morning before the PUBG premiere is fully publicized; do the merch mission circuit early before stock runs low.",
     "sources": [
       "https://www.invenglobal.com/articles/24454/krafton-unveils-5-titles-for-gamescom-2026",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
+      "https://www.nat-games.de/2026/08/11/gamescom-2026-alle-games-aussteller-in-der-uebersicht/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-11"
   },
   {
     "id": "embark",
@@ -393,21 +398,26 @@
     "id": "focus",
     "name": "Focus Entertainment",
     "type": "publisher",
-    "hall": null,
-    "booth": null,
-    "locationConfirmed": false,
-    "description": "On the confirmed exhibitor list (added late July) but booth location and lineup are still unannounced. Notably, GamesWirtschaft's regularly-updated Hall 6 exhibitor tracker no longer lists Focus at all as of its Aug 5 update — unlike 2025, when it held a Hall 6 stand — so a Hall 6 return isn't a safe assumption this year. Its big release Resonance: A Plague Tale Legacy launches Aug 27 — mid-show — and is confirmed playable at the Xbox booth.",
+    "hall": "6.1",
+    "booth": "B060/C061",
+    "locationConfirmed": true,
+    "description": "Booth now placed at Hall 6.1, B060/C061 by two independent trade trackers (nat-games.de, gamesfinest.de, both Aug 11) — not yet an official Focus statement, and GamesWirtschaft's own Hall 6 deep-dive tracker (last updated Aug 5) still doesn't name Focus in its narrative text, so treat the exact stand as reported-but-not-Focus-confirmed. Its big release Resonance: A Plague Tale Legacy launches Aug 27 — mid-show — and is confirmed playable at the Xbox booth.",
     "games": [
-      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Launches Aug 27; confirmed at Xbox's Hall 7 booth, likely also at Focus' own stand." },
+      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Launches Aug 27; confirmed at Xbox's Hall 7 booth, likely also at Focus' own Hall 6.1 stand." },
       { "title": "Edge of Memories", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "2026 JRPG-style title, plausible booth candidate." },
       { "title": "Warhammer 40,000: Space Marine 3", "status": "rumored", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Too early for hands-on; trailer presence possible." }
     ],
     "tags": ["AA", "adventure"],
     "crowd": 2,
     "crowdNote": "No announced blockbuster hands-on at its own stand; Resonance demand mostly absorbed by the Xbox booth.",
-    "visitAdvice": "Queue for Resonance at the Xbox booth where it's confirmed. Focus' own location is still unpublished and, unlike 2025, isn't currently showing up in Hall 6 listings — check the official exhibitor directory and Focus' channels closer to the show.",
-    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/", "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"],
-    "lastUpdated": "2026-08-10"
+    "visitAdvice": "Queue for Resonance at the Xbox booth where it's confirmed playable. Focus' own Hall 6.1 stand (B060/C061) is reported by trackers but not yet Focus-confirmed — double-check the official exhibitor directory closer to the show.",
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
+      "https://www.nat-games.de/2026/08/11/gamescom-2026-alle-games-aussteller-in-der-uebersicht/",
+      "https://gamesfinest.de/gamescom/gamescom-2026-welche-spiele-sind-vor-ort-und-wo-findest-du-sie/"
+    ],
+    "lastUpdated": "2026-08-11"
   },
   {
     "id": "hoyoverse",
@@ -481,20 +491,25 @@
     "name": "NetEase Games",
     "type": "publisher",
     "hall": "7.1",
-    "booth": null,
-    "locationConfirmed": false,
-    "description": "Officially bringing Marvel Rivals, Where Winds Meet and Sea of Remnants. The Hall 7.1 placement comes from community analysis of the published floor plan, not a NetEase press release — treat exact positions as provisional.",
+    "booth": "A-051/B-050",
+    "locationConfirmed": true,
+    "description": "Officially confirmed by NetEase's own Aug 11 press release: Hall 7.1 booth A-051 for Sea of Remnants, and booth B-050 for Marvel Rivals (Season 9.5 content, Jeff the Landshark statue, photo booth) and Where Winds Meet's Hidden Mountain finale. NetEase also runs a separate trade-only stand in the Business Area (Hall 4.2, D-050) previewing Once Human's next expansion plus one unannounced title.",
     "games": [
-      { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Multi-station 6v6 setups expected." },
-      { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Wuxia open-world RPG with a dedicated booth area." },
-      { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles"], "note": "Stylized pirate adventure RPG; demo status not yet detailed." }
+      { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Multi-station 6v6 setups; Season 9.5 content at booth B-050." },
+      { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Wuxia open-world RPG; Hidden Mountain finale content at booth B-050." },
+      { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles"], "note": "Stylized pirate adventure RPG, own booth A-051; hands-on status not detailed in NetEase's release." },
+      { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "platforms": ["PC", "Consoles"], "note": "Hands-on preview at NetEase's Business Area stand (Hall 4.2, D-050) — trade & media only, not reachable on a public ticket." }
     ],
     "tags": ["live-service", "shooter", "RPG"],
     "crowd": 4,
     "crowdNote": "Marvel Rivals is one of the biggest live-service shooters right now; 6v6 sessions cycle slowly — 45–90 min waits at peak.",
-    "visitAdvice": "Marvel Rivals seats 12 per cycle, so lines move in bursts — join right after a session starts. Where Winds Meet stations are usually much shorter.",
-    "sources": ["https://x.com/NetEaseGames_EN/status/2078511437178380513"],
-    "lastUpdated": "2026-08-06"
+    "visitAdvice": "Marvel Rivals seats 12 per cycle, so lines move in bursts — join right after a session starts. Sea of Remnants is at a separate booth (A-051) from Marvel Rivals/Where Winds Meet (B-050), both in Hall 7.1 near Xbox.",
+    "sources": [
+      "https://x.com/NetEaseGames_EN/status/2078511437178380513",
+      "https://www.neteasegames.com/news/Corporate/20260811/37075_1310671.html",
+      "https://www.theouterhaven.net/etease-games-gamescom-2026-lineup/"
+    ],
+    "lastUpdated": "2026-08-11"
   },
   {
     "id": "pearl-abyss",
@@ -518,10 +533,10 @@
     "id": "ggg-poe2",
     "name": "Grinding Gear Games",
     "type": "publisher",
-    "hall": "6",
-    "booth": null,
-    "locationConfirmed": false,
-    "description": "Path of Exile 2 booth reported for Hall 6 with an event-exclusive special demo, an 'eerie display' photo op and exclusive merchandise. Exact booth number still TBA.",
+    "hall": "6.1",
+    "booth": "B031",
+    "locationConfirmed": true,
+    "description": "Path of Exile 2 booth confirmed at Hall 6.1, B031 (two independent trackers, nat-games.de and gamesfinest.de, Aug 11) with an event-exclusive special demo, an 'eerie display' photo op and exclusive merchandise.",
     "games": [
       { "title": "Path of Exile 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Special demo exclusive to gamescom, post-'Return of the Ancients' era." }
     ],
@@ -529,35 +544,43 @@
     "crowd": 4,
     "crowdNote": "Very large, dedicated European PC-ARPG audience and a venue-exclusive demo — long, steady lines plus merch demand.",
     "visitAdvice": "Hit it early on a weekday; ask staff whether merch has a separate line from the demo queue.",
-    "sources": ["https://www.pathofexile.com/forum/view-thread/3980614"],
-    "lastUpdated": "2026-08-06"
+    "sources": [
+      "https://www.pathofexile.com/forum/view-thread/3980614",
+      "https://www.nat-games.de/2026/08/11/gamescom-2026-alle-games-aussteller-in-der-uebersicht/",
+      "https://gamesfinest.de/gamescom/gamescom-2026-welche-spiele-sind-vor-ort-und-wo-findest-du-sie/"
+    ],
+    "lastUpdated": "2026-08-11"
   },
   {
     "id": "eclipse-glow",
     "name": "Eclipse Glow Games",
     "type": "publisher",
     "hall": "6",
-    "booth": null,
-    "locationConfirmed": false,
-    "description": "Chinese studio behind Arthurian action game Tides of Annihilation, confirmed to host a hands-on demo booth — one of the notable new Chinese single-player entrants. GamesWirtschaft's Hall 6 exhibitor tracker now places it in Hall 6; exact booth number not yet officially published.",
+    "booth": "B-050",
+    "locationConfirmed": true,
+    "description": "Chinese studio behind Arthurian action game Tides of Annihilation, confirmed to host a hands-on demo booth at Hall 6, B-050 — one of the notable new Chinese single-player entrants. GamesWirtschaft's own Hall 6 tracker still doesn't list a stand number, but InvenGlobal and WorthPlaying both independently name the booth.",
     "games": [
-      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Public demo confirmed; Hall 6 per trade-press tracker, exact booth TBA." }
+      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Expanded event-exclusive demo, Hall 6, booth B-050, running Aug 27–30." }
     ],
     "tags": ["action", "single-player"],
     "crowd": 3,
     "crowdNote": "High-profile trailer buzz but a single-title booth — moderate lines, spiking after any ONL appearance.",
     "visitAdvice": "If it appears at Opening Night Live, queue early the next morning before word spreads.",
-    "sources": ["https://www.invenglobal.com/articles/23789/eclipse-glow-games-to-host-tides-of-annihilation-demo-booth-at-gamescom-2026", "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"],
-    "lastUpdated": "2026-08-10"
+    "sources": [
+      "https://www.invenglobal.com/articles/23789/eclipse-glow-games-to-host-tides-of-annihilation-demo-booth-at-gamescom-2026",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
+      "https://worthplaying.com/article/2026/7/15/news/150452"
+    ],
+    "lastUpdated": "2026-08-11"
   },
   {
     "id": "indie-arena-booth",
     "name": "Indie Arena Booth",
     "type": "indie",
     "hall": "10.2",
-    "booth": null,
+    "booth": "F010/E019",
     "locationConfirmed": true,
-    "description": "The world's biggest indie booth — 2026 theme 'Democratree: games for everyone': ~200 games from 182 developers across 41 countries, with publisher pods (11 bit, Fireshine, Headup, Wired Productions) and a Nintendo section with Switch/Switch 2 stations.",
+    "description": "The world's biggest indie booth — 2026 theme 'Democratree: games for everyone': ~200 games from 182 developers across 41 countries, with publisher pods (11 bit, Fireshine, Headup, Wired Productions) and a Nintendo section with Switch/Switch 2 stations. Audio brand beyerdynamic is this year's 'First Presenter' sponsor, kitting out 230+ developer stations with MMX 300 PRO headsets and running a vinyl soundtrack listening station.",
     "games": [
       { "title": "Stronghold 4", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Firefly's castle-sim revival — a headline title of the booth." },
       { "title": "Paralives", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Highly wishlisted life sim — expect one of the longer indie lines." },
@@ -577,9 +600,10 @@
     "visitAdvice": "Thu/Fri morning is ideal. Browse the lineup on indiearena.org or the IAB Steam curator page beforehand and pick targets — devs are at their stations, so it's the best place to actually talk to the people making the games. Combine with the Retro & Family area in the same hall.",
     "sources": [
       "https://indiearena.org/",
-      "https://www.gamesmarket.global/indie-arena-booth-full-gamescom-2026-lineup/"
+      "https://www.gamesmarket.global/indie-arena-booth-full-gamescom-2026-lineup/",
+      "https://www.gamespress.com/beyerdynamic-to-become-First-Presenter-of-the-Indie-Arena-Booth-at-gam"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-11"
   },
   {
     "id": "korea-pavilion",

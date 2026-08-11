@@ -59,7 +59,7 @@
     { "name": "Campus Area", "hall": "10.1", "description": "Universities, education and industry recruiting." },
     { "name": "Signing Area", "hall": "11.1", "description": "Content creator autograph and meet-and-greet sessions." },
     { "name": "gamescom epix", "hall": null, "description": "Free digital quest program (7 story chapters, started Aug 3) — on-site booth quests, collector cards, and free Sunday tickets for completing all chapters." },
-    { "name": "gamescom GDQ", "hall": null, "description": "New Games Done Quick speedrunning charity showcase, Aug 28–30, Congress Center North." },
+    { "name": "gamescom GDQ", "hall": null, "description": "New Games Done Quick speedrunning charity showcase, Aug 28–30, Konrad-Adenauer-Halle (Congress Center North)." },
     { "name": "City Festival", "hall": null, "description": "Free open-air concerts and gaming zones in Cologne's city center (Ringe), Aug 29–30 evenings." }
   ],
   "crowdTips": [
@@ -80,6 +80,7 @@
     "https://www.invenglobal.com/articles/23310/gamescom-2026-opening-night-live-tickets-go-on-sale-and-sell-out-instantly",
     "https://www.invenglobal.com/articles/24045/gamescom-2026-exhibitor-lineup-revealed-expected-to-be-largest-ever",
     "https://gamingpartys.de/2069/2026/07/gamescom-epix-2026-alle-infos-zu-quests-sonntag-tickets-neuen-story-kapitel/",
-    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-tickets-privatbesucher-preise-040326/"
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-tickets-privatbesucher-preise-040326/",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-events-shows-programm-100826/"
   ]
 }
