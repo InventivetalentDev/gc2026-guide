@@ -1036,6 +1036,15 @@ function compareItineraryItems(a, b) {
   return itineraryCrowd(b) - itineraryCrowd(a) || a.name.localeCompare(b.name);
 }
 
+const itineraryPlayed = (item) =>
+  item.kind === "exhibitor" ? hasPlayed(item.ex) : isPlayed("game", item.key);
+
+/* Played stops sink below the live ones inside each group, same as the
+   queue-priority list — the day keeps its shape but leads with what's left. */
+function compareItineraryRows(a, b) {
+  return itineraryPlayed(a) - itineraryPlayed(b) || compareItineraryItems(a, b);
+}
+
 function itineraryItemLocation(item) {
   if (item.kind === "game") {
     return item.at.length
@@ -1065,7 +1074,7 @@ function itineraryDayChips(item) {
 
 function itineraryItem(item) {
   const kindLabel = item.kind === "game" ? "Game" : "Booth";
-  return `<div class="it-item" data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}">
+  return `<div class="it-item" data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-played="${itineraryPlayed(item)}">
     <span class="it-main">
       <span class="it-kind">${esc(kindLabel)}</span>
       <span class="it-name">${esc(item.name)}</span>
@@ -1081,7 +1090,7 @@ function renderItinerary() {
   const validDays = new Set((state.event.days || []).map((d) => d.date));
   const unassigned = items
     .filter((item) => !validDays.has(assignedDay(item.kind, item.key)))
-    .sort(compareItineraryItems);
+    .sort(compareItineraryRows);
   const groups = [];
 
   if (unassigned.length) {
@@ -1093,7 +1102,7 @@ function renderItinerary() {
   for (const d of state.event.days || []) {
     const dayItems = items
       .filter((item) => assignedDay(item.kind, item.key) === d.date)
-      .sort(compareItineraryItems);
+      .sort(compareItineraryRows);
     if (!dayItems.length) continue;
     groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
       <div class="it-group-head">${dayHeaderInner(d)}</div>

@@ -745,6 +745,10 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 }
 .it-item:last-child { border-bottom: none; }
 .it-item:hover { background: var(--ground-3); }
+.it-item[data-played="true"] {
+  opacity: .62;
+  box-shadow: inset 3px 0 0 var(--ink-dim);
+}
 .it-main { display: flex; flex-direction: column; min-width: 0; }
 .it-kind {
   font-family: var(--font-mono);

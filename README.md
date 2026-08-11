@@ -137,7 +137,9 @@ becomes active again until you play the new addition.
 Played rows use a muted filled plate and dim in place rather than taking the orange
 signal colour: saved things need attention, while played things should recede. In the
 queue-priority list, played booths sink below the unplayed ones without changing their
-absolute ranks, and **Hide played** removes them altogether.
+absolute ranks, and **Hide played** removes them altogether. Itinerary day groups get
+the same treatment: played stops dim and sink to the bottom of their day, so each
+group leads with what's still left to do.
 
 Played marks live in a second local-only storage entry, `gc2026.played.v1`, separate
 from the saved list; **Hide played** is a view preference rather than a mark, so it
