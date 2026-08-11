@@ -8,6 +8,7 @@ const state = {
   query: "",
   type: "all",
   hall: "all",
+  age: "all",
   playableOnly: false,
   confirmedOnly: false,
   savedOnly: false,
@@ -36,6 +37,7 @@ const TYPE_LABELS = {
 };
 
 const CROWD_LABELS = ["Unknown", "Calm", "Light", "Moderate", "Busy", "Extreme"];
+const AGE_FILTERS = [["all", "All"], ["hide", "Hide 18+"], ["only", "18+ only"]];
 
 /* Long platform names blow out a dense card — show signage-style short codes.
    Keys are matched after lowercasing and stripping any parenthetical. */
@@ -81,6 +83,7 @@ async function loadData() {
   state.event = event;
   state.meta = meta;
   state.changelog = changelog;
+  buildShareCodeMap();
 }
 
 /* ---------- saved & played marks ----------
@@ -91,39 +94,54 @@ async function loadData() {
    every booth showing the same title. */
 
 const MARK_KEYS = { saved: "gc2026.saved.v1", played: "gc2026.played.v1" };
+const PREFS_KEY = "gc2026.prefs.v1";
 
 const gameKey = (title) => String(title).trim().toLowerCase().replace(/\s+/g, " ");
 
 function loadMarks(mark) {
-  const empty = { exhibitors: new Set(), games: new Set() };
-  if (mark === "played") state.hidePlayed = false;
   try {
     const raw = JSON.parse(localStorage.getItem(MARK_KEYS[mark]) || "{}");
-    if (mark === "played") state.hidePlayed = raw.hidePlayed === true;
     return {
       exhibitors: new Set(Array.isArray(raw.exhibitors) ? raw.exhibitors : []),
       games: new Set(Array.isArray(raw.games) ? raw.games : []),
     };
   } catch {
     /* corrupt entry, or storage blocked entirely (Safari private mode) */
-    return empty;
+    return { exhibitors: new Set(), games: new Set() };
   }
 }
 
 function persistMarks(mark) {
   try {
     const marks = state.marks[mark];
-    const payload = {
-      exhibitors: [...marks.exhibitors],
-      games: [...marks.games],
-    };
-    if (mark === "played") payload.hidePlayed = state.hidePlayed;
     localStorage.setItem(
       MARK_KEYS[mark],
-      JSON.stringify(payload)
+      JSON.stringify({ exhibitors: [...marks.exhibitors], games: [...marks.games] })
     );
   } catch {
     /* out of quota or storage denied — marks still work for this session */
+  }
+}
+
+/* Both view preferences live here rather than beside the marks they act on:
+   "hide played" is a lens on the list, the same kind of thing as the age
+   filter, and neither survives being tangled up with the marks themselves. */
+function loadPrefs() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
+    const age = AGE_FILTERS.some(([value]) => value === raw.age) ? raw.age : "all";
+    return { age, hidePlayed: raw.hidePlayed === true };
+  } catch {
+    /* corrupt entry, or storage blocked entirely (Safari private mode) */
+    return { age: "all", hidePlayed: false };
+  }
+}
+
+function persistPrefs() {
+  try {
+    localStorage.setItem(PREFS_KEY, JSON.stringify({ age: state.age, hidePlayed: state.hidePlayed }));
+  } catch {
+    /* out of quota or storage denied — the choice still works for this session */
   }
 }
 
@@ -150,6 +168,15 @@ const hasPlayed = (ex) => {
   return isPlayed("exhibitor", ex.id) ||
     (mine.length > 0 && mine.every((g) => isPlayed("game", gameKey(g.title))));
 };
+
+const AGE_GATE = 18;
+const isAdult = (g) => Number(g.age) >= AGE_GATE;
+const adultGames = (ex) => (ex.games || []).filter(isAdult);
+const hasAdult = (ex) => ex.ageRestricted === true || adultGames(ex).length > 0;
+/* One place decides which rows exist under the current age filter — the card,
+   the query haystack and the playable check must all agree. */
+const visibleGames = (ex) =>
+  state.age === "hide" ? (ex.games || []).filter((g) => !isAdult(g)) : (ex.games || []);
 
 /* The "+" adds to the list and the "−" takes it back off — same language as the
    "+ 4 more" / "− Show fewer" control, so no icon is needed. The saved state is
@@ -195,6 +222,7 @@ function onMarksChanged({ rebuild = false } = {}) {
   else syncMarkUI();
   renderMarkControls();
   renderPriority();
+  renderWristband();
 }
 
 /* Bring already-rendered buttons and their rows back in sync with the sets,
@@ -249,10 +277,320 @@ function renderMarkControls() {
   $("#clear-played").classList.toggle("hidden", played === 0);
   $("#hide-played").checked = state.hidePlayed;
   $("#priority-hide-played").checked = state.hidePlayed;
+  $("#share-list").classList.toggle("hidden", encodedSavedTokens().length === 0);
+}
+
+/* ---------- sharing ----------
+
+   A shared URL contains only stable exhibitor ids and short hashes of the
+   normalised game titles. Both maps are rebuilt from the guide data, so the
+   link needs no server and works from the offline cache. */
+
+const shareCodes = {
+  exhibitorIds: new Set(),
+  gameToCode: new Map(),
+  codeToGame: new Map(),
+};
+
+function hash32(s) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h;
+}
+
+function buildShareCodeMap() {
+  shareCodes.exhibitorIds = new Set(state.exhibitors.map((ex) => ex.id));
+  shareCodes.gameToCode.clear();
+  shareCodes.codeToGame.clear();
+
+  const gameKeys = [
+    ...new Set(state.exhibitors.flatMap((ex) => (ex.games || []).map((game) => gameKey(game.title)))),
+  ].sort();
+  const taken = new Set(shareCodes.exhibitorIds);
+
+  gameKeys.forEach((key) => {
+    let salt = 0;
+    let code;
+    do {
+      code = hash32(salt ? `${key}#${salt}` : key).toString(36);
+      salt += 1;
+    } while (taken.has(code));
+    taken.add(code);
+    shareCodes.gameToCode.set(key, code);
+    shareCodes.codeToGame.set(code, key);
+  });
+}
+
+function encodedSavedTokens() {
+  const exhibitors = [...state.marks.saved.exhibitors]
+    .filter((id) => shareCodes.exhibitorIds.has(id))
+    .sort();
+  const games = [...state.marks.saved.games]
+    .map((key) => shareCodes.gameToCode.get(key))
+    .filter(Boolean)
+    .sort();
+  return [...exhibitors, ...games];
+}
+
+function buildShareLink() {
+  /* Search params are not part of the guide state and can contain referral or
+     campaign data that should not hitch a ride in somebody else's link. */
+  const base = `${location.origin}${location.pathname}`;
+  return `${base}#saved?l=${encodedSavedTokens().join(".")}`;
+}
+
+function parseHash() {
+  const raw = location.hash.slice(1);
+  const i = raw.indexOf("?");
+  return {
+    route: i === -1 ? raw : raw.slice(0, i),
+    params: new URLSearchParams(i === -1 ? "" : raw.slice(i + 1)),
+  };
+}
+
+function resolveTokens(payload) {
+  const incoming = { exhibitors: new Set(), games: new Set(), unresolved: 0 };
+  const tokens = new Set(String(payload).split(".").filter(Boolean));
+  tokens.forEach((token) => {
+    if (shareCodes.exhibitorIds.has(token)) incoming.exhibitors.add(token);
+    else if (shareCodes.codeToGame.has(token)) incoming.games.add(shareCodes.codeToGame.get(token));
+    else incoming.unresolved += 1;
+  });
+  return incoming;
+}
+
+/* The address bar stops being the copy of the link the moment the payload is
+   consumed, so this tab keeps its own until the offer has been answered.
+   Dismissing the prompt then costs a reload rather than the whole list, and
+   the copy dies with the tab — it can never haunt a later visit. */
+const PENDING_KEY = "gc2026.share.pending";
+
+function rememberPending(payload) {
+  try {
+    sessionStorage.setItem(PENDING_KEY, payload);
+  } catch {
+    /* storage denied — the offer simply won't survive a reload */
+  }
+}
+
+function forgetPending() {
+  try {
+    sessionStorage.removeItem(PENDING_KEY);
+  } catch {
+    /* nothing was stored in the first place */
+  }
+}
+
+function takeIncomingList() {
+  const { route, params } = parseHash();
+  if (route !== SAVED_ROUTE || !params.has("l")) return null;
+
+  const payload = params.get("l") || "";
+  rememberPending(payload);
+  /* Consume the payload before any rendering can synchronise the route, so a
+     refresh cannot import twice and the link is not left lying in the bar. */
+  history.replaceState(null, "", "#saved");
+  return resolveTokens(payload);
+}
+
+/* An offer this tab was made but never answered — a dismissed prompt, or a
+   reload before the visitor decided. */
+function pendingIncomingList() {
+  let payload = null;
+  try {
+    payload = sessionStorage.getItem(PENDING_KEY);
+  } catch {
+    /* storage denied */
+  }
+  return payload === null ? null : resolveTokens(payload);
+}
+
+const incomingCount = (incoming) => incoming.exhibitors.size + incoming.games.size;
+const itemLabel = (n) => `${n} saved item${n === 1 ? "" : "s"}`;
+
+function unresolvedNote(n) {
+  if (!n) return "";
+  return ` ${n === 1 ? "1 isn't" : `${n} aren't`} in the guide any more.`;
+}
+
+function renderBookmarkViews() {
+  renderExhibitors();
+  renderMarkControls();
+  renderPriority();
+}
+
+function applyIncoming(incoming) {
+  const before = {
+    exhibitors: new Set(state.marks.saved.exhibitors),
+    games: new Set(state.marks.saved.games),
+  };
+  incoming.exhibitors.forEach((id) => state.marks.saved.exhibitors.add(id));
+  incoming.games.forEach((key) => state.marks.saved.games.add(key));
+  persistMarks("saved");
+  renderBookmarkViews();
+  /* Answered. Undo is a correction to a decision already made, not a reason to
+     put the offer back on the table. */
+  forgetPending();
+  return before;
+}
+
+function restoreBookmarks(snapshot) {
+  state.marks.saved = {
+    exhibitors: new Set(snapshot.exhibitors),
+    games: new Set(snapshot.games),
+  };
+  persistMarks("saved");
+  renderBookmarkViews();
+  showToast("Shared list import undone.", null, null, { priority: true, replace: true });
+}
+
+function offerIncoming(incoming) {
+  const total = incomingCount(incoming);
+  if (total === 0) {
+    forgetPending();
+    showToast("That shared list is out of date — nothing left to add.", null, null, {
+      priority: true,
+    });
+    return;
+  }
+
+  const stale = unresolvedNote(incoming.unresolved);
+  /* Old localStorage entries can outlive a renamed/removed guide item. They
+     remain stored in case the data returns, but do not make the visible local
+     list count as non-empty for import decisions. */
+  if (encodedSavedTokens().length === 0) {
+    const before = applyIncoming(incoming);
+    showToast(
+      `Loaded ${itemLabel(total)} from a shared link.${stale}`,
+      "Undo",
+      () => restoreBookmarks(before),
+      { priority: true }
+    );
+    return;
+  }
+
+  const newCount =
+    [...incoming.exhibitors].filter((id) => !state.marks.saved.exhibitors.has(id)).length +
+    [...incoming.games].filter((key) => !state.marks.saved.games.has(key)).length;
+  /* Someone re-opening a link they already imported, or the other half of a
+     phone/desktop pair that is already in sync. There is nothing to add, so
+     offering the button would only produce an import of nothing. */
+  if (newCount === 0) {
+    forgetPending();
+    showToast(`You already have everything in this shared link.${stale}`, null, null, {
+      priority: true,
+    });
+    return;
+  }
+  showToast(
+    `A shared link has ${itemLabel(total)} — ${newCount} new to you.${stale}`,
+    "Add to my list",
+    () => {
+      const before = applyIncoming(incoming);
+      showToast(
+        `Added ${itemLabel(newCount)} from the shared link.${stale}`,
+        "Undo",
+        () => restoreBookmarks(before),
+        { priority: true, replace: true }
+      );
+    },
+    { priority: true }
+  );
+}
+
+function renderShareDialog() {
+  const link = buildShareLink();
+  const input = $("#share-link");
+  input.value = link;
+  const shareable = encodedSavedTokens().length;
+  const unavailable = savedCount() - shareable;
+  $("#share-count").textContent = unavailable
+    ? `${itemLabel(shareable)} ready to share. ${unavailable} older item${
+        unavailable === 1 ? " is" : "s are"
+      } no longer in the guide.`
+    : itemLabel(shareable);
+
+  const nativeShare = $("#native-share");
+  nativeShare.hidden = typeof navigator.share !== "function";
+
+  const hasEncoder = typeof window.qrSvg === "function";
+  const svg = hasEncoder ? window.qrSvg(link) : null;
+  $("#share-qr").hidden = !svg;
+  $("#share-qr-image").innerHTML = svg || "";
+  const fallback = $("#share-qr-fallback");
+  fallback.textContent = hasEncoder
+    ? "This list is too long for a QR code — send the link instead."
+    : "The QR code could not be loaded — send the link instead.";
+  fallback.hidden = Boolean(svg);
+
+  const status = $("#share-status");
+  status.textContent = "";
+}
+
+function showShareStatus(message) {
+  const status = $("#share-status");
+  status.textContent = message;
+}
+
+function bindShareDialog() {
+  const dialog = $("#share-dialog");
+  const input = $("#share-link");
+
+  $("#share-list").addEventListener("click", () => {
+    renderShareDialog();
+    dialog.showModal();
+  });
+  input.addEventListener("focus", () => input.select());
+  $("#close-share").addEventListener("click", () => dialog.close());
+
+  /* Backdrop clicks target the dialog itself. Check the coordinates as well,
+     so a click on padding inside the panel does not dismiss it. */
+  dialog.addEventListener("click", (event) => {
+    if (event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    const inside =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+    if (!inside) dialog.close();
+  });
+
+  $("#copy-share-link").addEventListener("click", async () => {
+    try {
+      if (typeof navigator.clipboard?.writeText !== "function") throw new Error("clipboard unavailable");
+      await navigator.clipboard.writeText(input.value);
+      showShareStatus("Link copied.");
+    } catch {
+      input.focus();
+      input.select();
+      showShareStatus("Press ⌘C / Ctrl+C to copy.");
+    }
+  });
+
+  $("#native-share").addEventListener("click", async () => {
+    try {
+      await navigator.share({ title: "gamescom 2026 saved list", url: input.value });
+    } catch (err) {
+      if (err?.name !== "AbortError") {
+        showShareStatus("Sharing failed — copy the link instead.");
+      }
+    }
+  });
 }
 
 /* ---------- filtering & sorting ---------- */
 
+/* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
+   deliberately not a content filter. It hides lineup rows, not prose: an earlier
+   pass regex-scrubbed adult titles out of the searchable description, which made
+   the grid render a name it would then refuse to find, and could never be
+   complete anyway (visitAdvice says "hit MW4 or 007 First Light first", and
+   Plaion carries an "18+" tag). A leaky content filter reads as a guarantee it
+   cannot keep, so descriptions stay exactly as written and stay searchable. */
 function matchesQuery(ex, q) {
   if (!q) return true;
   const hay = [
@@ -261,7 +599,10 @@ function matchesQuery(ex, q) {
     ex.hall ? `hall ${ex.hall}` : "",
     ex.booth || "",
     ...(ex.tags || []),
-    ...(ex.games || []).map((g) => g.title),
+    ...visibleGames(ex).map((g) => g.title),
+    /* Searching "18+" while hiding 18+ would return exactly the booths whose
+       gated titles are currently hidden. */
+    hasAdult(ex) && state.age !== "hide" ? "18+" : "",
   ]
     .join(" ")
     .toLowerCase();
@@ -276,6 +617,7 @@ function filtersActive() {
     state.query !== "" ||
     state.type !== "all" ||
     state.hall !== "all" ||
+    state.age !== "all" ||
     state.playableOnly ||
     state.confirmedOnly ||
     state.savedOnly ||
@@ -287,7 +629,12 @@ function filtered() {
   const list = state.exhibitors.filter((ex) => {
     if (state.type !== "all" && ex.type !== state.type) return false;
     if (state.hall !== "all" && String(ex.hall) !== state.hall) return false;
-    if (state.playableOnly && !(ex.games || []).some((g) => g.playable)) return false;
+    if (state.age === "only" && !hasAdult(ex)) return false;
+    if (state.age === "hide") {
+      if (ex.ageRestricted === true) return false;
+      if ((ex.games || []).length && !visibleGames(ex).length) return false;
+    }
+    if (state.playableOnly && !visibleGames(ex).some((g) => g.playable)) return false;
     if (state.confirmedOnly && !ex.locationConfirmed) return false;
     if (state.savedOnly && !hasSaved(ex)) return false;
     if (state.hidePlayed && hasPlayed(ex)) return false;
@@ -356,6 +703,24 @@ function hallMarker(ex) {
   </div>`;
 }
 
+function ageBadge(status = "expected", label = "18+", extraClass = "") {
+  const ageStatus = status === "confirmed" ? "confirmed" : "expected";
+  const title = ageStatus === "confirmed"
+    ? "18+ wristband required"
+    : "18+ expected — not confirmed";
+  return `<span class="badge badge-age${extraClass ? ` ${extraClass}` : ""}" data-age-status="${ageStatus}"
+      title="${esc(title)}"><span aria-hidden="true">${esc(label)}</span><span class="sr-only">${esc(title)}</span></span>`;
+}
+
+/* A booth-wide `ageRestricted` is a hand-written editorial assertion that the
+   zone is gated — per docs/UPDATING.md it is only set when a source supports it,
+   so it counts as confirmed. A per-game flag inferred from the title's rating
+   does not, and stays "expected". */
+const boothAgeStatus = (ex) =>
+  ex.ageRestricted === true || adultGames(ex).some((g) => g.ageStatus === "confirmed")
+    ? "confirmed"
+    : "expected";
+
 function gameRow(g) {
   const status = g.status || "expected";
   const plat = platformCodes(g.platforms);
@@ -371,6 +736,7 @@ function gameRow(g) {
       <span class="game-title">${esc(g.title)}</span>
       ${statusLabel}
       ${g.playable ? `<span class="badge badge-playable">playable</span>` : ""}
+      ${isAdult(g) ? ageBadge(g.ageStatus) : ""}
     </span>
     ${plat ? `<span class="game-plat">${esc(plat)}</span>` : "<span></span>"}
     ${markButton("played", "game", key, g.title)}
@@ -380,7 +746,7 @@ function gameRow(g) {
 }
 
 function card(ex) {
-  const games = ex.games || [];
+  const games = visibleGames(ex);
   const isOpen = state.expanded.has(ex.id);
   /* A saved game never hides behind "+ 12 more" — the whole point of saving it
      is not having to go looking for it again. */
@@ -401,7 +767,7 @@ function card(ex) {
       ${hallMarker(ex)}
       <div class="exh-id">
         <span class="overline">${esc(TYPE_LABELS[ex.type] || ex.type)}</span>
-        <h3>${esc(ex.name)}</h3>
+        <h3>${esc(ex.name)}${hasAdult(ex) && !games.length && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</h3>
       </div>
       ${markButton("played", "exhibitor", ex.id, ex.name)}
       ${markButton("saved", "exhibitor", ex.id, ex.name, { wide: true })}
@@ -415,7 +781,7 @@ function card(ex) {
                 <span>Lineup</span>
                 <span>${games.length} title${games.length === 1 ? "" : "s"}${
                   playableCount ? `<span class="stamp">${playableCount} playable</span>` : ""
-                }</span>
+                }${hasAdult(ex) && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</span>
               </div>
               <ul class="games">${shown.map(gameRow).join("")}</ul>
               ${moreBtn}
@@ -470,6 +836,8 @@ function renderFilterSummary() {
   const parts = [];
   if (state.type !== "all") parts.push(TYPE_LABELS[state.type] || state.type);
   if (state.hall !== "all") parts.push(`Hall ${state.hall}`);
+  if (state.age === "hide") parts.push("hide 18+");
+  if (state.age === "only") parts.push("18+ only");
   if (state.playableOnly) parts.push("playable only");
   if (state.confirmedOnly) parts.push("confirmed only");
   if (state.savedOnly) parts.push("saved only");
@@ -516,6 +884,27 @@ function renderFilters() {
       renderExhibitors();
     })
   );
+
+  const ageFilters = $("#age-filters");
+  if (!ageFilters) return; // a cached pre-age-filter index.html may briefly pair with this JS
+  ageFilters.innerHTML = AGE_FILTERS
+    .map(
+      ([value, label]) =>
+        `<button class="chip age-chip ${state.age === value ? "active" : ""}" type="button"
+          data-age="${value}" aria-pressed="${state.age === value}">${label}</button>`
+    )
+    .join("");
+  ageFilters.closest(".toolbar-row")?.classList.remove("hidden");
+  $$("#age-filters .chip").forEach((chip) =>
+    chip.addEventListener("click", () => {
+      const age = chip.dataset.age;
+      state.age = age;
+      persistPrefs();
+      renderFilters();
+      renderExhibitors();
+      $(`#age-filters [data-age="${CSS.escape(age)}"]`)?.focus();
+    })
+  );
 }
 
 /* ---------- planner ---------- */
@@ -541,8 +930,60 @@ function renderPlanner() {
     .join("");
 
   renderPriority();
+  renderWristband();
 
   $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
+}
+
+/* Deliberately independent of state.age: the planner does not inherit the
+   exhibitor grid's filters (prioritySavedOnly is a separate toggle from
+   savedOnly for the same reason), and this section exists for the visitor who
+   wants the wristband, not the one browsing without it. */
+function renderWristband() {
+  const container = $("#wristband-list");
+  const section = $("#wristband-section");
+  if (!container || !section) return; // tolerate a cached pre-wristband index.html
+
+  const list = state.exhibitors
+    .filter(hasAdult)
+    .sort((a, b) => {
+      const ha = a.hall ? parseFloat(a.hall) : 99;
+      const hb = b.hall ? parseFloat(b.hall) : 99;
+      return ha - hb || a.name.localeCompare(b.name);
+    });
+
+  const rows = list
+    .map((e) => {
+      const titles = adultGames(e);
+      const games = titles.length
+        ? titles.map((g) => esc(g.title)).join(" · ")
+        : "Booth-wide age-restricted zone";
+      const location = `${e.hall ? `Hall ${esc(e.hall)}` : "Hall TBA"} · ${
+        e.booth ? esc(e.booth) : "booth TBA"
+      }`;
+      const expected = boothAgeStatus(e) !== "confirmed";
+      /* The "expected" marker sits inside the titles cell rather than in a column
+         of its own: every row is its own grid, so a column that only some rows
+         fill sizes those rows' fr tracks differently and breaks the alignment
+         down the list. */
+      return `<div class="priority-item wristband-item" data-saved="${hasSaved(e)}" data-played="${hasPlayed(e)}">
+        <span class="wristband-name">${esc(e.name)}</span>
+        <span class="wristband-loc">${location}</span>
+        <span class="wristband-games">${games}${
+          expected ? ` ${ageBadge("expected", "18+ expected", "wristband-status")}` : ""
+        }</span>
+        <span class="row-actions">
+          ${markButton("played", "exhibitor", e.id, e.name)}
+          ${markButton("saved", "exhibitor", e.id, e.name)}
+        </span>
+      </div>`;
+    })
+    .join("");
+
+  keepingFocus(container, () => {
+    container.innerHTML = rows;
+  });
+  section.classList.toggle("hidden", list.length === 0);
 }
 
 function renderPriority() {
@@ -561,7 +1002,7 @@ function renderPriority() {
       const mine = savedGames(e);
       return `<div class="priority-item" data-saved="${hasSaved(e)}" data-played="${hasPlayed(e)}">
         <span class="priority-rank">${String(busiest.indexOf(e) + 1).padStart(2, "0")}</span>
-        <span class="priority-name">${esc(e.name)}</span>
+        <span class="priority-name">${esc(e.name)}${hasAdult(e) ? ageBadge(boothAgeStatus(e)) : ""}</span>
         <span class="priority-loc">${e.hall ? `Hall ${esc(e.hall)}` : "TBA"}</span>
         <span class="priority-advice">${esc(e.visitAdvice || e.crowdNote || "")}</span>
         <span class="row-actions">
@@ -672,6 +1113,76 @@ function renderChangelog() {
 }
 
 /* ---------- misc ---------- */
+
+const toast = $("#toast");
+let activeToast = null;
+const toastQueue = [];
+
+function renderToast(notification) {
+  activeToast = notification;
+  $("#toast-text").textContent = notification.message;
+  const btn = $("#toast-action");
+  if (notification.actionLabel) {
+    btn.textContent = notification.actionLabel;
+    btn.hidden = false;
+    btn.onclick = notification.onAction;
+  } else {
+    btn.hidden = true;
+    btn.onclick = null;
+  }
+  toast.hidden = false;
+}
+
+function queueToast(notification) {
+  if (!notification.priority) {
+    toastQueue.push(notification);
+    return;
+  }
+  const before = toastQueue.findIndex((queued) => !queued.priority);
+  toastQueue.splice(before === -1 ? toastQueue.length : before, 0, notification);
+}
+
+/* Import prompts are priority notifications because their payload has already
+   been removed from the address bar. PWA and install messages queue behind
+   them instead of destroying the only Add/Undo action. */
+function showToast(message, actionLabel, onAction, options = {}) {
+  if (!toast) return null;
+  const notification = {
+    message,
+    actionLabel,
+    onAction,
+    priority: Boolean(options.priority),
+  };
+  if (toast.hidden || !activeToast || options.replace) {
+    renderToast(notification);
+  } else if (notification.priority && !activeToast.priority) {
+    queueToast(activeToast);
+    renderToast(notification);
+  } else if (options.queue !== false) {
+    queueToast(notification);
+  } else {
+    return null;
+  }
+  return notification;
+}
+
+function hideToast(notification) {
+  if (!toast) return;
+  if (notification && notification !== activeToast) {
+    const queued = toastQueue.indexOf(notification);
+    if (queued !== -1) toastQueue.splice(queued, 1);
+    return;
+  }
+  const next = toastQueue.shift();
+  if (next) renderToast(next);
+  else {
+    activeToast = null;
+    toast.hidden = true;
+  }
+}
+
+if (toast) $("#toast-dismiss").addEventListener("click", () => hideToast());
+window.gcToast = { show: showToast, hide: hideToast };
 
 function renderCountdown() {
   const start = new Date(state.event.startDate + "T10:00:00+02:00");
@@ -785,6 +1296,7 @@ function bindControls() {
     persistMarks("played");
     onMarksChanged({ rebuild: true });
   });
+  bindShareDialog();
   /* One delegated listener covers every + and ✓ button in both views, including the
      ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
@@ -793,12 +1305,16 @@ function bindControls() {
   });
   /* Same marks, second tab: keep them from overwriting each other. */
   window.addEventListener("storage", (e) => {
-    if (e.key !== null && !Object.values(MARK_KEYS).includes(e.key)) return;
+    const watched = [...Object.values(MARK_KEYS), PREFS_KEY];
+    if (e.key !== null && !watched.includes(e.key)) return;
     if (e.key === null || e.key === MARK_KEYS.saved) state.marks.saved = loadMarks("saved");
     if (e.key === null || e.key === MARK_KEYS.played) state.marks.played = loadMarks("played");
+    if (e.key === null || e.key === PREFS_KEY) Object.assign(state, loadPrefs());
+    renderFilters();
     renderExhibitors();
     renderMarkControls();
     renderPriority();
+    renderWristband();
   });
 
   $("#reset-filters").addEventListener("click", () => {
@@ -806,6 +1322,7 @@ function bindControls() {
       query: "",
       type: "all",
       hall: "all",
+      age: "all",
       playableOnly: false,
       confirmedOnly: false,
       savedOnly: false,
@@ -815,7 +1332,8 @@ function bindControls() {
     $("#playable-only").checked = false;
     $("#confirmed-only").checked = false;
     $("#saved-only").checked = false;
-    persistMarks("played");
+    $("#hide-played").checked = false;
+    persistPrefs();
     renderMarkControls();
     renderFilters();
     renderExhibitors();
@@ -829,7 +1347,11 @@ function bindControls() {
   $$(".tab").forEach((tab) => tab.addEventListener("click", () => showView(routeFor(tab.dataset.view))));
   /* push:true here so an unknown or now-stale hash gets rewritten to the route
      actually on screen rather than being left lying in the address bar. */
-  window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
+  window.addEventListener("hashchange", () => {
+    const incoming = takeIncomingList();
+    showView(incoming ? SAVED_ROUTE : parseHash().route);
+    if (incoming) offerIncoming(incoming);
+  });
 }
 
 async function main() {
@@ -841,6 +1363,11 @@ async function main() {
   }
   state.marks.saved = loadMarks("saved");
   state.marks.played = loadMarks("played");
+  Object.assign(state, loadPrefs());
+  const incoming = takeIncomingList();
+  /* Only a link in the address bar moves the visitor to their list; a leftover
+     offer is repeated where they already were. */
+  const offer = incoming || pendingIncomingList();
   $("#event-dates").textContent = `${state.event.location} · ${state.event.dates}`;
   bindControls();
   renderCountdown();
@@ -851,7 +1378,8 @@ async function main() {
   renderPlanner();
   renderEvent();
   renderChangelog();
-  showView(location.hash.slice(1) || VIEWS[0], { push: false });
+  showView(incoming ? SAVED_ROUTE : parseHash().route || VIEWS[0], { push: false });
+  if (offer) offerIncoming(offer);
 }
 
 main();

@@ -6,9 +6,10 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 
 - Overview of exhibitors with their announced (or rumored) games and products
 - Hall & booth locations where known — clearly marked when unconfirmed
-- Search across exhibitors, games and tags; filters by category, hall, playable demos
+- Search across exhibitors, games and tags; filters by category, hall, playable demos and age gate (hide 18+ / 18+ only)
 - **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
-- Crowd forecasts (1–5) per exhibitor and a **Visit Planner** with queue-priority list and day-by-day advice
+- **Shareable saved lists** — move a plan to another device or send it to a friend with a link or scannable QR code
+- Crowd forecasts (1–5) per exhibitor and a **Visit Planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - Event info: dates, hours, tickets, special areas, Opening Night Live
 - **Installable and offline-capable** — add it to your home screen and the whole guide
   stays readable in a hall with no reception
@@ -79,9 +80,18 @@ overwhelmingly German. To refresh them, re-run the download step in
 
 The `+` on a card head saves a booth; the `+` on a lineup row saves a single game.
 Both are kept in `localStorage` under `gc2026.saved.v1` — no account, no server, and
-nothing leaves the device. Two tabs of the guide stay in sync via the `storage` event,
-and if storage is blocked altogether (Safari private mode) the list still works for
-the session instead of throwing.
+nothing leaves the device unless you share a link yourself. Two tabs of the guide stay
+in sync via the `storage` event, and if storage is blocked altogether (Safari private
+mode) the list still works for the session instead of throwing.
+
+Shared links encode guide identifiers only — exhibitor IDs and compact game codes. The
+link and its QR code are built entirely in your browser, so no saved-list data is
+uploaded or sent anywhere by the guide. Opening one never replaces an existing list:
+it asks before adding to a non-empty list, while an empty list imports immediately with
+an Undo option. Opening the link consumes it — it does not stay in the address bar to be
+forwarded on — so until the question is answered the tab keeps its own copy: dismissing
+the prompt costs a reload rather than the whole list. Answer it, or close the tab, and
+the copy is gone.
 
 It is entirely local, so it needs no network: with the app running off the service
 worker cache in a dead-reception hall, the list still renders, both saved-only filters
@@ -94,8 +104,9 @@ long-press from the home screen instead of three taps into a filter drawer. It i
 listed first of the four shortcuts because launchers truncate — if anything gets cut it
 should be Updates, not this. On the exhibitor list the URL owns the filter: `#saved`
 turns it on, `#exhibitors` clears it, and the tabs route through whichever you had set,
-so switching to the planner and back keeps your filter. A `#saved` link survives a
-reload and can be shared.
+so switching to the planner and back keeps your filter. A bare `#saved` route survives
+a reload; the **Share list** control builds a separate, self-contained link for moving
+the actual items.
 
 Games are keyed by **title**, not by booth. Eight titles this year are shown at two
 booths at once — Alien: Isolation 2 sits at both Xbox and SEGA — and someone who saved
@@ -122,9 +133,14 @@ signal colour: saved things need attention, while played things should recede. I
 queue-priority list, played booths sink below the unplayed ones without changing their
 absolute ranks, and **Hide played** removes them altogether.
 
-Played marks and the hide preference live in a second local-only storage entry,
-`gc2026.played.v1`, separate from the saved list. They work offline, stay in sync
-between tabs, and never leave the device.
+Played marks live in a second local-only storage entry, `gc2026.played.v1`, separate
+from the saved list; **Hide played** is a view preference rather than a mark, so it
+sits in `gc2026.prefs.v1` next to the age filter. All of it works offline, stays in
+sync between tabs, and never leaves the device.
+
+Played marks are deliberately **not** part of a shared link. A shared list is a plan
+you hand to someone else, and your progress through it is not theirs — `?l=` carries
+saved booths and games only.
 
 ## Architecture
 

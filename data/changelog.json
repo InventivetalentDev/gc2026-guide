@@ -1,12 +1,30 @@
 [
   {
     "date": "2026-08-10",
-    "revision": 5,
+    "revision": 7,
     "changes": [
       "Tick ✓ on a game once you've played it — the row dims, and the same title is marked at every booth showing it.",
       "A booth counts as played when you tick it directly or finish every game you saved there; save another game and it becomes active again.",
       "Played booths sink below the rest of the queue-priority list without losing their original rank, and the new “Hide played” switch removes them altogether.",
       "Your played history and hide preference live in this browser only, work offline and never leave your device."
+    ]
+  },
+  {
+    "date": "2026-08-10",
+    "revision": 6,
+    "changes": [
+      "New: hide 18+ demos or show only age-gated booths, with badges distinguishing confirmed wristband checks from expected restrictions.",
+      "The Visit Planner now groups booths with adult demos into a wristband checklist, so you can collect the red band before queueing."
+    ]
+  },
+  {
+    "date": "2026-08-10",
+    "revision": 5,
+    "changes": [
+      "New: share your saved booths and games as a link, with a scannable QR code for moving a plan from desktop to phone.",
+      "Opening a shared link never replaces your list: an empty list loads immediately with Undo, while an existing list asks before adding only the new items.",
+      "Shared links are built entirely in the browser and contain guide identifiers only — exhibitor IDs and compact game codes — so nothing is uploaded or sent anywhere unless you share the link yourself.",
+      "Link sharing and QR generation work offline; the QR encoder is dependency-free and included in the app cache."
     ]
   },
   {
