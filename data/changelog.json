@@ -1,13 +1,21 @@
 [
   {
     "date": "2026-08-12",
-    "revision": 12,
+    "revision": 13,
     "changes": [
       "New: assign each saved booth or game to a specific gamescom day, with unassigned picks kept together until you're ready to place them.",
       "Each itinerary day shows its opening hours, access rules and crowd advice inline, so the plan stays useful while you move through the halls.",
       "Export the assigned day plan as a calendar (.ics) file, with each day's stops collected into one event.",
       "Stops you've marked played dim and sink to the bottom of their itinerary day, so each group leads with what's still left to do.",
       "Your itinerary stays in this browser only, alongside your saved list — day assignments are not part of shared links, and nothing is sent anywhere."
+    ]
+  },
+  {
+    "date": "2026-08-12",
+    "revision": 12,
+    "changes": [
+      "New: Route by hall on the Visit planner groups your saved stops in hall-number order, with offsite and unannounced locations — plus absent exhibitors — called out separately.",
+      "Route stops carry the played tick too: a played stop dims, drops to the end of its hall, and respects the Hide played toggle."
     ]
   },
   {
