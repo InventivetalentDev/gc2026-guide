@@ -16,7 +16,25 @@ This document is the playbook for refreshing the data — written so a scheduled
 2. **Web-search for news since the last update** — query patterns like
    `gamescom 2026 <exhibitor> lineup`, `gamescom 2026 booth`, `gamescom 2026 playable`,
    restricted to the last ~2 weeks.
-3. **Update `data/exhibitors.json`**:
+   ⚠️ News only surfaces the AAA names. Community and mid-size booths (Aternos,
+   SCS Software, Behaviour, retro brands…) never make the press — they are only
+   findable in the directory sweep below.
+3. **Sweep the official exhibitor directory for new names** — the directory has no
+   public API and its search form ignores query parameters, but the paginated AJAX
+   endpoint works without a session, 20 entries per page:
+   ```sh
+   # loop start=0,20,40,… until past the total reported by blaetternInfo(N) in the response
+   curl -s "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/?route=aussteller/blaettern&fw_ajax=1&start=0"
+   ```
+   Each result item carries the company name, country and a hall-plan link with
+   `halle=` / `standnr=` parameters. Diff at least the consumer halls (5.x–10.x)
+   against `data/exhibitors.json` on every refresh; halls 1–4.x are the trade-only
+   business area, and `F…` values are open-air sites. Useful permalinks:
+   - Directory entry: `https://exhibitors.gamescom.global/exhibitor/<slug>/` (slug from the result link)
+   - Self-managed profile with booth program: `https://www.gamescom.global/en/exhibitor/<slug>`
+     (different slug namespace; the page embeds a JSON `partner` payload with products,
+     events and booth descriptions — grep the page source for `\"partner\":`)
+4. **Update `data/exhibitors.json`**:
    - Add newly announced exhibitors.
    - Upgrade game `status` (`rumored` → `expected` → `confirmed`) as info firms up; **never downgrade silently** — remove a game only if it's officially not coming, and note why in the commit message.
    - Fill in `hall`/`booth` and flip `locationConfirmed` to `true` when officially published.
@@ -24,16 +42,16 @@ This document is the playbook for refreshing the data — written so a scheduled
    - Re-check show-floor age gates: set numeric game `age` and `ageStatus`, or booth-wide `ageRestricted`, only when a source supports the restriction.
    - Re-evaluate `crowd`, `crowdNote` and `visitAdvice` when new info (booth size, lineup hype, ticket sellouts) changes the picture.
    - Refresh each touched exhibitor's `lastUpdated` and append new `sources`.
-4. **Update `data/event.json`** if hours/tickets/areas/ONL details changed (e.g. days selling out — that raises crowd levels too).
-5. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date), increment `revision`, adjust `note` if warranted.
-6. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
+5. **Update `data/event.json`** if hours/tickets/areas/ONL details changed (e.g. days selling out — that raises crowd levels too).
+6. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date), increment `revision`, adjust `note` if warranted.
+7. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
    human-readable bullet per meaningful change — this renders on the site's Updates tab.
    Skip trivia; write for visitors ("Ubisoft booth confirmed: Hall 6 B010"), not diffs.
-7. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
+8. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
    ```sh
    node -e "['exhibitors','event','meta','changelog'].forEach(f=>JSON.parse(require('fs').readFileSync('data/'+f+'.json')))"
    ```
-8. **Commit & push to `main`** with a message summarizing what changed, e.g.
+9. **Commit & push to `main`** with a message summarizing what changed, e.g.
    `data: Ubisoft booth confirmed Hall 6 B010; add Anno 118 as playable; bump rev 7`.
 
 ## Editorial rules
