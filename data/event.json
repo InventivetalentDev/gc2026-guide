@@ -12,7 +12,7 @@
       "hours": "Business 09:00–19:00, entertainment 13:00–19:00",
       "open": "13:00",
       "close": "19:00",
-      "note": "Public entry was only via the €65.50 Wildcard ticket (from 13:00) — it sold out Aug 5, so Wednesday is now trade/media only unless you already bought one."
+      "note": "Public entry was only via the €65.50 Wildcard ticket (from 13:00) — it sold out Aug 5, so Wednesday is now trade/media only unless you already bought one. Trade badge caveat: some big booths reserve Wednesday (or its morning) for invited press — Xbox's 2026 booth doesn't open to visitors until Thursday, and in 2025 Capcom admitted only press until about 11:00."
     },
     {
       "date": "2026-08-27",
@@ -69,12 +69,13 @@
     { "name": "Campus Area", "hall": "10.1", "description": "Universities, education and industry recruiting." },
     { "name": "Signing Area", "hall": "11.1", "description": "Content creator autograph and meet-and-greet sessions." },
     { "name": "gamescom epix", "hall": null, "description": "Free digital quest program (7 story chapters, started Aug 3) — on-site booth quests, collector cards, and free Sunday tickets for completing all chapters." },
-    { "name": "gamescom GDQ", "hall": null, "description": "New Games Done Quick speedrunning charity showcase, Aug 28–30, Congress Center North." },
+    { "name": "gamescom GDQ", "hall": null, "description": "New Games Done Quick speedrunning charity showcase, Aug 28–30, Konrad-Adenauer-Halle (Congress Center North)." },
     { "name": "City Festival", "hall": null, "description": "Free open-air concerts and gaming zones in Cologne's city center (Ringe), Aug 29–30 evenings." }
   ],
   "crowdTips": [
     "Saturday is the busiest, priciest day and usually sells out — do hands-on play Thursday or Sunday instead.",
     "Wednesday's Wildcard ticket (entry from 13:00) was the quietest way to play the hottest demos — it's now sold out, so Thursday morning is the next-best low-crowd option if you don't already have one.",
+    "On trade Wednesday, a trade badge doesn't open every door: several AAA booths run invited-press-only previews in the morning or skip the day entirely (Xbox 2026: booth opens Thursday; Capcom 2025: press-only until ~11:00). Check a booth's own channels before planning your Wednesday around it.",
     "Arrive well before doors open and pick the entrance nearest your first must-play booth — big booths build 2–4 h queues within the first hour.",
     "Pick 5–10 must-play booths in advance (official gamescom app + hall plan) and hit your single most-wanted booth right at opening.",
     "Some large booths hand out time slots or fast-lane wristbands in the morning via their own apps — check exhibitors' socials the week before.",
@@ -90,6 +91,9 @@
     "https://www.invenglobal.com/articles/23310/gamescom-2026-opening-night-live-tickets-go-on-sale-and-sell-out-instantly",
     "https://www.invenglobal.com/articles/24045/gamescom-2026-exhibitor-lineup-revealed-expected-to-be-largest-ever",
     "https://gamingpartys.de/2069/2026/07/gamescom-epix-2026-alle-infos-zu-quests-sonntag-tickets-neuen-story-kapitel/",
-    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-tickets-privatbesucher-preise-040326/"
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-tickets-privatbesucher-preise-040326/",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-events-shows-programm-100826/",
+    "https://news.xbox.com/en-us/2026/07/28/xbox-gamescom-2026/",
+    "https://www.drwindows.de/news/die-gamescom-2025-mein-persoenlicher-rueckblick"
   ]
 }

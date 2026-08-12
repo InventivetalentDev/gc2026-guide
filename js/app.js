@@ -874,6 +874,13 @@ function card(ex) {
         <span class="queue-val">${crowd ? `${crowd}/5` : "—"} ${esc(CROWD_LABELS[crowd] || "?")}</span>
       </div>
       ${ex.visitAdvice ? `<p class="advice"><span class="advice-label">Plan</span>${esc(ex.visitAdvice)}</p>` : ""}
+      ${
+        ex.officialUrl
+          ? /* Every card would otherwise announce the same "Official exhibitor page"
+               to a screen reader, so the booth name rides along in the accessible name. */
+            `<a class="official-link" href="${esc(ex.officialUrl)}" target="_blank" rel="noopener">Official exhibitor page<span aria-hidden="true"> ↗</span><span class="sr-only"> for ${esc(ex.name)}, opens in a new tab</span></a>`
+          : ""
+      }
     </div>
   </article>`;
 }
