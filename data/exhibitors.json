@@ -335,6 +335,32 @@
     "lastUpdated": "2026-08-12"
   },
   {
+    "id": "snail-games",
+    "name": "Snail Games",
+    "type": "publisher",
+    "hall": "8.1",
+    "booth": "A041",
+    "locationConfirmed": true,
+    "description": "The ARK publisher's officially announced stand (8.1, A-041): new ARK: Survival Ascended content alongside open-universe MMO For The Stars, medieval survival sim Bellwright and cozy builder Honeycomb: The World Beyond — plus a first public look at an unannounced, internally developed AAA title.",
+    "games": [
+      { "title": "ARK: Survival Ascended", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "New content and franchise developments for the survival flagship." },
+      { "title": "For The Stars", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Open-universe MMO." },
+      { "title": "Bellwright", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Medieval survival/colony sim, 1M+ players on Steam." },
+      { "title": "Honeycomb: The World Beyond", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Sci-fi sandbox builder; also on Snail's official gamescom profile." },
+      { "title": "Unannounced Snail AAA title", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "First look promised for media and attendees." }
+    ],
+    "tags": ["survival", "MMO", "world premiere"],
+    "crowd": 3,
+    "crowdNote": "ARK's community is large and a AAA reveal pulls walk-up interest, but it's a mid-size stand rather than a mega-booth.",
+    "visitAdvice": "If the unannounced title lands a splashy reveal, the stand will busy up the next morning — otherwise ARK fans can drop in most times.",
+    "sources": [
+      "https://exhibitors.gamescom.global/exhibitor/snail_games_usa/",
+      "https://investor.snail.com/news-releases/news-release-details/snail-games-attend-gamescom-2026-expanded-product-pipeline-and",
+      "https://www.gamescom.global/en/exhibitor/snail-games-usa"
+    ],
+    "lastUpdated": "2026-08-12"
+  },
+  {
     "id": "plaion",
     "name": "Plaion (Deep Silver)",
     "type": "publisher",
@@ -611,6 +637,30 @@
     "lastUpdated": "2026-08-12"
   },
   {
+    "id": "aerosoft",
+    "name": "Aerosoft",
+    "type": "publisher",
+    "hall": "9.1",
+    "booth": "B043",
+    "locationConfirmed": true,
+    "description": "The Paderborn simulation specialist confirms Winter Resort 3 and Professional Ship Simulator, plus five simulators revealed for the first time at the show — police work, mining, firefighting, crab fishing and roadmaking. A compact stand among Hall 9.1's big booths (plus a business-area stand in 4.2).",
+    "games": [
+      { "title": "Winter Resort 3", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Alpine ski-resort sim sequel." },
+      { "title": "Professional Ship Simulator", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Part of the confirmed lineup." },
+      { "title": "Five unannounced simulators", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "First reveals: police work, mining, firefighting, crab fishing and roadmaking." }
+    ],
+    "tags": ["simulation", "German"],
+    "crowd": 2,
+    "crowdNote": "Dedicated sim niche — steady interest but rarely long lines.",
+    "visitAdvice": "Pairs into a sim circuit with GIANTS and the Team17 × astragon stand in Hall 6.1; reveal stations are busiest right after doors.",
+    "sources": [
+      "https://exhibitors.gamescom.global/exhibitor/aerosoft/",
+      "https://www.gamesmarket.global/aerosoft-confirms-gamescom-2026-presence/",
+      "https://www.univers-simu.com/en/news/la-gamescom-2026-affiche-complet-giants-aerosoft-et-lopening-night-live-se-devoilent-124784/"
+    ],
+    "lastUpdated": "2026-08-12"
+  },
+  {
     "id": "ggg-poe2",
     "name": "Grinding Gear Games",
     "type": "publisher",
@@ -703,6 +753,24 @@
     "visitAdvice": "Browse any time of day; a good low-queue option even on the weekend.",
     "sources": ["https://www.invenglobal.com/articles/24045/gamescom-2026-exhibitor-lineup-revealed-expected-to-be-largest-ever"],
     "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "koei-tecmo",
+    "name": "Koei Tecmo",
+    "type": "publisher",
+    "hall": "10.2",
+    "booth": "E043",
+    "locationConfirmed": true,
+    "description": "Officially listed with a small Hall 10.2 stand, registered alongside Japanese partner Gentle Giants — the program is unannounced, and Koei Tecmo's main autumn stage is Tokyo Game Show. With Attack on Titan 3 due winter 2026, some presence for it is plausible but unconfirmed.",
+    "games": [
+      { "title": "Attack on Titan 3", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Winter 2026 release timing makes a showing plausible — our inference, nothing announced." }
+    ],
+    "tags": ["Japanese", "action"],
+    "crowd": 2,
+    "crowdNote": "Small stand in the indie/merch hall — browsing traffic unless something playable turns up.",
+    "visitAdvice": "Check on-site: a playable Attack on Titan 3 or Nioh 3 station would queue fast; otherwise a quick stop on your Indie Arena Booth round.",
+    "sources": ["https://exhibitors.gamescom.global/exhibitor/koeitecmoisken/"],
+    "lastUpdated": "2026-08-12"
   },
   {
     "id": "bilibili",
@@ -799,6 +867,27 @@
     "crowdNote": "A small stand with a devoted horror crowd — short lines unless a new reveal drops at ONL.",
     "visitAdvice": "If Bloober shows anything at Opening Night Live, expect the stand to spike the next morning — otherwise a quick stop.",
     "sources": ["https://exhibitors.gamescom.global/exhibitor/bloober_team/"],
+    "lastUpdated": "2026-08-12"
+  },
+  {
+    "id": "coffee-stain",
+    "name": "Coffee Stain",
+    "type": "publisher",
+    "hall": "10.1",
+    "booth": "A062/B063",
+    "locationConfirmed": true,
+    "description": "The Satisfactory studio and publisher of Valheim and Deep Rock Galactic is officially listed with a Hall 10.1 stand; its program is unannounced. Satisfactory's 1.2 update shipped in June and an official Satisfactory board game is due late 2026 — demo stations and merch are the safe bets.",
+    "games": [
+      { "title": "Satisfactory", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Nothing announced for the stand yet; the 1.2 update (June 2026) makes it the obvious centerpiece." }
+    ],
+    "tags": ["indie", "co-op", "simulation"],
+    "crowd": 2,
+    "crowdNote": "Beloved catalog but a low-key stand — browsing traffic more than queues.",
+    "visitAdvice": "Easy drop-in next to the other Hall 10.1 publisher stands (SCS, Bloober, Kepler).",
+    "sources": [
+      "https://exhibitors.gamescom.global/exhibitor/coffee_stain_publishu-food_association/",
+      "https://www.gamescom.global/en/exhibitor/coffee-stain-publishing"
+    ],
     "lastUpdated": "2026-08-12"
   },
   {
@@ -966,6 +1055,25 @@
     "visitAdvice": "Walk in anytime; pairs well with Logitech and ASUS in the same hall.",
     "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
     "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "amd",
+    "name": "AMD",
+    "type": "hardware",
+    "hall": "7.1",
+    "booth": "B041/C040",
+    "locationConfirmed": true,
+    "description": "Co-registered on a shared Hall 7.1 stand block with Webedia's community area, Vodafone, ZOTAC and the Driveball Arena — expect Ryzen/Radeon demo rigs powering partner activations rather than a standalone AMD mega-booth. AMD also hosts its own Cologne event on Aug 23, teasing a Radeon announcement right before the show.",
+    "games": [],
+    "tags": ["hardware", "PC", "community"],
+    "crowd": 2,
+    "crowdNote": "Traffic on the shared block follows the community-stage program and creator meetups more than AMD itself.",
+    "visitAdvice": "Worth a pass if you're PC-hardware shopping; check the community area's stage schedule for creator sessions.",
+    "sources": [
+      "https://exhibitors.gamescom.global/exhibitor/amd_int_sales/",
+      "https://www.tweaktown.com/news/99792/amd-is-hosting-mysterious-gamescom-event-on-august-23-new-radeon-announcement-coming/index.html"
+    ],
+    "lastUpdated": "2026-08-12"
   },
   {
     "id": "wargaming",
