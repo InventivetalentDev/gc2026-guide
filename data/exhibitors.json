@@ -6,6 +6,7 @@
     "hall": "7.1",
     "booth": "A061/C060",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/xbox",
     "description": "Xbox's biggest gamescom booth ever, celebrating 25 years of Xbox: 25 games on ~140 stations, a Fable live-demo theater, daily livestreams and an Xbox FanFest on Aug 26. Bethesda/Activision titles fold into this booth. Booth open Thu–Sun 9:00–20:00.",
     "games": [
       { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "confirmed", "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"], "note": "First public 6v6 multiplayer hands-on — expected to be the single biggest queue of the show." },
@@ -54,6 +55,7 @@
     "hall": "9.1",
     "booth": "A010/B009",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/nintendo-of-europe-se",
     "description": "Nintendo's traditional giant Hall 9 booth, all-in on Switch 2 with nine confirmed playable titles 'and more' — headlined by the first publicly playable Call of Duty on Nintendo hardware in over a decade (a native Switch 2 port).",
     "games": [
       { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Switch 2"], "note": "Native Switch 2 build (Infinity Ward + Digital Legends) — not cloud streaming." },
@@ -87,6 +89,7 @@
     "hall": null,
     "booth": null,
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/sony-europe-bv",
     "description": "NOT exhibiting with a consumer booth — Sony skips a PlayStation booth for the seventh year running (last appearance 2019), favoring its own State of Play streams and Tokyo Game Show. Sony's only registrations in the official directory are trade- or partner-facing: SIE Deutschland on a shared industry stand in business Hall 4.1 (trade only), Sony Pictures co-located at Capcom's Hall 9.1 booth, and 'Sony Europe' plots on the open-air site north of Hall 8. PS5 titles are still playable at third-party booths (Blood of Dawnwalker, Turok, 007 First Light and more).",
     "games": [],
     "tags": ["not exhibiting"],
@@ -106,6 +109,7 @@
     "hall": "7.1",
     "booth": "A011/B010",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/google-uk-ltd",
     "description": "Officially listed in the 2026 exhibitor directory, near Xbox in Hall 7.1. Expect mobile and Google Play Games on PC partner titles, demo stations and giveaways; the specific lineup is still TBC.",
     "games": [
       { "title": "Partner mobile/PC titles", "status": "expected", "playable": true, "platforms": ["Android", "PC (Google Play Games)"], "note": "Directory notes 'feature of developer IP TBC' — lineup unannounced." }
@@ -124,6 +128,7 @@
     "hall": "9.1",
     "booth": "A070/C079",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/capcom-entertainment-germany-gmbh",
     "description": "One of Hall 9's biggest footprints (~950 m², ~60 demo stations) with two world-first hands-ons — Dragon's Dogma 2: Dark Arisen and Mega Man: Dual Override — plus Onimusha a week before launch. Rocket Beans runs the stage program.",
     "games": [
       { "title": "Dragon's Dogma 2: Dark Arisen", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "World-first public hands-on of the expansion (launches Oct 9, 2026)." },
@@ -148,6 +153,7 @@
     "hall": "7.1",
     "booth": null,
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/sega-europe",
     "description": "Trademark themed booth in Hall 7: Alien: Isolation 2's European hands-on debut in a claustrophobic sci-fi set, Persona 4 Revival in a recreated Junes shopping center, and Stranger Than Heaven staged as an underground jazz club.",
     "games": [
       { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "European hands-on debut of the prologue; also at the Xbox booth — compare queues." },
@@ -177,6 +183,7 @@
     "hall": "6.1",
     "booth": "A020/B021",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/bandai-namco-entertainment",
     "description": "Fully playable lineup next to Ubisoft and EA in Hall 6, headlined by the world's first open hands-on of The Blood of Dawnwalker (out Sept 3) and the first playable Ace Combat 8, plus the usual spectacular photo-op builds.",
     "games": [
       { "title": "Ace Combat 8: Wings of Theve", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First-ever public hands-on; launches Oct 2, 2026." },
@@ -204,6 +211,7 @@
     "hall": "7.1",
     "booth": "A021/B020",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/konami-digital-entertainment-bv",
     "description": "Main Hall 7 booth with an immersive Silent Hill: Townfall walk-through experience (new trailer at ONL), playable Castlevania: Belmont's Curse and a Metal Gear photo spot — plus a separate Yu-Gi-Oh! TCG stand in Hall 5.2 (B021/A020).",
     "games": [
       { "title": "Silent Hill: Townfall", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Interactive walk-through experience, not a demo; new trailer at ONL Aug 25." },
@@ -228,6 +236,7 @@
     "hall": "6.1",
     "booth": "C011/B010",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/ubisoft-gmbh",
     "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Anno 117 and The Division 2.",
     "games": [
       { "title": "Rayman Legends Retold", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"], "note": "Demo: opening level, a new dragon-ride sequence and a classic musical level." },
@@ -253,6 +262,7 @@
     "hall": "6.1",
     "booth": null,
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/ea-swiss-sarl",
     "description": "Officially back as an exhibitor (confirmed late July) with a booth at the Hall 6 entrance next to Ubisoft — but the lineup is still unannounced. EA Sports FC 27, launching weeks after the show, is the near-certain centerpiece.",
     "games": [
       { "title": "EA Sports FC 27", "status": "expected", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"], "note": "Launches weeks after gamescom; Switch 2 version separately confirmed at Nintendo's booth." },
@@ -273,6 +283,7 @@
     "hall": "8.1",
     "booth": null,
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/square-enix-ltd",
     "description": "Late addition to the exhibitor list: a Final Fantasy-focused fan booth in Hall 8 with play stations, photo stops and a large merch range — a community/catalog showing, with Dragon Quest VII Reimagined the one genuinely new title.",
     "games": [
       { "title": "Dragon Quest VII Reimagined", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"], "note": "The booth's one new title — its only likely long queue." },
@@ -319,6 +330,7 @@
     "hall": "8.1",
     "booth": "B021/C030 + C020/B012",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/gryph-frontier-pte-ltd",
     "description": "Hypergryph's global publishing brand returns with a significantly bigger Arknights: Endfield presence across two Hall 8.1 stand blocks: expanded interactive installations and photo spots, plus Boss Speedrun Challenges with exclusive event rewards.",
     "games": [
       { "title": "Arknights: Endfield", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Boss Speedrun Challenge stations with exclusive event rewards." }
@@ -341,6 +353,7 @@
     "hall": "8.1",
     "booth": "A041",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/snail-games-usa",
     "description": "The ARK publisher's officially announced stand (8.1, A-041): new ARK: Survival Ascended content alongside open-universe MMO For The Stars, medieval survival sim Bellwright and cozy builder Honeycomb: The World Beyond — plus a first public look at an unannounced, internally developed AAA title.",
     "games": [
       { "title": "ARK: Survival Ascended", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "New content and franchise developments for the survival flagship." },
@@ -367,6 +380,7 @@
     "hall": "9.1",
     "booth": null,
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/plaion-gmbh",
     "description": "One of Hall 9's largest booths, centered on METRO 2039 from in-house studio 4A Games — additionally playable at the Xbox booth in Hall 7.",
     "games": [
       { "title": "METRO 2039", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Focus title; also at Xbox's Hall 7 stand." }
@@ -385,6 +399,7 @@
     "hall": "9.1",
     "booth": "B050/C051 + B040/C041",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/krafton",
     "description": "One of Hall 9's largest presences with five titles, headlined by a still-secret world-premiere FPS from PUBG STUDIOS (set in the Pacific Northwest) plus Neon Giant's cyber-noir shooter NO LAW. Interactive missions earn themed merch. The location is now officially confirmed in the exhibitor directory, with two stand blocks: B050/C051 plus B040/C041.",
     "games": [
       { "title": "Untitled PUBG STUDIOS project", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "World-premiere reveal of a new PUBG-universe FPS at the show." },
@@ -412,6 +427,7 @@
     "hall": "6.1",
     "booth": null,
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/embark-studios-ab",
     "description": "Riding ARC Raiders' breakout success, the Swedish studio booked a Hall 6 booth reportedly twice the size of EA's — a first-time flex centered on its extraction-shooter hit.",
     "games": [
       { "title": "ARC Raiders", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Booth focus; expect new-content showcases for the live-service hit." },
@@ -431,6 +447,7 @@
     "hall": "6.1",
     "booth": "B060/C061",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/team17-digital-ltd",
     "description": "Shared group booth (officially B060/C061, a stand block also shared with Focus Entertainment): Team17's creature-collector LumenTale and Silver Pines alongside astragon's simulator lineup (Bus Simulator 27, Construction Simulator Evolution, Firefighting Simulator: Ignite).",
     "games": [
       { "title": "LumenTale: Memories of Trey", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Team17's headline demo." },
@@ -456,6 +473,7 @@
     "hall": "6.1",
     "booth": "B061",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/giants-software-entertainment-gmbh",
     "description": "Farming Simulator's developer-publisher with its traditional community booth (plus a business-area stand in Hall 4.2). The booth program is unannounced so far — Farming Simulator 26 (Switch/mobile, out May 2026) and FS25 expansion content fresh from FarmCon are the safe bets, alongside merch.",
     "games": [
       { "title": "Farming Simulator 26", "status": "expected", "playable": null, "platforms": ["Switch", "Mobile"], "note": "The Switch/mobile edition released May 19, 2026 — likely demo stations." },
@@ -478,6 +496,7 @@
     "hall": "6.1",
     "booth": "B060/C061",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/focus-entertainment-publishing-sas",
     "description": "Booth officially confirmed in the gamescom exhibitor directory: Hall 6.1, B060/C061 — a stand block it shares with Team17 and astragon. Its big release Resonance: A Plague Tale Legacy launches Aug 27 — mid-show — and is confirmed playable at the Xbox booth.",
     "games": [
       { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Launches Aug 27; confirmed at Xbox's Hall 7 booth, likely also at Focus' own Hall 6.1 stand." },
@@ -504,6 +523,7 @@
     "hall": "6.1",
     "booth": "B030",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/hoyoverse",
     "description": "One of the biggest Asian booths of the show (~660 m², plus a business booth in Hall 4.2): five titles across themed zones — a Snezhnaya-themed Genshin area, Honkai: Star Rail's Planarcadia, Zenless Zone Zero, and world-premiere hands-ons for Honkai: Nexus Anima and Petit Planet.",
     "games": [
       { "title": "Genshin Impact", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Mobile"], "note": "Snezhnaya-themed zone with railway and Statue of The Seven builds; exclusive merch." },
@@ -529,6 +549,7 @@
     "hall": "6.1",
     "booth": "C071/A070",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/level-infinite",
     "description": "Tencent's global publishing brand, next door to HoYoverse, with a fully playable three-game lineup headlined by the world-first public hands-on of Remedy's CONTROL Resonant. Themed photo spaces, prize wheel, dev meet-and-greets and a Hunt: Showdown cosplay showcase.",
     "games": [
       { "title": "CONTROL Resonant", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S", "PC"], "note": "First time playable anywhere; launches Sept 24, 2026 — the booth's biggest draw." },
@@ -553,6 +574,7 @@
     "hall": "8.1",
     "booth": "B050/A051",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/tencent-games",
     "description": "Tencent Games is officially registered on the show floor — Hall 8.1, B050/A051, program still unannounced — in addition to 'Worlds of Play: The Game Art Exhibition' offsite at the Wassermannhalle (Aug 27–29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's playable games remain at Level Infinite in Hall 6.1.",
     "games": [
       { "title": "Worlds of Play (40-title art exhibition)", "status": "confirmed", "playable": false, "platforms": [], "note": "Art exhibition Aug 27–29, off the main show floor." },
@@ -575,6 +597,7 @@
     "hall": "7.1",
     "booth": "A-051/B-050",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/netease-interactive",
     "description": "Officially confirmed by NetEase's own Aug 11 press release: Hall 7.1 booth A-051 for Sea of Remnants, and booth B-050 for Marvel Rivals (Season 9.5 content, Jeff the Landshark statue, photo booth) and Where Winds Meet's Hidden Mountain finale. NetEase also runs a separate trade-only stand in the Business Area (Hall 4.2, D-050) previewing Once Human's next expansion plus one unannounced title.",
     "games": [
       { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Multi-station 6v6 setups; Season 9.5 content at booth B-050." },
@@ -600,6 +623,7 @@
     "hall": "9.1",
     "booth": "B010/C011",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/pearl-abyss-corp",
     "description": "Showcasing Crimson Desert (6M+ sales) in partnership with Samsung: 30 demo PCs on Samsung's new 6K Odyssey G8 monitors, plus stage events, giveaways and cosplay. Officially at 9.1 B010/C011 (an earlier revision had this swapped with Samsung's own stand); Samsung is co-registered here as the tech partner.",
     "games": [
       { "title": "Crimson Desert", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Current release build on 30 Samsung Odyssey G8 6K/165 Hz stations." }
@@ -621,6 +645,7 @@
     "hall": "9.1",
     "booth": "A054/B055",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/infold-pte-ltd",
     "description": "Publisher of Infinity Nikki and Love and Deepspace. The Infinity Nikki booth (officially announced as 9-A054) hosts meet-and-greets with Nikki and Momo, activity stations with exclusive merch rewards and special events with guest appearances; Love and Deepspace shared Infold's booth in 2025 and is expected back.",
     "games": [
       { "title": "Infinity Nikki", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Mobile"], "note": "Official booth events, activities and exclusive merch — expect activity queues rather than demo stations." },
@@ -643,6 +668,7 @@
     "hall": "9.1",
     "booth": "B043",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/aerosoft-gmbh",
     "description": "The Paderborn simulation specialist confirms Winter Resort 3 and Professional Ship Simulator, plus five simulators revealed for the first time at the show — police work, mining, firefighting, crab fishing and roadmaking. A compact stand among Hall 9.1's big booths (plus a business-area stand in 4.2).",
     "games": [
       { "title": "Winter Resort 3", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Alpine ski-resort sim sequel." },
@@ -667,6 +693,7 @@
     "hall": "6.1",
     "booth": "B031",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/grinding-gear-games-ltd",
     "description": "Path of Exile 2 booth confirmed at Hall 6.1, B031 (two independent trackers, nat-games.de and gamesfinest.de, Aug 11) with an event-exclusive special demo, an 'eerie display' photo op and exclusive merchandise.",
     "games": [
       { "title": "Path of Exile 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Special demo exclusive to gamescom, post-'Return of the Ancients' era." }
@@ -689,6 +716,7 @@
     "hall": "6.1",
     "booth": "B-050",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/eclipse-glow-games",
     "description": "Chinese studio behind Arthurian action game Tides of Annihilation, confirmed to host a hands-on demo booth at Hall 6, B-050 — one of the notable new Chinese single-player entrants. GamesWirtschaft's own Hall 6 tracker still doesn't list a stand number, but InvenGlobal and WorthPlaying both independently name the booth.",
     "games": [
       { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Expanded event-exclusive demo, Hall 6, booth B-050, running Aug 27–30." }
@@ -711,6 +739,7 @@
     "hall": "10.2",
     "booth": "F010/E019",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/indie-arena-booth",
     "description": "The world's biggest indie booth — 2026 theme 'Democratree: games for everyone': ~200 games from 182 developers across 41 countries, with publisher pods (11 bit, Fireshine, Headup, Wired Productions) and a Nintendo section with Switch/Switch 2 stations. Audio brand beyerdynamic is this year's 'First Presenter' sponsor, kitting out 230+ developer stations with MMX 300 PRO headsets and running a vinyl soundtrack listening station.",
     "games": [
       { "title": "Stronghold 4", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Firefly's castle-sim revival — a headline title of the booth." },
@@ -743,6 +772,7 @@
     "hall": "10.2",
     "booth": null,
     "locationConfirmed": false,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/korea-creative-content-agency",
     "description": "Umbrella pavilion organized by the Korea Creative Content Agency, bundling small and mid-size Korean studios in the indie area (plus a B2B zone) — the best single stop for discovering Korean PC/mobile titles beyond Krafton and Pearl Abyss.",
     "games": [
       { "title": "Various Korean indie/mobile titles", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "Rotating multi-studio showcase; individual titles announced closer to the show." }
@@ -761,6 +791,7 @@
     "hall": "10.2",
     "booth": "E043",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/koeitecmo",
     "description": "Officially listed with a small Hall 10.2 stand, registered alongside Japanese partner Gentle Giants — the program is unannounced, and Koei Tecmo's main autumn stage is Tokyo Game Show. With Attack on Titan 3 due winter 2026, some presence for it is plausible but unconfirmed.",
     "games": [
       { "title": "Attack on Titan 3", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Winter 2026 release timing makes a showing plausible — our inference, nothing announced." }
@@ -779,6 +810,7 @@
     "hall": "10.1",
     "booth": "A090",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/bilibili-hk-ltd",
     "description": "Chinese video/community platform and game publisher, confirmed in the official directory with a booth in the indie-focused Hall 10.1. Its 2026 game lineup hasn't been announced yet.",
     "games": [
       { "title": "Bilibili-published titles (lineup TBA)", "status": "expected", "playable": null, "platforms": ["PC", "Mobile"], "note": "Expect an indie-scale showcase similar to prior years." }
@@ -797,6 +829,7 @@
     "hall": "10.1",
     "booth": "B030/C031",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/aternos",
     "description": "The free Minecraft server host (Bonn-based, one of the largest in the world) runs 'MC Party' together with the Cytooxien team: four custom-built Minecraft minigames — Dragon Escape, Farming, Dungeons and Paintball — played solo or in groups via a player-card queue system. Rounds earn coins to trade at the booth for Aternos/Cytooxien merch and MGA's Miniverse 'Make It Mini Minecraft' collectibles.",
     "games": [
       { "title": "MC Party (Minecraft minigames)", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Dragon Escape, Farming, Dungeons and Paintball — every round earns coins redeemable for merch and prizes." }
@@ -818,6 +851,7 @@
     "hall": "10.1",
     "booth": "E072",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/behaviour-interactive",
     "description": "Dead by Daylight's studio is officially listed with a Hall 10.1 stand in the game's 10th-anniversary year. Its booth program is still unannounced — expect anniversary content and community activities rather than a AAA-style demo floor.",
     "games": [
       { "title": "Dead by Daylight", "status": "expected", "playable": null, "platforms": ["PC", "Consoles", "Mobile"], "note": "Nothing officially announced for the stand yet; anniversary-year community presence is the safe bet." }
@@ -839,6 +873,7 @@
     "hall": "10.1",
     "booth": "B022/C023",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/scs-software-sro",
     "description": "The Euro Truck Simulator 2 / American Truck Simulator studio brings its traditional community stand — truck-seat driving rigs, team meet-and-greets and merch, a gamescom fixture for years (plus a business-area stand in Hall 4.1).",
     "games": [
       { "title": "Euro Truck Simulator 2", "status": "expected", "playable": true, "platforms": ["PC"], "note": "Driving rigs are the stand's tradition; specific 2026 program unannounced." },
@@ -858,6 +893,7 @@
     "hall": "10.1",
     "booth": "C040/D041",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/bloober-team-spolka-akcyjna",
     "description": "The Silent Hill 2 remake and Cronos: The New Dawn studio is officially listed in Hall 10.1 (plus a business-area stand); its 2026 booth program is unannounced — Cronos content or a look at its next horror project are the plausible showings. Cronos art also features in Tencent's offsite Worlds of Play exhibition.",
     "games": [
       { "title": "Cronos: The New Dawn", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Nothing announced for the stand yet; Bloober's flagship since its Sept 2025 release." }
@@ -876,6 +912,7 @@
     "hall": "10.1",
     "booth": "A062/B063",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/coffee-stain-publishing",
     "description": "The Satisfactory studio and publisher of Valheim and Deep Rock Galactic is officially listed with a Hall 10.1 stand; its program is unannounced. Satisfactory's 1.2 update shipped in June and an official Satisfactory board game is due late 2026 — demo stations and merch are the safe bets.",
     "games": [
       { "title": "Satisfactory", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Nothing announced for the stand yet; the 1.2 update (June 2026) makes it the obvious centerpiece." }
@@ -897,6 +934,7 @@
     "hall": "10.1",
     "booth": "B093",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/kepler-interactive",
     "description": "The publisher collective behind Clair Obscur: Expedition 33 lists ONTOS as its featured gamescom product: Frictional Games' (SOMA, Amnesia) sci-fi narrative mystery aboard the repurposed moon hotel Samsara, due 2026. Expect a presentation-style stand rather than a mass demo floor.",
     "games": [
       { "title": "ONTOS", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "SOMA spiritual successor from Frictional Games, releasing 2026; listed on Kepler's official gamescom profile." }
@@ -919,6 +957,7 @@
     "hall": "10.1",
     "booth": "B041",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/atari",
     "description": "Anchor of Hall 10.1's retro corner: Atari's stand sits in a cluster with the revived Commodore (C059/B050) and MicroProse (A060/B061) — expect classic and modern-retro hardware, re-releases and collector merch across all three.",
     "games": [],
     "tags": ["retro", "hardware", "merch"],
@@ -938,6 +977,7 @@
     "hall": "9.1",
     "booth": "A040/B029",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/lego-gmbh",
     "description": "Multi-stand block in Hall 9.1 next to Nintendo, confirmed returning for 2026. The lineup is TBC — the 2025 booth featured Batman, One Piece and Super Mario activations, so expect current LEGO video games plus set photo-ops.",
     "games": [
       { "title": "LEGO video game lineup (TBC)", "status": "expected", "playable": true, "platforms": ["Multi"], "note": "LEGO historically reveals new games at gamescom/ONL; 2026 titles unannounced." }
@@ -959,6 +999,7 @@
     "hall": "5.2",
     "booth": "B011/A010",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/wizards-of-the-coast",
     "description": "Wizards of the Coast anchors the trading-card corner of Hall 5.2, sharing its stand block with European distributor ADC Blackfire. Learn-to-play tables and 2026-set demos are the safe bet (this year's slate includes Reality Fracture and previews of The Hobbit crossover). Konami's separate Yu-Gi-Oh! stand, Ravensburger, Pegasus and Panini fill out the same hall.",
     "games": [
       { "title": "Magic: The Gathering", "status": "confirmed", "playable": true, "platforms": [], "note": "Learn-to-play and casual play tables; promo cards usually while daily stocks last." }
@@ -980,6 +1021,7 @@
     "hall": "8.1",
     "booth": "B041/C040",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/asus-global-pte-ltd",
     "description": "Large Hall 8.1 presence plus an outdoor activation at Hall 8 North: ROG laptops, monitors and the ROG Xbox Ally handheld family playable on-site.",
     "games": [],
     "tags": ["hardware", "handheld", "PC"],
@@ -1015,6 +1057,7 @@
     "hall": "10.2",
     "booth": "E020/D021",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/razer-europe-gmbh",
     "description": "Two official locations (Hall 10.2 consumer + Hall 2.2 business). Hands-on with the 2026 peripheral line following its big CES slate, esports activations and merch drops.",
     "games": [],
     "tags": ["hardware", "peripherals", "merch"],
@@ -1031,6 +1074,7 @@
     "hall": "8.1",
     "booth": "A065",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/logitech-ireland-services-ltd",
     "description": "Official directory listing under Logitech and Logitech G (second stand in Hall 10.1): gaming mice, keyboards, headsets and sim-racing rigs with try-before-you-buy stations.",
     "games": [],
     "tags": ["hardware", "peripherals", "sim racing"],
@@ -1047,6 +1091,7 @@
     "hall": "8.1",
     "booth": "C060",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/aoc-international-europe-bv",
     "description": "AOC's gaming-monitor brand with its latest high-refresh OLED and Mini-LED monitors on demo stations.",
     "games": [],
     "tags": ["hardware", "monitors"],
@@ -1162,6 +1207,7 @@
     "hall": "8.1",
     "booth": "B053a",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/paradox-interactive-ab",
     "description": "No classic solo booth: Paradox co-presents Transport Fever 3 with Urban Games, whose stand is officially confirmed at Hall 8.1, B053a — complete with a London double-decker bus as the eye-catcher. Paradox itself is registered in the directory at Level Infinite's shared Hall 6.1 stand, so a presence in the Tencent area looks likely.",
     "games": [
       { "title": "Transport Fever 3", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Shown with Urban Games in Hall 8; double-decker photo op." },

@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-12",
+    "revision": 10,
+    "changes": [
+      "Booth cards now link to the exhibitor's official gamescom page, where the exhibitor publishes its own booth program, stage times and trailers — 46 of the 53 booths have one.",
+      "No link on CD Projekt Red, Take-Two/Rockstar, THQ Nordic, Wargaming and Kuro Games (not registered as exhibitors), on AMD (co-registered on the shared Hall 7.1 community stand rather than under its own name), or on Samsung (gamescom has switched its profile page off)."
+    ]
+  },
+  {
+    "date": "2026-08-12",
     "revision": 9,
     "changes": [
       "Fifteen exhibitors added after a full sweep of the official 1,610-entry exhibitor directory and follow-up research — press coverage had surfaced almost none of them.",
