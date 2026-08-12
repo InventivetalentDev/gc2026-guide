@@ -222,7 +222,11 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   to   { opacity: 1; transform: none; }
 }
 
-.lede { border-left: 3px solid var(--signal); padding: 2px 0 2px 18px; margin-bottom: 32px; max-width: 68ch; }
+.lede {
+  border-left: 3px solid var(--signal);
+  padding: 2px 0 2px 18px;
+  margin-bottom: 32px;
+}
 .lede h2 {
   font-family: var(--font-poster);
   font-size: 2rem; font-weight: 400;
@@ -837,7 +841,10 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   display: flex; align-items: baseline; gap: 12px;
 }
 .info-block > h2 .section-num { color: var(--signal); }
-.info-block p { color: var(--ink-mid); font-size: .9rem; max-width: 78ch; }
+.info-block p {
+  color: var(--ink-mid);
+  font-size: .9rem;
+}
 .info-block p + p { margin-top: 10px; }
 .info-block b, .info-block strong { color: var(--ink); font-weight: 600; }
 .info-block a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--signal); text-underline-offset: 3px; }

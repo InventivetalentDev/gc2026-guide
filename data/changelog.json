@@ -1,10 +1,19 @@
 [
   {
     "date": "2026-08-12",
-    "revision": 10,
+    "revision": 11,
     "changes": [
       "Booth cards now link to the exhibitor's official gamescom page, where the exhibitor publishes its own booth program, stage times and trailers — 46 of the 53 booths have one.",
       "No link on CD Projekt Red, Take-Two/Rockstar, THQ Nordic, Wargaming and Kuro Games (not registered as exhibitors), on AMD (co-registered on the shared Hall 7.1 community stand rather than under its own name), or on Samsung (gamescom has switched its profile page off)."
+    ]
+  },
+  {
+    "date": "2026-08-12",
+    "revision": 10,
+    "changes": [
+      "Trade Wednesday reality-check added: a trade badge doesn't open every booth on Aug 26 — some big exhibitors reserve the morning (or the whole day) for invited press. Notes added to the day planner, crowd tips and affected exhibitor entries.",
+      "Xbox booth hours corrected per Xbox Wire: Thu/Fri 10:00–20:00, Sat/Sun 9:00–20:00 — the booth is closed on trade Wednesday apart from the evening FanFest (its Wednesday has traditionally been an invited-press preview).",
+      "Capcom: in 2025 the booth admitted only press until ~11:00 on Wednesday — trade visitors should plan Wednesday visits for late morning onwards."
     ]
   },
   {
