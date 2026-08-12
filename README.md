@@ -6,6 +6,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 
 - Overview of exhibitors with their announced (or rumored) games and products
 - Hall & booth locations where known — clearly marked when unconfirmed
+- A link to the exhibitor's official gamescom page where one exists, for the booth program straight from the source
 - Search across exhibitors, games and tags; filters by category, hall, playable demos and age gate (hide 18+ / 18+ only)
 - **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
 - **Shareable saved lists** — move a plan to another device or send it to a friend with a link or scannable QR code

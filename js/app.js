@@ -817,6 +817,13 @@ function card(ex) {
         <span class="queue-val">${crowd ? `${crowd}/5` : "—"} ${esc(CROWD_LABELS[crowd] || "?")}</span>
       </div>
       ${ex.visitAdvice ? `<p class="advice"><span class="advice-label">Plan</span>${esc(ex.visitAdvice)}</p>` : ""}
+      ${
+        ex.officialUrl
+          ? /* Every card would otherwise announce the same "Official exhibitor page"
+               to a screen reader, so the booth name rides along in the accessible name. */
+            `<a class="official-link" href="${esc(ex.officialUrl)}" target="_blank" rel="noopener">Official exhibitor page<span aria-hidden="true"> ↗</span><span class="sr-only"> for ${esc(ex.name)}, opens in a new tab</span></a>`
+          : ""
+      }
     </div>
   </article>`;
 }
@@ -1078,7 +1085,10 @@ function routeGroups() {
       played += 1;
       if (state.hidePlayed) return;
     }
-    const key = isOffsite(ex) ? "offsite" : ex.hall ? String(ex.hall) : "tba";
+    /* A known hall wins over the offsite tag. Some entries are both — Tencent
+       runs a Hall 8.1 booth *and* the Wassermannhalle art exhibition on one
+       entry — and a stop you can walk to belongs in the hall you walk to. */
+    const key = ex.hall ? String(ex.hall) : isOffsite(ex) ? "offsite" : "tba";
     if (!buckets.has(key)) buckets.set(key, []);
     buckets.get(key).push(ex);
   });

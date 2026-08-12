@@ -16,24 +16,57 @@ This document is the playbook for refreshing the data — written so a scheduled
 2. **Web-search for news since the last update** — query patterns like
    `gamescom 2026 <exhibitor> lineup`, `gamescom 2026 booth`, `gamescom 2026 playable`,
    restricted to the last ~2 weeks.
-3. **Update `data/exhibitors.json`**:
+   ⚠️ News only surfaces the AAA names. Community and mid-size booths (Aternos,
+   SCS Software, Behaviour, retro brands…) never make the press — they are only
+   findable in the directory sweep below.
+3. **Sweep the official exhibitor directory for new names** — the directory has no
+   public API and its search form ignores query parameters, but the paginated AJAX
+   endpoint works without a session, 20 entries per page:
+   ```sh
+   # loop start=0,20,40,… until past the total reported by blaetternInfo(N) in the response
+   curl -s "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/?route=aussteller/blaettern&fw_ajax=1&start=0"
+   ```
+   Each result item carries the company name, country and a hall-plan link with
+   `halle=` / `standnr=` parameters. Diff at least the consumer halls (5.x–10.x)
+   against `data/exhibitors.json` on every refresh; halls 1–4.x are the trade-only
+   business area, and `F…` values are open-air sites. Useful permalinks:
+   - Directory entry: `https://exhibitors.gamescom.global/exhibitor/<slug>/` (slug from the result link)
+   - Self-managed profile with booth program: `https://www.gamescom.global/en/exhibitor/<slug>`
+     (different slug namespace; the page embeds a JSON `partner` payload with products,
+     events and booth descriptions — grep the page source for `\"partner\":`)
+4. **Re-check `officialUrl` links** — the self-managed profile is what the exhibitor
+   itself publishes (booth program, trailers, meet-and-greet times), so it's the one
+   link per booth worth surfacing. The slugs are legal-entity names, not brands
+   (`ea-swiss-sarl`, `gryph-frontier-pte-ltd`), so don't guess them — enumerate the
+   list page, which paginates with `?page=N` and repeats the last page once exhausted:
+   ```sh
+   # ~9 pages of ~100; each embedded partner object carries name, nameShort and slug
+   curl -s "https://www.gamescom.global/en/exhibitors?page=1" | grep -o '"nameShort\\?":.\\{0,120\\}'
+   ```
+   Two rules keep these honest, because a wrong slug silently sends visitors to another
+   company: **open every URL you add** and confirm the `<title>` names the right
+   exhibitor (a missing profile soft-404s with a `200` and `<title>404 | gamescom</title>`),
+   and **skip any partner whose payload has `"disablePartnerPage": true`** — gamescom
+   itself stops linking those, so we don't either.
+5. **Update `data/exhibitors.json`**:
    - Add newly announced exhibitors.
    - Upgrade game `status` (`rumored` → `expected` → `confirmed`) as info firms up; **never downgrade silently** — remove a game only if it's officially not coming, and note why in the commit message.
    - Fill in `hall`/`booth` and flip `locationConfirmed` to `true` when officially published.
    - Set `playable` when hands-on demos are confirmed.
    - Re-check show-floor age gates: set numeric game `age` and `ageStatus`, or booth-wide `ageRestricted`, only when a source supports the restriction.
    - Re-evaluate `crowd`, `crowdNote` and `visitAdvice` when new info (booth size, lineup hype, ticket sellouts) changes the picture.
+   - Add `officialUrl` for any exhibitor that gained a profile page, and drop it again if a page disappears.
    - Refresh each touched exhibitor's `lastUpdated` and append new `sources`.
-4. **Update `data/event.json`** if hours/tickets/areas/ONL details changed (e.g. days selling out — that raises crowd levels too).
-5. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date), increment `revision`, adjust `note` if warranted.
-6. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
+6. **Update `data/event.json`** if hours/tickets/areas/ONL details changed (e.g. days selling out — that raises crowd levels too).
+7. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date), increment `revision`, adjust `note` if warranted.
+8. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
    human-readable bullet per meaningful change — this renders on the site's Updates tab.
    Skip trivia; write for visitors ("Ubisoft booth confirmed: Hall 6 B010"), not diffs.
-7. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
+9. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
    ```sh
    node -e "['exhibitors','event','meta','changelog'].forEach(f=>JSON.parse(require('fs').readFileSync('data/'+f+'.json')))"
    ```
-8. **Commit & push to `main`** with a message summarizing what changed, e.g.
+10. **Commit & push to `main`** with a message summarizing what changed, e.g.
    `data: Ubisoft booth confirmed Hall 6 B010; add Anno 118 as playable; bump rev 7`.
 
 ## Editorial rules
@@ -43,12 +76,17 @@ This document is the playbook for refreshing the data — written so a scheduled
   - `expected`: strongly implied (e.g. publisher confirmed + game launches in Sept/Oct)
   - `rumored`: our inference only — press speculation, past-year patterns
 - `locationConfirmed: false` + a hall value means "best guess (often from 2025 placement)". The UI marks the hall block amber and suffixes the booth with "· unconf."
-- The tags `not exhibiting` and `offsite` are load-bearing for the planner's route view. Use those exact strings: `not exhibiting` excludes an entry from the route and lists it in the absent footnote only; `offsite` puts it in the Offsite bucket and uses `booth` as its location text.
+- The tags `not exhibiting` and `offsite` are load-bearing for the planner's route view. Use those exact strings: `not exhibiting` excludes an entry from the route and lists it in the absent footnote only; `offsite` files a **hall-less** entry under the Offsite bucket. A `hall` value always wins over the `offsite` tag — an entry carrying both (Tencent runs a Hall 8.1 booth *and* the offsite Wassermannhalle exhibition) is routed to its hall, because that is the stop a visitor walks to.
 - `age` is the minimum age for an interactive demo **on the show floor**, not the USK or PEGI rating of the finished game. `ageStatus: "confirmed"` needs an exhibitor statement or official listing; a restriction inferred from the game's rating stays `"expected"`. Keep `age` numeric so lower gates remain expressible, but the current UI only filters and badges values `>= 18`. Use exhibitor-level `ageRestricted: true` only for a gated zone with no single game to attach it to — it is a hand-written assertion that the gate is real, so the UI treats it as confirmed and does *not* mark the booth "18+ expected".
 - The `Hide 18+` filter is a **browsing filter** ("don't show me demos I can't play"), not a content filter: it hides lineup rows, while descriptions, `visitAdvice` and tags stay as written and stay searchable. Don't write data on the assumption that a title is suppressed everywhere when it is hidden.
 - `platforms` is rendered on each game row as short codes (`XSX`, `SW2`, `PS5`…). Unknown values fall back to the uppercased string, so keep them short and consistent — see `PLATFORM_CODES` in `js/app.js` to add a new mapping.
 - Crowd scale: 1 calm · 2 light · 3 moderate · 4 busy (30–90 min queues) · 5 extreme (2 h+ queues, may cap lines early).
 - Don't remove the `sources` history; append.
+- `officialUrl` is the **only** outbound link on a card, so it points at gamescom's own
+  profile for that booth — never a publisher's marketing site, and never a directory
+  search result. Booths we run as one entry but gamescom registers as two (Team17 ×
+  astragon, Paradox / Urban Games) get the headliner's page; a second link would just
+  make the reader choose. `sources` is where the rest of the evidence goes.
 - **A game `title` is a user-facing key, so treat it like `id`.** Visitors save games and
   mark them played by lowercased title — rename *Fable* to *Fable (2026)* and everyone
   who saved or played it silently loses that mark, on every booth showing it. Correct
@@ -69,6 +107,7 @@ This document is the playbook for refreshing the data — written so a scheduled
   "hall": "8",                     // string or null (halls can be "4.1" style)
   "booth": "B010",                 // string or null
   "locationConfirmed": false,      // true only when officially published for 2026
+  "officialUrl": "https://www.gamescom.global/en/exhibitor/xbox",  // optional: official profile, omit when there is none
   "ageRestricted": true,           // optional: booth-wide age gate when no game fits
   "description": "1–2 sentences on what they're showing.",
   "games": [

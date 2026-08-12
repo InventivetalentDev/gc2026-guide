@@ -1,10 +1,62 @@
 [
   {
-    "date": "2026-08-11",
-    "revision": 8,
+    "date": "2026-08-12",
+    "revision": 12,
     "changes": [
       "New: Route by hall on the Visit planner groups your saved stops in hall-number order, with offsite and unannounced locations — plus absent exhibitors — called out separately.",
       "Route stops carry the played tick too: a played stop dims, drops to the end of its hall, and respects the Hide played toggle."
+    ]
+  },
+  {
+    "date": "2026-08-12",
+    "revision": 11,
+    "changes": [
+      "Booth cards now link to the exhibitor's official gamescom page, where the exhibitor publishes its own booth program, stage times and trailers — 46 of the 53 booths have one.",
+      "No link on CD Projekt Red, Take-Two/Rockstar, THQ Nordic, Wargaming and Kuro Games (not registered as exhibitors), on AMD (co-registered on the shared Hall 7.1 community stand rather than under its own name), or on Samsung (gamescom has switched its profile page off)."
+    ]
+  },
+  {
+    "date": "2026-08-12",
+    "revision": 10,
+    "changes": [
+      "Trade Wednesday reality-check added: a trade badge doesn't open every booth on Aug 26 — some big exhibitors reserve the morning (or the whole day) for invited press. Notes added to the day planner, crowd tips and affected exhibitor entries.",
+      "Xbox booth hours corrected per Xbox Wire: Thu/Fri 10:00–20:00, Sat/Sun 9:00–20:00 — the booth is closed on trade Wednesday apart from the evening FanFest (its Wednesday has traditionally been an invited-press preview).",
+      "Capcom: in 2025 the booth admitted only press until ~11:00 on Wednesday — trade visitors should plan Wednesday visits for late morning onwards."
+    ]
+  },
+  {
+    "date": "2026-08-12",
+    "revision": 9,
+    "changes": [
+      "Fifteen exhibitors added after a full sweep of the official 1,610-entry exhibitor directory and follow-up research — press coverage had surfaced almost none of them.",
+      "New: Aternos (Hall 10.1, B030/C031) — the free Minecraft server host runs 'MC Party' with the Cytooxien team: four custom minigames, with coins to spend on merch and MGA Miniverse collectibles.",
+      "New: Infold Games (Hall 9.1, A054/B055) — Infinity Nikki meet-and-greets, activities and exclusive merch; Love and Deepspace expected back too.",
+      "New: Gryphline's Arknights: Endfield returns bigger, with two Hall 8.1 stand blocks and Boss Speedrun Challenges.",
+      "New: GIANTS Software (Farming Simulator) at Hall 6.1, B061; SCS Software's Euro/American Truck Simulator rigs at Hall 10.1, B022/C023.",
+      "New: Behaviour Interactive (Dead by Daylight's 10th-anniversary year) at Hall 10.1, E072; Bloober Team at C040/D041.",
+      "New: Kepler Interactive shows ONTOS — Frictional Games' SOMA successor — at Hall 10.1, B093.",
+      "New: Magic: The Gathering (Wizards of the Coast) anchors the Hall 5.2 card corner; Atari heads a retro cluster with the revived Commodore and MicroProse in Hall 10.1.",
+      "New: Snail Games (Hall 8.1, A041) — ARK: Survival Ascended content, For The Stars, Bellwright and Honeycomb, plus a first look at an unannounced AAA title.",
+      "New: Aerosoft (Hall 9.1, B043) — Winter Resort 3, Professional Ship Simulator and five first-time sim reveals (police work, mining, firefighting, crab fishing, roadmaking).",
+      "New: Coffee Stain (Satisfactory; publisher of Valheim and Deep Rock Galactic) at Hall 10.1, A062/B063; Koei Tecmo with a small Hall 10.2 stand.",
+      "New: AMD co-anchors the shared Hall 7.1 community block (B041/C040) with Ryzen/Radeon rigs — and teases a Radeon announcement at its own Cologne event on Aug 23.",
+      "Now officially confirmed in the directory: Focus (6.1 B060/C061, sharing the stand block with Team17 x astragon), KRAFTON's two stand blocks (9.1 B050/C051 + B040/C041) and Urban Games' Transport Fever 3 stand (8.1 B053a).",
+      "Corrected: Pearl Abyss is at 9.1 B010/C011 and Samsung's own Odyssey stand at B020/C029 — the two were swapped. Samsung stays co-registered at the Pearl Abyss stand it powers.",
+      "Tencent is officially on the show floor too: Hall 8.1, B050/A051 (program unannounced) — separate from the offsite Worlds of Play art exhibition.",
+      "Hall labels now match the official directory (6.1/7.1/8.1/9.1), so the hall filter no longer splits the same hall in two."
+    ]
+  },
+  {
+    "date": "2026-08-11",
+    "revision": 8,
+    "changes": [
+      "NetEase's Hall 7.1 booths are now officially confirmed: A-051 for Sea of Remnants, B-050 for Marvel Rivals (Season 9.5) and Where Winds Meet — plus a trade-only Business Area preview of Once Human's next expansion (Hall 4.2, D-050).",
+      "Focus Entertainment's booth is now reported at Hall 6.1, B060/C061 — not yet an official Focus statement, so treat it as provisional.",
+      "Grinding Gear Games' Path of Exile 2 booth confirmed: Hall 6.1, B031.",
+      "Eclipse Glow Games' Tides of Annihilation booth confirmed: Hall 6, B-050.",
+      "KRAFTON's booth is now reported as Hall 9.1, B050/C051 — a single, uncorroborated source, so treat it with caution.",
+      "Square Enix will show a 'New Look' at Final Fantasy VII Revelation during Opening Night Live (Aug 25).",
+      "Indie Arena Booth's stands confirmed (Hall 10.2, F010/E019); audio brand beyerdynamic is this year's headline sponsor, equipping 230+ dev stations with headsets."
     ]
   },
   {
