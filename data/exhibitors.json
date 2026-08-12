@@ -6,7 +6,7 @@
     "hall": "7.1",
     "booth": "A061/C060",
     "locationConfirmed": true,
-    "description": "Xbox's biggest gamescom booth ever, celebrating 25 years of Xbox: 25 games on ~140 stations, a Fable live-demo theater, daily livestreams and an Xbox FanFest on Aug 26. Bethesda/Activision titles fold into this booth. Booth open Thu–Sun 9:00–20:00.",
+    "description": "Xbox's biggest gamescom booth ever, celebrating 25 years of Xbox: 25 games on ~140 stations, a Fable live-demo theater, daily livestreams and an Xbox FanFest on Aug 26. Bethesda/Activision titles fold into this booth. Booth open Thu/Fri 10:00–20:00, Sat/Sun 9:00–20:00 — closed on trade Wednesday except the evening FanFest (Aug 26, 20:00–23:00).",
     "games": [
       { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "confirmed", "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"], "note": "First public 6v6 multiplayer hands-on — expected to be the single biggest queue of the show." },
       { "title": "Gears of War: E-Day", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"], "note": "First public campaign hands-on ahead of the Oct 6, 2026 release." },
@@ -35,7 +35,7 @@
     "tags": ["AAA", "console", "shooter", "playable demos", "25 years of Xbox"],
     "crowd": 5,
     "crowdNote": "Largest platform booth of the show; MW4, Gears E-Day and the Fable theater will draw 2–4 h queues.",
-    "visitAdvice": "Be at Hall 7 right at 9:00 opening Thu or Fri, head straight to CoD MW4 or Gears E-Day; do the Fable theater (higher throughput) mid-day. Avoid Saturday entirely.",
+    "visitAdvice": "Be at Hall 7 right at the 10:00 booth opening Thu or Fri, head straight to CoD MW4 or Gears E-Day; do the Fable theater (higher throughput) mid-day. Avoid Saturday entirely. Trade badges: don't plan around Wednesday — the booth only opens Thursday (its Wednesday has traditionally been an invited-press preview).",
     "sources": [
       "https://news.xbox.com/en-us/2026/07/28/xbox-gamescom-2026/",
       "https://www.activision.com/de/games",
@@ -43,9 +43,10 @@
       "https://en.bandainamcoent.eu/dawnwalker/the-blood-of-dawnwalker",
       "https://www.gamescom.global/en/info/gamescom-cares",
       "https://insider-gaming.com/xbox-confirms-gamescom-2026-presence-and-playable-game-lineup/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.drwindows.de/news/die-gamescom-2025-mein-persoenlicher-rueckblick"
     ],
-    "lastUpdated": "2026-08-10"
+    "lastUpdated": "2026-08-12"
   },
   {
     "id": "nintendo",
@@ -134,12 +135,12 @@
     "tags": ["AAA", "RPG", "action", "world premiere", "playable demos"],
     "crowd": 5,
     "crowdNote": "Two world-first demos plus near-launch Onimusha in the most congested hall — expect 1–3 h queues for Dark Arisen and Onimusha.",
-    "visitAdvice": "Go straight to Capcom at hall opening on a weekday: Dark Arisen first (fewest stations vs demand), then Onimusha. Street Fighter 6 queues stay short all day.",
+    "visitAdvice": "Go straight to Capcom at hall opening on a weekday: Dark Arisen first (fewest stations vs demand), then Onimusha. Street Fighter 6 queues stay short all day. Trade badges on Wednesday: in 2025 the booth admitted only press until about 11:00, so plan any Wednesday visit for late morning onwards.",
     "sources": [
       "https://www.gematsu.com/2026/06/capcom-announces-gamescom-2026-lineup-including-playable-dragons-dogma-ii-dark-arisen-and-mega-man-dual-override",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-12"
   },
   {
     "id": "sega-atlus",
