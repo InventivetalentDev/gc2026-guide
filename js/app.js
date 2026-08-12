@@ -222,6 +222,9 @@ function onMarksChanged({ rebuild = false } = {}) {
   else syncMarkUI();
   renderMarkControls();
   renderPriority();
+  /* A bookmark toggle can add or remove whole stops, so the route cannot use
+     the grid's patch-in-place shortcut. keepingFocus() restores its buttons. */
+  renderRoute();
   renderWristband();
 }
 
@@ -252,8 +255,11 @@ function syncMarkUI() {
 
 /* Re-rendering a list with innerHTML destroys the button that was just pressed,
    which drops keyboard focus back to the top of the page. Put it back on the
-   equivalent button whenever one survives the re-render. */
-function keepingFocus(container, render) {
+   equivalent button whenever one survives the re-render. When the whole row is
+   gone instead (unsaving in a saved-only list removes it), land on the nearest
+   remaining button — or the caller's fallback element — so keyboard users stay
+   in context rather than dropping to <body>. */
+function keepingFocus(container, render, fallback) {
   const el = document.activeElement;
   const inside = el && container.contains(el);
   const sel = !inside
@@ -263,8 +269,14 @@ function keepingFocus(container, render) {
       : el.classList.contains("more-games")
         ? `.more-games[data-id="${CSS.escape(el.dataset.id)}"]`
         : null;
+  const index = sel ? [...container.querySelectorAll(".bm")].indexOf(el) : -1;
   render();
-  if (sel) container.querySelector(sel)?.focus();
+  if (!sel) return;
+  const again = container.querySelector(sel);
+  if (again) return again.focus();
+  if (index < 0) return;
+  const buttons = [...container.querySelectorAll(".bm")];
+  (buttons[Math.min(index, buttons.length - 1)] || fallback)?.focus();
 }
 
 function renderMarkControls() {
@@ -275,6 +287,7 @@ function renderMarkControls() {
   $("#played-count").textContent = played ? `(${played})` : "";
   $("#clear-saved").classList.toggle("hidden", saved === 0);
   $("#clear-played").classList.toggle("hidden", played === 0);
+  $("#goto-route")?.classList.toggle("hidden", saved === 0);
   $("#hide-played").checked = state.hidePlayed;
   $("#priority-hide-played").checked = state.hidePlayed;
   $("#share-list").classList.toggle("hidden", encodedSavedTokens().length === 0);
@@ -584,6 +597,15 @@ function bindShareDialog() {
 
 /* ---------- filtering & sorting ---------- */
 
+/* Shared orderings. Crowd-desc is the house default wherever booths rank;
+   hall order approximates a sensible walk through the entertainment halls —
+   decimal halls are upper levels, so parseFloat keeps 6.1 after 6 and before
+   7, and missing halls sort last. If verified venue routing ever lands,
+   hallRank is the single seam to replace with an explicit order: the grid's
+   hall sort, the planner's route and the wristband list all read through it. */
+const byCrowdDesc = (a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name);
+const hallRank = (hall) => (hall ? parseFloat(hall) : Infinity);
+
 /* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
    deliberately not a content filter. It hides lineup rows, not prose: an earlier
    pass regex-scrubbed adult titles out of the searchable description, which made
@@ -642,14 +664,10 @@ function filtered() {
   });
 
   const bySort = {
-    "crowd-desc": (a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name),
+    "crowd-desc": byCrowdDesc,
     "crowd-asc": (a, b) => (a.crowd || 0) - (b.crowd || 0) || a.name.localeCompare(b.name),
     name: (a, b) => a.name.localeCompare(b.name),
-    hall: (a, b) => {
-      const ha = a.hall ? parseFloat(a.hall) : 99;
-      const hb = b.hall ? parseFloat(b.hall) : 99;
-      return ha - hb || a.name.localeCompare(b.name);
-    },
+    hall: (a, b) => hallRank(a.hall) - hallRank(b.hall) || a.name.localeCompare(b.name),
   };
   return list.sort(bySort[state.sort] || bySort["crowd-desc"]);
 }
@@ -937,9 +955,20 @@ function renderPlanner() {
     .join("");
 
   renderPriority();
+  renderRoute();
   renderWristband();
 
   $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
+}
+
+/* The "Saved here" chip row is shared by the queue-priority table and the
+   route board — one helper so the markup can't drift apart. */
+function savedHereChips(ex) {
+  const mine = savedGames(ex);
+  if (!mine.length) return "";
+  return `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
+    .map((g) => `<span class="priority-game">${esc(g.title)}</span>`)
+    .join("")}</span>`;
 }
 
 /* Deliberately independent of state.age: the planner does not inherit the
@@ -953,11 +982,7 @@ function renderWristband() {
 
   const list = state.exhibitors
     .filter(hasAdult)
-    .sort((a, b) => {
-      const ha = a.hall ? parseFloat(a.hall) : 99;
-      const hb = b.hall ? parseFloat(b.hall) : 99;
-      return ha - hb || a.name.localeCompare(b.name);
-    });
+    .sort((a, b) => hallRank(a.hall) - hallRank(b.hall) || a.name.localeCompare(b.name));
 
   const rows = list
     .map((e) => {
@@ -994,9 +1019,7 @@ function renderWristband() {
 }
 
 function renderPriority() {
-  const busiest = [...state.exhibitors]
-    .filter((e) => (e.crowd || 0) >= 4)
-    .sort((a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name));
+  const busiest = [...state.exhibitors].filter((e) => (e.crowd || 0) >= 4).sort(byCrowdDesc);
   /* Ranks come from the unfiltered order: "07" has to keep meaning "seventh
      worst queue of the show", not "seventh row you happen to be looking at". */
   const scoped = state.prioritySavedOnly ? busiest.filter(hasSaved) : busiest;
@@ -1005,9 +1028,8 @@ function renderPriority() {
   list.sort((a, b) => hasPlayed(a) - hasPlayed(b));
 
   const rows = list
-    .map((e) => {
-      const mine = savedGames(e);
-      return `<div class="priority-item" data-saved="${hasSaved(e)}" data-played="${hasPlayed(e)}">
+    .map(
+      (e) => `<div class="priority-item" data-saved="${hasSaved(e)}" data-played="${hasPlayed(e)}">
         <span class="priority-rank">${String(busiest.indexOf(e) + 1).padStart(2, "0")}</span>
         <span class="priority-name">${esc(e.name)}${hasAdult(e) ? ageBadge(boothAgeStatus(e)) : ""}</span>
         <span class="priority-loc">${e.hall ? `Hall ${esc(e.hall)}` : "TBA"}</span>
@@ -1016,19 +1038,17 @@ function renderPriority() {
           ${markButton("played", "exhibitor", e.id, e.name)}
           ${markButton("saved", "exhibitor", e.id, e.name)}
         </span>
-        ${
-          mine.length
-            ? `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
-                .map((g) => `<span class="priority-game">${esc(g.title)}</span>`)
-                .join("")}</span>`
-            : ""
-        }
-      </div>`;
-    })
+        ${savedHereChips(e)}
+      </div>`
+    )
     .join("");
-  keepingFocus($("#priority-list"), () => {
-    $("#priority-list").innerHTML = rows;
-  });
+  keepingFocus(
+    $("#priority-list"),
+    () => {
+      $("#priority-list").innerHTML = rows;
+    },
+    $("#priority-saved-only")
+  );
 
   $("#priority-list").classList.toggle("hidden", list.length === 0);
   $("#priority-empty").classList.toggle("hidden", list.length > 0);
@@ -1042,6 +1062,119 @@ function renderPriority() {
       ? `${busiest.length} high-queue booths`
       : `${list.length} / ${busiest.length} high-queue booths`;
   $("#priority-count").textContent = `${count}${played ? ` · ${played} played` : ""}`;
+}
+
+/* ---------- route by hall ---------- */
+
+const isAbsent = (ex) => (ex.tags || []).includes("not exhibiting");
+const isOffsite = (ex) => (ex.tags || []).includes("offsite");
+
+function routeGroups() {
+  const buckets = new Map();
+  const absent = [];
+  let played = 0;
+
+  state.exhibitors.filter(hasSaved).forEach((ex) => {
+    /* Absence wins over offsite: entries such as Wargaming mention an offsite
+       event but still have no show-floor stop. */
+    if (isAbsent(ex)) {
+      absent.push(ex.name);
+      return;
+    }
+    if (hasPlayed(ex)) {
+      played += 1;
+      if (state.hidePlayed) return;
+    }
+    /* A known hall wins over the offsite tag. Some entries are both — Tencent
+       runs a Hall 8.1 booth *and* the Wassermannhalle art exhibition on one
+       entry — and a stop you can walk to belongs in the hall you walk to. */
+    const key = ex.hall ? String(ex.hall) : isOffsite(ex) ? "offsite" : "tba";
+    if (!buckets.has(key)) buckets.set(key, []);
+    buckets.get(key).push(ex);
+  });
+
+  const numbered = [...buckets.keys()]
+    .filter((key) => key !== "offsite" && key !== "tba")
+    .sort((a, b) => hallRank(a) - hallRank(b) || a.localeCompare(b));
+  const keys = [...numbered, ...["offsite", "tba"].filter((key) => buckets.has(key))];
+
+  return {
+    groups: keys.map((key) => ({
+      key,
+      label: key === "offsite" ? "Offsite" : key === "tba" ? "Location TBA" : `Hall ${key}`,
+      /* Crowd-desc, then played stops sink to the end of their hall — same
+         stable two-pass sort as the priority table. */
+      items: buckets
+        .get(key)
+        .sort(byCrowdDesc)
+        .sort((a, b) => hasPlayed(a) - hasPlayed(b)),
+    })),
+    absent: absent.sort((a, b) => a.localeCompare(b)),
+    played,
+  };
+}
+
+function renderRoute() {
+  /* The service worker caches index.html and app.js independently, so on a
+     flaky network this file can briefly run against a one-version-older shell
+     that has no route section yet (see handleNavigation in sw.js). Bail out
+     instead of letting a null lookup abort the whole boot. */
+  const routeList = $("#route-list");
+  if (!routeList) return;
+  const { groups, absent, played } = routeGroups();
+  const stopCount = groups.reduce((total, group) => total + group.items.length, 0);
+  const hallCount = groups.filter((group) => group.key !== "offsite" && group.key !== "tba").length;
+  const html = groups
+    .map((group) => {
+      const kicker = group.key === "offsite" || group.key === "tba" ? "Location" : "Hall";
+      const number = group.key === "offsite" ? "Offsite" : group.key === "tba" ? "TBA" : group.key;
+      const rows = group.items
+        .map((ex) => {
+          const baseLocation = ex.booth ? ex.booth : ex.hall ? "booth TBA" : "location TBA";
+          const loc = baseLocation + (ex.hall && !ex.locationConfirmed ? " · unconf." : "");
+          const crowd = ex.crowd || 0;
+          return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}">
+            <span class="route-name">${esc(ex.name)}</span>
+            <span class="route-booth">${esc(loc)}</span>
+            <span class="route-crowd" data-level="${esc(crowd)}">Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}</span>
+            <span class="row-actions">
+              ${markButton("played", "exhibitor", ex.id, ex.name)}
+              ${markButton("saved", "exhibitor", ex.id, ex.name)}
+            </span>
+            ${savedHereChips(ex)}
+          </div>`;
+        })
+        .join("");
+      const countLabel = `${group.items.length} stop${group.items.length === 1 ? "" : "s"}`;
+      return `<h4 class="route-hall" aria-label="${esc(`${group.label}, ${countLabel}`)}">
+        <span class="route-hall-kicker">${esc(kicker)}</span>
+        <span class="route-hall-num">${esc(number)}</span>
+        <span class="route-hall-count">${esc(countLabel)}</span>
+      </h4>${rows}`;
+    })
+    .join("");
+
+  keepingFocus(
+    routeList,
+    () => {
+      routeList.innerHTML = html;
+    },
+    $("#route-title")
+  );
+  routeList.classList.toggle("hidden", stopCount === 0);
+  $("#route-empty").classList.toggle("hidden", stopCount > 0 || absent.length > 0);
+  $("#route-empty").textContent = state.hidePlayed && played > 0 && stopCount === 0
+    ? "Every stop on your route is played — nice work."
+    : savedCount()
+      ? "No current stops match your saved list — the exhibitor data may have changed."
+      : "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall.";
+  $("#route-count").textContent =
+    `${stopCount} stop${stopCount === 1 ? "" : "s"} · ${hallCount} hall${hallCount === 1 ? "" : "s"}` +
+    (played ? ` · ${played} played` : "");
+  $("#route-absent").classList.toggle("hidden", absent.length === 0);
+  $("#route-absent").textContent = absent.length
+    ? `On your list but not on the show floor: ${absent.join(", ")}.`
+    : "";
 }
 
 /* ---------- event info ---------- */
@@ -1234,9 +1367,12 @@ function setHidePlayed(on) {
   state.hidePlayed = on;
   $("#hide-played").checked = on;
   $("#priority-hide-played").checked = on;
-  persistMarks("played");
+  /* The lens is a preference, not a mark — persistMarks here would rewrite the
+     unchanged played sets and lose the toggle on the next reload. */
+  persistPrefs();
   renderExhibitors();
   renderPriority();
+  renderRoute();
 }
 
 function showView(route, { push = true } = {}) {
@@ -1289,6 +1425,13 @@ function bindControls() {
   $("#priority-hide-played").addEventListener("change", (e) => {
     setHidePlayed(e.target.checked);
   });
+  /* Optional-chained like the other #route-* lookups: absent on a stale
+     cached shell — see the note in renderRoute. */
+  $("#goto-route")?.addEventListener("click", () => {
+    showView("planner");
+    $("#route-section").scrollIntoView();
+    $("#route-title").focus({ preventScroll: true });
+  });
   $("#clear-saved").addEventListener("click", () => {
     const n = savedCount();
     if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"}? This can't be undone.`)) return;
@@ -1321,6 +1464,7 @@ function bindControls() {
     renderExhibitors();
     renderMarkControls();
     renderPriority();
+    renderRoute();
     renderWristband();
   });
 

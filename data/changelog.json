@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-12",
+    "revision": 12,
+    "changes": [
+      "New: Route by hall on the Visit planner groups your saved stops in hall-number order, with offsite and unannounced locations — plus absent exhibitors — called out separately.",
+      "Route stops carry the played tick too: a played stop dims, drops to the end of its hall, and respects the Hide played toggle."
+    ]
+  },
+  {
+    "date": "2026-08-12",
     "revision": 11,
     "changes": [
       "Booth cards now link to the exhibitor's official gamescom page, where the exhibitor publishes its own booth program, stage times and trailers — 46 of the 53 booths have one.",
