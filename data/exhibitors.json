@@ -1411,6 +1411,7 @@
     "hall": "10.1",
     "booth": "D020/E021",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/program/areas/gamescom-campus",
     "description": "Roughly half of Hall 10.1 is not a games floor at all. The Campus area runs education and recruiting — universities, SAE, PIXL VISN and IU alongside employers from the Bundeswehr and Rheinmetall to Siemens, Airbus, DATEV and several state police forces — plus a large community and youth-work block at D020/E021: jfc Medienzentrum, Gaming Ohne Grenzen, AbleGamers, youth-protection groups and the city of Cologne. Worth knowing before you walk into 10.1 expecting demos.",
     "games": [],
     "tags": ["careers", "education", "community"],
@@ -1418,7 +1419,7 @@
     "crowdNote": "Busy with school groups on the trade days, quiet at the weekend — never a queue.",
     "visitAdvice": "Skip it unless you're job-hunting or studying. It is, however, a genuinely calm place to sit down mid-day, and the accessibility and youth-work stands are worth a look.",
     "sources": [
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/program/areas/gamescom-campus",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-hallenplan-erklaert-210726/"
     ],
     "lastUpdated": "2026-08-13"

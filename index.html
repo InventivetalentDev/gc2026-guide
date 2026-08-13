@@ -219,15 +219,15 @@
     </div>
   </footer>
 
-  <dialog class="share-dialog" id="share-dialog" aria-labelledby="share-dialog-title" aria-describedby="share-count">
-    <div class="share-dialog-head">
+  <dialog class="sheet" id="share-dialog" aria-labelledby="share-dialog-title" aria-describedby="share-count">
+    <div class="sheet-head">
       <div>
         <span class="overline">Your plan</span>
         <h2 id="share-dialog-title">Share saved list</h2>
       </div>
-      <button class="share-dialog-close" id="close-share" type="button" aria-label="Close share dialog">×</button>
+      <button class="sheet-close" id="close-share" type="button" aria-label="Close share dialog">×</button>
     </div>
-    <div class="share-dialog-body">
+    <div class="sheet-body">
       <p class="share-count" id="share-count"></p>
       <label class="share-link-field" for="share-link">
         <span class="field-label">Share link</span>
@@ -243,6 +243,24 @@
         <p>Scan to open this list on another device.</p>
       </div>
       <p class="share-qr-fallback" id="share-qr-fallback" hidden>This list is too long for a QR code — send the link instead.</p>
+    </div>
+  </dialog>
+
+  <!-- One dialog serves every entry: the list is written on open, the same way
+       the share dialog is. -->
+  <dialog class="sheet src-dialog" id="sources-dialog" aria-labelledby="sources-dialog-title" aria-describedby="sources-note">
+    <div class="sheet-head">
+      <div>
+        <span class="overline">Where this comes from</span>
+        <h2 id="sources-dialog-title">Sources</h2>
+      </div>
+      <button class="sheet-close" id="close-sources" type="button" aria-label="Close sources">×</button>
+    </div>
+    <div class="sheet-body">
+      <p class="src-subject" id="sources-subject"></p>
+      <p class="src-note" id="sources-note"></p>
+      <ol class="src-list" id="sources-list"></ol>
+      <p class="src-caveat">This is an unofficial guide, and booth numbers and lineups keep changing until the doors open. If a detail decides your day, check it at the source.</p>
     </div>
   </dialog>
 
