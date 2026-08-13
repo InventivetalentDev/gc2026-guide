@@ -183,11 +183,53 @@ render path for no user benefit).
 - **A label layer above all shapes**: Koelnmesse files overlapping
   sub-stands ("E-071a" over "E-071", gallery stands suffixed "g") which
   would otherwise paint over neighbours' names.
+- **Booth codes fitted to their booth**: a fixed size overflowed the
+  small stands — "F-073g" is wider than its 4 m box — and spilled across
+  neighbours. Below ~0.45 m the code is dropped; that stand is
+  identified by tapping instead.
+- **A collision pass decides what is actually drawn** (decision 9).
 - **Guide-covered names bright, official-only names dim, empty stands
   code-only** — coverage is visible at a glance and honest about gaps.
 - **State colours**: saved = signal plate (`hasSaved` semantics — booth
   saved *or* any of its games saved, `js/app.js:173`), played = dimmed,
   unconfirmed = amber dashed stroke.
+
+### 9. Label placement is a collision pass, not a formula
+
+Position alone cannot decide which labels are safe to draw. Koelnmesse
+files sub-stands *inside* their parent (C-032 within C-030) and, in
+several cases, exactly on top of it — Pawprint's C-041 and the empty
+C-041g share all four corners — so a label drawn per booth will sit on
+another booth's label no matter how it is positioned.
+
+So every label is measured, then walked in priority order — guide-covered
+booths first, then largest, a booth's own name ahead of its own code —
+and any that collides with one already placed is dropped. Three
+properties make this behave:
+
+- **Bands are cumulative.** Whatever a band places keeps its spot in
+  every deeper band. Deciding each band independently let a label win at
+  one zoom and lose at the next, so zooming *in* could delete the name
+  you were reading.
+- **Measurement never depends on current visibility.** `getBBox()`
+  reports zeros for a `display: none` element, so measuring while the
+  previous pass's verdicts are applied piles every hidden label at the
+  origin and corrupts the next verdict. Classes are cleared, then
+  measured, then reassigned.
+- **The second pass waits a frame after `document.fonts.ready`.** That
+  promise resolves before the text using the font is laid out again;
+  measuring in the gap yields fallback widths, which is enough for a
+  two-line name to overlap its own booth code.
+
+Each of those three was a real bug found by measuring rendered label
+boxes across all seven halls, and each looked like "the declutter just
+doesn't work" from the outside. The check is worth keeping as a test
+(verification step 3): every hall, every band, zero overlapping pairs.
+`declutter.passes` exists so a test can wait for labels to settle
+instead of sleeping.
+
+A dropped label costs nothing permanent — the stand stays tappable, and
+deeper bands run their own pass, so names reappear as competition thins.
 
 ### 8. Storage compatibility
 
@@ -247,28 +289,35 @@ Serve the repo root; clear `gc2026.saved.v1`.
    fit, no horizontal page scroll at 360 px, footer counts read
    "23 stands · 6 in the guide".
 2. **Zoom bands** — pinch/wheel in: mid names appear, then booth codes;
-   strokes stay 1 px; pan stays 60 fps-ish during gesture (no re-raster
-   until release).
-3. **Deep link** — paste `map.html#10.2/E020`: hall 10.2 loads, Razer
+   nothing that was readable at one zoom disappears at the next; strokes
+   stay 1 px; pan stays 60 fps-ish during gesture.
+3. **No overlapping labels** (scripted): for each hall, for each band,
+   set the map to that band, measure every label not hidden in it, and
+   assert no two boxes intersect. Wait on `declutter.passes >= 2` first —
+   measuring earlier reads pre-webfont metrics. Also assert every
+   guide-covered stand is named in at least one band (45 today).
+4. **Deep link** — paste `map.html#10.2/E020`: hall 10.2 loads, Razer
    zoomed + sheet open. Change the hash in the bar to `#9.1` — hall
    switches without reload.
-4. **Save loop** — tap Nintendo (9.1), Save booth: stand turns signal,
+5. **Desktop drag** — mouse-drag the map on a desktop browser: it pans.
+   No ghost image follows the cursor, no text selection, no `dragstart`
+   fires.
+6. **Save loop** — tap Nintendo (9.1), Save booth: stand turns signal,
    chip shows ●1, second tab's exhibitor grid shows the bookmark;
    unsave from the grid, map reverts (storage event).
-5. **Game-only saving** — save just *Alien: Isolation 2* in the app:
+7. **Game-only saving** — save just *Alien: Isolation 2* in the app:
    Xbox's stand lights up in 7.1 (booth-or-game semantics).
-6. **Unconfirmed** — an exhibitor with `locationConfirmed: false` and a
+8. **Unconfirmed** — an exhibitor with `locationConfirmed: false` and a
    booth code renders amber-dashed; its sheet says so.
-7. **Overlaps** — hall 10.2 gallery stands ("…g") don't hide base-stand
-   labels; hall 10.1's 191 stands render without jank.
-8. **Orientation spot-check** (once, on site or against the official map
-   side-by-side): Xbox fills hall 7's western end; Nintendo sits at
-   A-010 B-009 in 9.1; Razer at E-020 D-021 in 10.2. A mirrored hall
-   means one sign in the tool's `CAMPUS` table, then re-snapshot.
-9. **Offline** (after step 3 of integration) — airplane mode, reopen
-   installed app → map, switch to a never-opened hall: renders from
-   precache.
-10. **Escaping** — official names render through `esc()`/`textContent`
+9. **Density** — hall 10.1's 191 stands render without jank.
+10. **Orientation spot-check** (once, on site or against the official map
+    side-by-side): Xbox fills hall 7's western end; Nintendo sits at
+    A-010 B-009 in 9.1; Razer at E-020 D-021 in 10.2. A mirrored hall
+    means one sign in the tool's `CAMPUS` table, then re-snapshot.
+11. **Offline** (after step 3 of integration) — airplane mode, reopen
+    installed app → map, switch to a never-opened hall: renders from
+    precache.
+12. **Escaping** — official names render through `esc()`/`textContent`
     everywhere; no raw HTML from snapshot JSON reaches the DOM.
 
 ## Open questions

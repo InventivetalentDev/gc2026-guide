@@ -10,7 +10,8 @@
      questions on a real phone — does per-hall SVG with labelled booths feel
      good, and is the pan/zoom worth building dependency-free? — before the
      feature is integrated properly. See docs/PLAN-hall-map.md. -->
-<link rel="icon" href="icons/icon-192.png" />
+<!-- same favicon as the guide: one app, one tab icon (index.html:26) -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23ff4d17'/><text x='50' y='72' font-size='58' font-family='monospace' font-weight='700' text-anchor='middle' fill='%230c0c0d'>26</text></svg>" />
 <link rel="stylesheet" href="css/fonts.css" />
 <style>
   :root {
@@ -74,7 +75,11 @@
       radial-gradient(circle at 30% 20%, rgba(255,255,255,.02), transparent 60%),
       var(--ground);
     cursor: grab;
+    /* a drag on the map is a pan, never a text selection or a native image
+       drag — without this, desktop mouse drags grab the SVG instead */
+    user-select: none; -webkit-user-select: none;
   }
+  #map { -webkit-user-drag: none; }
   #stage.dragging { cursor: grabbing; }
   #map { position: absolute; left: 0; top: 0; transform-origin: 0 0; display: block; }
   #stage .load {
@@ -83,13 +88,14 @@
   }
   #stage .load[hidden] { display: none; }
   .note {
-    flex: none; display: flex; justify-content: space-between; gap: 1rem;
+    flex: none; display: flex; justify-content: space-between; gap: .35rem 1rem;
+    flex-wrap: wrap;
     padding: .35rem .75rem calc(.35rem + env(safe-area-inset-bottom));
     border-top: 1px solid var(--rule);
     font-family: var(--font-mono); font-size: .62rem; color: var(--ink-dim);
-    white-space: nowrap; overflow: hidden;
   }
-  .note .src { overflow: hidden; text-overflow: ellipsis; }
+  .note a { color: var(--ink-mid); }
+  .note a:hover { color: var(--ink); }
 
   /* ---- SVG hall ---- */
   .block { fill: var(--ground-2); stroke: var(--rule-soft); }
@@ -108,12 +114,14 @@
   .lbl-name { font-family: var(--font-display); font-weight: 600; fill: var(--ink-dim); }
   .stand.covered .lbl-name { fill: var(--ink); }
   .stand.saved text { fill: var(--signal-ink); }
-  .lbl-code { font-family: var(--font-mono); fill: var(--ink-dim); font-size: 1.3px; }
+  .lbl-code { font-family: var(--font-mono); fill: var(--ink-dim); }
   .stand.saved .lbl-code { fill: rgba(11,11,12,.75); }
-  /* zoom bands: which label tiers exist at which zoom. s1 = big booths … s4 = tiny */
-  .z0 .s3 .lbl-name, .z0 .s4 .lbl-name, .z1 .s4 .lbl-name { display: none; }
-  .z0 .lbl-code, .z1 .lbl-code { display: none; }
-  .z2 .s4 .lbl-name { display: block; }
+  /* Zoom bands. Which labels survive each band is computed in declutter()
+     — booth size tier AND collisions with higher-priority labels — and
+     written back as nz0/nz1/nz2. Koelnmesse files sub-stands that sit
+     inside (or exactly on top of) their parent, so position alone can't
+     decide this. */
+  .z0 .nz0, .z1 .nz1, .z2 .nz2 { display: none; }
 
   /* ---- bottom sheet ---- */
   #sheet {
@@ -181,7 +189,7 @@
 
 <footer class="note">
   <span id="counts"></span>
-  <span class="src">booth outlines: official hall plan data · schematic · unofficial</span>
+  <span class="src" id="srcnote"></span>
 </footer>
 
 <script>
@@ -297,8 +305,14 @@ function renderHall(id) {
      paint over their neighbours' names */
   const labels = document.createElementNS(SVGNS, "g");
 
+  /* Paint big stands first so nested ones (30 of hall 10.1's 191 sit
+     inside a larger stand) stay on top and stay tappable. The data file
+     is ordered by stand number for reviewable diffs, which is not a
+     containment order. */
+  const painting = [...hall.stands].sort((a, b) => (b.a || 0) - (a.a || 0));
+
   state.stands = [];
-  for (const s of hall.stands) {
+  for (const s of painting) {
     const rec = standRecord(id, s);
     const g = document.createElementNS(SVGNS, "g");
     const lg = document.createElementNS(SVGNS, "g");
@@ -331,17 +345,36 @@ function renderHall(id) {
           t.appendChild(ts);
         });
         lg.appendChild(t);
+        rec.nameEl = t;
+        rec.nameLines = lines.length;
       }
     }
-    /* size class drives which zoom band reveals the name */
-    cls += fs >= 3 ? " s1" : fs >= 1.9 ? " s2" : fs >= 1.2 ? " s3" : " s4";
+    /* size tier: 1 = anchor booth … 4 = tiny. Drives how deep you have to
+       zoom before this name is offered at all (see declutter). */
+    rec.tier = fs >= 3 ? 1 : fs >= 1.9 ? 2 : fs >= 1.2 ? 3 : 4;
+    cls += ` s${rec.tier}`;
 
-    const code = document.createElementNS(SVGNS, "text");
-    code.setAttribute("class", "lbl-code");
-    code.setAttribute("x", box.cx);
-    code.setAttribute("y", Math.min(box.y1 - 0.8, box.cy + fs + 1.6));
-    code.textContent = s.nr;
-    lg.appendChild(code);
+    /* Booth codes are set to fit their own booth. A fixed size overflowed
+       the small stands ("F-073g" is wider than its 4 m box) and spilled
+       across neighbours; below ~0.45 m it would be unreadable even at max
+       zoom, so those stands stay code-less and are identified by tapping. */
+    const codeFs = Math.min(1.6, (box.w * 0.9) / (s.nr.length * 0.62), box.h * 0.42);
+    if (codeFs >= 0.45) {
+      const code = document.createElementNS(SVGNS, "text");
+      code.setAttribute("class", "lbl-code");
+      code.setAttribute("x", box.cx);
+      code.setAttribute("font-size", codeFs);
+      /* Under the whole name block when there is one, otherwise centred.
+         The name's last baseline sits (lines-1)/2 line-heights below the
+         booth centre — forgetting that put the code inside a two-line
+         name's second line. */
+      const lastBaseline = box.cy + (((rec.nameLines || 1) - 1) * fs * 1.05) / 2;
+      const y = fs ? lastBaseline + fs * 0.3 + codeFs : box.cy + codeFs * 0.36;
+      code.setAttribute("y", Math.min(y, box.y1 - codeFs * 0.25));
+      code.textContent = s.nr;
+      lg.appendChild(code);
+      rec.codeEl = code;
+    }
 
     if (rec.exs.length) {
       cls += " covered";
@@ -363,8 +396,81 @@ function renderHall(id) {
   $("#map")?.remove();
   $("#load").hidden = true;
   stage.appendChild(svg);
+  declutter.passes = 0;
+  declutter();
+  /* Webfont metrics differ from the fallback's, so measure again once
+     Archivo Narrow has actually landed — one frame later, because
+     fonts.ready resolves before the text using them has been laid out
+     again, and measuring in that gap yields the fallback's widths and
+     lets a name overlap its own booth code. Always two passes per hall,
+     even when the fonts are cached, so "labels are settled" is a
+     condition a test can wait on rather than a sleep. */
+  document.fonts?.ready.then(() =>
+    requestAnimationFrame(() => { if ($("#map") === svg) declutter(); }));
   refreshMarks();
   fitView(svg, W, H);
+}
+
+/* Decide, per zoom band, which labels are actually drawn.
+
+   Two things make this necessary and neither is solvable by position
+   alone: Koelnmesse files sub-stands that sit inside their parent
+   (C-032 within C-030) or exactly on top of it (C-041g over Pawprint's
+   C-041, same four corners), and small stands sit close enough that a
+   name and a neighbour's code collide well before they overlap a booth.
+
+   So: measure every label, walk them in priority order — guide-covered
+   booths first, then biggest, names before codes — and drop any that
+   collides with one already placed. A dropped label is not a loss: the
+   stand is still tappable, and deeper zoom bands run their own pass, so
+   labels reappear as their neighbours' competition thins out. */
+function declutter() {
+  const items = [];
+  for (const rec of state.stands) {
+    if (rec.nameEl) items.push({ el: rec.nameEl, rec, name: true });
+    if (rec.codeEl) items.push({ el: rec.codeEl, rec, name: false });
+  }
+  /* Measure with every label shown. getBBox() reports zeros for a
+     display:none element, so measuring while last pass's verdicts are
+     still applied would put every hidden label in a phantom pile at the
+     origin — and re-running after the webfonts land would then delete
+     labels the first pass had placed. Clear first, measure, then decide.
+     No paint happens in between, so nothing flashes.
+
+     Both loops are batched — every write, then every read — because
+     interleaving them forces a layout per label. */
+  for (const it of items) it.el.classList.remove("nz0", "nz1", "nz2");
+  for (const it of items) {
+    const b = it.el.getBBox();
+    const pad = 0.35;
+    it.box = { x0: b.x - pad, y0: b.y - pad, x1: b.x + b.width + pad, y1: b.y + b.height + pad };
+  }
+  items.sort((a, b) =>
+    (b.rec.exs.length ? 1 : 0) - (a.rec.exs.length ? 1 : 0) ||
+    (b.rec.data.a || 0) - (a.rec.data.a || 0) ||
+    (a.name ? 0 : 1) - (b.name ? 0 : 1)); /* a booth's name outranks its own code */
+
+  const hits = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+  /* Bands are cumulative: whatever a band placed keeps its spot in every
+     deeper band. Deciding each band independently let a label win at one
+     zoom and lose at the next, so zooming in could make a name you were
+     reading disappear. Zooming in now only ever adds labels. */
+  const placed = new Set();
+  declutter.passes = (declutter.passes || 0) + 1; /* tests wait on this */
+  for (let band = 0; band < 3; band++) {
+    const taken = items.filter((it) => placed.has(it)).map((it) => it.box);
+    for (const it of items) {
+      /* tier 1 names show from the start, tier 4 only at the deepest
+         band; codes are a last-band detail */
+      const offered = it.name ? it.rec.tier <= band + 2 : band === 2;
+      const show = placed.has(it) || (offered && !taken.some((t) => hits(t, it.box)));
+      it.el.classList.toggle(`nz${band}`, !show);
+      if (show && !placed.has(it)) {
+        placed.add(it);
+        taken.push(it.box);
+      }
+    }
+  }
 }
 
 /* re-apply saved/played classes without rebuilding the DOM */
@@ -467,8 +573,15 @@ let lastTap = { t: 0, x: 0, y: 0 };
 
 const stage = $("#stage");
 
+/* Chrome and Firefox start a native element drag from a mouse-down on SVG
+   content, which steals the gesture and drags a ghost of the map instead
+   of panning it. Cancelling both the default of the pointerdown and any
+   dragstart that still gets through keeps every drag a pan. */
+stage.addEventListener("dragstart", (e) => e.preventDefault());
+
 stage.addEventListener("pointerdown", (e) => {
   if (e.target.closest("#sheet")) return;
+  e.preventDefault();
   stage.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   $("#map")?.style.setProperty("will-change", "transform");
@@ -633,6 +746,22 @@ window.addEventListener("storage", (e) => {
 
 /* ================= boot ================= */
 
+/* Where the outlines came from and when they were checked — the same
+   promise the guide's ⓘ sources dialog makes about every booth number,
+   kept in the one place this page has room for it. Link and date come
+   from the snapshot itself, so a re-run of tools/fetch-hallplan.mjs
+   re-dates it without anyone remembering to. */
+function renderSourceNote() {
+  const { source, fetched } = state.index;
+  const when = new Date(`${fetched}T00:00:00Z`);
+  const date = isNaN(when) ? fetched : when.toLocaleDateString("en-GB", {
+    day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
+  });
+  $("#srcnote").innerHTML =
+    `booth outlines: <a href="${esc(source)}" target="_blank" rel="noopener nofollow">official hall plan</a>` +
+    ` · checked ${esc(date)} · schematic, unofficial`;
+}
+
 async function showHall(id, { standCode = null } = {}) {
   const already = id === state.hall && $("#map");
   if (!already) {
@@ -680,6 +809,7 @@ async function main() {
   state.index = index;
   state.exhibitors = exhibitors;
   buildJoin();
+  renderSourceNote();
 
   /* deep link: #7.1/A061 — else the hall with the most saved stops, else 7.1 */
   const [hallArg, code] = location.hash.slice(1).split("/");
