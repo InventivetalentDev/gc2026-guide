@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-08-13",
+    "revision": 16,
+    "changes": [
+      "New: every exhibitor card now shows where its information came from — the ⓘ marker next to the official-page link opens the list of sources behind that booth's location, lineup and queue call.",
+      "Each list says when the entry was last checked, so a booth still marked \"unconf.\" can be verified at the source before you plan a day around it.",
+      "The Event info tab carries the same marker for the dates, hours, ticket prices and hall areas on that page."
+    ]
+  },
+  {
+    "date": "2026-08-13",
     "revision": 15,
     "changes": [
       "The planner's itinerary and Route by hall are now one section — Your plan: the same saved stops, arranged by day or by hall with one tap instead of two near-identical lists stacked on the page.",
