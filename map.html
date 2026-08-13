@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#09090a" />
+<title>Hall map · gamescom 2026 guide (prototype)</title>
+<!-- PROTOTYPE. Deliberately standalone: not linked from the app, not in the
+     service-worker precache, everything inline. It exists to answer two
+     questions on a real phone — does per-hall SVG with labelled booths feel
+     good, and is the pan/zoom worth building dependency-free? — before the
+     feature is integrated properly. See docs/PLAN-hall-map.md. -->
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="stylesheet" href="css/fonts.css" />
+<style>
+  :root {
+    --ground: #09090a; --ground-2: #141416; --ground-3: #1c1c1f;
+    --rule: #2b2c30; --rule-soft: #1f2023;
+    --ink: #f2efe9; --ink-mid: #b3b1ab; --ink-dim: #86847f;
+    --signal: #ff4d17; --signal-ink: #0b0b0c; --warn: #e8a33a;
+    --plate: #232327;
+    --font-ui: "Archivo", system-ui, sans-serif;
+    --font-display: "Archivo Narrow", "Archivo", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --font-poster: "Anton", "Archivo Narrow", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    display: flex; flex-direction: column; height: 100dvh;
+    background: var(--ground); color: var(--ink);
+    font-family: var(--font-ui); overscroll-behavior: none;
+  }
+
+  /* ---- chrome ---- */
+  .bar {
+    display: flex; align-items: center; gap: .6rem;
+    padding: .5rem .75rem; border-bottom: 1px solid var(--rule);
+  }
+  .bar a { color: var(--ink-dim); text-decoration: none; font-size: .8rem; }
+  .bar a:hover { color: var(--ink); }
+  .wordmark {
+    font-family: var(--font-poster); font-size: 1.05rem; letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+  .wordmark .num { background: var(--signal); color: var(--signal-ink); padding: 0 .3rem; margin-right: .35rem; }
+  .proto {
+    margin-left: auto; font-family: var(--font-mono); font-size: .6rem;
+    letter-spacing: .12em; color: var(--warn); border: 1px solid var(--warn);
+    padding: .15rem .35rem; text-transform: uppercase;
+  }
+  .halls {
+    display: flex; gap: .4rem; padding: .5rem .75rem; overflow-x: auto;
+    border-bottom: 1px solid var(--rule); scrollbar-width: none; flex: none;
+  }
+  .halls::-webkit-scrollbar { display: none; }
+  .hall-chip {
+    font-family: var(--font-mono); font-size: .78rem; white-space: nowrap;
+    background: var(--ground-2); color: var(--ink-mid);
+    border: 1px solid var(--rule); border-radius: 2px; padding: .35rem .55rem;
+    cursor: pointer;
+  }
+  .hall-chip .n { color: var(--signal); font-weight: 700; }
+  .hall-chip[aria-pressed="true"] {
+    background: var(--signal); border-color: var(--signal);
+    color: var(--signal-ink); font-weight: 700;
+  }
+  .hall-chip[aria-pressed="true"] .n { color: var(--signal-ink); }
+
+  /* ---- stage ---- */
+  #stage {
+    position: relative; flex: 1; overflow: hidden; touch-action: none;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,.02), transparent 60%),
+      var(--ground);
+    cursor: grab;
+  }
+  #stage.dragging { cursor: grabbing; }
+  #map { position: absolute; left: 0; top: 0; transform-origin: 0 0; display: block; }
+  #stage .load {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    color: var(--ink-dim); font-family: var(--font-mono); font-size: .8rem;
+  }
+  #stage .load[hidden] { display: none; }
+  .note {
+    flex: none; display: flex; justify-content: space-between; gap: 1rem;
+    padding: .35rem .75rem calc(.35rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-mono); font-size: .62rem; color: var(--ink-dim);
+    white-space: nowrap; overflow: hidden;
+  }
+  .note .src { overflow: hidden; text-overflow: ellipsis; }
+
+  /* ---- SVG hall ---- */
+  .block { fill: var(--ground-2); stroke: var(--rule-soft); }
+  .stand path { fill: var(--ground-3); stroke: var(--rule); cursor: pointer; }
+  .stand.official path { fill: var(--plate); }
+  .stand.covered path { fill: #2e2e33; }
+  .stand.saved path { fill: var(--signal); stroke: #ff6a3d; }
+  .stand.played { opacity: .45; }
+  .stand.unconf path { stroke: var(--warn); stroke-dasharray: 5 4; }
+  .stand.sel path { stroke: var(--ink); stroke-width: 2; }
+  svg path { vector-effect: non-scaling-stroke; }
+  svg text {
+    pointer-events: none; user-select: none; -webkit-user-select: none;
+    text-anchor: middle; fill: var(--ink-mid);
+  }
+  .lbl-name { font-family: var(--font-display); font-weight: 600; fill: var(--ink-dim); }
+  .stand.covered .lbl-name { fill: var(--ink); }
+  .stand.saved text { fill: var(--signal-ink); }
+  .lbl-code { font-family: var(--font-mono); fill: var(--ink-dim); font-size: 1.3px; }
+  .stand.saved .lbl-code { fill: rgba(11,11,12,.75); }
+  /* zoom bands: which label tiers exist at which zoom. s1 = big booths … s4 = tiny */
+  .z0 .s3 .lbl-name, .z0 .s4 .lbl-name, .z1 .s4 .lbl-name { display: none; }
+  .z0 .lbl-code, .z1 .lbl-code { display: none; }
+  .z2 .s4 .lbl-name { display: block; }
+
+  /* ---- bottom sheet ---- */
+  #sheet {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+    background: var(--ground-2); border-top: 2px solid var(--signal);
+    padding: .8rem .9rem calc(.8rem + env(safe-area-inset-bottom));
+    box-shadow: 0 -6px 0 rgba(255,255,255,.03);
+    transform: translateY(105%); transition: transform .18s ease-out;
+  }
+  #sheet.open { transform: none; }
+  #sheet .close {
+    position: absolute; right: .5rem; top: .4rem; border: 0; background: none;
+    color: var(--ink-dim); font-size: 1.2rem; cursor: pointer; padding: .3rem .5rem;
+  }
+  #sheet h2 { font-family: var(--font-display); font-size: 1.25rem; line-height: 1.15; padding-right: 2rem; }
+  #sheet .loc { font-family: var(--font-mono); font-size: .72rem; color: var(--ink-mid); margin-top: .25rem; }
+  #sheet .badges { display: flex; gap: .4rem; margin-top: .45rem; flex-wrap: wrap; }
+  #sheet .badge {
+    font-family: var(--font-mono); font-size: .6rem; letter-spacing: .08em;
+    padding: .12rem .35rem; border: 1px solid var(--rule); color: var(--ink-mid);
+    text-transform: uppercase;
+  }
+  #sheet .badge.saved { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
+  #sheet .badge.unconf { border-color: var(--warn); color: var(--warn); }
+  #sheet .who { margin-top: .5rem; font-size: .82rem; color: var(--ink-mid); line-height: 1.45; }
+  #sheet .who b { color: var(--ink); font-weight: 600; }
+  #sheet .actions { display: flex; gap: .5rem; margin-top: .7rem; }
+  #sheet .actions .save {
+    font-family: var(--font-mono); font-size: .75rem; cursor: pointer;
+    background: var(--ground-3); color: var(--ink); border: 1px solid var(--rule);
+    padding: .45rem .7rem; border-radius: 2px;
+  }
+  #sheet .actions .save[data-on="true"] { background: var(--signal); color: var(--signal-ink); border-color: var(--signal); }
+  #sheet .actions a {
+    font-family: var(--font-mono); font-size: .75rem; color: var(--ink-mid);
+    align-self: center; text-decoration: none;
+  }
+  #sheet .actions a:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <span class="wordmark"><span class="num">GC26</span>Hall map</span>
+  <span class="proto">prototype</span>
+  <a href="./">← guide</a>
+</header>
+
+<nav class="halls" id="halls" aria-label="Halls"></nav>
+
+<div id="stage">
+  <div class="load" id="load">loading hall …</div>
+  <div id="sheet" role="dialog" aria-label="Stand details">
+    <button class="close" id="sheet-close" aria-label="Close">×</button>
+    <h2 id="sheet-name"></h2>
+    <p class="loc" id="sheet-loc"></p>
+    <div class="badges" id="sheet-badges"></div>
+    <p class="who" id="sheet-who"></p>
+    <div class="actions">
+      <button class="save" id="sheet-save" hidden></button>
+      <a id="sheet-link" href="./#exhibitors">open in guide →</a>
+    </div>
+  </div>
+</div>
+
+<footer class="note">
+  <span id="counts"></span>
+  <span class="src">booth outlines: official hall plan data · schematic · unofficial</span>
+</footer>
+
+<script>
+"use strict";
+/* ================= data & state ================= */
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const SVGNS = "http://www.w3.org/2000/svg";
+const CROWD = ["", "Calm", "Light", "Moderate", "Busy", "Extreme"];
+
+const state = {
+  index: null,          // data/hallplan/index.json
+  exhibitors: [],       // data/exhibitors.json
+  halls: new Map(),     // hall id -> hall json
+  byStand: new Map(),   // "hall:CODE" -> [exhibitor, …]
+  hall: null,           // current hall id
+  stands: [],           // render records for current hall: {g, data, exs, codes}
+  saved: { exhibitors: new Set(), games: new Set() },
+  played: new Set(),
+  sel: null,
+};
+
+/* same storage the guide app uses — read/write compatible (js/app.js) */
+const SAVED_KEY = "gc2026.saved.v1";
+const PLAYED_KEY = "gc2026.played.v1";
+const gameKey = (t) => String(t).trim().toLowerCase().replace(/\s+/g, " ");
+
+function loadMarks() {
+  const read = (key) => { try { return JSON.parse(localStorage.getItem(key) || "{}"); } catch { return {}; } };
+  const saved = read(SAVED_KEY), played = read(PLAYED_KEY);
+  state.saved.exhibitors = new Set(Array.isArray(saved.exhibitors) ? saved.exhibitors : []);
+  state.saved.games = new Set(Array.isArray(saved.games) ? saved.games : []);
+  state.played = new Set(Array.isArray(played.exhibitors) ? played.exhibitors : []);
+}
+
+const exSaved = (ex) => state.saved.exhibitors.has(ex.id) ||
+  (ex.games || []).some((g) => state.saved.games.has(gameKey(g.title)));
+
+/* booth-code normalisation — must match tools/fetch-hallplan.mjs */
+const codeSet = (str) => new Set(String(str || "")
+  .split(/[\s/,+]+/).map((c) => c.replace(/[^0-9a-z]/gi, "").toUpperCase()).filter(Boolean));
+
+function buildJoin() {
+  state.byStand.clear();
+  for (const ex of state.exhibitors) {
+    if (!ex.hall || !ex.booth) continue;
+    for (const code of codeSet(ex.booth)) {
+      const key = `${ex.hall}:${code}`;
+      if (!state.byStand.has(key)) state.byStand.set(key, []);
+      state.byStand.get(key).push(ex);
+    }
+  }
+}
+
+/* ================= hall rendering ================= */
+
+function polyPath(poly) {
+  return "M" + poly.map((p) => p[0] + " " + p[1]).join("L") + "Z";
+}
+
+function bbox(poly) {
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  for (const [x, y] of poly) {
+    if (x < x0) x0 = x; if (y < y0) y0 = y;
+    if (x > x1) x1 = x; if (y > y1) y1 = y;
+  }
+  return { x0, y0, x1, y1, w: x1 - x0, h: y1 - y0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+}
+
+/* split a name into up to two balanced lines */
+function nameLines(name) {
+  if (name.length <= 11 || !name.includes(" ")) return [name];
+  const mid = name.length / 2;
+  let best = -1, bestD = 1e9;
+  for (let i = 0; i < name.length; i++)
+    if (name[i] === " " && Math.abs(i - mid) < bestD) { best = i; bestD = Math.abs(i - mid); }
+  return [name.slice(0, best), name.slice(best + 1)];
+}
+
+function standRecord(hallId, s) {
+  const codes = codeSet(s.nr);
+  const exs = [];
+  for (const code of codes)
+    for (const ex of state.byStand.get(`${hallId}:${code}`) || [])
+      if (!exs.includes(ex)) exs.push(ex);
+  return { data: s, codes, exs };
+}
+
+function renderHall(id) {
+  const hall = state.halls.get(id);
+  const stage = $("#stage");
+  const [W, H] = hall.size;
+
+  const svg = document.createElementNS(SVGNS, "svg");
+  svg.setAttribute("id", "map");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("width", W);
+  svg.setAttribute("height", H);
+
+  const blocks = document.createElementNS(SVGNS, "g");
+  for (const b of hall.blocks) {
+    const p = document.createElementNS(SVGNS, "path");
+    p.setAttribute("class", "block");
+    p.setAttribute("d", polyPath(b));
+    blocks.appendChild(p);
+  }
+  svg.appendChild(blocks);
+
+  /* labels live in their own layer above every stand shape — overlapping
+     sub-stands (E-071a over E-071, gallery "…g" stands) would otherwise
+     paint over their neighbours' names */
+  const labels = document.createElementNS(SVGNS, "g");
+
+  state.stands = [];
+  for (const s of hall.stands) {
+    const rec = standRecord(id, s);
+    const g = document.createElementNS(SVGNS, "g");
+    const lg = document.createElementNS(SVGNS, "g");
+    const box = bbox(s.poly);
+    const name = rec.exs.length ? rec.exs[0].name : (s.names[0] || "");
+
+    const p = document.createElementNS(SVGNS, "path");
+    p.setAttribute("d", polyPath(s.poly));
+    g.appendChild(p);
+
+    let cls = "stand", fs = 0;
+    if (name) {
+      const lines = nameLines(name);
+      const longest = Math.max(...lines.map((l) => l.length));
+      /* fit: booth width vs text length, booth height vs line count, and a
+         cap tied to booth size so huge halls don't shout */
+      fs = Math.min(box.w * 0.92 / (longest * 0.52), box.h * 0.5 / lines.length, Math.sqrt(s.a || box.w * box.h) * 0.3);
+      fs = Math.min(7, fs);
+      if (fs >= 0.8) {
+        const t = document.createElementNS(SVGNS, "text");
+        t.setAttribute("class", "lbl-name");
+        t.setAttribute("x", box.cx);
+        t.setAttribute("y", box.cy - ((lines.length - 1) * fs * 1.05) / 2);
+        t.setAttribute("font-size", fs);
+        lines.forEach((line, i) => {
+          const ts = document.createElementNS(SVGNS, "tspan");
+          ts.setAttribute("x", box.cx);
+          if (i) ts.setAttribute("dy", fs * 1.05);
+          ts.textContent = line;
+          t.appendChild(ts);
+        });
+        lg.appendChild(t);
+      }
+    }
+    /* size class drives which zoom band reveals the name */
+    cls += fs >= 3 ? " s1" : fs >= 1.9 ? " s2" : fs >= 1.2 ? " s3" : " s4";
+
+    const code = document.createElementNS(SVGNS, "text");
+    code.setAttribute("class", "lbl-code");
+    code.setAttribute("x", box.cx);
+    code.setAttribute("y", Math.min(box.y1 - 0.8, box.cy + fs + 1.6));
+    code.textContent = s.nr;
+    lg.appendChild(code);
+
+    if (rec.exs.length) {
+      cls += " covered";
+      if (rec.exs.some((ex) => ex.locationConfirmed === false)) cls += " unconf";
+    } else if (s.names.length) cls += " official";
+    g.setAttribute("class", cls);
+    lg.setAttribute("class", cls);
+    g.setAttribute("role", "button");
+    g.setAttribute("aria-label", `${name || "Stand"} — stand ${s.nr}`);
+
+    rec.g = g;
+    rec.lg = lg;
+    state.stands.push(rec);
+    svg.appendChild(g);
+    labels.appendChild(lg);
+  }
+  svg.appendChild(labels);
+
+  $("#map")?.remove();
+  $("#load").hidden = true;
+  stage.appendChild(svg);
+  refreshMarks();
+  fitView(svg, W, H);
+}
+
+/* re-apply saved/played classes without rebuilding the DOM */
+function refreshMarks() {
+  let savedCount = 0;
+  for (const rec of state.stands) {
+    const saved = rec.exs.some(exSaved);
+    const played = rec.exs.length > 0 && rec.exs.every((ex) => state.played.has(ex.id));
+    for (const el of [rec.g, rec.lg]) {
+      el.classList.toggle("saved", saved);
+      el.classList.toggle("played", played);
+    }
+    if (saved) savedCount += 1;
+  }
+  const covered = state.stands.filter((r) => r.exs.length).length;
+  $("#counts").textContent =
+    `${state.stands.length} stands · ${covered} in the guide` + (savedCount ? ` · ${savedCount} saved` : "");
+  renderChips();
+}
+
+/* ================= hall chips ================= */
+
+function hallSavedCount(id) {
+  const hall = state.halls.get(id);
+  if (!hall) {
+    /* not loaded yet — count from guide data alone */
+    return state.exhibitors.filter((ex) => String(ex.hall) === id && exSaved(ex)).length;
+  }
+  let n = 0;
+  for (const s of hall.stands) {
+    const rec = standRecord(id, s);
+    if (rec.exs.some(exSaved)) n += 1;
+  }
+  return n;
+}
+
+function renderChips() {
+  const nav = $("#halls");
+  nav.innerHTML = state.index.halls.map((h) => {
+    const n = hallSavedCount(h.id);
+    return `<button class="hall-chip" data-hall="${esc(h.id)}" aria-pressed="${h.id === state.hall}">
+      Hall ${esc(h.id)}${n ? ` <span class="n">●${n}</span>` : ""}</button>`;
+  }).join("");
+}
+
+/* ================= pan / zoom ================= */
+
+const view = { s: 1, tx: 0, ty: 0, fit: 1, min: 1, max: 1 };
+let raf = 0;
+
+function applyView() {
+  if (raf) return;
+  raf = requestAnimationFrame(() => {
+    raf = 0;
+    const map = $("#map");
+    if (!map) return;
+    map.style.transform = `translate(${view.tx}px, ${view.ty}px) scale(${view.s})`;
+    const z = view.s / view.fit;
+    map.setAttribute("class", z < 1.7 ? "z0" : z < 3.4 ? "z1" : "z2");
+  });
+}
+
+function fitView(svg, W, H) {
+  const r = $("#stage").getBoundingClientRect();
+  view.fit = Math.min(r.width / W, r.height / H) * 0.94;
+  view.min = view.fit * 0.8;
+  /* ~10× fit ≈ a 15 m slice of hall on a phone — enough to read any booth
+     code; deeper just gets lost in empty aisle */
+  view.max = view.fit * 10;
+  view.s = view.fit;
+  view.tx = (r.width - W * view.s) / 2;
+  view.ty = (r.height - H * view.s) / 2;
+  applyView();
+}
+
+function clampView() {
+  const map = $("#map");
+  if (!map) return;
+  const W = +map.getAttribute("width"), H = +map.getAttribute("height");
+  const r = $("#stage").getBoundingClientRect();
+  const m = 60; /* keep at least this much content on screen */
+  view.tx = Math.min(r.width - m, Math.max(m - W * view.s, view.tx));
+  view.ty = Math.min(r.height - m, Math.max(m - H * view.s, view.ty));
+}
+
+function zoomAt(px, py, factor) {
+  const s = Math.min(view.max, Math.max(view.min, view.s * factor));
+  const k = s / view.s;
+  view.tx = px - (px - view.tx) * k;
+  view.ty = py - (py - view.ty) * k;
+  view.s = s;
+  clampView();
+  applyView();
+}
+
+const pointers = new Map();
+let pinch = null;          /* {d0, mid0, s0, tx0, ty0} */
+let tap = null;            /* {x, y, t, target} */
+let lastTap = { t: 0, x: 0, y: 0 };
+
+const stage = $("#stage");
+
+stage.addEventListener("pointerdown", (e) => {
+  if (e.target.closest("#sheet")) return;
+  stage.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  $("#map")?.style.setProperty("will-change", "transform");
+  if (pointers.size === 1) {
+    tap = { x: e.clientX, y: e.clientY, t: Date.now(), target: e.target };
+    stage.classList.add("dragging");
+  } else if (pointers.size === 2) {
+    tap = null;
+    const [a, b] = [...pointers.values()];
+    pinch = {
+      d0: Math.hypot(a.x - b.x, a.y - b.y),
+      mid0: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+      s0: view.s, tx0: view.tx, ty0: view.ty,
+    };
+  }
+});
+
+stage.addEventListener("pointermove", (e) => {
+  const p = pointers.get(e.pointerId);
+  if (!p) return;
+  const rect = stage.getBoundingClientRect();
+  if (pointers.size === 1 && !pinch) {
+    view.tx += e.clientX - p.x;
+    view.ty += e.clientY - p.y;
+    if (tap && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 9) tap = null;
+    clampView();
+    applyView();
+  }
+  p.x = e.clientX; p.y = e.clientY;
+  if (pointers.size === 2 && pinch) {
+    const [a, b] = [...pointers.values()];
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    const mid = { x: (a.x + b.x) / 2 - rect.left, y: (a.y + b.y) / 2 - rect.top };
+    const s = Math.min(view.max, Math.max(view.min, pinch.s0 * (d / pinch.d0)));
+    const k = s / pinch.s0;
+    const m0 = { x: pinch.mid0.x - rect.left, y: pinch.mid0.y - rect.top };
+    view.s = s;
+    view.tx = mid.x - (m0.x - pinch.tx0) * k;
+    view.ty = mid.y - (m0.y - pinch.ty0) * k;
+    clampView();
+    applyView();
+  }
+});
+
+function endPointer(e) {
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) pinch = null;
+  if (!pointers.size) {
+    stage.classList.remove("dragging");
+    $("#map")?.style.removeProperty("will-change");
+  }
+  if (tap && e.type === "pointerup" && Date.now() - tap.t < 400) {
+    const rect = stage.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const now = Date.now();
+    if (now - lastTap.t < 320 && Math.hypot(x - lastTap.x, y - lastTap.y) < 40) {
+      zoomAt(x, y, 2.2);            /* double tap */
+      lastTap = { t: 0, x, y };
+    } else {
+      lastTap = { t: now, x, y };
+      const g = tap.target.closest?.(".stand");
+      selectStand(g ? state.stands.find((r) => r.g === g) : null);
+    }
+    tap = null;
+  }
+}
+stage.addEventListener("pointerup", endPointer);
+stage.addEventListener("pointercancel", endPointer);
+
+stage.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  const rect = stage.getBoundingClientRect();
+  zoomAt(e.clientX - rect.left, e.clientY - rect.top, Math.pow(1.0015, -e.deltaY));
+}, { passive: false });
+
+/* ================= selection & sheet ================= */
+
+function zoomToStand(rec) {
+  const box = bbox(rec.data.poly);
+  const r = stage.getBoundingClientRect();
+  const s = Math.min(view.max, Math.max(view.fit * 3.4, view.fit));
+  view.s = s;
+  view.tx = r.width / 2 - box.cx * s;
+  view.ty = r.height * 0.4 - box.cy * s;
+  clampView();
+  applyView();
+}
+
+function selectStand(rec, { zoom = false } = {}) {
+  state.sel?.g.classList.remove("sel");
+  state.sel = rec || null;
+  const sheet = $("#sheet");
+  if (!rec) { sheet.classList.remove("open"); return; }
+  rec.g.classList.add("sel");
+  if (zoom) zoomToStand(rec);
+
+  const s = rec.data;
+  const ex = rec.exs[0];
+  const name = ex ? ex.name : (s.names[0] || `Stand ${s.nr}`);
+  $("#sheet-name").textContent = name;
+  $("#sheet-loc").textContent = `Hall ${state.hall} · Stand ${s.nr}` + (s.a ? ` · ~${s.a} m²` : "");
+
+  const badges = [];
+  if (rec.exs.some(exSaved)) badges.push('<span class="badge saved">Saved</span>');
+  if (ex && ex.locationConfirmed === false) badges.push('<span class="badge unconf">Location unconfirmed</span>');
+  if (ex && rec.exs.every((x) => state.played.has(x.id))) badges.push('<span class="badge">Played</span>');
+  $("#sheet-badges").innerHTML = badges.join("");
+
+  let who = "";
+  if (ex) {
+    const games = ex.games || [];
+    const titles = games.slice(0, 3).map((g) => esc(g.title)).join(", ");
+    who = `<b>${esc(ex.name)}</b>`;
+    if (ex.crowd) who += ` · queue forecast Q${ex.crowd} ${esc(CROWD[ex.crowd] || "")}`;
+    if (games.length) who += `<br />${games.length} game${games.length === 1 ? "" : "s"}: ${titles}${games.length > 3 ? `, +${games.length - 3} more` : ""}`;
+    if (rec.exs.length > 1) who += `<br />also here: ${rec.exs.slice(1).map((x) => esc(x.name)).join(", ")}`;
+  } else if (s.names.length) {
+    const names = s.names.slice(0, 6).map(esc).join(", ");
+    who = names + (s.names.length > 6 ? `, +${s.names.length - 6} more` : "") +
+      "<br /><span style='color:var(--ink-dim)'>not covered by the guide (yet)</span>";
+  } else {
+    who = "<span style='color:var(--ink-dim)'>no exhibitor filed for this stand</span>";
+  }
+  $("#sheet-who").innerHTML = who;
+
+  const save = $("#sheet-save");
+  if (ex) {
+    save.hidden = false;
+    const on = state.saved.exhibitors.has(ex.id);
+    save.dataset.on = on;
+    save.textContent = on ? "− Remove from saved" : "+ Save booth";
+    save.onclick = () => { toggleSaved(ex.id); selectStand(rec); };
+  } else {
+    save.hidden = true;
+  }
+  sheet.classList.add("open");
+  /* replaceState: shareable position without stuffing the back stack —
+     and it never fires hashchange, so our own writes can't loop */
+  history.replaceState(null, "", `#${state.hall}/${[...rec.codes][0] || ""}`);
+}
+
+$("#sheet-close").addEventListener("click", () => selectStand(null));
+
+function toggleSaved(id) {
+  loadMarks(); /* pick up concurrent app-tab changes before writing */
+  const set = state.saved.exhibitors;
+  set.has(id) ? set.delete(id) : set.add(id);
+  try {
+    localStorage.setItem(SAVED_KEY, JSON.stringify({
+      exhibitors: [...state.saved.exhibitors], games: [...state.saved.games],
+    }));
+  } catch { /* storage denied — session-only, same as the app */ }
+  refreshMarks();
+}
+
+window.addEventListener("storage", (e) => {
+  if (e.key !== SAVED_KEY && e.key !== PLAYED_KEY) return;
+  loadMarks();
+  refreshMarks();
+  if (state.sel) selectStand(state.sel);
+});
+
+/* ================= boot ================= */
+
+async function showHall(id, { standCode = null } = {}) {
+  const already = id === state.hall && $("#map");
+  if (!already) {
+    state.hall = id;
+    state.sel = null;
+    $("#sheet").classList.remove("open");
+    renderChips();
+    if (!state.halls.has(id)) {
+      $("#load").hidden = false;
+      const h = state.index.halls.find((h) => h.id === id);
+      const res = await fetch(`data/hallplan/${h.file}`);
+      state.halls.set(id, await res.json());
+    }
+    renderHall(id);
+  }
+  if (standCode) {
+    const rec = state.stands.find((r) => r.codes.has(standCode));
+    if (rec) selectStand(rec, { zoom: true });
+  }
+}
+
+/* the address bar is an input too: a pasted #hall/stand link navigates */
+window.addEventListener("hashchange", () => {
+  const [h, c] = location.hash.slice(1).split("/");
+  if (!state.index || !state.index.halls.some((x) => x.id === h)) return;
+  showHall(h, { standCode: c ? c.toUpperCase() : null });
+});
+
+$("#halls").addEventListener("click", (e) => {
+  const chip = e.target.closest(".hall-chip");
+  if (chip) showHall(chip.dataset.hall);
+});
+
+window.addEventListener("resize", () => {
+  const map = $("#map");
+  if (map) fitView(map, +map.getAttribute("width"), +map.getAttribute("height"));
+});
+
+async function main() {
+  loadMarks();
+  const [index, exhibitors] = await Promise.all([
+    fetch("data/hallplan/index.json").then((r) => r.json()),
+    fetch("data/exhibitors.json").then((r) => r.json()),
+  ]);
+  state.index = index;
+  state.exhibitors = exhibitors;
+  buildJoin();
+
+  /* deep link: #7.1/A061 — else the hall with the most saved stops, else 7.1 */
+  const [hallArg, code] = location.hash.slice(1).split("/");
+  let start = index.halls.some((h) => h.id === hallArg) ? hallArg : null;
+  if (!start) {
+    let best = 0;
+    for (const h of index.halls) {
+      const n = hallSavedCount(h.id);
+      if (n > best) { best = n; start = h.id; }
+    }
+  }
+  await showHall(start || "7.1", { standCode: code ? code.toUpperCase() : null });
+
+  /* idle prefetch: the other halls are 1–8 KB gz each */
+  const prefetch = () => state.index.halls.forEach((h) => {
+    if (!state.halls.has(h.id))
+      fetch(`data/hallplan/${h.file}`).then((r) => r.json()).then((d) => state.halls.set(h.id, d)).catch(() => {});
+  });
+  "requestIdleCallback" in window ? requestIdleCallback(prefetch, { timeout: 4000 }) : setTimeout(prefetch, 3000);
+}
+
+main().catch((err) => {
+  $("#load").hidden = false;
+  $("#load").textContent = "could not load hall data — " + err.message;
+});
+</script>
+</body>
+</html>
