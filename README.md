@@ -11,6 +11,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
 - **Shareable saved lists** — move a plan to another device or send it to a friend with a link or scannable QR code
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
+- **Itinerary builder** — assign saved booths and games to a day, see that day's hours and crowd advice inline, then export the plan to a calendar
 - Event info: dates, hours, tickets, special areas, Opening Night Live
 - **Installable and offline-capable** — add it to your home screen and the whole guide
   stays readable in a hall with no reception
@@ -94,6 +95,11 @@ forwarded on — so until the question is answered the tab keeps its own copy: d
 the prompt costs a reload rather than the whole list. Answer it, or close the tab, and
 the copy is gone.
 
+The Visit Planner turns those bookmarks into a day-by-day itinerary. Assignments are
+kept separately under `gc2026.itinerary.v1`, follow the same booth and game keys, and
+stay on this device too. You can see each day's hours and crowd advice beside its stops
+or export the assigned days to a calendar file.
+
 It is entirely local, so it needs no network: with the app running off the service
 worker cache in a dead-reception hall, the list still renders, both saved-only filters
 still work, and anything saved while offline persists. That is the case it is for —
@@ -132,7 +138,9 @@ becomes active again until you play the new addition.
 Played rows use a muted filled plate and dim in place rather than taking the orange
 signal colour: saved things need attention, while played things should recede. In the
 queue-priority list, played booths sink below the unplayed ones without changing their
-absolute ranks, and **Hide played** removes them altogether.
+absolute ranks, and **Hide played** removes them altogether. Itinerary day groups get
+the same treatment: played stops dim and sink to the bottom of their day, so each
+group leads with what's still left to do.
 
 Played marks live in a second local-only storage entry, `gc2026.played.v1`, separate
 from the saved list; **Hide played** is a view preference rather than a mark, so it

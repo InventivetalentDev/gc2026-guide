@@ -22,6 +22,8 @@ const state = {
     saved: { exhibitors: new Set(), games: new Set() },
     played: { exhibitors: new Set(), games: new Set() },
   },
+  /* item-key → ISO day date; replaced from localStorage in main() */
+  itinerary: { exhibitors: new Map(), games: new Map() },
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -94,6 +96,7 @@ async function loadData() {
    every booth showing the same title. */
 
 const MARK_KEYS = { saved: "gc2026.saved.v1", played: "gc2026.played.v1" };
+const IT_KEY = "gc2026.itinerary.v1";
 const PREFS_KEY = "gc2026.prefs.v1";
 
 const gameKey = (title) => String(title).trim().toLowerCase().replace(/\s+/g, " ");
@@ -206,6 +209,8 @@ function toggleMark(mark, kind, key) {
   const set = markSet(mark, kind);
   set.has(key) ? set.delete(key) : set.add(key);
   persistMarks(mark);
+  /* Only the saved set scopes the itinerary; a played tick can't orphan it. */
+  if (mark === "saved") pruneItinerary();
   onMarksChanged();
 }
 
@@ -226,6 +231,7 @@ function onMarksChanged({ rebuild = false } = {}) {
      the grid's patch-in-place shortcut. keepingFocus() restores its buttons. */
   renderRoute();
   renderWristband();
+  renderItinerary();
 }
 
 /* Bring already-rendered buttons and their rows back in sync with the sets,
@@ -264,7 +270,9 @@ function keepingFocus(container, render, fallback) {
   const inside = el && container.contains(el);
   const sel = !inside
     ? null
-    : el.dataset.mark && el.dataset.bmKey
+    : el.dataset.itDay
+      ? `[data-it-kind="${CSS.escape(el.dataset.itKind)}"][data-it-key="${CSS.escape(el.dataset.itKey)}"][data-it-day="${CSS.escape(el.dataset.itDay)}"]`
+      : el.dataset.mark && el.dataset.bmKey
       ? `.bm[data-mark="${CSS.escape(el.dataset.mark)}"][data-bm-kind="${CSS.escape(el.dataset.bmKind)}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
       : el.classList.contains("more-games")
         ? `.more-games[data-id="${CSS.escape(el.dataset.id)}"]`
@@ -433,6 +441,9 @@ function renderBookmarkViews() {
   renderExhibitors();
   renderMarkControls();
   renderPriority();
+  renderRoute();
+  renderWristband();
+  renderItinerary();
 }
 
 function applyIncoming(incoming) {
@@ -456,6 +467,8 @@ function restoreBookmarks(snapshot) {
     games: new Set(snapshot.games),
   };
   persistMarks("saved");
+  /* Undo can take away items the visitor already placed on a day. */
+  pruneItinerary();
   renderBookmarkViews();
   showToast("Shared list import undone.", null, null, { priority: true, replace: true });
 }
@@ -593,6 +606,69 @@ function bindShareDialog() {
       }
     }
   });
+}
+
+/* ---------- itinerary ---------- */
+
+function loadItinerary() {
+  const empty = { exhibitors: new Map(), games: new Map() };
+  try {
+    const raw = JSON.parse(localStorage.getItem(IT_KEY) || "{}");
+    const validDays = new Set((state.event?.days || []).map((d) => d.date));
+    const entries = (kind) => {
+      const source =
+        raw && raw[kind] && typeof raw[kind] === "object" && !Array.isArray(raw[kind]) ? raw[kind] : {};
+      const saved = state.marks.saved[kind];
+      return Object.entries(source).filter(([key, date]) => saved.has(key) && validDays.has(date));
+    };
+    return {
+      exhibitors: new Map(entries("exhibitors")),
+      games: new Map(entries("games")),
+    };
+  } catch {
+    /* corrupt entry, or storage blocked entirely — assignments stay in-session */
+    return empty;
+  }
+}
+
+function persistItinerary() {
+  try {
+    localStorage.setItem(
+      IT_KEY,
+      JSON.stringify({
+        exhibitors: Object.fromEntries(state.itinerary.exhibitors),
+        games: Object.fromEntries(state.itinerary.games),
+      })
+    );
+  } catch {
+    /* out of quota or storage denied — assignments still work for this session */
+  }
+}
+
+const itMap = (kind) => (kind === "game" ? state.itinerary.games : state.itinerary.exhibitors);
+const assignedDay = (kind, key) => itMap(kind).get(key) || null;
+
+function assignToDay(kind, key, date) {
+  const map = itMap(kind);
+  map.get(key) === date ? map.delete(key) : map.set(key, date);
+  persistItinerary();
+  onItineraryChanged();
+}
+
+function pruneItinerary() {
+  let changed = false;
+  for (const kind of ["exhibitors", "games"]) {
+    for (const key of state.itinerary[kind].keys()) {
+      if (state.marks.saved[kind].has(key)) continue;
+      state.itinerary[kind].delete(key);
+      changed = true;
+    }
+  }
+  if (changed) persistItinerary();
+}
+
+function onItineraryChanged() {
+  renderItinerary();
 }
 
 /* ---------- filtering & sorting ---------- */
@@ -934,26 +1010,159 @@ function renderFilters() {
 
 /* ---------- planner ---------- */
 
+const isTradeDay = (d) => /trade|media|business/i.test(d.access);
+
+/* Shared by the day board (section 01) and the itinerary group headers, so
+   the two renderings of a day can never drift apart. */
+function dayHeaderInner(d) {
+  const [, month, day] = d.date.split("-");
+  return `<span class="day-when">
+      <span class="day-dow">${esc(d.label.slice(0, 3))}</span>
+      <span class="day-date">${esc(day)}.${esc(month)}</span>
+    </span>
+    <span class="day-access ${isTradeDay(d) ? "trade" : "public"}">${esc(d.access)}</span>
+    <span class="day-detail">
+      ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
+      ${d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
+    </span>`;
+}
+
+function itineraryItems() {
+  const exhibitors = [...state.marks.saved.exhibitors]
+    .map((key) => {
+      const ex = state.exhibitors.find((item) => item.id === key);
+      return ex ? { kind: "exhibitor", key, name: ex.name, ex } : null;
+    })
+    .filter(Boolean);
+
+  const games = [...state.marks.saved.games].map((key) => {
+    const at = state.exhibitors.filter((ex) =>
+      (ex.games || []).some((g) => gameKey(g.title) === key)
+    );
+    const name = at.length ? at[0].games.find((g) => gameKey(g.title) === key).title : key;
+    return { kind: "game", key, name, at };
+  });
+
+  return [...exhibitors, ...games];
+}
+
+/* Same precedence as routeGroups(), so a booth reads the same in both planner
+   sections: absence wins over everything, then a known hall wins over the
+   offsite tag — an entry carrying both is a stop you can walk to. */
+function itineraryLocation(ex, { booth = true } = {}) {
+  if (isAbsent(ex)) return "Absent — no booth";
+  if (!ex.hall) return isOffsite(ex) ? "Offsite" : "Hall TBA";
+  return `Hall ${ex.hall}${booth && ex.booth ? ` · ${ex.booth}` : ""}`;
+}
+
+function itineraryCrowd(item) {
+  return item.kind === "exhibitor"
+    ? item.ex.crowd || 0
+    : Math.max(0, ...item.at.map((ex) => ex.crowd || 0));
+}
+
+function compareItineraryItems(a, b) {
+  return itineraryCrowd(b) - itineraryCrowd(a) || a.name.localeCompare(b.name);
+}
+
+const itineraryPlayed = (item) =>
+  item.kind === "exhibitor" ? hasPlayed(item.ex) : isPlayed("game", item.key);
+
+/* Played stops sink below the live ones inside each group, same as the
+   queue-priority list — the day keeps its shape but leads with what's left. */
+function compareItineraryRows(a, b) {
+  return itineraryPlayed(a) - itineraryPlayed(b) || compareItineraryItems(a, b);
+}
+
+function itineraryItemLocation(item) {
+  if (item.kind === "game") {
+    return item.at.length
+      ? item.at.map((ex) => `${ex.name} — ${itineraryLocation(ex, { booth: false })}`).join(" · ")
+      : "Booth TBA";
+  }
+  const crowd = item.ex.crowd || 0;
+  return `${itineraryLocation(item.ex)} · Queue ${crowd ? `${crowd}/5 ${CROWD_LABELS[crowd] || "?"}` : "unknown"}`;
+}
+
+function itineraryDayChips(item) {
+  const current = assignedDay(item.kind, item.key);
+  const label = `Assign ${item.name} to a day`;
+  return `<span class="it-days" role="group" aria-label="${esc(label)}">${(state.event.days || [])
+    .map((d) => {
+      const active = current === d.date;
+      const trade = isTradeDay(d);
+      const action = active ? `Remove from ${d.label}` : `Assign to ${d.label}`;
+      const title = trade ? `${action} (trade & media only)` : action;
+      return `<button class="day-chip${active ? " active" : ""}" type="button"
+        data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-it-day="${esc(d.date)}"
+        data-trade="${esc(String(trade))}" aria-pressed="${esc(String(active))}"
+        title="${esc(title)}" aria-label="${esc(title)}">${esc(d.label.slice(0, 3))}</button>`;
+    })
+    .join("")}</span>`;
+}
+
+function itineraryItem(item) {
+  const kindLabel = item.kind === "game" ? "Game" : "Booth";
+  return `<div class="it-item" data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-played="${itineraryPlayed(item)}">
+    <span class="it-main">
+      <span class="it-kind">${esc(kindLabel)}</span>
+      <span class="it-name">${esc(item.name)}</span>
+    </span>
+    <span class="it-loc">${esc(itineraryItemLocation(item))}</span>
+    ${itineraryDayChips(item)}
+    ${markButton("saved", item.kind, item.key, item.name)}
+  </div>`;
+}
+
+function renderItinerary() {
+  const items = itineraryItems();
+  const validDays = new Set((state.event.days || []).map((d) => d.date));
+  const unassigned = items
+    .filter((item) => !validDays.has(assignedDay(item.kind, item.key)))
+    .sort(compareItineraryRows);
+  const groups = [];
+
+  if (unassigned.length) {
+    groups.push(`<div class="it-group">
+      <div class="it-group-head unassigned"><span class="it-group-title">Unassigned</span></div>
+      ${unassigned.map(itineraryItem).join("")}
+    </div>`);
+  }
+  for (const d of state.event.days || []) {
+    const dayItems = items
+      .filter((item) => assignedDay(item.kind, item.key) === d.date)
+      .sort(compareItineraryRows);
+    if (!dayItems.length) continue;
+    groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
+      <div class="it-group-head">${dayHeaderInner(d)}</div>
+      ${dayItems.map(itineraryItem).join("")}
+    </div>`);
+  }
+
+  const board = $("#itinerary");
+  keepingFocus(board, () => {
+    board.innerHTML = groups.join("");
+  });
+  board.classList.toggle("hidden", items.length === 0);
+  $("#itinerary-empty").classList.toggle("hidden", items.length > 0);
+  /* Saved-but-empty happens when every saved id fell out of a data refresh —
+     "nothing saved yet" would be a lie next to a visible saved counter. */
+  $("#itinerary-empty").textContent = savedCount()
+    ? "Nothing you saved is in the current lineup anymore — exhibitors come and go between data updates."
+    : "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.";
+  $("#export-ics").classList.toggle(
+    "hidden",
+    !items.some((item) => validDays.has(assignedDay(item.kind, item.key)))
+  );
+}
+
 function renderPlanner() {
   const ev = state.event;
   $("#day-guide").innerHTML = (ev.days || [])
-    .map((d) => {
-      const isTrade = /trade|media|business/i.test(d.access);
-      const [, month, day] = d.date.split("-");
-      return `<div class="day-row">
-        <span class="day-when">
-          <span class="day-dow">${esc(d.label.slice(0, 3))}</span>
-          <span class="day-date">${esc(day)}.${esc(month)}</span>
-        </span>
-        <span class="day-access ${isTrade ? "trade" : "public"}">${esc(d.access)}</span>
-        <span class="day-detail">
-          ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
-          ${d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
-        </span>
-      </div>`;
-    })
+    .map((d) => `<div class="day-row">${dayHeaderInner(d)}</div>`)
     .join("");
 
+  renderItinerary();
   renderPriority();
   renderRoute();
   renderWristband();
@@ -1062,6 +1271,117 @@ function renderPriority() {
       ? `${busiest.length} high-queue booths`
       : `${list.length} / ${busiest.length} high-queue booths`;
   $("#priority-count").textContent = `${count}${played ? ` · ${played} played` : ""}`;
+}
+
+/* ---------- calendar export ---------- */
+
+function icsEscape(s) {
+  return String(s ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\r/g, "")
+    .replace(/\n/g, "\\n");
+}
+
+const icsEncoder = new TextEncoder();
+
+function icsFold(line) {
+  const folded = [];
+  let part = "";
+  let bytes = 0;
+  let limit = 75;
+
+  for (const char of String(line)) {
+    const size = icsEncoder.encode(char).length;
+    if (part && bytes + size > limit) {
+      folded.push(part);
+      part = char;
+      bytes = size;
+      /* The leading space on a continuation line also counts as an octet. */
+      limit = 74;
+    } else {
+      part += char;
+      bytes += size;
+    }
+  }
+  folded.push(part);
+  return folded.join("\r\n ");
+}
+
+function icsDateTimeUTC(d) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(
+    d.getUTCHours()
+  )}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
+}
+
+function icsDescription(item) {
+  if (item.kind === "exhibitor") {
+    const crowd = item.ex.crowd || 0;
+    return `${item.name} — ${itineraryLocation(item.ex).replace(" · ", ", booth ")} (queue ${
+      crowd ? `${crowd}/5` : "unknown"
+    })`;
+  }
+  const booths = item.at
+    .map((ex) => `${ex.name} (${itineraryLocation(ex, { booth: false })})`)
+    .join(", ");
+  return `${item.name} — ${booths ? `at ${booths}` : "booth not listed"}`;
+}
+
+function buildICS() {
+  const items = itineraryItems();
+  const stamp = icsDateTimeUTC(new Date());
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//gc2026-guide//gamescom 2026 itinerary//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+  ];
+
+  for (const d of state.event.days || []) {
+    const dayItems = items
+      .filter((item) => assignedDay(item.kind, item.key) === d.date)
+      .sort(compareItineraryItems);
+    if (!dayItems.length) continue;
+
+    lines.push("BEGIN:VEVENT", `UID:gc2026-${d.date}@gc2026-guide`, `DTSTAMP:${stamp}`);
+
+    const start = d.open ? new Date(`${d.date}T${d.open}:00+02:00`) : null;
+    const end = d.close ? new Date(`${d.date}T${d.close}:00+02:00`) : null;
+    if (start && end && !Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())) {
+      lines.push(`DTSTART:${icsDateTimeUTC(start)}`, `DTEND:${icsDateTimeUTC(end)}`);
+    } else {
+      const date = String(d.date).replace(/-/g, "");
+      const next = new Date(`${d.date}T00:00:00Z`);
+      next.setUTCDate(next.getUTCDate() + 1);
+      lines.push(`DTSTART;VALUE=DATE:${date}`, `DTEND;VALUE=DATE:${icsDateTimeUTC(next).slice(0, 8)}`);
+    }
+
+    lines.push(
+      `SUMMARY:${icsEscape(`gamescom — ${d.label} plan (${dayItems.length} stop${dayItems.length === 1 ? "" : "s"})`)}`,
+      `LOCATION:${icsEscape(state.event.location || "Koelnmesse, Cologne")}`,
+      `DESCRIPTION:${icsEscape(dayItems.map(icsDescription).join("\n"))}`,
+      "END:VEVENT"
+    );
+  }
+
+  lines.push("END:VCALENDAR");
+  return `${lines.map(icsFold).join("\r\n")}\r\n`;
+}
+
+function downloadICS() {
+  const blob = new Blob([buildICS()], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "gamescom-2026-itinerary.ics";
+  link.hidden = true;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 /* ---------- route by hall ---------- */
@@ -1434,9 +1754,11 @@ function bindControls() {
   });
   $("#clear-saved").addEventListener("click", () => {
     const n = savedCount();
-    if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"}? This can't be undone.`)) return;
+    if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"} and their day assignments? This can't be undone.`)) return;
     state.marks.saved = { exhibitors: new Set(), games: new Set() };
+    state.itinerary = { exhibitors: new Map(), games: new Map() };
     persistMarks("saved");
+    persistItinerary();
     onMarksChanged({ rebuild: true });
   });
   $("#clear-played").addEventListener("click", () => {
@@ -1446,26 +1768,35 @@ function bindControls() {
     persistMarks("played");
     onMarksChanged({ rebuild: true });
   });
+  $("#export-ics").addEventListener("click", downloadICS);
   bindShareDialog();
-  /* One delegated listener covers every + and ✓ button in both views, including the
-     ones that get re-rendered underneath it. */
+  /* One delegated listener covers every +, ✓ and day button in every view,
+     including the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
+    const day = e.target.closest("[data-it-day]");
+    if (day) {
+      assignToDay(day.dataset.itKind, day.dataset.itKey, day.dataset.itDay);
+      return;
+    }
     const btn = e.target.closest("[data-mark]");
     if (btn) toggleMark(btn.dataset.mark, btn.dataset.bmKind, btn.dataset.bmKey);
   });
   /* Same marks, second tab: keep them from overwriting each other. */
   window.addEventListener("storage", (e) => {
-    const watched = [...Object.values(MARK_KEYS), PREFS_KEY];
+    const watched = [...Object.values(MARK_KEYS), IT_KEY, PREFS_KEY];
     if (e.key !== null && !watched.includes(e.key)) return;
     if (e.key === null || e.key === MARK_KEYS.saved) state.marks.saved = loadMarks("saved");
     if (e.key === null || e.key === MARK_KEYS.played) state.marks.played = loadMarks("played");
+    if (e.key === null || e.key === IT_KEY) state.itinerary = loadItinerary();
     if (e.key === null || e.key === PREFS_KEY) Object.assign(state, loadPrefs());
+    pruneItinerary();
     renderFilters();
     renderExhibitors();
     renderMarkControls();
     renderPriority();
     renderRoute();
     renderWristband();
+    renderItinerary();
   });
 
   $("#reset-filters").addEventListener("click", () => {
@@ -1514,6 +1845,7 @@ async function main() {
   }
   state.marks.saved = loadMarks("saved");
   state.marks.played = loadMarks("played");
+  state.itinerary = loadItinerary();
   Object.assign(state, loadPrefs());
   const incoming = takeIncomingList();
   /* Only a link in the address bar moves the visitor to their list; a leftover

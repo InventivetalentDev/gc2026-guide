@@ -120,8 +120,16 @@
       <h3 class="section-title"><span class="section-num">01</span> The five days</h3>
       <div id="day-guide" class="day-board"></div>
 
+      <h3 class="section-title"><span class="section-num">02</span> Your itinerary</h3>
+      <p class="section-sub">Give each saved booth and game a day. Unassigned items sit at the top until you place them.</p>
+      <div class="itinerary-controls">
+        <button class="reset hidden" id="export-ics" type="button">Export to calendar (.ics)</button>
+      </div>
+      <div id="itinerary" class="it-board"></div>
+      <p class="empty hidden" id="itinerary-empty"></p>
+
       <section id="route-section" aria-labelledby="route-title">
-        <h3 class="section-title" id="route-title" tabindex="-1"><span class="section-num">02</span> Route by hall</h3>
+        <h3 class="section-title" id="route-title" tabindex="-1"><span class="section-num">03</span> Route by hall</h3>
         <p class="section-sub">Your saved stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls.</p>
         <div class="route-controls">
           <span class="result-count" id="route-count"></span>
@@ -131,7 +139,7 @@
         <p class="route-absent hidden" id="route-absent"></p>
       </section>
 
-      <h3 class="section-title"><span class="section-num">03</span> Queue priority</h3>
+      <h3 class="section-title"><span class="section-num">04</span> Queue priority</h3>
       <p class="section-sub">Busiest booths first. If any of these matter to you, make one your first stop of the day.</p>
       <div class="priority-controls">
         <label class="toggle"><input type="checkbox" id="priority-saved-only"> Saved only <span class="saved-count" id="priority-saved-count"></span></label>
@@ -142,12 +150,12 @@
       <p class="empty hidden" id="priority-empty"></p>
 
       <section id="wristband-section" class="hidden">
-        <h3 class="section-title"><span class="section-num">04</span> 18+ wristband</h3>
+        <h3 class="section-title"><span class="section-num">05</span> 18+ wristband</h3>
         <p class="section-sub">Booths with 18+ demos check ID and hand out a red wristband — get it on arrival, not at the front of the queue.</p>
         <div id="wristband-list" class="priority-table"></div>
       </section>
 
-      <h3 class="section-title"><span class="section-num">05</span> General crowd tips</h3>
+      <h3 class="section-title"><span class="section-num">06</span> General crowd tips</h3>
       <ol class="tips" id="crowd-tips"></ol>
     </section>
 
