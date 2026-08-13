@@ -26,6 +26,8 @@ const state = {
   itinerary: { exhibitors: new Map(), games: new Map() },
   /* which arrangement of the plan board is on screen; persisted in prefs */
   planLens: "day",
+  /* hall-lens day filter: "all", an ISO day date, or "none" (unassigned) */
+  planDay: "all",
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -1183,9 +1185,12 @@ function renderPlanner() {
 }
 
 /* The "Saved here" chip row is shared by the queue-priority table and the
-   route board — one helper so the markup can't drift apart. */
-function savedHereChips(ex) {
-  const mine = savedGames(ex);
+   route board — one helper so the markup can't drift apart. The route passes
+   its day filter so a single-day view lists only that day's games. */
+function savedHereChips(ex, { day = null } = {}) {
+  const mine = day
+    ? savedGames(ex).filter((g) => (assignedDay("game", gameKey(g.title)) || "none") === day)
+    : savedGames(ex);
   if (!mine.length) return "";
   return `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
     .map((g) => `<span class="priority-game">${esc(g.title)}</span>`)
@@ -1401,6 +1406,16 @@ function downloadICS() {
 const isAbsent = (ex) => (ex.tags || []).includes("not exhibiting");
 const isOffsite = (ex) => (ex.tags || []).includes("offsite");
 
+/* Which days a stop is planned for: the booth's own assignment plus those of
+   the saved games shown there. "none" stands in for any saved element still
+   waiting for a day. */
+function stopDays(ex) {
+  const days = new Set();
+  if (isSaved("exhibitor", ex.id)) days.add(assignedDay("exhibitor", ex.id) || "none");
+  savedGames(ex).forEach((g) => days.add(assignedDay("game", gameKey(g.title)) || "none"));
+  return days;
+}
+
 function routeGroups() {
   const buckets = new Map();
   const absent = [];
@@ -1413,6 +1428,9 @@ function routeGroups() {
       absent.push(ex.name);
       return;
     }
+    /* The day filter scopes everything after it — including the played count,
+       so "1 played" always describes the stops actually on screen. */
+    if (state.planDay !== "all" && !stopDays(ex).has(state.planDay)) return;
     if (hasPlayed(ex)) {
       played += 1;
       if (state.hidePlayed) return;
@@ -1446,8 +1464,21 @@ function routeGroups() {
   };
 }
 
+/* Short day tags on a stop — the hall lens reading the day lens back. Only in
+   the all-days view; under a single-day filter every row would repeat the
+   same tag. */
+function routeDayTags(ex) {
+  const assigned = new Set([...stopDays(ex)].filter((day) => day !== "none"));
+  if (!assigned.size) return "";
+  return (state.event.days || [])
+    .filter((d) => assigned.has(d.date))
+    .map((d) => `<span class="route-day">${esc(d.label.slice(0, 3))}</span>`)
+    .join("");
+}
+
 function renderRoute() {
   const routeList = $("#plan-board");
+  const dayFilter = state.planDay === "all" ? null : state.planDay;
   const { groups, absent, played } = routeGroups();
   const stopCount = groups.reduce((total, group) => total + group.items.length, 0);
   const hallCount = groups.filter((group) => group.key !== "offsite" && group.key !== "tba").length;
@@ -1461,14 +1492,14 @@ function renderRoute() {
           const loc = baseLocation + (ex.hall && !ex.locationConfirmed ? " · unconf." : "");
           const crowd = ex.crowd || 0;
           return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}">
-            <span class="route-name">${esc(ex.name)}</span>
+            <span class="route-name">${esc(ex.name)}${dayFilter ? "" : routeDayTags(ex)}</span>
             <span class="route-booth">${esc(loc)}</span>
             <span class="route-crowd" data-level="${esc(crowd)}">Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}</span>
             <span class="row-actions">
               ${markButton("played", "exhibitor", ex.id, ex.name)}
               ${markButton("saved", "exhibitor", ex.id, ex.name)}
             </span>
-            ${savedHereChips(ex)}
+            ${savedHereChips(ex, { day: dayFilter })}
           </div>`;
         })
         .join("");
@@ -1489,16 +1520,23 @@ function renderRoute() {
     $("#plan-title")
   );
   routeList.classList.toggle("hidden", stopCount === 0);
-  $("#plan-empty").classList.toggle("hidden", stopCount > 0 || absent.length > 0);
-  $("#plan-empty").textContent = state.hidePlayed && played > 0 && stopCount === 0
-    ? "Every stop on your route is played — nice work."
-    : savedCount()
-      ? "No current stops match your saved list — the exhibitor data may have changed."
-      : "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall.";
+  /* Under a day filter the absent footnote is hidden, so it can't stand in
+     for the empty message the way it does on the all-days view. */
+  $("#plan-empty").classList.toggle("hidden", stopCount > 0 || (!dayFilter && absent.length > 0));
+  $("#plan-empty").textContent = !savedCount()
+    ? "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall."
+    : state.hidePlayed && played > 0 && stopCount === 0
+      ? "Every stop here is played — nice work."
+      : dayFilter === "none"
+        ? "Every stop on your list has a day — flip to By day to review the plan."
+        : dayFilter
+          ? `Nothing planned for ${dayLabel(dayFilter)} yet. Assign stops to days in the By day view.`
+          : "No current stops match your saved list — the exhibitor data may have changed.";
   $("#plan-count").textContent =
     `${stopCount} stop${stopCount === 1 ? "" : "s"} · ${hallCount} hall${hallCount === 1 ? "" : "s"}` +
     (played ? ` · ${played} played` : "");
-  $("#plan-absent").classList.toggle("hidden", absent.length === 0);
+  /* Absent entries have no day to belong to; the footnote is an all-days fact. */
+  $("#plan-absent").classList.toggle("hidden", absent.length === 0 || Boolean(dayFilter));
   $("#plan-absent").textContent = absent.length
     ? `On your list but not on the show floor: ${absent.join(", ")}.`
     : "";
@@ -1516,6 +1554,49 @@ const PLAN_SUBS = {
   hall: "Your stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls.",
 };
 
+const dayLabel = (date) => (state.event.days || []).find((d) => d.date === date)?.label || date;
+
+/* Day chips over the hall lens — the itinerary's assignments projected onto
+   the route, so "today's stops, in walking order" is one tap. Hidden until at
+   least one stop sits on a day, and in the day lens, where the grouping
+   already answers the question. */
+function renderPlanDayFilter() {
+  const row = $("#plan-day-filter");
+  if (!row) return;
+  const seen = new Set();
+  state.exhibitors.filter(hasSaved).forEach((ex) => {
+    if (!isAbsent(ex)) stopDays(ex).forEach((day) => seen.add(day));
+  });
+  const assigned = (state.event.days || []).filter((d) => seen.has(d.date));
+  /* A filter left pointing at a day that lost its last stop would strand the
+     view on an empty board with no active chip to clear it. */
+  if (state.planDay !== "all" && !seen.has(state.planDay)) state.planDay = "all";
+  const show = state.planLens === "hall" && assigned.length > 0;
+  row.classList.toggle("hidden", !show);
+  row.innerHTML = !show
+    ? ""
+    : [
+        ["all", "All days", "Every stop on your list"],
+        ...assigned.map((d) => [d.date, d.label.slice(0, 3), `Only stops planned for ${d.label}`]),
+        ...(seen.has("none") ? [["none", "Unassigned", "Only stops without a day yet"]] : []),
+      ]
+        .map(
+          ([value, label, title]) => `<button class="day-chip${state.planDay === value ? " active" : ""}"
+            type="button" data-plan-day="${esc(value)}" aria-pressed="${state.planDay === value}"
+            title="${esc(title)}" aria-label="${esc(title)}">${esc(label)}</button>`
+        )
+        .join("");
+  $$("#plan-day-filter .day-chip").forEach((chip) =>
+    chip.addEventListener("click", () => {
+      state.planDay = chip.dataset.planDay;
+      renderPlan();
+      /* The render rebuilds the chip row — put focus back on the chip that
+         was pressed, the way the age filter does. */
+      $(`#plan-day-filter [data-plan-day="${CSS.escape(chip.dataset.planDay)}"]`)?.focus();
+    })
+  );
+}
+
 function renderPlan() {
   /* The service worker caches index.html and app.js independently, so on a
      flaky network this file can briefly run against a one-version-older shell
@@ -1531,6 +1612,9 @@ function renderPlan() {
     chip.setAttribute("aria-pressed", String(on));
   });
   $("#plan-sub").textContent = hall ? PLAN_SUBS.hall : PLAN_SUBS.day;
+  /* Before the board: this can reset a stranded state.planDay back to "all",
+     and routeGroups() has to see the corrected value. */
+  renderPlanDayFilter();
   /* Same shell, restyled per lens; toggle (not className) so "hidden" and the
      renderers' own state survive the swap. */
   board.classList.toggle("it-board", !hall);

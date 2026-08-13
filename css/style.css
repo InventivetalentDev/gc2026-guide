@@ -737,6 +737,12 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 }
 .plan-controls .result-count { margin-left: auto; }
 .plan-lens { display: flex; gap: 6px; }
+.plan-days {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin: -2px 0 12px;
+}
 
 /* ============================================================
    planner — your plan, day lens (itinerary)
@@ -953,6 +959,21 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .route-item .row-actions { grid-column: -2 / -1; grid-row: 1; align-self: center; }
 .route-item .priority-saved { grid-column: 1 / -1; }
 .route-name { font-weight: 700; font-size: .95rem; }
+/* the day a stop is planned for, read straight off the itinerary */
+.route-day {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--signal);
+  background: var(--signal-wash);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  margin-left: 8px;
+  vertical-align: .14em;
+  white-space: nowrap;
+}
 .route-booth {
   font-family: var(--font-mono);
   font-size: .76rem;
