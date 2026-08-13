@@ -596,20 +596,20 @@
     "name": "NetEase Games",
     "type": "publisher",
     "hall": "7.1",
-    "booth": "A-051/B-050",
+    "booth": "A051/B050",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/netease-interactive",
-    "description": "Two Hall 7.1 booths: A-051 for Sea of Remnants, and B-050 for Marvel Rivals (Season 9.5 content, Jeff the Landshark statue, photo booth) and Where Winds Meet's Hidden Mountain finale. NetEase also runs a separate trade-only stand in the business area (Hall 4.2, D-050), previewing Once Human's next expansion plus one unannounced title.",
+    "description": "Two Hall 7.1 booths: A051 for Sea of Remnants, and B050 for Marvel Rivals (Season 9.5 content, Jeff the Landshark statue, photo booth) and Where Winds Meet's Hidden Mountain finale. NetEase also runs a separate trade-only stand in the business area (Hall 4.2, D050), previewing Once Human's next expansion plus one unannounced title.",
     "games": [
-      { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Multi-station 6v6 setups; Season 9.5 content at booth B-050." },
-      { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Wuxia open-world RPG; Hidden Mountain finale content at booth B-050." },
-      { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles"], "note": "Stylized pirate adventure RPG, own booth A-051; hands-on status not detailed in NetEase's release." },
-      { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "platforms": ["PC", "Consoles"], "note": "Hands-on preview at NetEase's business-area stand (Hall 4.2, D-050) — trade & media only, not reachable on a public ticket." }
+      { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Multi-station 6v6 setups; Season 9.5 content at booth B050." },
+      { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Wuxia open-world RPG; Hidden Mountain finale content at booth B050." },
+      { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles"], "note": "Stylized pirate adventure RPG, own booth A051; hands-on status not detailed in NetEase's release." },
+      { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "platforms": ["PC", "Consoles"], "note": "Hands-on preview at NetEase's business-area stand (Hall 4.2, D050) — trade & media only, not reachable on a public ticket." }
     ],
     "tags": ["live-service", "shooter", "RPG"],
     "crowd": 4,
     "crowdNote": "Marvel Rivals is one of the biggest live-service shooters right now; 6v6 sessions cycle slowly — 45–90 min waits at peak.",
-    "visitAdvice": "Marvel Rivals seats 12 per cycle, so lines move in bursts — join right after a session starts. Sea of Remnants is at a separate booth (A-051) from Marvel Rivals and Where Winds Meet (B-050), both in Hall 7.1 near Xbox.",
+    "visitAdvice": "Marvel Rivals seats 12 per cycle, so lines move in bursts — join right after a session starts. Sea of Remnants is at a separate booth (A051) from Marvel Rivals and Where Winds Meet (B050), both in Hall 7.1 near Xbox.",
     "sources": [
       "https://x.com/NetEaseGames_EN/status/2078511437178380513",
       "https://www.neteasegames.com/news/Corporate/20260811/37075_1310671.html",
@@ -716,12 +716,12 @@
     "name": "Eclipse Glow Games",
     "type": "publisher",
     "hall": "6.1",
-    "booth": "B-050",
+    "booth": "B050",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/eclipse-glow-games",
     "description": "The Chinese studio behind Arthurian action game Tides of Annihilation runs a hands-on demo booth in Hall 6.1 — one of the notable new Chinese single-player entrants. The booth number comes from trade-press reports rather than the official directory, so check it against the hall plan on site.",
     "games": [
-      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Expanded event-exclusive demo, Hall 6.1, booth B-050, running Aug 27–30." }
+      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Expanded event-exclusive demo, Hall 6.1, booth B050, running Aug 27–30." }
     ],
     "tags": ["action", "single-player"],
     "crowd": 3,
