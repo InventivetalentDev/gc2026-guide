@@ -19,17 +19,32 @@ This document is the playbook for refreshing the data — written so a scheduled
    ⚠️ News only surfaces the AAA names. Community and mid-size booths (Aternos,
    SCS Software, Behaviour, retro brands…) never make the press — they are only
    findable in the directory sweep below.
-3. **Sweep the official exhibitor directory for new names** — the directory has no
-   public API and its search form ignores query parameters, but the paginated AJAX
-   endpoint works without a session, 20 entries per page:
+3. **Sweep the official exhibitor directory for new names** — this is now scripted.
+   `tools/fetch-directory.py` walks the paginated AJAX endpoint (no session needed,
+   20 entries per page, total reported by `blaetternInfo(N)`) and rewrites
+   `data/directory.json`, which the site's **Full directory** section reads:
    ```sh
-   # loop start=0,20,40,… until past the total reported by blaetternInfo(N) in the response
-   curl -s "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/?route=aussteller/blaettern&fw_ajax=1&start=0"
+   python3 tools/fetch-directory.py             # whole show → data/directory.json
+   python3 tools/fetch-directory.py --hall 10.1 # one hall, to stdout, for eyeballing
    ```
-   Each result item carries the company name, country and a hall-plan link with
-   `halle=` / `standnr=` parameters. Diff at least the consumer halls (5.x–10.x)
-   against `data/exhibitors.json` on every refresh; halls 1–4.x are the trade-only
-   business area, and `F…` values are open-air sites. Useful permalinks:
+   Re-run it on every refresh — it is the file that answers "is this company even
+   here?", and a stale copy silently misses new registrations.
+
+   The search form ignores plain query parameters, but it does accept its whole
+   state as one JSON blob in `paginatevalues`, which is how the `--hall` filter
+   works; every key has to be present even when empty (see `FORM` in the script).
+
+   Then diff the sweep against `data/exhibitors.json` by hand and decide what earns
+   a card. Concentrate on the consumer halls (5.x–10.x); halls 1–4.x are the
+   trade-only business area, and `F…` values are open-air sites. **Hall 10 is where
+   the long tail lives** — 10.1 alone carries ~184 booths and 10.2 ~460, most of the
+   latter being individual studios inside the Indie Arena Booth. Two things there
+   are worth re-checking every time, because neither is ever in the press: the
+   hardware/peripheral row in 10.1's A–D rows, and anything registered under a legal
+   entity that hides a known brand (MOZA Racing files as *Shenzhen Gudsen Technology*,
+   Backforce as *Interstuhl*, AULA as *Dongguan Suoai Electronics*). The self-managed
+   profile payload in step 4 carries a `Brand` field that unmasks most of these.
+   Useful permalinks:
    - Directory entry: `https://exhibitors.gamescom.global/exhibitor/<slug>/` (slug from the result link)
    - Self-managed profile with booth program: `https://www.gamescom.global/en/exhibitor/<slug>`
      (different slug namespace; the page embeds a JSON `partner` payload with products,
@@ -87,6 +102,22 @@ This document is the playbook for refreshing the data — written so a scheduled
   search result. Booths we run as one entry but gamescom registers as two (Team17 ×
   astragon, Paradox / Urban Games) get the headliner's page; a second link would just
   make the reader choose. `sources` is where the rest of the evidence goes.
+  One narrow exception: a booth run by gamescom itself may point at gamescom's own
+  site for that thing when it has no partner profile — `gamescom-lan` links to
+  `lan.gamescom.global`. That is still gamescom publishing about its own area, which
+  is what the rule is protecting; a vendor's shop is not.
+- `type: "experience"` is for booths whose draw is **something you do rather than a
+  game you demo** — sim rigs, VR, a rideable robot, an RC drift track, head-only table
+  tennis. Keep it broad on purpose: the specific flavour goes in `tags`
+  (`sim racing`, `attraction`, `VR`), so next year's stunt needs no new type. A company
+  that merely *sells* hardware stays `hardware` even if you can touch it — MOZA is an
+  experience because the booth is six bookable rigs; Corsair is hardware because the
+  booth is a product wall. Note gamescom's own directory makes a similar cut with its
+  `Fun_More` partner type, which is a decent sanity check.
+- A brand registered on an exhibitor's official profile is **not** the same as an
+  announced demo. It supports `status: "expected"` with a note saying so — not
+  `confirmed`, and never `playable: true`. Several Hall 10 entries (Stage Tour,
+  House Flipper 2, PROJECT BLITZ) rest on exactly this and say so in their notes.
 - **A game `title` is a user-facing key, so treat it like `id`.** Visitors save games and
   mark them played by lowercased title, and day assignments in `gc2026.itinerary.v1`
   deliberately follow the same key — rename *Fable* to *Fable (2026)* and everyone who
@@ -105,7 +136,7 @@ This document is the playbook for refreshing the data — written so a scheduled
 {
   "id": "xbox",                    // stable slug, never change once published
   "name": "Xbox (Microsoft)",
-  "type": "platform",              // platform | publisher | hardware | indie | media | merch
+  "type": "platform",              // platform | publisher | hardware | indie | experience | media | merch
   "hall": "8",                     // string or null (halls can be "4.1" style)
   "booth": "B010",                 // string or null
   "locationConfirmed": false,      // true only when officially published for 2026
@@ -165,6 +196,34 @@ This document is the playbook for refreshing the data — written so a scheduled
 ```jsonc
 { "lastUpdated": "2026-08-06", "revision": 1, "note": "shown in the footer" }
 ```
+
+### `data/directory.json` — generated, do not hand-edit
+
+The raw official exhibitor list behind the site's **Full directory** section.
+Rewritten wholesale by `tools/fetch-directory.py`; hand edits are lost on the next
+refresh, and anything worth keeping belongs in `exhibitors.json` as a card instead.
+
+```jsonc
+{
+  "lastUpdated": "2026-08-13",
+  "count": 1630,
+  "source": "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+  "profileBase": "https://exhibitors.gamescom.global/en/exhibitor/",  // + slug + "/"
+  "exhibitors": [
+    { "name": "1000 Orks UG", "country": "Germany", "slug": "1000_orks_ug",
+      "stands": [ { "hall": "10.2", "booth": "F010/E019" } ] }
+  ]
+}
+```
+
+Booth strings are normalised to the guide's own `A010/B011` form on the way in, so
+the UI can match a directory stand against a card's `hall` + `booth` and label it
+"at Indie Arena Booth". That match is booth-based and needs no maintenance — but it
+is also why `booth` values in `exhibitors.json` should stay in that form.
+
+It is written minified (~200 KB, ~43 KB over the wire) and is **not** in the service
+worker's precache list: it is fetched the first time a visitor opens the section, and
+cached from then on by the generic `/data/` rule. Nobody pays for it who never opens it.
 
 ### `data/changelog.json` — array, newest first:
 

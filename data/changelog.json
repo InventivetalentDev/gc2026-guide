@@ -1,6 +1,18 @@
 [
   {
     "date": "2026-08-13",
+    "revision": 16,
+    "changes": [
+      "22 new booths from a full sweep of Hall 10 — the half of the show that never makes the news. MOZA Racing runs six sim-racing and flight rigs at 10.1 A022 and takes free bookings online before the show, which is the difference between sitting down and watching.",
+      "New category, Experiences & Activities, for booths where the draw is something you do rather than a game you demo: MOZA's rigs, Kawasaki's rideable CORLEO robot at 10.1 D010, XelerateVR, an RC drift track and Headis in 10.2, and the gamescom LAN area.",
+      "Hall 10.1's retro corner is now covered properly: the revived Commodore (C059/B050, showing the C64 Ultimate), MicroProse (A060/B061) and Embracer Freemode at F061, whose RedOctane team is behind the new Guitar Hero-style Stage Tour.",
+      "Hardware row added: Corsair, PNY, Thermaltake, ASRock, PXN's wheels, 8BitDo in 10.2, and the genuinely strange hi-fi corner at A070 where konsolenfan.de hosts Yamaha, Genelec, ELAC and Canton. Logitech G's second stand now carries its booth number (10.1 E074/F077).",
+      "Also new: Raw Fury, RocketWerkz, Frozen District, AREA 35, and A MAZE.'s experimental-games PlayGround in 10.2. A gamescom Campus entry explains that about half of Hall 10.1 is recruiting and education, not demos.",
+      "New Full directory section under the exhibitor grid: all 1,630 booths registered with gamescom, searchable by name, hall and booth number. Indie Arena Booth and other shared stands name the booth their studios sit on, so a studio you can't find in the guide is still findable on the floor. It only downloads when you open it."
+    ]
+  },
+  {
+    "date": "2026-08-13",
     "revision": 15,
     "changes": [
       "The planner's itinerary and Route by hall are now one section — Your plan: the same saved stops, arranged by day or by hall with one tap instead of two near-identical lists stacked on the page.",

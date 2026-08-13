@@ -973,6 +973,457 @@
     "lastUpdated": "2026-08-12"
   },
   {
+    "id": "moza-racing",
+    "name": "MOZA Racing",
+    "type": "experience",
+    "hall": "10.1",
+    "booth": "A022",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/shenzhen-gudsen-technology-co-ltd",
+    "description": "Sim-racing and flight-sim rigs, registered under parent company Gudsen Technology: six simulator stations running the 2026 hardware line — R16 Ultra and R5 Pro wheelbases, MOZA's first motion platform, an AI motion-feedback system and an AI driving coach. Sessions are free but bookable in advance on MOZA's own gamescom page, one guest per slot, and you're asked to arrive five minutes early.",
+    "games": [
+      { "title": "MOZA sim racing & flight rigs", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Six stations split between racing and flight sim. Book a slot on MOZA's site — walk-up seat time is whatever the no-shows leave behind." }
+    ],
+    "tags": ["sim racing", "flight sim", "hardware", "hands-on", "bookable"],
+    "crowd": 3,
+    "crowdNote": "Six rigs and long individual sessions mean the walk-up queue moves slowly, even though the booth never draws platform-holder crowds.",
+    "visitAdvice": "Book before the show — it costs nothing and is the whole difference between sitting down and watching. Note MOZA's own page offers Wednesday slots and quotes 09:00 openings: Wednesday is trade & media only, and the entertainment area opens at 13:00 that day and 10:00 on Thu/Fri, so treat their times as booth-side optimism and check the day's real hours.",
+    "sources": [
+      "https://eu.mozaracing.com/de/pages/gamescom-2026",
+      "https://exhibitors.gamescom.global/en/exhibitor/gudsen_technology_co/",
+      "https://www.gamescom.global/en/exhibitor/shenzhen-gudsen-technology-co-ltd"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "kawasaki-corleo",
+    "name": "Kawasaki — CORLEO",
+    "type": "experience",
+    "hall": "10.1",
+    "booth": "D010",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/kawasaki-heavy-industries-ltd",
+    "description": "Kawasaki Heavy Industries holds a stand in the middle of Hall 10.1 under a single registered brand: CORLEO, its four-legged rideable robot concept, which the company confirmed for commercial development this year. Kawasaki has said the CORLEO riding simulator — built from motion data and 3D models captured during development — is aimed at the games and esports industries and targeted for 2027, so expect the machine and a simulator rather than a ride on the real thing.",
+    "games": [],
+    "tags": ["attraction", "robotics", "photo spot"],
+    "crowd": 3,
+    "crowdNote": "A rideable robot horse in a games hall is a photo magnet — expect a scrum around it rather than an orderly queue.",
+    "visitAdvice": "Worth the detour if you're in 10.1 for the hardware row anyway. Early morning or the last hour for a clear photo; the booth program is unannounced, so don't plan a day around riding it.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/kawasaki_heavy_indus/",
+      "https://www.gamescom.global/en/exhibitor/kawasaki-heavy-industries-ltd",
+      "https://newatlas.com/motorcycles/kawasaki-robot-horse-corleo/"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "rc-drift-games",
+    "name": "RC Drift Games",
+    "type": "experience",
+    "hall": "10.2",
+    "booth": "B050/A059",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/rc-drift-games",
+    "description": "A radio-controlled drift track in Hall 10.2's Retro & Family half, registered as a club rather than a company. No screen involved, and one of the few things on the floor small children can do properly.",
+    "games": [],
+    "tags": ["family-friendly", "hands-on", "attraction"],
+    "crowd": 2,
+    "crowdNote": "Limited controllers and a fixed track — short rotating waits, longest on the family-heavy weekend days.",
+    "visitAdvice": "Good filler while someone else queues for the Indie Arena Booth two aisles over.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/rc_drift_games/",
+      "https://www.gamescom.global/en/exhibitor/rc-drift-games"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "headis",
+    "name": "Headis",
+    "type": "experience",
+    "hall": "10.2",
+    "booth": "C050/B051",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/headis-gmbh",
+    "description": "Head-only table tennis, played on a full-size table with a rubber ball — a gamescom regular and the fastest way to get properly sweaty at a games show. Registered across two Hall 10.2 stands (C050/B051 and B041/C040).",
+    "games": [],
+    "tags": ["family-friendly", "hands-on", "attraction"],
+    "crowd": 2,
+    "crowdNote": "Spectators outnumber players; the wait to actually get on a table is short.",
+    "visitAdvice": "Not what you want an hour before a big queue — go after you're done playing for the day.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/headis/",
+      "https://www.gamescom.global/en/exhibitor/headis-gmbh"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "xelerate-vr",
+    "name": "XelerateVR",
+    "type": "experience",
+    "hall": "10.1",
+    "booth": "F086",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/xeleratevr-gmbh",
+    "description": "A German VR stand at the back of Hall 10.1, registered across portable VR hardware, action/adventure, role-playing, simulation and sports — a headset experience rather than a game booth. The 2026 program is unannounced.",
+    "games": [],
+    "tags": ["VR", "hands-on"],
+    "crowd": 2,
+    "crowdNote": "VR sessions run one visitor at a time, so even a short line is a slow one.",
+    "visitAdvice": "Ask how long a session runs before joining the queue — that number matters more than the queue length.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/xeleratevr_gmbh/",
+      "https://www.gamescom.global/en/exhibitor/xeleratevr-gmbh"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "gamescom-lan",
+    "name": "gamescom LAN",
+    "type": "experience",
+    "hall": "10.1",
+    "booth": "E071/E071a",
+    "locationConfirmed": true,
+    "officialUrl": "https://lan.gamescom.global/en/",
+    "description": "The team behind gamescom LAN — the separate BYOC LAN and esports weekend held at Koelnmesse in March — runs an on-site area in Hall 10.1. It is registered for trading card games, organisations and agency services rather than a LAN party, and hosts the partner activations filed at E071a: TikTok, EDEKA, L'Oréal and Backforce seating. Don't come expecting to plug a tower in; the LAN itself is a different event on different dates.",
+    "games": [],
+    "tags": ["community", "TCG", "esports"],
+    "crowd": 2,
+    "crowdNote": "Partner activations and card tables draw a steady trickle, not a queue.",
+    "visitAdvice": "Worth a pass if you play TCGs or want the giveaway-shaped part of the show; skip it if you came for demos.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/gamescom_lan/",
+      "https://lan.gamescom.global/en/"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "commodore",
+    "name": "Commodore",
+    "type": "hardware",
+    "hall": "10.1",
+    "booth": "C059/B050",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/commodore-international-corporation",
+    "description": "The revived Commodore brand takes a full stand in Hall 10.1's retro corner, registered for the Commodore 64 Ultimate — the FPGA-based, cycle-accurate C64 re-creation — with the C64C Edition announced to ship late 2026. Directly alongside Atari (B041) and MicroProse (A060/B061).",
+    "games": [],
+    "tags": ["retro", "hardware", "merch"],
+    "crowd": 3,
+    "crowdNote": "Small stand, heavy nostalgia pull and a machine people want to put their hands on — steady browsing rather than a managed queue.",
+    "visitAdvice": "Do the whole retro corner in one pass: Commodore, Atari and MicroProse sit within a few metres of each other.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/commodore_internatio/",
+      "https://www.gamescom.global/en/exhibitor/commodore-international-corporation",
+      "https://commodore.net/c-you-soon-commodore-64-ultimate-line-up-expands-with-c64c-edition-later-this-year/"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "microprose",
+    "name": "MicroProse",
+    "type": "publisher",
+    "hall": "10.1",
+    "booth": "A060/B061",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/microprose-software-pty-ltd",
+    "description": "The revived MicroProse — the Sid Meier-era sim and strategy label, relaunched out of Australia — takes a stand in Hall 10.1's retro corner, registered across action/adventure, RPG, simulation and strategy. The 2026 lineup is unannounced.",
+    "games": [],
+    "tags": ["retro", "simulation", "strategy"],
+    "crowd": 2,
+    "crowdNote": "A niche audience that knows exactly why it's there; expect conversation, not queues.",
+    "visitAdvice": "Pair it with Commodore and Atari a few stands away.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/microprose/",
+      "https://www.gamescom.global/en/exhibitor/microprose-software-pty-ltd"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "embracer-freemode",
+    "name": "Embracer Freemode (RedOctane)",
+    "type": "publisher",
+    "hall": "10.1",
+    "booth": "F061",
+    "locationConfirmed": true,
+    "description": "Freemode's stand is registered under three brands — Embracer Freemode, RedOctane and Stage Tour — and for input peripherals as well as games. Stage Tour is the relaunched Guitar Hero team's new plastic-instrument rhythm game: guitar, drums and vocals, up to four players in any combination, announced for autumn 2026 with its own Kramer-style guitar, drum kit and microphone.",
+    "games": [
+      { "title": "Stage Tour", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"], "note": "Registered as a brand on the official exhibitor profile, which is not the same as a confirmed hands-on demo. A closed alpha ran in summer 2026." }
+    ],
+    "tags": ["rhythm", "peripherals", "retro"],
+    "crowd": 3,
+    "crowdNote": "If the instruments are out on the floor this is a booth people queue for; if it's a display stand, barely a wait. Unknown until the show.",
+    "visitAdvice": "Check the stand early in the day to see whether it's playable, then come back — plastic-instrument demos build the longest queues in the afternoon.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/_stagetour/",
+      "https://www.engadget.com/gaming/guitar-hero-vets-redoctane-reveal-their-new-music-game-220809719.html"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "rocketwerkz",
+    "name": "RocketWerkz",
+    "type": "publisher",
+    "hall": "10.1",
+    "booth": "A044",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/rocketwerkz",
+    "description": "Dean Hall's New Zealand studio — the DayZ creator, since then Stationeers and Icarus — takes a small Hall 10.1 stand, registered for action/adventure, simulation and strategy. Lineup unannounced.",
+    "games": [],
+    "tags": ["simulation", "survival", "AA"],
+    "crowd": 2,
+    "crowdNote": "A small stand with a devoted but not enormous following.",
+    "visitAdvice": "Low-queue stop; go when the big halls are at their worst.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/rocketwerkz4_fleet_group/",
+      "https://www.gamescom.global/en/exhibitor/rocketwerkz"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "frozen-district",
+    "name": "Frozen District",
+    "type": "publisher",
+    "hall": "10.1",
+    "booth": "A042",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/frozen-district",
+    "description": "The House Flipper studio, registered at Hall 10.1 under both its own name and House Flipper 2 — and, fittingly for a cleaning-simulator developer, filed under the directory's care and cleaning product group as well as games.",
+    "games": [
+      { "title": "House Flipper 2", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Registered as a brand on the official exhibitor profile; the demo program is unannounced." }
+    ],
+    "tags": ["simulation", "cozy", "AA"],
+    "crowd": 2,
+    "crowdNote": "Cozy-sim fans browse rather than queue.",
+    "visitAdvice": "Two stands from Raw Fury and three from MOZA — worth folding into one pass along the A row.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/frozen_district/",
+      "https://www.gamescom.global/en/exhibitor/frozen-district"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "raw-fury",
+    "name": "Raw Fury",
+    "type": "publisher",
+    "hall": "10.1",
+    "booth": "B021",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/raw-fury-ab",
+    "description": "The Swedish indie publisher behind Kingdom, Sable, Norco and Blue Prince runs a consumer stand in Hall 10.1 alongside its business stand in Hall 2.1. The 2026 lineup is unannounced.",
+    "games": [],
+    "tags": ["indie", "narrative", "publisher"],
+    "crowd": 2,
+    "crowdNote": "Indie-publisher stands draw curious traffic rather than queues.",
+    "visitAdvice": "Good discovery stop between the bigger 10.1 stands; ask what's on the machines rather than reading the signage.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/raw_fury/",
+      "https://www.gamescom.global/en/exhibitor/raw-fury-ab"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "area-35",
+    "name": "AREA 35",
+    "type": "publisher",
+    "hall": "10.1",
+    "booth": "C070/D071",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/area-35-inc",
+    "description": "The Japanese studio behind the TINY METAL tactics games takes a Hall 10.1 stand, registered under TINY METAL, TINY METAL 2 and PROJECT BLITZ.",
+    "games": [
+      { "title": "PROJECT BLITZ", "status": "expected", "playable": null, "platforms": ["TBA"], "note": "Registered as a brand on the official exhibitor profile; nothing else announced." },
+      { "title": "TINY METAL 2", "status": "expected", "playable": null, "platforms": ["TBA"], "note": "Registered as a brand on the official exhibitor profile." }
+    ],
+    "tags": ["Japanese", "strategy", "AA"],
+    "crowd": 2,
+    "crowdNote": "Turn-based tactics is a slow-burn crowd — people sit down and stay.",
+    "visitAdvice": "If a machine is free, take it; the demos run long and turnover is poor.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/_area35east/",
+      "https://www.gamescom.global/en/exhibitor/area-35-inc"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "corsair",
+    "name": "Corsair",
+    "type": "hardware",
+    "hall": "10.1",
+    "booth": "A030",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/corsair-memory",
+    "description": "Consumer stand at the front of Hall 10.1's hardware row, with a second business stand in Hall 2.2. Registered across the whole range: keyboards, mice, headsets, displays, chairs and sim-racing wheels and pedals.",
+    "games": [],
+    "tags": ["hardware", "peripherals", "sim racing"],
+    "crowd": 2,
+    "crowdNote": "Try-before-you-buy stations turn over quickly; merch drops are the only thing that draws a line.",
+    "visitAdvice": "Any afternoon. Worth pairing with MOZA and PXN if you're shopping for a wheel.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/corsair_memory/",
+      "https://www.gamescom.global/en/exhibitor/corsair-memory"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "pny",
+    "name": "PNY",
+    "type": "hardware",
+    "hall": "10.1",
+    "booth": "A024",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/pny-technologies-quadro-gmbh",
+    "description": "Graphics cards, memory and storage. PNY has trailed slim-format GeForce RTX 50 models, DDR4 and DDR5 memory, microSD Express cards for Switch 2 and a previously unannounced console SSD for its Hall 10.1 stand.",
+    "games": [],
+    "tags": ["hardware", "components"],
+    "crowd": 2,
+    "crowdNote": "Component stands draw lookers, not queues.",
+    "visitAdvice": "Quick stop; the Switch 2 microSD Express cards are the part worth asking about in person.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/pny_technologies_gmbpny/",
+      "https://www.gamescom.global/en/exhibitor/pny-technologies-quadro-gmbh",
+      "https://basic-tutorials.com/news/pny-gamescom-2026-rtx-50-slim-new-ssd-and-microsd-express-on-the-way/"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "thermaltake",
+    "name": "Thermaltake",
+    "type": "hardware",
+    "hall": "10.1",
+    "booth": "D060/E061",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/thermaltake-germany-gmbh",
+    "description": "One of the larger stands in Hall 10.1's hardware row — cases, cooling and modded build showcases.",
+    "games": [],
+    "tags": ["hardware", "components", "modding"],
+    "crowd": 2,
+    "crowdNote": "Show builds pull photographers; nothing to queue for.",
+    "visitAdvice": "Any time. Good stop if you want build ideas rather than demos.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/thermaltake_germany/",
+      "https://www.gamescom.global/en/exhibitor/thermaltake-germany-gmbh"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "asrock",
+    "name": "ASRock",
+    "type": "hardware",
+    "hall": "10.1",
+    "booth": "B060",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/asrock-europe-bv",
+    "description": "Motherboards, graphics cards and monitors on a compact Hall 10.1 stand.",
+    "games": [],
+    "tags": ["hardware", "components"],
+    "crowd": 1,
+    "crowdNote": "One of the quieter hardware stands.",
+    "visitAdvice": "Any time; a two-minute stop unless you're shopping.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/asrock_europe/",
+      "https://www.gamescom.global/en/exhibitor/asrock-europe-bv"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "pxn",
+    "name": "PXN",
+    "type": "hardware",
+    "hall": "10.1",
+    "booth": "C041",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/shenzhen-pxn-electronics-technology",
+    "description": "Budget sim-racing gear — wheels and pedal sets — a few rows from MOZA's rigs in the same hall. PXN's own announcement gave booth C029; C041 is what the official directory lists, so go by the hall plan.",
+    "games": [],
+    "tags": ["hardware", "sim racing", "peripherals"],
+    "crowd": 2,
+    "crowdNote": "Hands-on wheels with quick turnover.",
+    "visitAdvice": "The cheap end of the wheel market — useful to try back-to-back with MOZA at A022 before you spend anything.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/shenzhen_pxn_electro/",
+      "https://www.gamescom.global/en/exhibitor/shenzhen-pxn-electronics-technology"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "8bitdo",
+    "name": "8BitDo",
+    "type": "hardware",
+    "hall": "10.2",
+    "booth": "E046",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/shenzhen-8bitdo-tech-co-ltd",
+    "description": "Retro-styled controllers, keyboards and adapters, sharing Clear River Games' stand in Hall 10.2 — a short walk from the Indie Arena Booth and in the same half of the hall as the Retro & Family area.",
+    "games": [],
+    "tags": ["hardware", "retro", "peripherals"],
+    "crowd": 2,
+    "crowdNote": "Small shared stand; browsing traffic that thickens at the weekend.",
+    "visitAdvice": "Fold it into an Indie Arena Booth trip rather than making a separate journey.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/shenzhen_8bitdo_tech/",
+      "https://www.gamescom.global/en/exhibitor/shenzhen-8bitdo-tech-co-ltd"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "konsolenfan-audio",
+    "name": "konsolenfan.de — audio corner",
+    "type": "hardware",
+    "hall": "10.1",
+    "booth": "A070",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/konsolenfande-gmbh",
+    "description": "A shared hi-fi stand that is genuinely odd for a games show: konsolenfan.de hosts Yamaha, Genelec, ELAC, Canton, clearaudio, Oehlbach and Sharp under one booth number, with LiberNovo seating alongside. Eight separate companies are registered at A070.",
+    "games": [],
+    "tags": ["hardware", "audio", "hi-fi"],
+    "crowd": 1,
+    "crowdNote": "Almost nobody comes to gamescom for loudspeakers — one of the quietest corners of a busy hall.",
+    "visitAdvice": "A good place to sit out someone else's queue, and about the only stand on the floor where you can hear anything properly.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/konsolenfande_gmbhpersiehl/",
+      "https://www.gamescom.global/en/exhibitor/konsolenfande-gmbh"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "a-maze",
+    "name": "A MAZE. Digital PlayGround",
+    "type": "indie",
+    "hall": "10.2",
+    "booth": "E030/D031",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/a-maze",
+    "description": "The Berlin independent-games festival's third Digital PlayGround at gamescom: experimental and art games curated well outside what the Indie Arena Booth covers, a few stands away in the same hall.",
+    "games": [],
+    "tags": ["indie", "experimental", "art games", "playable demos"],
+    "crowd": 2,
+    "crowdNote": "Small, curated and quiet next to the Indie Arena Booth — machines free up quickly.",
+    "visitAdvice": "The best antidote to a day of AAA queues. Go when the Indie Arena Booth is at its busiest.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/a_maze/",
+      "https://www.gamescom.global/en/exhibitor/a-maze"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
+    "id": "gamescom-campus",
+    "name": "gamescom Campus",
+    "type": "media",
+    "hall": "10.1",
+    "booth": "D020/E021",
+    "locationConfirmed": true,
+    "description": "Roughly half of Hall 10.1 is not a games floor at all. The Campus area runs education and recruiting — universities, SAE, PIXL VISN and IU alongside employers from the Bundeswehr and Rheinmetall to Siemens, Airbus, DATEV and several state police forces — plus a large community and youth-work block at D020/E021: jfc Medienzentrum, Gaming Ohne Grenzen, AbleGamers, youth-protection groups and the city of Cologne. Worth knowing before you walk into 10.1 expecting demos.",
+    "games": [],
+    "tags": ["careers", "education", "community"],
+    "crowd": 1,
+    "crowdNote": "Busy with school groups on the trade days, quiet at the weekend — never a queue.",
+    "visitAdvice": "Skip it unless you're job-hunting or studying. It is, however, a genuinely calm place to sit down mid-day, and the accessibility and youth-work stands are worth a look.",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-hallenplan-erklaert-210726/"
+    ],
+    "lastUpdated": "2026-08-13"
+  },
+  {
     "id": "lego",
     "name": "LEGO Games",
     "type": "publisher",
@@ -1077,7 +1528,7 @@
     "booth": "A065",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/logitech-ireland-services-ltd",
-    "description": "Listed under both Logitech and Logitech G, with a second stand in Hall 10.1: gaming mice, keyboards, headsets and sim-racing rigs with try-before-you-buy stations.",
+    "description": "Listed under both Logitech and Logitech G, with a second, larger stand in Hall 10.1 at E074/F077: gaming mice, keyboards, headsets and sim-racing rigs with try-before-you-buy stations.",
     "games": [],
     "tags": ["hardware", "peripherals", "sim racing"],
     "crowd": 2,
