@@ -8,11 +8,14 @@ be false. The official interactive hall plan at
 unauthenticated JSON endpoint, and that geometry (positions, booth numbers,
 exhibitor names, all in metres) is exactly what an honest map needs.
 
-**A working prototype ships on this branch**: `map.html` (standalone page,
-not linked from the app, not in the service-worker precache),
-`tools/fetch-hallplan.mjs` (snapshot tool) and `data/hallplan/` (the
-snapshot). This document records what was learned building it and what
-integration takes.
+**Status: built and integrated.** `tools/fetch-hallplan.mjs` snapshots the
+geometry into `data/hallplan/`; `map.html` + `js/map.js` + `css/map.css`
+draw it; `js/marks.js` holds what the map and the guide must agree on;
+`sw.js` precaches both pages and all seven halls; the guide links out
+from every hall plate and plan-board hall header, and the map links back
+to a card. This document records the discovery, the design decisions and
+the test script — the integration steps below are done, kept because they
+say *where* everything is wired.
 
 ## Why build one at all
 
@@ -239,47 +242,45 @@ save-in-app stay in sync across tabs today. At integration the map page
 should reuse the app's mark helpers verbatim rather than keeping its
 replica (see steps).
 
-## What the prototype deliberately omits
+## Deliberately not built
 
 Route/day overlays (numbered stops for a selected day), search-on-map,
-keyboard/screen-reader interaction beyond `aria-label`s, played toggling
-(display only), per-exhibitor deep links back into the guide (no such
-route exists yet — `#exhibitors` is as close as it gets), and any service
-worker involvement. None of these change the architecture.
+played *toggling* from the map (it is shown, not editable — the guide owns
+that flow), and keyboard interaction beyond Escape and the labelled stand
+buttons: a keyboard user gets the guide's list, which is better for that
+input anyway, and pretending otherwise with an arrow-key pan would be
+theatre. None of these change the architecture.
 
-## Integration steps
+## How it is wired
 
-1. **Split the page** into `map.html` + `js/map.js` + `css/map.css`
-   (house pattern; also lets the SW's stale-while-revalidate versioning
-   apply, `sw.js:135`). Import tokens from `css/style.css` rather than
-   duplicating the palette block.
-2. **Share the storage/join helpers.** Either extract
-   `gameKey/loadMarks/persistMarks/hasSaved` + `codeSet` into a small
-   `js/marks.js` used by both pages, or accept the duplication
-   consciously — but then add a test-script check that the two stay
-   byte-identical. The prototype's replica drift is the main integration
-   hazard.
-3. **Service worker**: add `map.html`, `js/map.js`, `css/map.css` to
-   `SHELL` (`sw.js:28`) and the eight `data/hallplan/*` files to `DATA`
-   (`sw.js:44`). Teach `handleNavigation` (`sw.js:165`) to fall back to
-   the cached `map.html` for navigations whose pathname ends in
-   `/map.html` — today every offline navigation falls back to the shell
-   `./`, which would serve the guide instead of the map.
-4. **Cross-links in**: the hall plate on exhibitor cards
-   (`hallMarker`, `js/app.js:887`) links to `map.html#<hall>/<booth>`
-   when the hall is known; plan-board hall headers link to
-   `map.html#<hall>`; both `target`-less same-tab links. Add a "Hall map"
-   entry to the manifest `shortcuts` — after "Saved list", which stays
-   first (README, "the saved list").
-5. **Cross-links out**: the sheet's "open in guide" gains a real target
-   once the guide has per-exhibitor anchors; until then it routes to
-   `#exhibitors` (and `#saved` when the booth is saved).
-6. **UPDATING.md**: new section — when to re-run
-   `tools/fetch-hallplan.mjs` (layout revisions, new halls), reading the
-   join report, and the editorial rule that `booth` values use official
-   codes (`A061/C060` formatting is fine; the normaliser eats both).
-7. **Ship**: `data/changelog.json` entry + `data/meta.json` rev bump per
-   the UPDATING.md procedure.
+1. **The page** is `map.html` (a shell, like `index.html`) + `js/map.js`
+   + `css/map.css`. It links `css/style.css` first and adds its own layer
+   on top, so there is exactly one palette and the hall chips are the
+   guide's `.chip.hall-chip` component, not a lookalike. `js/pwa.js` is
+   shared as-is: it null-checks everything it touches, so on the map it
+   just registers the worker and drives the offline flag.
+2. **Shared rules** live in `js/marks.js` (`GCMarks`), loaded before both
+   apps: the storage keys and shape, `gameKey`, the booth-or-game
+   `hasSaved` predicate, and `boothCodes` — the booth-code normaliser
+   that decides which stand lights up. `js/app.js` calls it behind its
+   existing names. The one copy that cannot be shared is in
+   `tools/fetch-hallplan.mjs` (Node, no DOM), and that file says so.
+3. **Service worker**: `map.html`, `js/map.js`, `js/marks.js` and
+   `css/map.css` are in `SHELL`; all eight `data/hallplan/*` files are in
+   `DATA`. `handleNavigation` picks its fallback with `pageKey()` — an
+   offline navigation to `/map.html` gets the cached map, not the guide,
+   which is what every navigation used to fall back to.
+4. **Cross-links in**: `hallMarker()` renders the hall plate as an anchor
+   to `map.html#<hall>/<booth>` when `state.mapHalls` has that hall
+   (loaded from `data/hallplan/index.json`, optional — no index, no
+   links, guide unchanged). Plan-board hall headers carry a `Map →` link.
+   The manifest has a "Hall map" shortcut, second after "Saved list".
+5. **Cross-links out**: the sheet links to `./#exhibitors?ex=<id>`, and
+   `focusExhibitor()` in `js/app.js` scrolls that card into view and
+   flashes it, clearing any filter that would otherwise hide it.
+6. **UPDATING.md** has a "Refreshing the hall plans" section: when to
+   re-run the tool, how to read the join report, and the rule that booth
+   numbers stay editorial — never hand-edit `data/hallplan/`.
 
 ## Verification (manual test script)
 
@@ -314,10 +315,14 @@ Serve the repo root; clear `gc2026.saved.v1`.
     side-by-side): Xbox fills hall 7's western end; Nintendo sits at
     A-010 B-009 in 9.1; Razer at E-020 D-021 in 10.2. A mirrored hall
     means one sign in the tool's `CAMPUS` table, then re-snapshot.
-11. **Offline** (after step 3 of integration) — airplane mode, reopen
-    installed app → map, switch to a never-opened hall: renders from
-    precache.
-12. **Escaping** — official names render through `esc()`/`textContent`
+11. **Cross-links** — a card's hall plate opens that booth's sheet on the
+    map; a plan-board hall header opens that hall; the sheet's "open in
+    guide" lands on that card, even with "saved only" left on. Cards for
+    halls the snapshot lacks show a plain plate with no link.
+12. **Offline** — airplane mode, reopen installed app → map, switch to a
+    never-opened hall: renders from precache. Navigating straight to
+    `map.html` offline serves the map, not the guide.
+13. **Escaping** — official names render through `esc()`/`textContent`
     everywhere; no raw HTML from snapshot JSON reaches the DOM.
 
 ## Open questions

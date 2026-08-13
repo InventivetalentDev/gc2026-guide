@@ -28,6 +28,8 @@ const state = {
   planLens: "day",
   /* hall-lens day filter: "all", an ISO day date, or "none" (unassigned) */
   planDay: "all",
+  /* hall ids the hall map can draw; filled from data/hallplan/index.json */
+  mapHalls: new Set(),
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -79,16 +81,20 @@ const VIEWS = ["exhibitors", "planner", "event", "updates"];
 
 async function loadData() {
   const bust = `?v=${Date.now()}`;
-  const [exhibitors, event, meta, changelog] = await Promise.all([
+  const [exhibitors, event, meta, changelog, hallplan] = await Promise.all([
     fetch(`data/exhibitors.json${bust}`).then((r) => r.json()),
     fetch(`data/event.json${bust}`).then((r) => r.json()),
     fetch(`data/meta.json${bust}`).then((r) => r.json()),
     fetch(`data/changelog.json${bust}`).then((r) => r.json()).catch(() => []),
+    /* Only the ~900-byte index, only to know which halls the map covers.
+       Optional on purpose: no hall plan, no map links, guide unchanged. */
+    fetch(`data/hallplan/index.json${bust}`).then((r) => r.json()).catch(() => null),
   ]);
   state.exhibitors = exhibitors;
   state.event = event;
   state.meta = meta;
   state.changelog = changelog;
+  state.mapHalls = new Set((hallplan?.halls || []).map((h) => String(h.id)));
   buildShareCodeMap();
 }
 
@@ -99,36 +105,15 @@ async function loadData() {
    (Alien: Isolation 2 sits at both Xbox and SEGA), so a game mark applies at
    every booth showing the same title. */
 
-const MARK_KEYS = { saved: "gc2026.saved.v1", played: "gc2026.played.v1" };
+/* The storage shape and the saved-game rule live in js/marks.js, because
+   the hall map reads and writes the same two lists. Everything below
+   still calls loadMarks/persistMarks/gameKey by their old names. */
+const { MARK_KEYS, gameKey } = GCMarks;
 const IT_KEY = "gc2026.itinerary.v1";
 const PREFS_KEY = "gc2026.prefs.v1";
 
-const gameKey = (title) => String(title).trim().toLowerCase().replace(/\s+/g, " ");
-
-function loadMarks(mark) {
-  try {
-    const raw = JSON.parse(localStorage.getItem(MARK_KEYS[mark]) || "{}");
-    return {
-      exhibitors: new Set(Array.isArray(raw.exhibitors) ? raw.exhibitors : []),
-      games: new Set(Array.isArray(raw.games) ? raw.games : []),
-    };
-  } catch {
-    /* corrupt entry, or storage blocked entirely (Safari private mode) */
-    return { exhibitors: new Set(), games: new Set() };
-  }
-}
-
-function persistMarks(mark) {
-  try {
-    const marks = state.marks[mark];
-    localStorage.setItem(
-      MARK_KEYS[mark],
-      JSON.stringify({ exhibitors: [...marks.exhibitors], games: [...marks.games] })
-    );
-  } catch {
-    /* out of quota or storage denied — marks still work for this session */
-  }
-}
+const loadMarks = (mark) => GCMarks.readMarks(mark);
+const persistMarks = (mark) => GCMarks.writeMarks(mark, state.marks[mark]);
 
 /* Both view preferences live here rather than beside the marks they act on:
    "hide played" is a lens on the list, the same kind of thing as the age
@@ -163,14 +148,14 @@ const markSet = (mark, kind) => (kind === "game" ? state.marks[mark].games : sta
 const isMarked = (mark, kind, key) => markSet(mark, kind).has(key);
 const isSaved = (kind, key) => isMarked("saved", kind, key);
 const isPlayed = (kind, key) => isMarked("played", kind, key);
-const savedGames = (ex) => (ex.games || []).filter((g) => isSaved("game", gameKey(g.title)));
+const savedGames = (ex) => GCMarks.savedGames(state.marks.saved, ex);
 const markCount = (mark) => state.marks[mark].exhibitors.size + state.marks[mark].games.size;
 const savedCount = () => markCount("saved");
 const playedCount = () => markCount("played");
 
 /* An exhibitor counts as saved if you saved the booth itself *or* any game
    they're showing — the publisher is how you actually get to the game. */
-const hasSaved = (ex) => isSaved("exhibitor", ex.id) || savedGames(ex).length > 0;
+const hasSaved = (ex) => GCMarks.hasSaved(state.marks.saved, ex);
 
 /* A booth is done when marked directly, or when every game saved there is done.
    An unsaved booth with some incidentally played games does not count as done —
@@ -882,6 +867,15 @@ function platformCodes(platforms) {
   return codes.length > 4 ? `${shown}·+${codes.length - 4}` : shown;
 }
 
+/* Which halls the map can actually draw, from data/hallplan/index.json.
+   Empty when that file is missing (an older cached copy, or a hall the
+   snapshot doesn't cover), and every link below is gated on it — a plate
+   that opens an empty map is worse than a plate that doesn't link. */
+const hasMap = (hall) => state.mapHalls.has(String(hall));
+const mapLink = (hall, booth) =>
+  `map.html#${encodeURIComponent(hall)}` +
+  (booth ? `/${encodeURIComponent([...GCMarks.boothCodes(booth)][0] || "")}` : "");
+
 /* The hall number is the one thing you read while walking, so it gets
    set like a wayfinding sign rather than tucked into a badge. */
 function hallMarker(ex) {
@@ -900,12 +894,19 @@ function hallMarker(ex) {
     </div>`;
   }
   const confirmed = !!ex.locationConfirmed;
-  return `<div class="hall-marker" data-state="${confirmed ? "confirmed" : "unconfirmed"}"
-      title="${confirmed ? "Officially confirmed location" : "Best guess — not officially confirmed"}">
-    <span class="hall-kicker">Hall</span>
+  const where = confirmed ? "Officially confirmed location" : "Best guess — not officially confirmed";
+  const inner = `<span class="hall-kicker">Hall</span>
     <span class="hall-num">${esc(ex.hall)}</span>
-    <span class="hall-booth">${ex.booth ? esc(ex.booth) : "booth TBA"}${confirmed ? "" : " · unconf."}</span>
-  </div>`;
+    <span class="hall-booth">${ex.booth ? esc(ex.booth) : "booth TBA"}${confirmed ? "" : " · unconf."}</span>`;
+  const state_ = `data-state="${confirmed ? "confirmed" : "unconfirmed"}"`;
+  /* The plate is already the "where" of the card, so it is also the way
+     to the map — no second control competing for the same corner. */
+  if (!hasMap(ex.hall)) return `<div class="hall-marker" ${state_} title="${where}">${inner}</div>`;
+  return `<a class="hall-marker" ${state_} href="${esc(mapLink(ex.hall, ex.booth))}"
+      title="${where} — open the hall map"
+      aria-label="${esc(`Hall ${ex.hall}${ex.booth ? `, booth ${ex.booth}` : ""} — open the hall map`)}">
+    ${inner}<span class="hall-map-cue" aria-hidden="true">Map →</span>
+  </a>`;
 }
 
 function ageBadge(status = "expected", label = "18+", extraClass = "") {
@@ -1610,10 +1611,17 @@ function renderRoute() {
         })
         .join("");
       const countLabel = `${group.items.length} stop${group.items.length === 1 ? "" : "s"}`;
+      /* One link per hall, on the header — the stops below are a walking
+         order, and a link on every row would bury that. */
+      const toMap = hasMap(group.key)
+        ? `<a class="route-hall-map" href="${esc(mapLink(group.key))}"
+            aria-label="${esc(`Open hall ${group.key} on the map`)}">Map →</a>`
+        : "";
       return `<h4 class="route-hall" aria-label="${esc(`${group.label}, ${countLabel}`)}">
         <span class="route-hall-kicker">${esc(kicker)}</span>
         <span class="route-hall-num">${esc(number)}</span>
         <span class="route-hall-count">${esc(countLabel)}</span>
+        ${toMap}
       </h4>${rows}`;
     })
     .join("");
@@ -1910,6 +1918,31 @@ function renderFreshness() {
    installed app can put a launcher shortcut straight on your list, and so the
    filtered list can be linked and survives a reload. */
 
+/* Every filter back to its default, controls included. Shared by the
+   reset button and by focusExhibitor(), which has to be able to clear a
+   filter that is hiding the card the visitor asked for. Callers do their
+   own re-rendering — the two want different sets. */
+function resetFilters() {
+  Object.assign(state, {
+    query: "",
+    type: "all",
+    hall: "all",
+    age: "all",
+    playableOnly: false,
+    confirmedOnly: false,
+    savedOnly: false,
+    hidePlayed: false,
+  });
+  $("#search").value = "";
+  $("#playable-only").checked = false;
+  $("#confirmed-only").checked = false;
+  $("#saved-only").checked = false;
+  $("#hide-played").checked = false;
+  persistPrefs();
+  renderMarkControls();
+  renderFilters();
+}
+
 const SAVED_ROUTE = "saved";
 
 const routeFor = (view) => (view === "exhibitors" && state.savedOnly ? SAVED_ROUTE : view);
@@ -1917,6 +1950,27 @@ const routeFor = (view) => (view === "exhibitors" && state.savedOnly ? SAVED_ROU
 function syncHash() {
   const target = routeFor(state.view);
   if (location.hash.slice(1) !== target) history.replaceState(null, "", `#${target}`);
+}
+
+/* The hall map links back as #exhibitors?ex=<id> — a booth you tapped on
+   the map should land on its card, not at the top of 53 of them. The
+   param is consumed like a share payload (syncHash drops it moments
+   later anyway), and any filter hiding the card is cleared first: you
+   asked for this booth by name, so a stale "saved only" must not answer
+   with an empty grid. */
+function focusExhibitor(id) {
+  const ex = id && state.exhibitors.find((e) => e.id === id);
+  if (!ex) return;
+  const find = () => $(`#exhibitor-grid .card[data-id="${CSS.escape(ex.id)}"]`);
+  if (!find()) {
+    resetFilters();
+    renderExhibitors();
+  }
+  const card = find();
+  if (!card) return;
+  card.scrollIntoView({ block: "center", behavior: "auto" });
+  card.classList.add("card-landed");
+  card.addEventListener("animationend", () => card.classList.remove("card-landed"), { once: true });
 }
 
 function setSavedOnly(on) {
@@ -2058,24 +2112,7 @@ function bindControls() {
   });
 
   $("#reset-filters").addEventListener("click", () => {
-    Object.assign(state, {
-      query: "",
-      type: "all",
-      hall: "all",
-      age: "all",
-      playableOnly: false,
-      confirmedOnly: false,
-      savedOnly: false,
-      hidePlayed: false,
-    });
-    $("#search").value = "";
-    $("#playable-only").checked = false;
-    $("#confirmed-only").checked = false;
-    $("#saved-only").checked = false;
-    $("#hide-played").checked = false;
-    persistPrefs();
-    renderMarkControls();
-    renderFilters();
+    resetFilters();
     renderExhibitors();
     renderPriority();
     /* Resetting hide-played changes which plan stops are on screen too —
@@ -2092,8 +2129,10 @@ function bindControls() {
      actually on screen rather than being left lying in the address bar. */
   window.addEventListener("hashchange", () => {
     const incoming = takeIncomingList();
-    showView(incoming ? SAVED_ROUTE : parseHash().route);
+    const landing = parseHash();
+    showView(incoming ? SAVED_ROUTE : landing.route);
     if (incoming) offerIncoming(incoming);
+    else focusExhibitor(landing.params.get("ex"));
   });
 }
 
@@ -2122,7 +2161,9 @@ async function main() {
   renderPlanner();
   renderEvent();
   renderChangelog();
-  showView(incoming ? SAVED_ROUTE : parseHash().route || VIEWS[0], { push: false });
+  const landing = parseHash();
+  showView(incoming ? SAVED_ROUTE : landing.route || VIEWS[0], { push: false });
+  if (!incoming) focusExhibitor(landing.params.get("ex"));
   if (offer) offerIncoming(offer);
 }
 
