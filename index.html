@@ -108,6 +108,19 @@
       </div>
       <div class="grid" id="exhibitor-grid"></div>
       <p class="empty hidden" id="no-results">Nothing matches — try clearing filters.</p>
+
+      <!-- The raw official list, kept behind a toggle: it is a lookup tool for
+           the long tail of booths that will never earn a card, and it only
+           downloads once someone opens it. -->
+      <details class="directory" id="directory">
+        <summary class="directory-summary">
+          <span class="row-label">Full directory</span>
+          <span class="directory-lede">Every booth registered with gamescom, not just the curated ones</span>
+          <span class="result-count" id="directory-count"></span>
+        </summary>
+        <p class="directory-note" id="directory-note"></p>
+        <div id="directory-list"></div>
+      </details>
     </section>
 
     <!-- ============ Planner view ============ -->
