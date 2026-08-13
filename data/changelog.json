@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-13",
+    "revision": 15,
+    "changes": [
+      "The planner's itinerary and Route by hall are now one section — Your plan: the same saved stops, arranged by day or by hall with one tap instead of two near-identical lists stacked on the page.",
+      "The hall view now reads your day assignments: every stop shows which day it's planned for, and once anything is placed, day chips filter the route to a single day — your Thursday, in walking order.",
+      "A saved game keeps listing every booth running it in the single-day route, so \"pick the shorter queue\" works inside a day plan too.",
+      "Nothing about your data moved: saved list, day assignments and played marks are untouched, and the arrangement you pick is remembered on this device like the other view preferences."
+    ]
+  },
+  {
+    "date": "2026-08-13",
     "revision": 14,
     "changes": [
       "New: assign each saved booth or game to a specific gamescom day, with unassigned picks kept together until you're ready to place them.",
