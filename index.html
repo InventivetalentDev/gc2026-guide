@@ -101,7 +101,7 @@
             <button class="reset hidden" id="share-list" type="button">Share list</button>
             <button class="reset hidden" id="clear-saved" type="button">Clear saved list</button>
             <button class="reset hidden" id="clear-played" type="button">Clear played</button>
-            <button class="reset hidden" id="goto-route" type="button">Route by hall →</button>
+            <button class="reset hidden" id="goto-plan" type="button">Your plan →</button>
             <button class="reset hidden" id="reset-filters" type="button">Clear filters</button>
           </div>
         </details>
@@ -120,26 +120,35 @@
       <h3 class="section-title"><span class="section-num">01</span> The five days</h3>
       <div id="day-guide" class="day-board"></div>
 
-      <h3 class="section-title"><span class="section-num">02</span> Your itinerary</h3>
-      <p class="section-sub">Give each saved booth and game a day. Unassigned items sit at the top until you place them.</p>
-      <div class="itinerary-controls">
-        <button class="reset hidden" id="export-ics" type="button">Export to calendar (.ics)</button>
-      </div>
-      <div id="itinerary" class="it-board"></div>
-      <p class="empty hidden" id="itinerary-empty"></p>
-
-      <section id="route-section" aria-labelledby="route-title">
-        <h3 class="section-title" id="route-title" tabindex="-1"><span class="section-num">03</span> Route by hall</h3>
-        <p class="section-sub">Your saved stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls.</p>
-        <div class="route-controls">
-          <span class="result-count" id="route-count"></span>
+      <section id="plan-section" aria-labelledby="plan-title">
+        <h3 class="section-title" id="plan-title" tabindex="-1"><span class="section-num">02</span> Your plan</h3>
+        <p class="section-sub" id="plan-sub">Give each saved booth and game a day. Unassigned items sit at the top until you place them.</p>
+        <div class="plan-controls">
+          <div class="plan-lens" id="plan-lens" role="group" aria-label="Arrange your plan">
+            <button class="chip lens-chip active" type="button" data-lens="day" aria-pressed="true">By day</button>
+            <button class="chip lens-chip" type="button" data-lens="hall" aria-pressed="false">By hall</button>
+          </div>
+          <button class="reset hidden" id="export-ics" type="button">Export to calendar (.ics)</button>
+          <span class="result-count" id="plan-count"></span>
         </div>
-        <div id="route-list" class="route-board"></div>
-        <p class="empty hidden" id="route-empty"></p>
-        <p class="route-absent hidden" id="route-absent"></p>
+        <div id="plan-board" class="it-board"></div>
+        <p class="empty hidden" id="plan-empty"></p>
+        <p class="route-absent hidden" id="plan-absent"></p>
       </section>
 
-      <h3 class="section-title"><span class="section-num">04</span> Queue priority</h3>
+      <!-- Stubs for one deploy cycle: the service worker refreshes index.html and
+           app.js independently (navigations network-first, scripts
+           stale-while-revalidate), so a fresh shell can briefly run against the
+           previous app.js, which still renders the separate itinerary and route
+           sections and would crash on their missing containers. Safe to remove
+           once rev 15 has been deployed for a while. -->
+      <div hidden>
+        <div id="itinerary"></div><p id="itinerary-empty"></p>
+        <div id="route-list"></div><p id="route-empty"></p>
+        <p id="route-absent"></p><span id="route-count"></span>
+      </div>
+
+      <h3 class="section-title"><span class="section-num">03</span> Queue priority</h3>
       <p class="section-sub">Busiest booths first. If one below matters to you, make it your first stop of the day.</p>
       <div class="priority-controls">
         <label class="toggle"><input type="checkbox" id="priority-saved-only"> Saved only <span class="saved-count" id="priority-saved-count"></span></label>
@@ -150,12 +159,12 @@
       <p class="empty hidden" id="priority-empty"></p>
 
       <section id="wristband-section" class="hidden">
-        <h3 class="section-title"><span class="section-num">05</span> 18+ wristband</h3>
+        <h3 class="section-title"><span class="section-num">04</span> 18+ wristband</h3>
         <p class="section-sub">Booths with 18+ demos check ID and hand out a red wristband — get it on arrival, not at the front of the queue.</p>
         <div id="wristband-list" class="priority-table"></div>
       </section>
 
-      <h3 class="section-title"><span class="section-num">06</span> General crowd tips</h3>
+      <h3 class="section-title"><span class="section-num">05</span> General crowd tips</h3>
       <ol class="tips" id="crowd-tips"></ol>
     </section>
 
