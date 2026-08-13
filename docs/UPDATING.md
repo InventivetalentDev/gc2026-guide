@@ -88,12 +88,14 @@ This document is the playbook for refreshing the data — written so a scheduled
   astragon, Paradox / Urban Games) get the headliner's page; a second link would just
   make the reader choose. `sources` is where the rest of the evidence goes.
 - **A game `title` is a user-facing key, so treat it like `id`.** Visitors save games and
-  mark them played by lowercased title — rename *Fable* to *Fable (2026)* and everyone
-  who saved or played it silently loses that mark, on every booth showing it. Correct
-  an outright wrong title, but don't re-punctuate, re-subtitle or "tidy" one that already
-  works. The same key is why a title spelled identically at two booths (Alien: Isolation
-  2 at both Xbox and SEGA) is saved and marked played at both at once — which is the
-  intent, so keep shared titles spelled the same across exhibitors.
+  mark them played by lowercased title, and day assignments in `gc2026.itinerary.v1`
+  deliberately follow the same key — rename *Fable* to *Fable (2026)* and everyone who
+  saved or played it silently loses that mark, on every booth showing it, and the rename
+  also orphans its day assignment. Correct an outright wrong title, but don't
+  re-punctuate, re-subtitle or "tidy" one that already works. The same key is why a title
+  spelled identically at two booths (Alien: Isolation 2 at both Xbox and SEGA) is saved
+  and marked played at both at once — which is the intent, so keep shared titles spelled
+  the same across exhibitors.
 
 ## Schema
 
@@ -139,7 +141,17 @@ This document is the playbook for refreshing the data — written so a scheduled
   "dates": "Aug 26–30, 2026",
   "startDate": "2026-08-26",       // used for the countdown
   "endDate": "2026-08-30",
-  "days": [ { "date": "2026-08-26", "label": "Wednesday", "access": "trade & media only", "hours": "09:00–19:00", "note": "..." } ],
+  "days": [
+    {
+      "date": "2026-08-26",
+      "label": "Wednesday",
+      "access": "trade & media only",
+      "hours": "Business 09:00–19:00, entertainment 13:00–19:00",
+      "open": "13:00",             // entertainment-area opening, HH:MM
+      "close": "19:00",            // entertainment-area closing, HH:MM
+      "note": "..."
+    }
+  ],
   "onl": { "date": "Tue, Aug 25", "time": "20:00 CEST", "note": "..." },
   "tickets": "summary incl. sold-out status",
   "areas": [ { "name": "Indie Arena Booth", "hall": "10.2", "description": "..." } ],

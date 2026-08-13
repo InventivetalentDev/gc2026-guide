@@ -1,6 +1,17 @@
 [
   {
     "date": "2026-08-13",
+    "revision": 14,
+    "changes": [
+      "New: assign each saved booth or game to a specific gamescom day, with unassigned picks kept together until you're ready to place them.",
+      "Each itinerary day shows its opening hours, access rules and crowd advice inline, so the plan stays useful while you move through the halls.",
+      "Export the assigned day plan as a calendar (.ics) file, with each day's stops collected into one event.",
+      "Stops you've marked played dim and sink to the bottom of their itinerary day, so each group leads with what's still left to do.",
+      "Your itinerary stays in this browser only, alongside your saved list — day assignments are not part of shared links, and nothing is sent anywhere."
+    ]
+  },
+  {
+    "date": "2026-08-13",
     "revision": 13,
     "changes": [
       "Focus Entertainment's Hall 6.1 booth (B060/C061) is now confirmed on Focus' own live gamescom exhibitor profile, not just third-party trackers — no more \"double-check before you go.\"",

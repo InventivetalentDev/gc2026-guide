@@ -10,6 +10,8 @@
       "label": "Wednesday",
       "access": "trade & media only",
       "hours": "Business 09:00–19:00, entertainment 13:00–19:00",
+      "open": "13:00",
+      "close": "19:00",
       "note": "Public entry was only via the €65.50 Wildcard ticket (from 13:00) — it sold out Aug 5, so Wednesday is now trade/media only unless you already bought one. Trade badge caveat: some big booths reserve Wednesday (or its morning) for invited press — Xbox's 2026 booth doesn't open to visitors until Thursday, and in 2025 Capcom admitted only press until about 11:00."
     },
     {
@@ -17,6 +19,8 @@
       "label": "Thursday",
       "access": "public",
       "hours": "Entertainment 10:00–20:00",
+      "open": "10:00",
+      "close": "20:00",
       "note": "Best full public day for hands-on demos — noticeably calmer than Fri–Sat."
     },
     {
@@ -24,6 +28,8 @@
       "label": "Friday",
       "access": "public",
       "hours": "Entertainment 10:00–20:00",
+      "open": "10:00",
+      "close": "20:00",
       "note": "Fills up over the day; mornings still workable for big booths. gamescom GDQ speedrun showcase starts (Congress Center North)."
     },
     {
@@ -31,6 +37,8 @@
       "label": "Saturday",
       "access": "public",
       "hours": "Entertainment 09:00–20:00 (business area closed)",
+      "open": "09:00",
+      "close": "20:00",
       "note": "Busiest and most expensive day, usually sells out — avoid for hands-on play if you can. City Festival in the evening."
     },
     {
@@ -38,6 +46,8 @@
       "label": "Sunday",
       "access": "public",
       "hours": "Entertainment 09:00–20:00 (business area closed)",
+      "open": "09:00",
+      "close": "20:00",
       "note": "Most relaxed public day; booths start winding down late afternoon. Free entry possible via completed gamescom epix quests."
     }
   ],
