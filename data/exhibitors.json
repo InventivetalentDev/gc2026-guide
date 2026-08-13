@@ -498,7 +498,7 @@
     "booth": "B060/C061",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/focus-entertainment-publishing-sas",
-    "description": "Booth officially confirmed in the gamescom exhibitor directory: Hall 6.1, B060/C061 — a stand block it shares with Team17 and astragon. Its big release Resonance: A Plague Tale Legacy launches Aug 27 — mid-show — and is confirmed playable at the Xbox booth.",
+    "description": "Booth now confirmed on Focus' own live gamescom exhibitor-directory profile page, not just third-party trackers: Hall 6.1, B060/C061 — a stand block it shares with Team17 and astragon — plus a trade-only Business Area stand (Hall 4.2, A028). Its big release Resonance: A Plague Tale Legacy launches Aug 27 — mid-show — and is confirmed playable at the Xbox booth.",
     "games": [
       { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Launches Aug 27; confirmed at Xbox's Hall 7 booth, likely also at Focus' own Hall 6.1 stand." },
       { "title": "Edge of Memories", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "2026 JRPG-style title, plausible booth candidate." },
@@ -507,7 +507,7 @@
     "tags": ["AA", "adventure"],
     "crowd": 2,
     "crowdNote": "No announced blockbuster hands-on at its own stand; Resonance demand mostly absorbed by the Xbox booth.",
-    "visitAdvice": "Queue for Resonance at the Xbox booth where it's confirmed playable. Focus' own Hall 6.1 stand (B060/C061) is reported by trackers but not yet Focus-confirmed — double-check the official exhibitor directory closer to the show.",
+    "visitAdvice": "Queue for Resonance at the Xbox booth where it's confirmed playable. Focus' own Hall 6.1 stand (B060/C061) is now confirmed on the official directory, but its own booth program is still unannounced.",
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
@@ -515,7 +515,7 @@
       "https://gamesfinest.de/gamescom/gamescom-2026-welche-spiele-sind-vor-ort-und-wo-findest-du-sie/",
       "https://exhibitors.gamescom.global/exhibitor/focus_entertainment/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-13"
   },
   {
     "id": "hoyoverse",
@@ -695,20 +695,21 @@
     "booth": "B031",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/grinding-gear-games-ltd",
-    "description": "Path of Exile 2 booth confirmed at Hall 6.1, B031 (two independent trackers, nat-games.de and gamesfinest.de, Aug 11) with an event-exclusive special demo, an 'eerie display' photo op and exclusive merchandise.",
+    "description": "Path of Exile 2 booth now officially confirmed on GGG's own live gamescom exhibitor-directory profile at Hall 6.1, B031, with an event-exclusive special demo, an 'eerie display' photo op and exclusive merchandise. GGG is also running a new content reveal on the official gamescom Twitch channel Aug 25, 20:00 CEST, ahead of the show floor opening.",
     "games": [
-      { "title": "Path of Exile 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Special demo exclusive to gamescom, post-'Return of the Ancients' era." }
+      { "title": "Path of Exile 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Special demo exclusive to gamescom, post-'Return of the Ancients' era; new content reveal streams on gamescom's Twitch Aug 25, 20:00 CEST." }
     ],
     "tags": ["ARPG", "PC", "merch"],
     "crowd": 4,
     "crowdNote": "Very large, dedicated European PC-ARPG audience and a venue-exclusive demo — long, steady lines plus merch demand.",
-    "visitAdvice": "Hit it early on a weekday; ask staff whether merch has a separate line from the demo queue.",
+    "visitAdvice": "Hit it early on a weekday; ask staff whether merch has a separate line from the demo queue. Catch the Aug 25 Twitch reveal beforehand for a preview of what's playable.",
     "sources": [
       "https://www.pathofexile.com/forum/view-thread/3980614",
       "https://www.nat-games.de/2026/08/11/gamescom-2026-alle-games-aussteller-in-der-uebersicht/",
-      "https://gamesfinest.de/gamescom/gamescom-2026-welche-spiele-sind-vor-ort-und-wo-findest-du-sie/"
+      "https://gamesfinest.de/gamescom/gamescom-2026-welche-spiele-sind-vor-ort-und-wo-findest-du-sie/",
+      "https://www.xboxdynasty.de/news/path-of-exile-2/gamescom-2026-bringt-neue-enthuellung-und-hands-on-erlebnis/"
     ],
-    "lastUpdated": "2026-08-11"
+    "lastUpdated": "2026-08-13"
   },
   {
     "id": "eclipse-glow",
