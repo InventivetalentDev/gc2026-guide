@@ -10,7 +10,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - Search across exhibitors, games and tags; filters by category, hall, playable demos and age gate (hide 18+ / 18+ only)
 - **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
 - **Shareable saved lists** — move a plan to another device or send it to a friend with a link or scannable QR code
-- Crowd forecasts (1–5) per exhibitor and a **Visit Planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
+- Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours and crowd advice inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter)
 - Event info: dates, hours, tickets, special areas, Opening Night Live
 - **Installable and offline-capable** — add it to your home screen and the whole guide
