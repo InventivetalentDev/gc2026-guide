@@ -11,7 +11,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
 - **Shareable saved lists** — move a plan to another device or send it to a friend with a link or scannable QR code
 - Crowd forecasts (1–5) per exhibitor and a **Visit Planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
-- **Itinerary builder** — assign saved booths and games to a day, see that day's hours and crowd advice inline, then export the plan to a calendar
+- **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours and crowd advice inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter)
 - Event info: dates, hours, tickets, special areas, Opening Night Live
 - **Installable and offline-capable** — add it to your home screen and the whole guide
   stays readable in a hall with no reception
@@ -95,10 +95,14 @@ forwarded on — so until the question is answered the tab keeps its own copy: d
 the prompt costs a reload rather than the whole list. Answer it, or close the tab, and
 the copy is gone.
 
-The Visit Planner turns those bookmarks into a day-by-day itinerary. Assignments are
-kept separately under `gc2026.itinerary.v1`, follow the same booth and game keys, and
-stay on this device too. You can see each day's hours and crowd advice beside its stops
-or export the assigned days to a calendar file.
+The Visit Planner turns those bookmarks into a plan — one board, two arrangements.
+The day view is the itinerary: assign each stop a day, see that day's hours and crowd
+advice inline, export the assignments to a calendar file. The hall view is the walking
+route, and it reads the same assignments back: each stop carries tags for the days it
+is planned on, and once anything is placed, day chips filter the route down to a single
+day's stops in hall order. Assignments are kept separately under `gc2026.itinerary.v1`,
+follow the same booth and game keys, and stay on this device too; the arrangement you
+last picked is a view preference in `gc2026.prefs.v1`.
 
 It is entirely local, so it needs no network: with the app running off the service
 worker cache in a dead-reception hall, the list still renders, both saved-only filters
