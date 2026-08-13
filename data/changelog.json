@@ -3,8 +3,8 @@
     "date": "2026-08-13",
     "revision": 13,
     "changes": [
-      "Focus Entertainment's Hall 6.1 booth (B060/C061) is now confirmed on Focus' own live gamescom exhibitor profile, not just third-party trackers — no more \"double-check before you go.\"",
-      "Grinding Gear Games' Path of Exile 2 booth (Hall 6.1, B031) is likewise now officially confirmed on GGG's own gamescom profile; GGG also streams a new content reveal on gamescom's official Twitch channel Aug 25, 20:00 CEST, ahead of the show-floor demo."
+      "Focus Entertainment's Hall 6.1 booth (B060/C061) is confirmed on Focus' own gamescom exhibitor profile, not just third-party trackers — no need to double-check it before you go.",
+      "Grinding Gear Games' Path of Exile 2 booth (Hall 6.1, B031) is likewise confirmed on GGG's own gamescom profile; GGG also streams a new content reveal on gamescom's official Twitch channel Aug 25, 20:00 CEST, ahead of the show-floor demo."
     ]
   },
   {
@@ -48,7 +48,7 @@
       "New: Aerosoft (Hall 9.1, B043) — Winter Resort 3, Professional Ship Simulator and five first-time sim reveals (police work, mining, firefighting, crab fishing, roadmaking).",
       "New: Coffee Stain (Satisfactory; publisher of Valheim and Deep Rock Galactic) at Hall 10.1, A062/B063; Koei Tecmo with a small Hall 10.2 stand.",
       "New: AMD co-anchors the shared Hall 7.1 community block (B041/C040) with Ryzen/Radeon rigs — and teases a Radeon announcement at its own Cologne event on Aug 23.",
-      "Now officially confirmed in the directory: Focus (6.1 B060/C061, sharing the stand block with Team17 x astragon), KRAFTON's two stand blocks (9.1 B050/C051 + B040/C041) and Urban Games' Transport Fever 3 stand (8.1 B053a).",
+      "Now officially confirmed in the directory: Focus (6.1 B060/C061, sharing the stand block with Team17 × astragon), KRAFTON's two stand blocks (9.1 B050/C051 + B040/C041) and Urban Games' Transport Fever 3 stand (8.1 B053a).",
       "Corrected: Pearl Abyss is at 9.1 B010/C011 and Samsung's own Odyssey stand at B020/C029 — the two were swapped. Samsung stays co-registered at the Pearl Abyss stand it powers.",
       "Tencent is officially on the show floor too: Hall 8.1, B050/A051 (program unannounced) — separate from the offsite Worlds of Play art exhibition.",
       "Hall labels now match the official directory (6.1/7.1/8.1/9.1), so the hall filter no longer splits the same hall in two."
@@ -73,7 +73,7 @@
     "changes": [
       "Tick ✓ on a game once you've played it — the row dims, and the same title is marked at every booth showing it.",
       "A booth counts as played when you tick it directly or finish every game you saved there; save another game and it becomes active again.",
-      "Played booths sink below the rest of the queue-priority list without losing their original rank, and the new “Hide played” switch removes them altogether.",
+      "Played booths sink below the rest of the queue-priority list without losing their original rank, and the new 'Hide played' switch removes them altogether.",
       "Your played history and hide preference live in this browser only, work offline and never leave your device."
     ]
   },
@@ -82,7 +82,7 @@
     "revision": 6,
     "changes": [
       "New: hide 18+ demos or show only age-gated booths, with badges distinguishing confirmed wristband checks from expected restrictions.",
-      "The Visit Planner now groups booths with adult demos into a wristband checklist, so you can collect the red band before queueing."
+      "The Visit planner now groups booths with adult demos into a wristband checklist, so you can collect the red band before queueing."
     ]
   },
   {
@@ -109,7 +109,7 @@
     "date": "2026-08-08",
     "revision": 3,
     "changes": [
-      "New: save the booths and games you actually care about with the + button, then tick “Saved” to filter the exhibitor list down to just those.",
+      "New: save the booths and games you actually care about with the + button, then tick 'Saved' to filter the exhibitor list down to just those.",
       "The queue-priority list on the Visit planner filters the same way, and counts a publisher as saved when you've saved any game they're showing — save Fable and Xbox stays in your list, with the matching titles named on the row.",
       "Saving a game saves it at every booth showing it, so you can compare queues for the titles that appear twice (Alien: Isolation 2, Modern Warfare 4 and six others).",
       "Your list lives in this browser only — no account, nothing sent anywhere."
