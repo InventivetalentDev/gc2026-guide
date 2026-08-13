@@ -81,12 +81,21 @@ This document is the playbook for refreshing the data — written so a scheduled
 - The `Hide 18+` filter is a **browsing filter** ("don't show me demos I can't play"), not a content filter: it hides lineup rows, while descriptions, `visitAdvice` and tags stay as written and stay searchable. Don't write data on the assumption that a title is suppressed everywhere when it is hidden.
 - `platforms` is rendered on each game row as short codes (`XSX`, `SW2`, `PS5`…). Unknown values fall back to the uppercased string, so keep them short and consistent — see `PLATFORM_CODES` in `js/app.js` to add a new mapping.
 - Crowd scale: 1 calm · 2 light · 3 moderate · 4 busy (30–90 min queues) · 5 extreme (2 h+ queues, may cap lines early).
-- Don't remove the `sources` history; append.
-- `officialUrl` is the **only** outbound link on a card, so it points at gamescom's own
-  profile for that booth — never a publisher's marketing site, and never a directory
-  search result. Booths we run as one entry but gamescom registers as two (Team17 ×
-  astragon, Paradox / Urban Games) get the headliner's page; a second link would just
-  make the reader choose. `sources` is where the rest of the evidence goes.
+- Don't remove the `sources` history; append. **`sources` is user-facing** — the ⓘ marker
+  in a card's foot opens the list, so every URL is one a visitor can be sent to. Keep
+  them deep links to the page that actually carries the claim rather than a site's front
+  page or a search result, drop one that has gone dead instead of leaving it to 404 on a
+  reader, and don't paste in a paywalled or login-walled URL as the only evidence for a
+  booth. Non-`http(s)` entries are dropped by the UI without a word, so they read as
+  missing evidence rather than as a note.
+- `officialUrl` is the only outbound link **in the card's own layout**, so it points at
+  gamescom's own profile for that booth — never a publisher's marketing site, and never a
+  directory search result. Booths we run as one entry but gamescom registers as two
+  (Team17 × astragon, Paradox / Urban Games) get the headliner's page; a second link
+  would just make the reader choose. `sources` is where the rest of the evidence goes,
+  and it is a click away behind the marker rather than competing with the plan.
+- `lastUpdated` is user-facing for the same reason — the sources dialog prints it as
+  "Last checked". Only move it when you actually re-checked that entry's sources.
 - **A game `title` is a user-facing key, so treat it like `id`.** Visitors save games and
   mark them played by lowercased title, and day assignments in `gc2026.itinerary.v1`
   deliberately follow the same key — rename *Fable* to *Fable (2026)* and everyone who

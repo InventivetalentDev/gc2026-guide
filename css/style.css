@@ -674,8 +674,8 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 
 /* Leaving the guide is a deliberate act, so the link sits quiet under the
    plan and only lights up on hover — it must not compete with the queue gauge. */
+.foot-links { display: flex; align-items: center; gap: 14px; }
 .official-link {
-  align-self: flex-start;
   font-family: var(--font-mono);
   font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
   color: var(--ink-dim);
@@ -684,6 +684,43 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   padding-bottom: 1px;
 }
 .official-link:hover { color: var(--signal); border-bottom-color: var(--signal); }
+
+/* The attribution marker. It has to be there on every card without becoming
+   the thing you read, so it sits at the far end of the foot in the quietest
+   ink on the page — the count is the whole label, and the accessible name
+   spells out what it opens. margin-left:auto rather than an order rule so it
+   still lands on the right when a card has no official page to sit beside. */
+.src-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  flex: 0 0 auto;
+  /* Quiet, but still a comfortable thumb target — the padding grows the box
+     without adding any ink. */
+  min-height: 24px;
+  padding: 2px 7px 2px 5px;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: .64rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: color .12s, border-color .12s;
+}
+.src-btn:hover { color: var(--ink); border-color: var(--ink-dim); }
+.src-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 13px; height: 13px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: .56rem;
+  font-weight: 700;
+  line-height: 1;
+}
 
 /* ============================================================
    planner — day board
@@ -1137,9 +1174,9 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 }
 
 /* ============================================================
-   share saved list
+   sheets — the panel chrome shared by every dialog
    ============================================================ */
-.share-dialog {
+.sheet {
   width: min(540px, calc(100vw - 32px));
   max-height: min(760px, calc(100vh - 32px));
   margin: auto;
@@ -1151,9 +1188,9 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   border-radius: var(--radius);
   box-shadow: var(--plate-shadow-hover);
 }
-.share-dialog::backdrop { background: rgba(0, 0, 0, .78); }
+.sheet::backdrop { background: rgba(0, 0, 0, .78); }
 
-.share-dialog-head {
+.sheet-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1161,7 +1198,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   padding: 18px 20px;
   border-bottom: 1px solid var(--rule);
 }
-.share-dialog-head h2 {
+.sheet-head h2 {
   margin-top: 2px;
   font-family: var(--font-poster);
   font-size: 1.65rem;
@@ -1170,7 +1207,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   letter-spacing: .005em;
   text-transform: uppercase;
 }
-.share-dialog-close {
+.sheet-close {
   flex: 0 0 auto;
   width: 36px;
   height: 36px;
@@ -1183,9 +1220,13 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   line-height: 1;
   cursor: pointer;
 }
-.share-dialog-close:hover { border-color: var(--ink-dim); color: var(--ink); }
+.sheet-close:hover { border-color: var(--ink-dim); color: var(--ink); }
 
-.share-dialog-body { padding: 20px; }
+.sheet-body { padding: 20px; }
+
+/* ============================================================
+   share saved list
+   ============================================================ */
 .share-count { margin-bottom: 14px; color: var(--ink-mid); font-size: .88rem; }
 
 .share-link-field {
@@ -1264,6 +1305,83 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   border-left: 3px solid var(--warn);
   background: rgba(232, 163, 58, .08);
 }
+
+/* ============================================================
+   sources dialog
+   ============================================================ */
+.src-dialog { width: min(500px, calc(100vw - 32px)); }
+.src-subject {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.src-note { margin-top: 4px; color: var(--ink-mid); font-size: .84rem; }
+
+.src-list { list-style: none; margin-top: 16px; border-top: 1px solid var(--rule-soft); }
+.src-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.src-num {
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+  padding: 11px 0;
+}
+/* The host is the part that tells you who is making the claim, so it is set as
+   the link; the path trails behind it in dimmer ink and is allowed to wrap
+   rather than pushing the panel sideways. */
+.src-list a {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 10px 0;
+  text-decoration: none;
+  color: var(--ink);
+}
+.src-host {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  border-bottom: 1px solid var(--rule);
+}
+.src-list a:hover .src-host { color: var(--signal); border-bottom-color: var(--signal); }
+.src-path {
+  min-width: 0;
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.src-caveat {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--warn);
+  background: rgba(232, 163, 58, .08);
+  color: var(--ink-mid);
+  font-size: .8rem;
+  line-height: 1.5;
+}
+
+/* Event info carries the same marker for the whole page's data. */
+.info-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule-soft);
+  color: var(--ink-dim);
+  font-size: .8rem;
+}
+.info-foot .src-btn { margin-left: 0; }
 
 /* ============================================================
    installed-app chrome — install button, offline flag, toast
@@ -1401,8 +1519,8 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .toolbar-search { flex-direction: column; align-items: stretch; }
   .result-count { margin-left: 0; flex-basis: 100%; }
   .area-list li { grid-template-columns: 1fr; row-gap: 2px; }
-  .share-dialog { width: calc(100vw - 24px); max-height: calc(100vh - 24px); }
-  .share-dialog-head, .share-dialog-body { padding: 16px; }
+  .sheet { width: calc(100vw - 24px); max-height: calc(100vh - 24px); }
+  .sheet-head, .sheet-body { padding: 16px; }
   .share-qr { grid-template-columns: 1fr; }
   .share-qr-image { max-width: 280px; margin: 0 auto; }
   .share-qr p { text-align: center; }

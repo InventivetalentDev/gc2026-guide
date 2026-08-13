@@ -285,6 +285,8 @@ function keepingFocus(container, render, fallback) {
       ? `[data-it-kind="${CSS.escape(el.dataset.itKind)}"][data-it-key="${CSS.escape(el.dataset.itKey)}"][data-it-day="${CSS.escape(el.dataset.itDay)}"]`
       : el.dataset.mark && el.dataset.bmKey
       ? `.bm[data-mark="${CSS.escape(el.dataset.mark)}"][data-bm-kind="${CSS.escape(el.dataset.bmKind)}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
+      : el.dataset.srcKind
+      ? `.src-btn[data-src-kind="${CSS.escape(el.dataset.srcKind)}"][data-src-key="${CSS.escape(el.dataset.srcKey)}"]`
       : el.classList.contains("more-games")
         ? `.more-games[data-id="${CSS.escape(el.dataset.id)}"]`
         : null;
@@ -580,20 +582,7 @@ function bindShareDialog() {
     dialog.showModal();
   });
   input.addEventListener("focus", () => input.select());
-  $("#close-share").addEventListener("click", () => dialog.close());
-
-  /* Backdrop clicks target the dialog itself. Check the coordinates as well,
-     so a click on padding inside the panel does not dismiss it. */
-  dialog.addEventListener("click", (event) => {
-    if (event.target !== dialog) return;
-    const rect = dialog.getBoundingClientRect();
-    const inside =
-      event.clientX >= rect.left &&
-      event.clientX <= rect.right &&
-      event.clientY >= rect.top &&
-      event.clientY <= rect.bottom;
-    if (!inside) dialog.close();
-  });
+  bindDialogDismiss(dialog, $("#close-share"));
 
   $("#copy-share-link").addEventListener("click", async () => {
     try {
@@ -616,6 +605,116 @@ function bindShareDialog() {
       }
     }
   });
+}
+
+/* ---------- sources & attribution ----------
+
+   Every entry in data/*.json already records the pages it was built from. An
+   unofficial guide that asks you to plan a day around a booth number owes you
+   the ability to check it, so each card carries a quiet marker that opens its
+   list — and the cards you most want to check are exactly the ones whose hall
+   plate says "unconf.". */
+
+/* Only http(s) becomes a live link: a stray javascript: or data: URL in the
+   data would otherwise be one tap away on every card showing it. */
+const isHttpUrl = (url) => /^https?:\/\//i.test(String(url));
+const sourceList = (sources) => (Array.isArray(sources) ? sources.filter(isHttpUrl) : []);
+
+/* Split for display: the host is what tells you whether this is gamescom
+   itself, the exhibitor, or a games-press roundup — so it leads, and the path
+   follows in a dimmer tone rather than a wrapped 120-character URL. */
+function sourceParts(url) {
+  try {
+    const parsed = new URL(url);
+    const rest = `${parsed.pathname}${parsed.search}`.replace(/\/+$/, "");
+    return { host: parsed.hostname.replace(/^www\./, ""), rest };
+  } catch {
+    /* isHttpUrl already passed, so this is a URL the parser rejects — show it
+       whole rather than dropping the only evidence for the entry. */
+    return { host: url, rest: "" };
+  }
+}
+
+function sourcesSubject(kind, key) {
+  if (kind === "event") {
+    return {
+      name: state.event?.name || "this guide",
+      what: "The dates, hours, tickets and hall areas on this page",
+      sources: state.event?.sources,
+      updated: state.meta?.lastUpdated,
+    };
+  }
+  const ex = state.exhibitors.find((item) => item.id === key);
+  if (!ex) return null;
+  return {
+    name: ex.name,
+    what: "The location, lineup and queue call on this card",
+    sources: ex.sources,
+    updated: ex.lastUpdated,
+  };
+}
+
+/* The dialog lives in index.html, which the service worker refreshes
+   independently of this file (see the note in renderPlan) — no dialog, no
+   marker, rather than a marker that does nothing when it is tapped. */
+function sourcesButton(kind, key) {
+  const subject = sourcesSubject(kind, key);
+  const list = sourceList(subject?.sources);
+  if (!list.length || !$("#sources-dialog")) return "";
+  const label = `Sources for ${subject.name} — ${list.length} link${list.length === 1 ? "" : "s"}`;
+  return `<button class="src-btn" type="button"
+      data-src-kind="${esc(kind)}" data-src-key="${esc(key)}"
+      title="${esc(label)}" aria-label="${esc(label)}" aria-haspopup="dialog">
+    <span class="src-glyph" aria-hidden="true">i</span>
+    <span class="src-n" aria-hidden="true">${list.length}</span>
+  </button>`;
+}
+
+function openSources(kind, key) {
+  const dialog = $("#sources-dialog");
+  const subject = sourcesSubject(kind, key);
+  const list = sourceList(subject?.sources);
+  if (!dialog || !list.length) return;
+
+  $("#sources-subject").textContent = subject.name;
+  $("#sources-note").textContent =
+    `${subject.what} come from ${list.length} source${list.length === 1 ? "" : "s"}.` +
+    (subject.updated ? ` Last checked ${subject.updated}.` : "");
+  $("#sources-list").innerHTML = list
+    .map((url, i) => {
+      const { host, rest } = sourceParts(url);
+      return `<li>
+        <span class="src-num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
+        <a href="${esc(url)}" target="_blank" rel="noopener nofollow">
+          <span class="src-host">${esc(host)}</span>${rest ? `<span class="src-path">${esc(rest)}</span>` : ""}
+          <span class="sr-only">, opens in a new tab</span>
+        </a>
+      </li>`;
+    })
+    .join("");
+  dialog.showModal();
+}
+
+/* Backdrop clicks target the dialog itself. Check the coordinates as well, so
+   a click on padding inside the panel does not dismiss it. */
+function bindDialogDismiss(dialog, closeBtn) {
+  closeBtn.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (event) => {
+    if (event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    const inside =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+    if (!inside) dialog.close();
+  });
+}
+
+function bindSourcesDialog() {
+  const dialog = $("#sources-dialog");
+  if (!dialog) return; // tolerate a cached pre-sources index.html
+  bindDialogDismiss(dialog, $("#close-sources"));
 }
 
 /* ---------- itinerary ---------- */
@@ -851,6 +950,19 @@ function gameRow(g) {
   </li>`;
 }
 
+/* The last line of the card: where the booth speaks for itself (the official
+   profile) and where we got the rest (the sources marker). Both are optional,
+   and the row disappears when neither is there. */
+function footLinks(ex) {
+  const official = ex.officialUrl
+    ? /* Every card would otherwise announce the same "Official exhibitor page"
+         to a screen reader, so the booth name rides along in the accessible name. */
+      `<a class="official-link" href="${esc(ex.officialUrl)}" target="_blank" rel="noopener">Official exhibitor page<span aria-hidden="true"> ↗</span><span class="sr-only"> for ${esc(ex.name)}, opens in a new tab</span></a>`
+    : "";
+  const sources = sourcesButton("exhibitor", ex.id);
+  return official || sources ? `<div class="foot-links">${official}${sources}</div>` : "";
+}
+
 function card(ex) {
   const games = visibleGames(ex);
   const isOpen = state.expanded.has(ex.id);
@@ -905,13 +1017,7 @@ function card(ex) {
         <span class="queue-val">${crowd ? `${crowd}/5` : "—"} ${esc(CROWD_LABELS[crowd] || "?")}</span>
       </div>
       ${ex.visitAdvice ? `<p class="advice"><span class="advice-label">Plan</span>${esc(ex.visitAdvice)}</p>` : ""}
-      ${
-        ex.officialUrl
-          ? /* Every card would otherwise announce the same "Official exhibitor page"
-               to a screen reader, so the booth name rides along in the accessible name. */
-            `<a class="official-link" href="${esc(ex.officialUrl)}" target="_blank" rel="noopener">Official exhibitor page<span aria-hidden="true"> ↗</span><span class="sr-only"> for ${esc(ex.name)}, opens in a new tab</span></a>`
-          : ""
-      }
+      ${footLinks(ex)}
     </div>
   </article>`;
 }
@@ -1685,7 +1791,11 @@ function renderEvent() {
     <div class="info-block">
       <h2><span class="section-num">04</span> Official links</h2>
       <ul class="link-list">${links}</ul>
-    </div>`;
+    </div>
+    <p class="info-foot">
+      <span>Compiled from published sources, not from gamescom itself.</span>
+      ${sourcesButton("event", "")}
+    </p>`;
 }
 
 /* ---------- changelog ---------- */
@@ -1913,12 +2023,18 @@ function bindControls() {
   });
   $("#export-ics").addEventListener("click", downloadICS);
   bindShareDialog();
-  /* One delegated listener covers every +, ✓ and day button in every view,
-     including the ones that get re-rendered underneath it. */
+  bindSourcesDialog();
+  /* One delegated listener covers every +, ✓, day and sources button in every
+     view, including the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
     const day = e.target.closest("[data-it-day]");
     if (day) {
       assignToDay(day.dataset.itKind, day.dataset.itKey, day.dataset.itDay);
+      return;
+    }
+    const src = e.target.closest("[data-src-kind]");
+    if (src) {
+      openSources(src.dataset.srcKind, src.dataset.srcKey);
       return;
     }
     const btn = e.target.closest("[data-mark]");
