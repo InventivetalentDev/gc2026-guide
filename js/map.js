@@ -78,12 +78,63 @@ function buildJoin() {
 }
 
 function standRecord(hallId, s) {
-  const codes = GCMarks.boothCodes(s.nr);
+  const codes = GCMarks.boothCodes([s.nr, ...(s.also || [])].join(" "));
   const exs = [];
   for (const code of codes)
     for (const ex of state.byStand.get(`${hallId}:${code}`) || [])
       if (!exs.includes(ex)) exs.push(ex);
   return { data: s, codes, exs };
+}
+
+/* ================= hall data ================= */
+
+/* Koelnmesse files a stand's gallery level as a stand of its own, on
+   exactly the same four corners: F-010 E-019 and F-010g E-019g are one
+   place, one floor above the other. Drawn as two stands the empty upper
+   one lands on top and swallows every tap, which is why tapping the
+   Indie Arena Booth answered "no exhibitor filed for this stand" while
+   the deep link to it was right all along.
+
+   Same footprint means same place, so they become one stand: one shape,
+   every stand number, every name filed on either level. This joins exact
+   duplicates only — a sub-stand that sits *inside* a larger one
+   (E-071a within E-071, 30 of them in hall 10.1) has a footprint of its
+   own and stays separate, which is what the painting order below is for.
+   34 pairs across six halls; hall 10.2 alone had 15. */
+function mergeLevels(stands) {
+  /* Which number a visitor reads on the stand: the one the exhibitors
+     were filed against, and failing that the plain ground-floor number
+     rather than its "g" twin. */
+  const rank = (s) => (s.names.length ? 2 : 0) + (/\d[a-z]/.test(s.nr) ? 0 : 1);
+  const byFootprint = new Map();
+  for (const s of stands) {
+    const key = s.poly.map((p) => p.join()).join(" ");
+    if (byFootprint.has(key)) byFootprint.get(key).push(s);
+    else byFootprint.set(key, [s]);
+  }
+  return [...byFootprint.values()].map((group) => {
+    if (group.length === 1) return group[0];
+    const [main, ...rest] = [...group].sort((a, b) => rank(b) - rank(a));
+    return {
+      ...main,
+      /* the levels stack, so the footprint is the larger of them, not the sum */
+      a: Math.max(...group.map((s) => s.a || 0)),
+      also: rest.map((s) => s.nr),
+      names: [...new Set([main, ...rest].flatMap((s) => s.names))],
+    };
+  });
+}
+
+/* Fetched once, merged once, and drawn in that shape from then on — the
+   snapshot on disk stays a faithful copy of what Koelnmesse filed. */
+async function loadHall(id) {
+  if (!state.halls.has(id)) {
+    const entry = state.index.halls.find((h) => h.id === id);
+    const hall = await fetch(`data/hallplan/${entry.file}`).then((r) => r.json());
+    hall.stands = mergeLevels(hall.stands);
+    state.halls.set(id, hall);
+  }
+  return state.halls.get(id);
 }
 
 /* ================= geometry helpers ================= */
@@ -557,7 +608,9 @@ function selectStand(rec, { zoom = false } = {}) {
   const ex = rec.exs[0];
   $("#sheet-name").textContent = ex ? ex.name : (s.names[0] || `Stand ${s.nr}`);
   $("#sheet-loc").textContent =
-    `Hall ${state.hall} · Stand ${s.nr}` + (s.a ? ` · ~${s.a} m²` : "");
+    `Hall ${state.hall} · Stand ${s.nr}` +
+    (s.also ? ` · also ${s.also.join(", ")}` : "") +
+    (s.a ? ` · ~${s.a} m²` : "");
 
   const badges = [];
   if (rec.exs.some(exSaved)) badges.push('<span class="badge badge-saved">Saved</span>');
@@ -654,11 +707,8 @@ async function showHall(id, { standCode = null } = {}) {
     state.sel = null;
     $("#sheet").classList.remove("open");
     renderChips();
-    if (!state.halls.has(id)) {
-      $("#load").hidden = false;
-      const h = state.index.halls.find((entry) => entry.id === id);
-      state.halls.set(id, await fetch(`data/hallplan/${h.file}`).then((r) => r.json()));
-    }
+    if (!state.halls.has(id)) $("#load").hidden = false;
+    await loadHall(id);
     renderHall(id);
   }
   if (standCode) {
@@ -716,13 +766,7 @@ async function main() {
   /* Idle-prefetch the rest: 1–8 KB gzipped each, and the service worker
      has them precached anyway — this just spares the parse on tap. */
   const prefetch = () => {
-    for (const h of state.index.halls) {
-      if (state.halls.has(h.id)) continue;
-      fetch(`data/hallplan/${h.file}`)
-        .then((r) => r.json())
-        .then((d) => state.halls.set(h.id, d))
-        .catch(() => {});
-    }
+    for (const h of state.index.halls) loadHall(h.id).catch(() => {});
   };
   "requestIdleCallback" in window
     ? requestIdleCallback(prefetch, { timeout: 4000 })
