@@ -41,6 +41,15 @@ breaks.
 4. **Push to `main`**, or run the workflow by hand from the Actions tab. The
    first deploy creates the Worker and attaches `gamescom.guide`.
 
+5. **Web Analytics** is enabled in the Cloudflare dashboard (Web Analytics →
+   the `gamescom.guide` site, automatic setup), which injects
+   `static.cloudflareinsights.com/beacon.min.js` into the HTML on its way out
+   of the edge. Nothing in this repo does that, so nothing in this repo would
+   tell you it is happening — hence this note. It matters because
+   `privacy.html` describes that beacon under Art. 6 (1) (f) GDPR: if the
+   dashboard setting is ever turned off, or switched to manual injection,
+   the privacy policy has to change with it.
+
 Deploying from a laptop works the same way and needs no secrets — `npx wrangler
 login` once, then:
 

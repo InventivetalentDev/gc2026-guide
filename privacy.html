@@ -55,7 +55,16 @@
 
     <p>When you share your list, it is encoded into the part of the link after the <code>#</code>.
     Browsers never send that part to a server, so a shared list does not reach me, my host, or their
-    logs — it travels only inside the link, to whoever you send it to.</p>
+    logs — it travels only inside the link, to whoever you send it to. Opening someone else's link
+    holds that incoming list in <code>sessionStorage</code> under <code>gc2026.share.pending</code>
+    just long enough for you to accept or dismiss it, so a reload cannot lose the offer; unlike
+    everything above, it is discarded the moment the tab closes.</p>
+
+    <p>To work in a hall with no reception, the guide also keeps a copy of <em>itself</em> — pages,
+    styles, fonts, icons and the exhibitor data — in the browser's cache storage. That is the app, not
+    information about you, and it is removed with the rest when you clear the site's data. Storing all
+    of this is what makes the offline guide you asked for work at all, so under § 25 (2) TDDDG it needs
+    no consent banner.</p>
 
     <h2>Hosting and delivery</h2>
     <p>The site runs on Cloudflare Workers and is delivered over Cloudflare's network (Cloudflare, Inc.,
@@ -86,7 +95,7 @@
     information is stored in or read out of your terminal equipment for this, no consent banner is
     required under § 25 TDDDG. You can block the script with any content blocker and the guide will
     work exactly as before. Details are in
-    <a href="https://www.cloudflare.com/web-analytics-privacy/" rel="noopener" target="_blank">Cloudflare's description of the service</a>.</p>
+    <a href="https://developers.cloudflare.com/web-analytics/about/" rel="noopener" target="_blank">Cloudflare's description of the service</a>.</p>
 
     <h2>What this site does not do</h2>
     <ul>
