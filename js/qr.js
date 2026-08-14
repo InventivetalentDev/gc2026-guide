@@ -307,7 +307,7 @@
       }
     }
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${extent} ${extent}" ` +
-      `role="img" aria-label="QR code" shape-rendering="crispEdges">` +
+      `role="img" aria-label="${(window.GCI18N?.t || ((k) => k))("share.qrAlt")}" shape-rendering="crispEdges">` +
       `<rect width="${extent}" height="${extent}" fill="#fff"/>` +
       `<path d="${path.join("")}" fill="#000"/></svg>`;
   }

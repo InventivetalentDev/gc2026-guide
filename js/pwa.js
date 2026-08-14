@@ -5,6 +5,7 @@
 
 (function () {
   const $ = (sel) => document.querySelector(sel);
+  const t = window.GCI18N?.t || ((key) => key);
 
   const standalone =
     window.matchMedia("(display-mode: standalone)").matches ||
@@ -21,7 +22,7 @@
   let updateAccepted = false;
 
   function offerUpdate(worker) {
-    window.gcToast?.show("A newer version of the guide is ready.", "Reload", () => {
+    window.gcToast?.show(t("pwa.updateReady"), t("pwa.reload"), () => {
       window.gcToast?.hide();
       updateAccepted = true;
       worker.postMessage("skip-waiting");
@@ -87,7 +88,7 @@
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    showInstallButton("Install app");
+    showInstallButton(t("pwa.install"));
   });
 
   if (installBtn) {
@@ -97,21 +98,21 @@
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         deferredPrompt = null;
-        if (outcome !== "accepted") showInstallButton("Install app");
+        if (outcome !== "accepted") showInstallButton(t("pwa.install"));
         return;
       }
-      window.gcToast?.show("In Safari, tap Share, then “Add to Home Screen”.");
+      window.gcToast?.show(t("pwa.iosHint"));
     });
   }
 
   window.addEventListener("appinstalled", () => {
     deferredPrompt = null;
     if (installBtn) installBtn.hidden = true;
-    const notice = window.gcToast?.show("Installed. The guide now works offline.");
+    const notice = window.gcToast?.show(t("pwa.installed"));
     if (notice) setTimeout(() => window.gcToast?.hide(notice), 6000);
   });
 
-  if (iOSSafari) showInstallButton("Add to Home Screen");
+  if (iOSSafari) showInstallButton(t("pwa.addToHome"));
 
   /* ---------- connectivity ---------- */
 

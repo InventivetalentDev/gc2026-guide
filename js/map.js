@@ -21,8 +21,17 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 const SVGNS = "http://www.w3.org/2000/svg";
-/* mirrors CROWD_LABELS in js/app.js — the queue forecast vocabulary */
-const CROWD_LABELS = ["Unknown", "Calm", "Light", "Moderate", "Busy", "Extreme"];
+
+/* Same string registry as the guide (js/i18n.js runs first on this page
+   too), so the queue vocabulary is one set of crowd.* keys rather than a
+   second copy to drift. The shim keeps a stale cached shell booting. */
+const GCI18N = window.GCI18N || { lang: "en", t: (key) => key, apply() {}, dayName: String };
+const t = GCI18N.t;
+const crowdLabel = (level) => {
+  const label = t(`crowd.${level}`);
+  return label === `crowd.${level}` ? "" : label;
+};
+
 const DEFAULT_HALL = "7.1";
 
 const state = {
@@ -197,7 +206,7 @@ function renderHall(id) {
   svg.setAttribute("width", W);
   svg.setAttribute("height", H);
   svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", `Schematic plan of hall ${id}`);
+  svg.setAttribute("aria-label", t("map.planAria", { hall: id }));
 
   const blocks = document.createElementNS(SVGNS, "g");
   for (const b of hall.blocks) {
@@ -299,7 +308,7 @@ function renderHall(id) {
        taps, and counting stands must not count it twice. */
     lg.setAttribute("class", `stand-labels ${cls}`);
     g.setAttribute("role", "button");
-    g.setAttribute("aria-label", `${name || "Stand"} — stand ${s.nr}`);
+    g.setAttribute("aria-label", t("map.standAria", { name: name || t("map.stand"), nr: s.nr }));
 
     rec.g = g;
     rec.lg = lg;
@@ -405,7 +414,8 @@ function refreshMarks() {
   }
   const covered = state.stands.filter((r) => r.exs.length).length;
   $("#counts").textContent =
-    `${state.stands.length} stands · ${covered} in the guide` + (saved ? ` · ${saved} saved` : "");
+    t("map.counts", { n: state.stands.length, covered }) +
+    (saved ? t("map.countsSaved", { n: saved }) : "");
   renderChips();
 }
 
@@ -424,9 +434,12 @@ function renderChips() {
   $("#halls").innerHTML = state.index.halls
     .map((h) => {
       const n = hallSavedCount(h.id);
-      const label = `Hall ${h.id}${n ? `, ${n} saved` : ""}`;
+      const label =
+        t("where.hall", { hall: h.id }) + (n ? t("map.chipSavedAria", { n }) : "");
       return `<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}" type="button"
-        data-hall="${esc(h.id)}" aria-label="${esc(label)}">Hall ${esc(h.id)}${
+        data-hall="${esc(h.id)}" aria-label="${esc(label)}">${esc(
+        t("where.hall", { hall: h.id })
+      )}${
         n ? ` <span class="chip-saved" aria-hidden="true">●${n}</span>` : ""
       }</button>`;
     })
@@ -606,39 +619,42 @@ function selectStand(rec, { zoom = false } = {}) {
 
   const s = rec.data;
   const ex = rec.exs[0];
-  $("#sheet-name").textContent = ex ? ex.name : (s.names[0] || `Stand ${s.nr}`);
+  $("#sheet-name").textContent = ex ? ex.name : (s.names[0] || t("map.standNr", { nr: s.nr }));
   $("#sheet-loc").textContent =
-    `Hall ${state.hall} · Stand ${s.nr}` +
-    (s.also ? ` · also ${s.also.join(", ")}` : "") +
+    t("map.sheetLoc", { hall: state.hall, nr: s.nr }) +
+    (s.also ? t("map.sheetAlso", { list: s.also.join(", ") }) : "") +
     (s.a ? ` · ~${s.a} m²` : "");
 
   const badges = [];
-  if (rec.exs.some(exSaved)) badges.push('<span class="badge badge-saved">Saved</span>');
+  if (rec.exs.some(exSaved))
+    badges.push(`<span class="badge badge-saved">${esc(t("mark.saved"))}</span>`);
   if (ex && ex.locationConfirmed === false)
-    badges.push('<span class="badge badge-unconf">Location unconfirmed</span>');
-  if (rec.exs.length && rec.exs.every(exPlayed)) badges.push('<span class="badge">Played</span>');
+    badges.push(`<span class="badge badge-unconf">${esc(t("map.unconfBadge"))}</span>`);
+  if (rec.exs.length && rec.exs.every(exPlayed))
+    badges.push(`<span class="badge">${esc(t("mark.played"))}</span>`);
   $("#sheet-badges").innerHTML = badges.join("");
 
   let who;
   if (ex) {
     const games = ex.games || [];
     who = `<b>${esc(ex.name)}</b>`;
-    if (ex.crowd) who += ` · queue forecast Q${esc(ex.crowd)} ${esc(CROWD_LABELS[ex.crowd] || "")}`;
+    if (ex.crowd)
+      who += ` · ${esc(t("map.queueForecast", { n: ex.crowd, label: crowdLabel(ex.crowd) }))}`;
     if (games.length) {
       const titles = games.slice(0, 3).map((g) => esc(g.title)).join(", ");
-      who += `<br>${games.length} game${games.length === 1 ? "" : "s"}: ${titles}` +
-        (games.length > 3 ? `, +${games.length - 3} more` : "");
+      who += `<br>${esc(t("map.gamesCount", { n: games.length }))}: ${titles}` +
+        (games.length > 3 ? esc(t("map.plusMore", { n: games.length - 3 })) : "");
     }
     if (rec.exs.length > 1)
-      who += `<br>also here: ${rec.exs.slice(1).map((x) => esc(x.name)).join(", ")}`;
+      who += `<br>${esc(t("map.alsoHere"))}: ${rec.exs.slice(1).map((x) => esc(x.name)).join(", ")}`;
   } else if (s.names.length) {
     /* Named in the official plan but not in the guide — say so rather
        than leave a blank booth looking like a data bug. */
     who = s.names.slice(0, 6).map(esc).join(", ") +
-      (s.names.length > 6 ? `, +${s.names.length - 6} more` : "") +
-      '<br><span class="map-sheet-dim">not covered by the guide</span>';
+      (s.names.length > 6 ? esc(t("map.plusMore", { n: s.names.length - 6 })) : "") +
+      `<br><span class="map-sheet-dim">${esc(t("map.notCovered"))}</span>`;
   } else {
-    who = '<span class="map-sheet-dim">no exhibitor filed for this stand</span>';
+    who = `<span class="map-sheet-dim">${esc(t("map.noExhibitor"))}</span>`;
   }
   $("#sheet-who").innerHTML = who;
 
@@ -647,7 +663,7 @@ function selectStand(rec, { zoom = false } = {}) {
   if (ex) {
     const on = state.marks.saved.exhibitors.has(ex.id);
     save.dataset.on = on;
-    save.textContent = on ? "− Remove from saved" : "+ Save booth";
+    save.textContent = on ? t("map.unsaveBooth") : t("map.saveBooth");
     save.onclick = () => {
       toggleSaved(ex.id);
       selectStand(rec);
@@ -691,12 +707,13 @@ window.addEventListener("storage", (e) => {
 function renderSourceNote() {
   const { source, fetched } = state.index;
   const when = new Date(`${fetched}T00:00:00Z`);
-  const date = isNaN(when) ? fetched : when.toLocaleDateString("en-GB", {
+  const date = isNaN(when) ? fetched : when.toLocaleDateString(GCI18N.lang, {
     day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
   });
   $("#srcnote").innerHTML =
-    `booth outlines: <a href="${esc(source)}" target="_blank" rel="noopener nofollow">official hall plan</a>` +
-    ` · checked ${esc(date)} · schematic, unofficial`;
+    `${esc(t("map.outlines"))}: <a href="${esc(source)}" target="_blank" rel="noopener nofollow">${esc(
+      t("map.officialHallPlan")
+    )}</a> · ${esc(t("map.checkedOn", { date }))}`;
 }
 
 /* ================= boot ================= */
@@ -775,5 +792,5 @@ async function main() {
 
 main().catch((err) => {
   $("#load").hidden = false;
-  $("#load").textContent = `could not load the hall plan — ${err.message}`;
+  $("#load").textContent = t("map.loadFailed", { error: err.message });
 });

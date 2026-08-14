@@ -140,36 +140,94 @@ This document is the playbook for refreshing the data — written so a scheduled
   and marked played at both at once — which is the intent, so keep shared titles spelled
   the same across exhibitors.
 
+## Keeping the German in sync
+
+The guide ships in English and German. English is the source: you write it,
+and the German is a translation of what you wrote. The two are kept honest by
+a checker rather than by memory.
+
+**The loop, on any refresh that touches prose:**
+
+```sh
+# 1. edit the English — data/i18n/en.json, never the base data files
+# 2. see what that broke
+node tools/check-i18n.mjs
+# 3. translate the keys it names, in data/i18n/de.json
+# 4. confirm the German now matches the English you wrote
+node tools/check-i18n.mjs --update
+```
+
+Step 4 is the one that is easy to skip and the one that matters: it re-records
+a hash of each English string, which is how step 2 knows next time that the
+English moved and the German did not. Running `--update` without actually
+revisiting the German silently certifies a stale translation — it is the only
+way to defeat the check, so don't use it to make an error message go away.
+
+`tools/build-site.sh` runs the checker before staging `dist/`, so a deploy
+carrying a missing or stale German string fails loudly instead of shipping a
+half-English page to a mostly German audience.
+
+What the checker enforces:
+
+- every English key exists in German, and nothing extra
+- plural forms (`"{n} stop|{n} stops"`) and `{placeholders}` match on both sides
+- every exhibitor id, game title, show day and area name in the prose exists in
+  the base data — this is what catches a **corrected game title orphaning its
+  note**, since notes are keyed by title
+- every tag in use has a display label (warning, not an error)
+
+**What stays English on purpose:** game titles, exhibitor names, platform names,
+official area names ("Indie Arena Booth"), "gamescom", "Opening Night Live", and
+the changelog — `data/changelog.json` is a transparency log rewritten every few
+days, and translating it would double the editorial cycle for the one surface
+nobody plans a day around. German readers get told so under the Updates lede.
+`imprint.html` and `privacy.html` are also English, though the footer links to
+them are labelled "Impressum" and "Datenschutz" — those are the words people
+look for, and § 5 DDG is about the imprint being easy to find.
+
+**Register:** German uses **du**, matching gamescom's own communication and the
+audience. Keep the English voice: informative, terse, no marketing.
+
+**Adding a language** means `js/i18n/<lang>.js`, `data/i18n/<lang>.json`, the
+`SUPPORTED` list in `js/i18n.js`, the two inline `<head>` scripts in
+`index.html` and `map.html`, and the `sw.js` precache lists. The switcher and
+`tools/check-i18n.mjs` pick it up from `SUPPORTED` on their own.
+
 ## Schema
+
+**Prose lives in `data/i18n/`, not in the files below.** The base files hold
+structure — ids, halls, booth numbers, dates, flags — and every sentence a
+visitor reads sits in `data/i18n/en.json` (the source) and `data/i18n/de.json`
+(the translation), keyed back to the base data. Editing a description means
+editing `en.json`; see [Keeping the German in sync](#keeping-the-german-in-sync).
 
 ### `data/exhibitors.json` — array of:
 
 ```jsonc
 {
   "id": "xbox",                    // stable slug, never change once published
-  "name": "Xbox (Microsoft)",
+  "name": "Xbox (Microsoft)",      // proper noun, never translated
   "type": "platform",              // platform | publisher | hardware | indie | experience | media | merch
   "hall": "8",                     // string or null (halls can be "4.1" style)
   "booth": "B010",                 // string or null; "/" joins one stand's halves, "," separates stands
   "locationConfirmed": false,      // true only when officially published for 2026
   "officialUrl": "https://www.gamescom.global/en/exhibitor/xbox",  // optional: official profile, omit when there is none
   "ageRestricted": true,           // optional: booth-wide age gate when no game fits
-  "description": "1–2 sentences on what they're showing.",
   "games": [
     {
-      "title": "Fable",
+      "title": "Fable",            // proper noun, never translated — also the
+                                   // identity behind saved marks and share links
       "status": "confirmed",       // confirmed | expected | rumored
       "playable": true,            // true | false | null (unknown)
       "age": 18,                   // optional: minimum age for this show-floor demo
       "ageStatus": "confirmed",   // optional: confirmed | expected (default expected)
-      "platforms": ["Xbox Series X|S", "PC"],
-      "note": "one-line context (optional)"
+      "platforms": ["Xbox Series X|S", "PC"]
     }
   ],
-  "tags": ["AAA", "shooter", "family-friendly"],
+  "tags": ["AAA", "shooter", "family-friendly"],  // raw identifiers, translated
+                                   // only for display; "not exhibiting" and
+                                   // "offsite" drive rendering — never rename them
   "crowd": 5,                      // 1–5, see scale above
-  "crowdNote": "why this rating",
-  "visitAdvice": "when to go / queue strategy",
   "sources": ["https://..."],
   "lastUpdated": "2026-08-06"
 }
@@ -181,33 +239,64 @@ This document is the playbook for refreshing the data — written so a scheduled
 {
   "name": "gamescom 2026",
   "location": "Koelnmesse, Cologne",
-  "dates": "Aug 26–30, 2026",
   "startDate": "2026-08-26",       // used for the countdown
   "endDate": "2026-08-30",
   "days": [
     {
-      "date": "2026-08-26",
-      "label": "Wednesday",
-      "access": "trade & media only",
-      "hours": "Business 09:00–19:00, entertainment 13:00–19:00",
+      "date": "2026-08-26",        // the key the day's prose hangs off
       "open": "13:00",             // entertainment-area opening, HH:MM
       "close": "19:00",            // entertainment-area closing, HH:MM
-      "note": "..."
+      "trade": true                // trade & media only — a fact, not a
+                                   // reading of the access sentence, which
+                                   // exists in every language
     }
   ],
-  "onl": { "date": "Tue, Aug 25", "time": "20:00 CEST", "note": "..." },
-  "tickets": "summary incl. sold-out status",
-  "areas": [ { "name": "Indie Arena Booth", "hall": "10.2", "description": "..." } ],
-  "crowdTips": ["...", "..."],
+  "onl": { "time": "20:00 CEST" },
+  "areas": [ { "name": "Indie Arena Booth", "hall": "10.2" } ],  // name is the
+                                   // official one and the key for its description
   "sources": ["https://..."]
 }
 ```
 
+Weekday names are not stored at all — the app formats them from `date` in the
+reader's language, so "Wednesday" and "Mittwoch" are the same fact.
+
 ### `data/meta.json`
 
 ```jsonc
-{ "lastUpdated": "2026-08-06", "revision": 1, "note": "shown in the footer" }
+{ "lastUpdated": "2026-08-06", "revision": 1 }
 ```
+
+### `data/i18n/en.json` and `data/i18n/de.json`
+
+Same shape in both; `en.json` is the source you edit, `de.json` the translation.
+
+```jsonc
+{
+  "meta":  { "note": "shown in the footer" },
+  "event": {
+    "dates": "Aug 26–30, 2026",
+    "tickets": "summary incl. sold-out status",
+    "onl":   { "date": "Tue, Aug 25", "note": "..." },
+    "days":  { "2026-08-26": { "access": "trade & media only", "hours": "...", "note": "..." } },
+    "areas": { "Indie Arena Booth": "..." },     // keyed by the official name
+    "crowdTips": ["...", "..."]
+  },
+  "tags": { "sim racing": "Simracing" },         // display label per raw tag
+  "exhibitors": {
+    "xbox": {
+      "description": "1–2 sentences on what they're showing.",
+      "crowdNote": "why this rating",
+      "visitAdvice": "when to go / queue strategy",
+      "games": { "Fable": "one-line context (optional)" }   // keyed by title
+    }
+  }
+}
+```
+
+Game notes are keyed by **title**, not position, so reordering a lineup or
+inserting a game never re-points a note at the wrong game. The cost is that
+correcting a title orphans its note — which `tools/check-i18n.mjs` catches.
 
 ### `data/directory.json` — generated, do not hand-edit
 
@@ -270,7 +359,9 @@ One list does need editing by hand: a **new hall level** adds a file under
 `data/hallplan/`, and files are only precached if they are named in `DATA`
 (`sw.js`). A hall missing from that list still works online and still
 renders — it just won't be there in a hall with no signal, which is the one
-place it matters.
+place it matters. The same applies to a **new language**: its
+`data/i18n/<lang>.json` and `js/i18n/<lang>.js` belong in `DATA` and `SHELL`
+respectively, or switching to it offline hands the visitor an empty guide.
 
 A caveat worth knowing when a change looks like it did not deploy: a visitor who
 already has the guide open is one load behind by design — the cached copy is served
@@ -377,8 +468,11 @@ smaller `woff2` (and the variable-weight files) only to modern browsers. Re-chec
 
 > Follow docs/UPDATING.md in this repo: re-check official gamescom 2026 sources and
 > recent news, update data/*.json accordingly (new exhibitors, confirmed booths/halls,
-> lineup changes, crowd re-evaluation), bump data/meta.json, validate JSON, then
-> commit and push to main with a summary of changes. If nothing changed, do nothing.
+> lineup changes, crowd re-evaluation) — structure in the base files, all prose in
+> data/i18n/en.json. Then run `node tools/check-i18n.mjs`, translate whatever it
+> names into data/i18n/de.json, and re-run with `--update`. Bump data/meta.json,
+> validate JSON, then commit and push to main with a summary of changes. If nothing
+> changed, do nothing.
 
 Cadence: every 2–3 days until ~Aug 20, then daily through the show (booth numbers and
 demo lineups often land in the final week).

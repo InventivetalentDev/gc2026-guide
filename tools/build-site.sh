@@ -38,6 +38,13 @@ if [ -n "$unclassified" ]; then
   exit 1
 fi
 
+# Missing or stale German would ship as English fragments in a German page,
+# which is exactly the kind of quiet breakage the check above exists to
+# prevent. No SITE change is needed for the new files: js/i18n/ and
+# data/i18n/ sit inside the already-listed js and data entries, and the
+# cp -R below carries them.
+node tools/check-i18n.mjs
+
 rm -rf dist
 mkdir dist
 for entry in $SITE; do

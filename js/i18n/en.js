@@ -1,0 +1,413 @@
+/* gamescom 2026 guide — English UI strings.
+
+   The source language: this is where a new string is written first, and
+   every other locale is checked against it (tools/check-i18n.mjs). Keys
+   are flat and dot-namespaced by the surface they appear on.
+
+   Two conventions:
+     {name}  interpolation, filled by t(key, { name })
+     one|other  plural forms, chosen by t(key, { n }) on n === 1
+
+   Editorial prose (booth descriptions, visit advice, event info) is NOT
+   here — that lives in data/i18n/<lang>.json, keyed by exhibitor id.
+   This file is the app's own chrome. */
+
+window.GC_STRINGS = window.GC_STRINGS || {};
+
+window.GC_STRINGS.en = {
+  /* ---------- document & navigation ---------- */
+  "meta.description":
+    "Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning.",
+  "nav.skip": "Skip to content",
+  "nav.sections": "Sections",
+  "brand.kicker": "Unofficial visitor guide",
+  "header.offline": "Offline · showing saved data",
+  "tab.exhibitors": "Exhibitors",
+  "tab.planner": "Visit planner",
+  "tab.event": "Event info",
+  "tab.updates": "Updates",
+
+  /* ---------- toolbar & filters ---------- */
+  "field.search": "Search",
+  "field.sort": "Sort by",
+  "search.placeholder": "Exhibitor, game or tag…",
+  "sort.crowdDesc": "Crowd — busiest first",
+  "sort.crowdAsc": "Crowd — calmest first",
+  "sort.name": "Name A–Z",
+  "sort.hall": "Hall number",
+  "toolbar.filters": "Filters",
+  "toolbar.category": "Category",
+  "toolbar.age": "Age",
+  "toolbar.onlyShow": "Only show",
+  "toggle.playable": "Playable demos",
+  "toggle.confirmed": "Confirmed locations",
+  "toggle.saved": "Saved",
+  "toggle.savedOnly": "Saved only",
+  "toggle.hidePlayed": "Hide played",
+  "filter.all": "All",
+  "action.shareList": "Share list",
+  "action.clearSaved": "Clear saved list",
+  "action.clearPlayed": "Clear played",
+  "action.yourPlan": "Your plan →",
+  "action.clearFilters": "Clear filters",
+  "action.exportIcs": "Export to calendar (.ics)",
+  "action.undo": "Undo",
+  "action.dismiss": "Dismiss",
+
+  /* Filter summary — the one line that says what is still filtered when
+     the drawer is shut, so every constraint gets a short name. */
+  "summary.none": "All categories, all halls",
+  "summary.hideAdult": "hide 18+",
+  "summary.onlyAdult": "18+ only",
+  "summary.playableOnly": "playable only",
+  "summary.confirmedOnly": "confirmed only",
+  "summary.savedOnly": "saved only",
+  "summary.playedHidden": "played hidden",
+
+  "count.exhibitors": "{n} exhibitor|{n} exhibitors",
+  "count.exhibitorsFiltered": "{n} / {total} exhibitors",
+  "empty.noMatches": "Nothing matches — try clearing filters.",
+  "empty.noSavedYet":
+    "Nothing saved yet — hit + on a booth or on any game in its lineup to start a list.",
+
+  /* ---------- vocabularies ---------- */
+  "type.platform": "Platforms",
+  "type.publisher": "Publishers",
+  "type.hardware": "Hardware",
+  "type.indie": "Indie",
+  "type.experience": "Experiences & Activities",
+  "type.media": "Media & Community",
+  "type.merch": "Merch & Lifestyle",
+
+  "crowd.0": "Unknown",
+  "crowd.1": "Calm",
+  "crowd.2": "Light",
+  "crowd.3": "Moderate",
+  "crowd.4": "Busy",
+  "crowd.5": "Extreme",
+
+  "status.confirmed": "Confirmed",
+  "status.expected": "expected",
+  "status.rumored": "rumored",
+  "badge.playable": "playable",
+
+  "age.filter.all": "All",
+  "age.filter.hide": "Hide 18+",
+  "age.filter.only": "18+ only",
+  "age.confirmedTitle": "18+ wristband required",
+  "age.expectedTitle": "18+ expected — not confirmed",
+  "age.expectedBadge": "18+ expected",
+
+  "hall.word": "Hall",
+  "where.hall": "Hall {hall}",
+  "where.hallBooth": "Hall {hall}, booth {booth}",
+  "where.hallDotBooth": "Hall {hall} · {booth}",
+  "kind.booth": "Booth",
+  "kind.game": "Game",
+
+  /* ---------- exhibitor cards ---------- */
+  "plate.statusKicker": "Status",
+  "plate.absent": "Absent",
+  "plate.noBooth": "no booth",
+  "plate.tba": "TBA",
+  "plate.notAnnounced": "not announced",
+  "plate.boothTba": "booth TBA",
+  "plate.unconfSuffix": " · unconf.",
+  "plate.confirmedTitle": "Officially confirmed location",
+  "plate.unconfirmedTitle": "Best guess — not officially confirmed",
+
+  "card.lineup": "Lineup",
+  "card.titles": "{n} title|{n} titles",
+  "card.playableCount": "{n} playable",
+  "card.showFewer": "− Show fewer",
+  "card.showMore": "+ {n} more",
+  "card.queueIndex": "Queue index",
+  "card.queueAria": "Queue index {n} of 5",
+  "card.planLabel": "Plan",
+  "card.officialPage": "Official exhibitor page",
+  "card.officialPageAria": " for {name}, opens in a new tab",
+
+  /* Whole sentences rather than assembled fragments: German declines
+     around the name, so "the {name} booth" cannot be a reusable piece. */
+  "mark.save": "Save",
+  "mark.saved": "Saved",
+  "mark.played": "Played",
+  "mark.aria.booth.save": "Save the {name} booth to your list",
+  "mark.aria.booth.unsave": "Remove the {name} booth from your saved list",
+  "mark.aria.booth.play": "Mark the {name} booth as played",
+  "mark.aria.booth.unplay": "Mark the {name} booth as not played",
+  "mark.aria.game.save": "Save {name} to your list",
+  "mark.aria.game.unsave": "Remove {name} from your saved list",
+  "mark.aria.game.play": "Mark {name} as played",
+  "mark.aria.game.unplay": "Mark {name} as not played",
+
+  /* ---------- the map, linked from every hall number ---------- */
+  "map.cue": "Map →",
+  "map.openTitle": "Open on the hall map",
+  "map.openTitleWith": "{what} — open the hall map",
+  "map.openAria": "{where} — open the hall map",
+
+  /* ---------- full official directory ---------- */
+  "directory.title": "Full directory",
+  "directory.summaryLede": "Every booth registered with gamescom, not just the curated ones",
+  "directory.booths": "{n} booth|{n} booths",
+  "directory.boothsFiltered": "{n} / {total} booths",
+  "directory.loading": "Loading the official list…",
+  "directory.loadFailed": "failed to load",
+  "directory.error":
+    "Couldn't load the directory ({error}). It needs one online load before it works offline.",
+  "directory.lede":
+    "The raw official list as published on {date} — booths with a card above included, and no lineups, crowd ratings or saving down here.",
+  "directory.tradeOnly":
+    "{n} of these stand only in the business area (halls 1–4), which a consumer ticket does not open.",
+  "directory.noMatches": "Nothing here matches the current search or hall.",
+  "directory.showMore": "Show {n} more",
+  "directory.noBooth": "no booth listed",
+  "directory.hostedAt": " at {name}",
+  "directory.entryAria": ", official directory entry, opens in a new tab",
+  "directory.businessArea": "Business area — trade & media only",
+  "directory.fallbackHint":
+    "No card matches — but one booth in the full directory below does.|No card matches — but {n} booths in the full directory below do.",
+
+  /* ---------- planner ---------- */
+  "planner.title": "When to visit what",
+  "planner.lede":
+    "Rough strategy based on expected crowd levels. High-demand booths (queue index 4–5) mean long waits — hit those first thing in the morning or accept the queue. Calm booths are good afternoon fillers.",
+  "planner.fiveDays": "The five days",
+  "planner.yourPlan": "Your plan",
+  "planner.queuePriority": "Queue priority",
+  "planner.queueSub":
+    "Busiest booths first. If any of these matter to you, make one your first stop of the day.",
+  "planner.wristband": "18+ wristband",
+  "planner.wristbandSub":
+    "Booths with 18+ demos check ID and hand out a red wristband — get it on arrival, not at the front of the queue.",
+  "planner.crowdTips": "General crowd tips",
+
+  "plan.sub.day":
+    "Give each saved booth and game a day. Unassigned items sit at the top until you place them.",
+  "plan.sub.hall":
+    "Your stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls.",
+  "plan.arrangeAria": "Arrange your plan",
+  "plan.lensDay": "By day",
+  "plan.lensHall": "By hall",
+  "plan.dayFilterAria": "Show one day's stops",
+  "plan.unassigned": "Unassigned",
+  "plan.savedHere": "Saved here",
+  "plan.absentStop": "Absent — no booth",
+  "plan.offsite": "Offsite",
+  "plan.hallTba": "Hall TBA",
+  "plan.boothTba": "Booth TBA",
+  "plan.queueWith": "Queue {n}/5 {label}",
+  "plan.queueUnknown": "Queue unknown",
+  "plan.assignAria": "Assign {name} to a day",
+  "plan.assignToDay": "Assign to {day}",
+  "plan.removeFromDay": "Remove from {day}",
+  "plan.dayTradeSuffix": "{action} (trade & media only)",
+  "plan.itemCount": "{n} item|{n} items",
+  "plan.placedSuffix": " · {n} placed",
+  "plan.emptyNoSaved": "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.",
+  "plan.emptyStale":
+    "Nothing you saved is in the current lineup anymore — exhibitors come and go between data updates.",
+
+  /* ---------- planner, hall lens ---------- */
+  "route.locationKicker": "Location",
+  "route.locationTba": "Location TBA",
+  "route.locationTbaShort": "location TBA",
+  "route.stops": "{n} stop|{n} stops",
+  "route.halls": "{n} hall|{n} halls",
+  "route.queueShort": "Q{n}",
+  "route.allDays": "All days",
+  "route.allDaysTitle": "Every stop on your list",
+  "route.onlyDay": "Only stops planned for {day}",
+  "route.onlyUnassigned": "Only stops without a day yet",
+  "route.absentNote": "On your list but not on the show floor: {names}.",
+  "route.emptyNoSaved":
+    "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall.",
+  "route.emptyAllPlayed": "Every stop here is played — nice work.",
+  "route.emptyAllAssigned": "Every stop on your list has a day — flip to By day to review the plan.",
+  "route.emptyForDay": "Nothing planned for {day} yet. Assign stops to days in the By day view.",
+  "route.emptyStale": "No current stops match your saved list — the exhibitor data may have changed.",
+
+  /* ---------- queue priority ---------- */
+  "priority.count": "{n} high-queue booth|{n} high-queue booths",
+  "priority.countFiltered": "{n} / {total} high-queue booths",
+  "priority.playedSuffix": " · {n} played",
+  "priority.emptyAllPlayed": "Everything on your list in the high-queue group is played — nice work.",
+  "priority.emptyNoneHigh":
+    "Nothing you saved is in the high-queue group — good news, those booths should be closer to a walk-up.",
+  "priority.emptyNoSaved": "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab.",
+  "wristband.wholeBooth": "Booth-wide age-restricted zone",
+
+  /* ---------- event info ---------- */
+  "event.theShow": "The show",
+  "event.tickets": "Tickets",
+  "event.ticketsFallback": "See gamescom.global for tickets.",
+  /* Escaped at the render site, so plain "&" here — not an entity. */
+  "event.areas": "Halls & areas",
+  "event.officialLinks": "Official links",
+  "event.compiledNote": "Compiled from published sources, not from gamescom itself.",
+  "links.officialSite": "Official site",
+  "links.exhibitorDirectory": "Exhibitor directory",
+  "links.officialList": "Official list",
+  "links.hallPlan": "Hall plan",
+  "links.officialMap": "Official map",
+
+  /* ---------- updates ---------- */
+  "updates.title": "Data updates",
+  "updates.lede":
+    "This guide is refreshed every few days until the show as exhibitors announce lineups and booth locations. What changed in each revision:",
+  "updates.rev": "rev {n}",
+  /* Shown to German readers only — see data-i18n-only in index.html. */
+  "updates.englishOnly": "",
+
+  /* ---------- countdown & freshness ---------- */
+  "countdown.days": "T−{n} day|T−{n} days",
+  "countdown.live": "● Live now",
+  "countdown.over": "See you next year",
+  "meta.freshness": "Data updated {date} · rev {rev}.",
+
+  /* ---------- sharing ---------- */
+  "share.overline": "Your plan",
+  "share.title": "Share saved list",
+  "share.closeAria": "Close share dialog",
+  "share.withLegend": "Sharing with",
+  "share.modeFriend": "Someone else",
+  "share.modeDevice": "Another of my devices",
+  "share.includeLegend": "What to include",
+  "share.partSaved": "Saved list",
+  "share.partDays": "Day plan",
+  "share.partPlayed": "Played marks",
+  "share.linkLabel": "Share link",
+  "share.copyAction": "Copy link",
+  "share.nativeAction": "Share…",
+  "share.nativeTitle": "gamescom 2026 saved list",
+  "share.qrHint": "Scan to open this list on another device.",
+  "share.qrAlt": "QR code",
+  "share.qrTooLong": "This list is too long for a QR code — send the link instead.",
+  "share.qrFailed": "The QR code could not be loaded — send the link instead.",
+  "share.copied": "Link copied.",
+  "share.copyManually": "Press ⌘C / Ctrl+C to copy.",
+  "share.failed": "Sharing failed — copy the link instead.",
+
+  "share.items": "{n} saved item|{n} saved items",
+  "share.readyWithStale": "{items} ready to share.",
+  "share.staleOlder": " {n} older item is no longer in the guide.| {n} older items are no longer in the guide.",
+  "share.stale": " {n} isn't in the guide any more.| {n} aren't in the guide any more.",
+  "share.carried.days": "a day plan",
+  "share.carried.played": "played marks",
+  "share.carried.join": " and ",
+  "share.carried.note": " It carries {what} too.",
+  "share.outOfDate": "That shared list is out of date — nothing left to add.",
+  "share.loadedMoved": "Loaded {items} you moved over.",
+  "share.loadedShared": "Loaded {items} from a shared link.",
+  "share.newToYou": " — {n} new to you",
+  "share.replaceCost":
+    " Replacing removes {n} item you only have here.| Replacing removes {n} items you only have here.",
+  "share.movedPlan": "Your moved plan has {items}{news}.",
+  "share.replaceAction": "Replace my list",
+  "share.replaced": "Your list now matches the moved plan.",
+  "share.alreadyHave": "You already have everything in this shared link.",
+  "share.linkHas": "A shared link has {items} — {n} new to you.",
+  "share.addAction": "Add to my list",
+  "share.added": "Added {items} from the shared link.",
+  "toast.moveUndone": "Move undone.",
+  "toast.importUndone": "Shared list import undone.",
+  "moved.withList": "The guide has moved to gamescom.guide. Your list comes with you.",
+  "moved.plain": "The guide has moved to gamescom.guide.",
+  "moved.open": "Open",
+
+  /* ---------- sources & attribution ---------- */
+  "sources.overline": "Where this comes from",
+  "sources.title": "Sources",
+  "sources.closeAria": "Close sources",
+  "sources.thisGuide": "this guide",
+  "sources.aria": "Sources for {name} — {n} link|Sources for {name} — {n} links",
+  "sources.note.event":
+    "The dates, hours, tickets and hall areas on this page come from {n} source.|The dates, hours, tickets and hall areas on this page come from {n} sources.",
+  "sources.note.card":
+    "The location, lineup and queue call on this card come from {n} source.|The location, lineup and queue call on this card come from {n} sources.",
+  "sources.lastChecked": " Last checked {date}.",
+  "sources.caveat":
+    "This is an unofficial guide, and booth numbers and lineups keep changing until the doors open. If a detail decides your day, check it at the source.",
+
+  /* ---------- calendar export ---------- */
+  "ics.summary": "gamescom — {day} plan ({n} stop)|gamescom — {day} plan ({n} stops)",
+  "ics.exhibitor": "{name} — {where} (queue {queue})",
+  "ics.hallBooth": "Hall {hall}, booth {booth}",
+  "ics.queueUnknown": "unknown",
+  "ics.gameAt": "{name} — at {booths}",
+  "ics.gameNoBooth": "{name} — booth not listed",
+
+  /* ---------- confirmations & boot ---------- */
+  "confirm.clearSaved":
+    "Forget all {n} saved item and its day assignment? This can't be undone.|Forget all {n} saved items and their day assignments? This can't be undone.",
+  "confirm.clearPlayed":
+    "Forget all {n} played mark? This can't be undone.|Forget all {n} played marks? This can't be undone.",
+  "boot.loadFailed":
+    "Failed to load data ({error}). If you opened this file directly, serve it instead:",
+
+  /* ---------- footer ---------- */
+  "footer.unofficial": "Unofficial fan-made guide.",
+  "footer.notAffiliated":
+    "Not affiliated with gamescom, Koelnmesse or game (the German games industry association).",
+  "footer.storage":
+    "Your saved list stays in this browser — no account, no server; nothing leaves the device unless you share a link yourself.",
+  "footer.createdBy":
+    'Created by <a class="subtle-link" href="https://inventivetalent.org">inventivetalent</a> with Claude Code. <a class="subtle-link" href="https://github.com/InventivetalentDev/gc2026-guide">Open Source</a>.',
+  "footer.imprint": "Imprint",
+  "footer.privacy": "Privacy",
+  "footer.statusKey": "Game status key",
+  "legend.confirmed":
+    '<span class="dot" data-status="confirmed"></span> <b>Confirmed</b> — officially announced for gamescom',
+  "legend.expected":
+    '<span class="dot" data-status="expected"></span> <b>Expected</b> — strongly implied, not announced',
+  "legend.rumored":
+    '<span class="dot" data-status="rumored"></span> <b>Rumored</b> — our guess, unverified',
+  "legend.age":
+    '<span class="badge badge-age" data-age-status="confirmed">18+</span> — demo is age-gated, ID and red wristband needed',
+
+  /* ---------- install & offline (js/pwa.js) ---------- */
+  "pwa.install": "Install app",
+  "pwa.addToHome": "Add to Home Screen",
+  "pwa.iosHint": "In Safari, tap Share, then “Add to Home Screen”.",
+  "pwa.installed": "Installed. The guide now works offline.",
+  "pwa.updateReady": "A newer version of the guide is ready.",
+  "pwa.reload": "Reload",
+
+  /* ---------- hall map page (map.html, js/map.js) ---------- */
+  "map.metaDescription":
+    "Booth-level hall maps for gamescom 2026, with your saved booths marked. Works offline.",
+  "map.docTitle": "Hall map · gamescom 2026 guide",
+  "map.title": "Hall map",
+  "map.offline": "Offline",
+  "map.backAria": "Back to the guide",
+  "map.hallsAria": "Halls",
+  "map.loading": "loading hall …",
+  "map.loadFailed": "could not load the hall plan — {error}",
+  "map.closeSheetAria": "Close stand details",
+  "map.openInGuide": "open in guide →",
+  "map.planAria": "Schematic plan of hall {hall}",
+  "map.stand": "Stand",
+  "map.standNr": "Stand {nr}",
+  "map.standAria": "{name} — stand {nr}",
+  "map.sheetLoc": "Hall {hall} · Stand {nr}",
+  "map.sheetAlso": " · also {list}",
+  "map.unconfBadge": "Location unconfirmed",
+  "map.queueForecast": "queue forecast Q{n} {label}",
+  "map.gamesCount": "{n} game|{n} games",
+  "map.plusMore": ", +{n} more",
+  "map.alsoHere": "also here",
+  "map.notCovered": "not covered by the guide",
+  "map.noExhibitor": "no exhibitor filed for this stand",
+  "map.saveBooth": "+ Save booth",
+  "map.unsaveBooth": "− Remove from saved",
+  "map.counts": "{n} stands · {covered} in the guide",
+  "map.countsSaved": " · {n} saved",
+  "map.chipSavedAria": ", {n} saved",
+  "map.outlines": "booth outlines",
+  "map.officialHallPlan": "official hall plan",
+  "map.checkedOn": "checked {date} · schematic, unofficial",
+
+  /* ---------- accessibility ---------- */
+  "a11y.newTab": ", opens in a new tab",
+};

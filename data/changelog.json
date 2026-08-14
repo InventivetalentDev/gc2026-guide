@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-14",
+    "revision": 22,
+    "changes": [
+      "The guide now speaks German. It picks your browser's language on the first visit, and a switcher in the header — and again in the footer — changes it whenever you like; your choice is remembered on this device. Everything a visitor reads is translated: booth descriptions, queue calls, visit advice, the planner, the hall map and the calendar export. Weekday names now come from the date rather than being written down, so they are right in both languages.",
+      "Game titles, exhibitor names and area names stay in their own language, as they should — and because a saved game is identified by its title, every share link in circulation keeps working across both languages. A list built in German opens correctly in English and back again.",
+      "Descriptions and advice moved out of the exhibitor and event files into per-language files of their own, so your phone only downloads the language you read. Both languages are cached for offline use, so switching still works in a hall with no reception.",
+      "The imprint and privacy pages stay in English, and so does this changelog — the guide says as much under the Updates heading when you are reading in German."
+    ]
+  },
+  {
+    "date": "2026-08-14",
     "revision": 21,
     "changes": [
       "Share list now asks who the link is for. Someone else gets your saved list alone — your progress through it is not theirs. Another of my devices brings your day plan and played marks along too, and on arrival offers to replace that device's list instead of adding to it, so removing a booth or moving it to another day finally carries across your own devices. The prompt counts what a replace would remove before anything is touched, and Undo puts all of it back.",

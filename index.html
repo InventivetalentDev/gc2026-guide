@@ -3,8 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning.">
+  <meta name="description" content="Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning." data-i18n-attr="content:meta.description">
   <meta name="color-scheme" content="dark">
+  <!-- Language, decided before anything paints. The guide switches at
+       runtime rather than on separate /de/ URLs (one deploy, one service
+       worker scope, no interaction with the SPA routing in wrangler.toml),
+       so <html lang> has to be stamped here rather than after app.js boots:
+       otherwise the first frame, and every screen reader that reads it,
+       gets the wrong language. js/i18n.js trusts this stamp. -->
+  <script>
+    (function () {
+      try {
+        var supported = ["en", "de"];
+        var pick = new URLSearchParams(location.search).get("lang");
+        if (supported.indexOf(pick) === -1) {
+          pick = JSON.parse(localStorage.getItem("gc2026.prefs.v1") || "{}").lang;
+        }
+        if (supported.indexOf(pick) === -1) {
+          var wanted = navigator.languages || [navigator.language || "en"];
+          pick = "en";
+          for (var i = 0; i < wanted.length; i++) {
+            var code = String(wanted[i]).slice(0, 2).toLowerCase();
+            if (supported.indexOf(code) !== -1) { pick = code; break; }
+          }
+        }
+        document.documentElement.lang = pick;
+      } catch (e) {
+        document.documentElement.lang = "en";
+      }
+    })();
+  </script>
   <meta name="theme-color" content="#09090a">
   <title>gamescom 2026 Guide</title>
   <!-- Absolute, and deliberately not relative: the same file is served on both
@@ -31,30 +59,34 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23ff4d17'/><text x='50' y='72' font-size='58' font-family='monospace' font-weight='700' text-anchor='middle' fill='%230c0c0d'>26</text></svg>">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
 
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand" href="#exhibitors">
         <span class="brand-mark" aria-hidden="true">26</span>
         <span class="brand-text">
-          <span class="brand-kicker">Unofficial visitor guide</span>
+          <span class="brand-kicker" data-i18n="brand.kicker">Unofficial visitor guide</span>
           <span class="brand-title">gamescom <span class="brand-year">2026</span></span>
         </span>
       </a>
       <div class="header-meta">
         <p class="meta-line" id="event-dates">Koelnmesse, Cologne · Aug 26–30, 2026</p>
         <p class="countdown" id="countdown" aria-live="polite"></p>
-        <p class="offline-flag">Offline · showing saved data</p>
-        <button class="install-btn" id="install-app" type="button" hidden>Install app</button>
+        <p class="offline-flag" data-i18n="header.offline">Offline · showing saved data</p>
+        <!-- Labelled with the other language's own name by js/i18n.js, and
+             hidden until it wires up so a scripting failure cannot leave a
+             dead control in the header. -->
+        <button class="lang-switch" data-lang-switch type="button" hidden></button>
+        <button class="install-btn" id="install-app" type="button" hidden data-i18n="pwa.install">Install app</button>
       </div>
     </div>
-    <nav class="tabs-outer" aria-label="Sections">
+    <nav class="tabs-outer" aria-label="Sections" data-i18n-attr="aria-label:nav.sections">
       <div class="wrap tabs" role="tablist">
-        <button class="tab active" role="tab" aria-selected="true" data-view="exhibitors"><span class="tab-index">01</span> Exhibitors</button>
-        <button class="tab" role="tab" aria-selected="false" data-view="planner"><span class="tab-index">02</span> Visit planner</button>
-        <button class="tab" role="tab" aria-selected="false" data-view="event"><span class="tab-index">03</span> Event info</button>
-        <button class="tab" role="tab" aria-selected="false" data-view="updates"><span class="tab-index">04</span> Updates</button>
+        <button class="tab active" role="tab" aria-selected="true" data-view="exhibitors"><span class="tab-index">01</span> <span data-i18n="tab.exhibitors">Exhibitors</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-view="planner"><span class="tab-index">02</span> <span data-i18n="tab.planner">Visit planner</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-view="event"><span class="tab-index">03</span> <span data-i18n="tab.event">Event info</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-view="updates"><span class="tab-index">04</span> <span data-i18n="tab.updates">Updates</span></button>
       </div>
     </nav>
   </header>
@@ -62,65 +94,65 @@
   <main class="wrap" id="main">
     <!-- ============ Exhibitors view ============ -->
     <section id="view-exhibitors" class="view active">
-      <h2 class="sr-only">Exhibitors</h2>
+      <h2 class="sr-only" data-i18n="tab.exhibitors">Exhibitors</h2>
       <div class="toolbar">
         <div class="toolbar-row toolbar-search">
           <label class="field field-search">
-            <span class="field-label">Search</span>
-            <input type="search" id="search" placeholder="Exhibitor, game or tag…" autocomplete="off">
+            <span class="field-label" data-i18n="field.search">Search</span>
+            <input type="search" id="search" placeholder="Exhibitor, game or tag…" autocomplete="off" data-i18n-attr="placeholder:search.placeholder">
           </label>
           <label class="field field-sort">
-            <span class="field-label">Sort by</span>
+            <span class="field-label" data-i18n="field.sort">Sort by</span>
             <select id="sort">
-              <option value="crowd-desc">Crowd — busiest first</option>
-              <option value="crowd-asc">Crowd — calmest first</option>
-              <option value="name">Name A–Z</option>
-              <option value="hall">Hall number</option>
+              <option value="crowd-desc" data-i18n="sort.crowdDesc">Crowd — busiest first</option>
+              <option value="crowd-asc" data-i18n="sort.crowdAsc">Crowd — calmest first</option>
+              <option value="name" data-i18n="sort.name">Name A–Z</option>
+              <option value="hall" data-i18n="sort.hall">Hall number</option>
             </select>
           </label>
         </div>
         <details class="toolbar-more" id="toolbar-more">
           <summary class="toolbar-summary">
-            <span class="row-label">Filters</span>
+            <span class="row-label" data-i18n="toolbar.filters">Filters</span>
             <span class="filter-summary" id="filter-summary"></span>
             <span class="result-count" id="result-count"></span>
           </summary>
           <div class="toolbar-row">
-            <span class="row-label">Category</span>
+            <span class="row-label" data-i18n="toolbar.category">Category</span>
             <div class="filter-row" id="type-filters"></div>
           </div>
           <div class="toolbar-row">
-            <span class="row-label">Hall</span>
+            <span class="row-label" data-i18n="hall.word">Hall</span>
             <div class="filter-row" id="hall-filters"></div>
           </div>
           <div class="toolbar-row hidden" id="age-filter-row">
-            <span class="row-label" id="age-filter-label">Age</span>
+            <span class="row-label" id="age-filter-label" data-i18n="toolbar.age">Age</span>
             <div class="filter-row" id="age-filters" role="group" aria-labelledby="age-filter-label"></div>
           </div>
           <div class="toolbar-row toolbar-foot">
-            <span class="row-label">Only show</span>
-            <label class="toggle"><input type="checkbox" id="playable-only"> Playable demos</label>
-            <label class="toggle"><input type="checkbox" id="confirmed-only"> Confirmed locations</label>
-            <label class="toggle"><input type="checkbox" id="saved-only"> Saved <span class="saved-count" id="saved-count"></span></label>
-            <label class="toggle"><input type="checkbox" id="hide-played"> Hide played <span class="saved-count" id="played-count"></span></label>
-            <button class="reset hidden" id="share-list" type="button">Share list</button>
-            <button class="reset hidden" id="clear-saved" type="button">Clear saved list</button>
-            <button class="reset hidden" id="clear-played" type="button">Clear played</button>
-            <button class="reset hidden" id="goto-plan" type="button">Your plan →</button>
-            <button class="reset hidden" id="reset-filters" type="button">Clear filters</button>
+            <span class="row-label" data-i18n="toolbar.onlyShow">Only show</span>
+            <label class="toggle"><input type="checkbox" id="playable-only"> <span data-i18n="toggle.playable">Playable demos</span></label>
+            <label class="toggle"><input type="checkbox" id="confirmed-only"> <span data-i18n="toggle.confirmed">Confirmed locations</span></label>
+            <label class="toggle"><input type="checkbox" id="saved-only"> <span data-i18n="toggle.saved">Saved</span> <span class="saved-count" id="saved-count"></span></label>
+            <label class="toggle"><input type="checkbox" id="hide-played"> <span data-i18n="toggle.hidePlayed">Hide played</span> <span class="saved-count" id="played-count"></span></label>
+            <button class="reset hidden" id="share-list" type="button" data-i18n="action.shareList">Share list</button>
+            <button class="reset hidden" id="clear-saved" type="button" data-i18n="action.clearSaved">Clear saved list</button>
+            <button class="reset hidden" id="clear-played" type="button" data-i18n="action.clearPlayed">Clear played</button>
+            <button class="reset hidden" id="goto-plan" type="button" data-i18n="action.yourPlan">Your plan →</button>
+            <button class="reset hidden" id="reset-filters" type="button" data-i18n="action.clearFilters">Clear filters</button>
           </div>
         </details>
       </div>
       <div class="grid" id="exhibitor-grid"></div>
-      <p class="empty hidden" id="no-results">Nothing matches — try clearing filters.</p>
+      <p class="empty hidden" id="no-results" data-i18n="empty.noMatches">Nothing matches — try clearing filters.</p>
 
       <!-- The raw official list, kept behind a toggle: it is a lookup tool for
            the long tail of booths that will never earn a card, and it only
            downloads once someone opens it. -->
       <details class="directory" id="directory">
         <summary class="directory-summary">
-          <span class="row-label">Full directory</span>
-          <span class="directory-lede">Every booth registered with gamescom, not just the curated ones</span>
+          <span class="row-label" data-i18n="directory.title">Full directory</span>
+          <span class="directory-lede" data-i18n="directory.summaryLede">Every booth registered with gamescom, not just the curated ones</span>
           <span class="result-count" id="directory-count"></span>
         </summary>
         <p class="directory-note" id="directory-note"></p>
@@ -131,25 +163,25 @@
     <!-- ============ Planner view ============ -->
     <section id="view-planner" class="view">
       <div class="lede">
-        <h2>When to visit what</h2>
-        <p>Rough strategy based on expected crowd levels. High-demand booths (queue index 4–5) mean long waits — hit those first thing in the morning or accept the queue. Calm booths are good afternoon fillers.</p>
+        <h2 data-i18n="planner.title">When to visit what</h2>
+        <p data-i18n="planner.lede">Rough strategy based on expected crowd levels. High-demand booths (queue index 4–5) mean long waits — hit those first thing in the morning or accept the queue. Calm booths are good afternoon fillers.</p>
       </div>
 
-      <h3 class="section-title"><span class="section-num">01</span> The five days</h3>
+      <h3 class="section-title"><span class="section-num">01</span> <span data-i18n="planner.fiveDays">The five days</span></h3>
       <div id="day-guide" class="day-board"></div>
 
       <section id="plan-section" aria-labelledby="plan-title">
-        <h3 class="section-title" id="plan-title" tabindex="-1"><span class="section-num">02</span> Your plan</h3>
-        <p class="section-sub" id="plan-sub">Give each saved booth and game a day. Unassigned items sit at the top until you place them.</p>
+        <h3 class="section-title" id="plan-title" tabindex="-1"><span class="section-num">02</span> <span data-i18n="planner.yourPlan">Your plan</span></h3>
+        <p class="section-sub" id="plan-sub" data-i18n="plan.sub.day">Give each saved booth and game a day. Unassigned items sit at the top until you place them.</p>
         <div class="plan-controls">
-          <div class="plan-lens" id="plan-lens" role="group" aria-label="Arrange your plan">
-            <button class="chip lens-chip active" type="button" data-lens="day" aria-pressed="true">By day</button>
-            <button class="chip lens-chip" type="button" data-lens="hall" aria-pressed="false">By hall</button>
+          <div class="plan-lens" id="plan-lens" role="group" aria-label="Arrange your plan" data-i18n-attr="aria-label:plan.arrangeAria">
+            <button class="chip lens-chip active" type="button" data-lens="day" aria-pressed="true" data-i18n="plan.lensDay">By day</button>
+            <button class="chip lens-chip" type="button" data-lens="hall" aria-pressed="false" data-i18n="plan.lensHall">By hall</button>
           </div>
-          <button class="reset hidden" id="export-ics" type="button">Export to calendar (.ics)</button>
+          <button class="reset hidden" id="export-ics" type="button" data-i18n="action.exportIcs">Export to calendar (.ics)</button>
           <span class="result-count" id="plan-count"></span>
         </div>
-        <div class="plan-days hidden" id="plan-day-filter" role="group" aria-label="Show one day's stops"></div>
+        <div class="plan-days hidden" id="plan-day-filter" role="group" aria-label="Show one day's stops" data-i18n-attr="aria-label:plan.dayFilterAria"></div>
         <div id="plan-board" class="it-board"></div>
         <p class="empty hidden" id="plan-empty"></p>
         <p class="route-absent hidden" id="plan-absent"></p>
@@ -167,37 +199,41 @@
         <p id="route-absent"></p><span id="route-count"></span>
       </div>
 
-      <h3 class="section-title"><span class="section-num">03</span> Queue priority</h3>
-      <p class="section-sub">Busiest booths first. If any of these matter to you, make one your first stop of the day.</p>
+      <h3 class="section-title"><span class="section-num">03</span> <span data-i18n="planner.queuePriority">Queue priority</span></h3>
+      <p class="section-sub" data-i18n="planner.queueSub">Busiest booths first. If any of these matter to you, make one your first stop of the day.</p>
       <div class="priority-controls">
-        <label class="toggle"><input type="checkbox" id="priority-saved-only"> Saved only <span class="saved-count" id="priority-saved-count"></span></label>
-        <label class="toggle"><input type="checkbox" id="priority-hide-played"> Hide played</label>
+        <label class="toggle"><input type="checkbox" id="priority-saved-only"> <span data-i18n="toggle.savedOnly">Saved only</span> <span class="saved-count" id="priority-saved-count"></span></label>
+        <label class="toggle"><input type="checkbox" id="priority-hide-played"> <span data-i18n="toggle.hidePlayed">Hide played</span></label>
         <span class="result-count" id="priority-count"></span>
       </div>
       <div id="priority-list" class="priority-table"></div>
       <p class="empty hidden" id="priority-empty"></p>
 
       <section id="wristband-section" class="hidden">
-        <h3 class="section-title"><span class="section-num">04</span> 18+ wristband</h3>
-        <p class="section-sub">Booths with 18+ demos check ID and hand out a red wristband — get it on arrival, not at the front of the queue.</p>
+        <h3 class="section-title"><span class="section-num">04</span> <span data-i18n="planner.wristband">18+ wristband</span></h3>
+        <p class="section-sub" data-i18n="planner.wristbandSub">Booths with 18+ demos check ID and hand out a red wristband — get it on arrival, not at the front of the queue.</p>
         <div id="wristband-list" class="priority-table"></div>
       </section>
 
-      <h3 class="section-title"><span class="section-num">05</span> General crowd tips</h3>
+      <h3 class="section-title"><span class="section-num">05</span> <span data-i18n="planner.crowdTips">General crowd tips</span></h3>
       <ol class="tips" id="crowd-tips"></ol>
     </section>
 
     <!-- ============ Event info view ============ -->
     <section id="view-event" class="view">
-      <h2 class="sr-only">Event info</h2>
+      <h2 class="sr-only" data-i18n="tab.event">Event info</h2>
       <div id="event-info"></div>
     </section>
 
     <!-- ============ Updates view ============ -->
     <section id="view-updates" class="view">
       <div class="lede">
-        <h2>Data updates</h2>
-        <p>This guide is refreshed every few days until the show as exhibitors announce lineups and booth locations. What changed in each revision:</p>
+        <h2 data-i18n="updates.title">Data updates</h2>
+        <p data-i18n="updates.lede">This guide is refreshed every few days until the show as exhibitors announce lineups and booth locations. What changed in each revision:</p>
+        <!-- The changelog itself stays English: it is a transparency log
+             rewritten every few days, and translating it would double the
+             editorial cycle. German readers get told rather than puzzled. -->
+        <p class="mono-note" data-i18n="updates.englishOnly" data-i18n-only="de" hidden></p>
       </div>
       <div id="changelog" class="timeline"></div>
     </section>
@@ -206,20 +242,25 @@
   <footer class="site-footer">
     <div class="wrap footer-inner">
       <div class="footer-col">
-        <p class="footer-strong">Unofficial fan-made guide.</p>
-        <p>Not affiliated with gamescom, Koelnmesse or game (the German games industry association).</p>
-        <p>Your saved list stays in this browser — no account, no server; nothing leaves the device unless you share a link yourself.</p>
-        <p>Created by <a class="subtle-link" href="https://inventivetalent.org">inventivetalent</a> with Claude Code. <a class="subtle-link" href="https://github.com/InventivetalentDev/gc2026-guide">Open Source</a>.</p>
-        <p><a class="subtle-link" href="imprint.html">Imprint</a> &middot; <a class="subtle-link" href="privacy.html">Privacy</a></p>
+        <p class="footer-strong" data-i18n="footer.unofficial">Unofficial fan-made guide.</p>
+        <p data-i18n="footer.notAffiliated">Not affiliated with gamescom, Koelnmesse or game (the German games industry association).</p>
+        <p data-i18n="footer.storage">Your saved list stays in this browser — no account, no server; nothing leaves the device unless you share a link yourself.</p>
+        <p data-i18n-html="footer.createdBy">Created by <a class="subtle-link" href="https://inventivetalent.org">inventivetalent</a> with Claude Code. <a class="subtle-link" href="https://github.com/InventivetalentDev/gc2026-guide">Open Source</a>.</p>
+        <!-- The legal pages stay English (see docs/UPDATING.md), but the
+             links to them are labelled in German: "Impressum" is the word a
+             German visitor looks for, and § 5 DDG is about it being easy to
+             find. A second switcher lives here as the findability backstop
+             for anyone who scrolled past the header. -->
+        <p><a class="subtle-link" href="imprint.html" data-i18n="footer.imprint">Imprint</a> &middot; <a class="subtle-link" href="privacy.html" data-i18n="footer.privacy">Privacy</a> &middot; <button class="subtle-link lang-switch-link" data-lang-switch type="button" hidden></button></p>
         <p class="mono-note" id="data-freshness"></p>
       </div>
       <div class="footer-col">
-        <p class="row-label">Game status key</p>
+        <p class="row-label" data-i18n="footer.statusKey">Game status key</p>
         <ul class="legend">
-          <li><span class="dot" data-status="confirmed"></span> <b>Confirmed</b> — officially announced for gamescom</li>
-          <li><span class="dot" data-status="expected"></span> <b>Expected</b> — strongly implied, not announced</li>
-          <li><span class="dot" data-status="rumored"></span> <b>Rumored</b> — our guess, unverified</li>
-          <li><span class="badge badge-age" data-age-status="confirmed">18+</span> — demo is age-gated, ID and red wristband needed</li>
+          <li data-i18n-html="legend.confirmed"><span class="dot" data-status="confirmed"></span> <b>Confirmed</b> — officially announced for gamescom</li>
+          <li data-i18n-html="legend.expected"><span class="dot" data-status="expected"></span> <b>Expected</b> — strongly implied, not announced</li>
+          <li data-i18n-html="legend.rumored"><span class="dot" data-status="rumored"></span> <b>Rumored</b> — our guess, unverified</li>
+          <li data-i18n-html="legend.age"><span class="badge badge-age" data-age-status="confirmed">18+</span> — demo is age-gated, ID and red wristband needed</li>
         </ul>
       </div>
     </div>
@@ -228,10 +269,10 @@
   <dialog class="sheet" id="share-dialog" aria-labelledby="share-dialog-title" aria-describedby="share-count">
     <div class="sheet-head">
       <div>
-        <span class="overline">Your plan</span>
-        <h2 id="share-dialog-title">Share saved list</h2>
+        <span class="overline" data-i18n="share.overline">Your plan</span>
+        <h2 id="share-dialog-title" data-i18n="share.title">Share saved list</h2>
       </div>
-      <button class="sheet-close" id="close-share" type="button" aria-label="Close share dialog">×</button>
+      <button class="sheet-close" id="close-share" type="button" aria-label="Close share dialog" data-i18n-attr="aria-label:share.closeAria">×</button>
     </div>
     <div class="sheet-body">
       <p class="share-count" id="share-count"></p>
@@ -240,30 +281,30 @@
            and the boxes stay adjustable for the in-between cases. Nothing here
            is remembered between opens. -->
       <fieldset class="share-set">
-        <legend class="field-label">Sharing with</legend>
-        <label class="toggle"><input type="radio" name="share-mode" id="share-mode-friend" checked> Someone else</label>
-        <label class="toggle"><input type="radio" name="share-mode" id="share-mode-device"> Another of my devices</label>
+        <legend class="field-label" data-i18n="share.withLegend">Sharing with</legend>
+        <label class="toggle"><input type="radio" name="share-mode" id="share-mode-friend" checked> <span data-i18n="share.modeFriend">Someone else</span></label>
+        <label class="toggle"><input type="radio" name="share-mode" id="share-mode-device"> <span data-i18n="share.modeDevice">Another of my devices</span></label>
       </fieldset>
       <fieldset class="share-set">
-        <legend class="field-label">What to include</legend>
-        <label class="toggle"><input type="checkbox" id="share-part-saved" checked disabled> Saved list <span class="saved-count" id="share-part-saved-count"></span></label>
-        <label class="toggle"><input type="checkbox" id="share-part-days"> Day plan <span class="saved-count" id="share-part-days-count"></span></label>
-        <label class="toggle"><input type="checkbox" id="share-part-played"> Played marks <span class="saved-count" id="share-part-played-count"></span></label>
+        <legend class="field-label" data-i18n="share.includeLegend">What to include</legend>
+        <label class="toggle"><input type="checkbox" id="share-part-saved" checked disabled> <span data-i18n="share.partSaved">Saved list</span> <span class="saved-count" id="share-part-saved-count"></span></label>
+        <label class="toggle"><input type="checkbox" id="share-part-days"> <span data-i18n="share.partDays">Day plan</span> <span class="saved-count" id="share-part-days-count"></span></label>
+        <label class="toggle"><input type="checkbox" id="share-part-played"> <span data-i18n="share.partPlayed">Played marks</span> <span class="saved-count" id="share-part-played-count"></span></label>
       </fieldset>
       <label class="share-link-field" for="share-link">
-        <span class="field-label">Share link</span>
+        <span class="field-label" data-i18n="share.linkLabel">Share link</span>
         <input id="share-link" type="text" readonly spellcheck="false">
       </label>
       <div class="share-actions">
-        <button class="share-action share-action-primary" id="copy-share-link" type="button">Copy link</button>
-        <button class="share-action" id="native-share" type="button" hidden>Share…</button>
+        <button class="share-action share-action-primary" id="copy-share-link" type="button" data-i18n="share.copyAction">Copy link</button>
+        <button class="share-action" id="native-share" type="button" hidden data-i18n="share.nativeAction">Share…</button>
       </div>
       <p class="share-status" id="share-status" role="status" aria-live="polite" aria-atomic="true"></p>
       <div class="share-qr" id="share-qr">
         <div class="share-qr-image" id="share-qr-image"></div>
-        <p>Scan to open this list on another device.</p>
+        <p data-i18n="share.qrHint">Scan to open this list on another device.</p>
       </div>
-      <p class="share-qr-fallback" id="share-qr-fallback" hidden>This list is too long for a QR code — send the link instead.</p>
+      <p class="share-qr-fallback" id="share-qr-fallback" hidden data-i18n="share.qrTooLong">This list is too long for a QR code — send the link instead.</p>
     </div>
   </dialog>
 
@@ -272,25 +313,31 @@
   <dialog class="sheet src-dialog" id="sources-dialog" aria-labelledby="sources-dialog-title" aria-describedby="sources-note">
     <div class="sheet-head">
       <div>
-        <span class="overline">Where this comes from</span>
-        <h2 id="sources-dialog-title">Sources</h2>
+        <span class="overline" data-i18n="sources.overline">Where this comes from</span>
+        <h2 id="sources-dialog-title" data-i18n="sources.title">Sources</h2>
       </div>
-      <button class="sheet-close" id="close-sources" type="button" aria-label="Close sources">×</button>
+      <button class="sheet-close" id="close-sources" type="button" aria-label="Close sources" data-i18n-attr="aria-label:sources.closeAria">×</button>
     </div>
     <div class="sheet-body">
       <p class="src-subject" id="sources-subject"></p>
       <p class="src-note" id="sources-note"></p>
       <ol class="src-list" id="sources-list"></ol>
-      <p class="src-caveat">This is an unofficial guide, and booth numbers and lineups keep changing until the doors open. If a detail decides your day, check it at the source.</p>
+      <p class="src-caveat" data-i18n="sources.caveat">This is an unofficial guide, and booth numbers and lineups keep changing until the doors open. If a detail decides your day, check it at the source.</p>
     </div>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden>
     <span class="toast-text" id="toast-text"></span>
     <button class="toast-action" id="toast-action" type="button" hidden></button>
-    <button class="toast-dismiss" id="toast-dismiss" type="button" aria-label="Dismiss">×</button>
+    <button class="toast-dismiss" id="toast-dismiss" type="button" aria-label="Dismiss" data-i18n-attr="aria-label:action.dismiss">×</button>
   </div>
 
+  <!-- Strings before anything that renders with them: both registries are
+       plain synchronous scripts, so js/i18n.js can translate the markup
+       above before the first paint rather than after it. -->
+  <script src="js/i18n/en.js"></script>
+  <script src="js/i18n/de.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/marks.js"></script>
   <script src="js/app.js"></script>
   <script src="js/qr.js" defer></script>
