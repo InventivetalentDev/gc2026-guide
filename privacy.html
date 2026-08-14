@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#09090a">
+<title>Privacy · gamescom 2026 guide</title>
+<meta name="description" content="What the unofficial gamescom 2026 guide stores, what it sends, and what it does not collect.">
+<meta name="robots" content="noindex">
+
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23ff4d17'/><text x='50' y='72' font-size='58' font-family='monospace' font-weight='700' text-anchor='middle' fill='%230c0c0d'>26</text></svg>">
+
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="legal-page">
+
+<header class="legal-bar">
+  <div class="wrap">
+    <a class="legal-back" href="./">← gamescom 2026 guide</a>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <article class="legal-doc">
+
+    <h1>Privacy</h1>
+    <p class="legal-updated">Information under Art. 13 GDPR · Last updated 14 August 2026</p>
+
+    <p class="legal-lede">This guide has no accounts, no login, no comment fields and no server of its
+    own. Everything you save — your list, your itinerary, your filters — is written to your own
+    browser and never sent anywhere. Visitor numbers are counted in aggregate, without cookies.</p>
+
+    <h2>Who is responsible</h2>
+    <p>Haylee Schäfer, Wiesenstraße 7, 78112 St. Georgen, Germany ·
+    <a href="mailto:mail@inventivetalent.org">mail@inventivetalent.org</a>.
+    Full details are in the <a href="imprint.html">imprint</a>.</p>
+
+    <h2>What stays in your browser</h2>
+    <p>The guide is a static site. Saving an exhibitor, marking a game as played, building an
+    itinerary or changing a filter writes to <code>localStorage</code> on your device, under these
+    keys:</p>
+    <ul>
+      <li><code>gc2026.saved.v1</code> — exhibitors and games you saved</li>
+      <li><code>gc2026.played.v1</code> — games you marked as played</li>
+      <li><code>gc2026.itinerary.v1</code> — your planned visit</li>
+      <li><code>gc2026.prefs.v1</code> — view preferences, e.g. age filter and “hide played”</li>
+    </ul>
+    <p>This data is never transmitted to me or to anyone else. It is not a cookie and is not sent with
+    requests. Clearing your browser's site data for this domain deletes all of it, and uninstalling the
+    app or using private browsing has the same effect. Because it lives only on your device, I cannot
+    read, restore or delete it for you.</p>
+
+    <p>When you share your list, it is encoded into the part of the link after the <code>#</code>.
+    Browsers never send that part to a server, so a shared list does not reach me, my host, or their
+    logs — it travels only inside the link, to whoever you send it to.</p>
+
+    <h2>Hosting and delivery</h2>
+    <p>The site runs on Cloudflare Workers and is delivered over Cloudflare's network (Cloudflare, Inc.,
+    101 Townsend St., San Francisco, CA 94107, USA), which serves the files and protects the site from
+    attacks. Cloudflare is the only provider involved in delivering this site.</p>
+    <p>Serving a web page technically requires processing connection data: your IP address, the time of
+    the request, the page requested, the referring page, and your browser's user agent and language.
+    This happens for every website you visit and is stored briefly in server logs for delivery,
+    security and error diagnosis. The legal basis is Art. 6 (1) (f) GDPR — my legitimate interest in
+    providing a working, reasonably secure site. Cloudflare acts as a processor on my behalf under
+    Art. 28 GDPR.</p>
+    <p>Your browser may additionally report <em>failed</em> connections to Cloudflare's network error
+    logging endpoint (<code>a.nel.cloudflare.com</code>). Successful requests are not reported.</p>
+
+    <h2>Visitor statistics</h2>
+    <p>This site uses <strong>Cloudflare Web Analytics</strong> to count how many people visit. A small
+    script is loaded from <code>static.cloudflareinsights.com</code> and reports a page view.</p>
+    <p>It is deliberately chosen because of what it does <em>not</em> do: it sets <strong>no cookies</strong>,
+    writes nothing to your device, does not fingerprint you, does not build a profile, and cannot follow
+    you to other websites. There is no persistent identifier — repeat visits are not linked to each
+    other. What is recorded is aggregate and non-identifying: page visited, referring site, country
+    (derived from the IP address, which is not stored for this purpose), broad device and browser type,
+    screen size, and page load timings.</p>
+    <p>I use this only to see roughly how many people find the guide useful. I cannot see individual
+    visitors, and no attempt is made to identify anyone. The legal basis is Art. 6 (1) (f) GDPR;
+    my legitimate interest is knowing whether the project is worth maintaining, and the impact on you
+    is minimal because nothing is stored on your device and nothing identifies you. Because no
+    information is stored in or read out of your terminal equipment for this, no consent banner is
+    required under § 25 TDDDG. You can block the script with any content blocker and the guide will
+    work exactly as before. Details are in
+    <a href="https://www.cloudflare.com/web-analytics-privacy/" rel="noopener" target="_blank">Cloudflare's description of the service</a>.</p>
+
+    <h2>What this site does not do</h2>
+    <ul>
+      <li>No advertising, ad networks or retargeting</li>
+      <li>No social media buttons, embeds, or trackers</li>
+      <li>No Google Analytics, no Google Fonts — the fonts are served from this domain</li>
+      <li>No newsletter, contact form, or account of any kind</li>
+      <li>No profiling and no automated decision-making under Art. 22 GDPR</li>
+      <li>No sale or sharing of personal data — there is none to sell</li>
+    </ul>
+
+    <h2>Transfers outside the EU</h2>
+    <p>Cloudflare is a US company and may process connection data outside the EU. It is certified under
+    the EU–US Data Privacy Framework and additionally relies on the European Commission's Standard
+    Contractual Clauses, which is the legal basis for these transfers under Art. 44 ff. GDPR.</p>
+
+    <h2>Links to other sites</h2>
+    <p>The guide links out to gamescom's official pages, exhibitor websites and similar. Following such
+    a link takes you to a site with its own privacy policy, over which I have no influence.</p>
+
+    <h2>How long data is kept</h2>
+    <p>Server and security logs are retained by Cloudflare for a short period, typically a few days
+    to a few weeks, and then deleted. Analytics data is aggregated and holds nothing that could
+    identify you. Data in your browser stays until you clear it.</p>
+
+    <h2>Your rights</h2>
+    <p>You have the right to access (Art. 15), rectification (Art. 16), erasure (Art. 17), restriction
+    of processing (Art. 18), data portability (Art. 20), and <strong>to object at any time to
+    processing based on legitimate interest (Art. 21)</strong>. To exercise any of these, write to
+    <a href="mailto:mail@inventivetalent.org">mail@inventivetalent.org</a>.</p>
+    <p>In practice there is a limit worth being honest about: since this site stores no identifiers and
+    keeps no records tied to you, I usually have no way to locate data belonging to a particular person,
+    and may not be able to answer an access request beyond what is written on this page (Art. 11 GDPR).</p>
+    <p>You may also complain to a supervisory authority. The one responsible for me is the
+    <a href="https://www.baden-wuerttemberg.datenschutz.de/" rel="noopener" target="_blank">State
+    Commissioner for Data Protection and Freedom of Information Baden-Württemberg</a>.</p>
+
+    <h2>Changes</h2>
+    <p>If the site gains features that change any of this, this page is updated along with them. The
+    date at the top shows the current version, and the full history is visible in the
+    <a href="https://github.com/InventivetalentDev/gc2026-guide" rel="noopener" target="_blank">public repository</a>.</p>
+
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-col">
+    <p><a class="subtle-link" href="./">Back to the guide</a> ·
+       <a class="subtle-link" href="imprint.html">Imprint</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
