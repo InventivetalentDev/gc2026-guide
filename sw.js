@@ -145,10 +145,10 @@ async function fromCacheFirst(request, cacheName) {
    a deployed CSS/JS change could sit unseen indefinitely. waitUntil keeps the
    worker alive until the put lands.
 
-   cache: "no-cache" — the revalidation must reach the server. The host serves
-   these with max-age=600, so a plain fetch() is answered by the HTTP cache and
-   rewrites the same stale bytes back into the SW cache. This forces a
-   conditional request instead; an unchanged file costs one 304. */
+   cache: "no-cache" — the revalidation must reach the server. Give the host any
+   max-age at all and a plain fetch() is answered by the HTTP cache, rewriting
+   the same stale bytes back into the SW cache. This forces a conditional
+   request instead; an unchanged file costs one 304. */
 function staleWhileRevalidate(event, cacheName) {
   const { request } = event;
 
@@ -189,8 +189,9 @@ async function handleNavigation(request) {
   const key = pageKey(new URL(request.url));
   try {
     const response = await Promise.race([
-      /* network-first is only meaningful if it reaches the network; the host
-         serves index.html with max-age too. A 304 keeps this cheap. */
+      /* network-first is only meaningful if it reaches the network, and the
+         HTTP cache will happily answer for index.html. A 304 keeps this
+         cheap. */
       fetch(new Request(request, { cache: "no-cache" })),
       new Promise((_, reject) => setTimeout(() => reject(new Error("slow")), NAV_TIMEOUT)),
     ]);

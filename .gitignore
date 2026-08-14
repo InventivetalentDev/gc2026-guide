@@ -1,0 +1,6 @@
+# Deploy staging directory. Rebuilt from the repo root by tools/build-site.sh
+# on every deploy — never edit anything in here.
+dist/
+
+# Wrangler's local state and scratch files.
+.wrangler/

@@ -1,0 +1,27 @@
+# Response headers for the deployed site. Staged into dist/ with everything
+# else, then parsed by Cloudflare Workers and never served as a file. (GitHub
+# Pages ignores it, so it is inert while both hosts are running.)
+#
+# Everything not listed here keeps Cloudflare's default of
+# `public, max-age=0, must-revalidate` plus an ETag, which is exactly what the
+# HTML, the JSON data and sw.js want: revalidated on every load, never stale,
+# and one cheap 304 when nothing changed. It is stricter than the ten minutes
+# GitHub Pages gave these files, so a data refresh lands a little sooner.
+
+# The service worker decides when every other cached file is replaced, so it is
+# the one file that must never be held. This is the default too — stated out
+# loud because a stale sw.js is the failure that pins a PWA on an old build.
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Fonts and icons are the exception. Four woff2 files are preloaded in the head
+# of every page, the service worker serves both directories cache-first anyway,
+# and neither changes except when someone re-runs the tools in docs/UPDATING.md.
+# A week of browser cache saves those conditional requests on a cold load, and
+# an icon regenerated in the meantime is a week late to a device that already
+# has one — never wrong, just behind.
+/fonts/*
+  Cache-Control: public, max-age=604800
+
+/icons/*
+  Cache-Control: public, max-age=604800
