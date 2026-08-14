@@ -282,9 +282,11 @@ theatre. None of these change the architecture.
    (loaded from `data/hallplan/index.json`, optional — no index, no
    links, guide unchanged). Plan-board hall headers carry a `Map →` link.
    The manifest has a "Hall map" shortcut, second after "Saved list".
-   Everywhere else a hall is *named* rather than plated, `hallLink()`
-   wraps that text: queue-priority rows, the wristband list, and the plan
-   board's day lens (where a game shown at two booths links to each). It
+   Everywhere else a hall or booth is *named* rather than plated,
+   `hallLink()` wraps that text: queue-priority rows, the wristband list,
+   the plan board's day lens (where a game shown at two booths links to
+   each) and each stop's booth number in the hall lens — the header keeps
+   opening the whole hall, a stop opens its stand. It
    is gated on the same `hasMap()`, so an undrawn hall stays plain text,
    and it takes the row's own label untouched — only a destination is
    added. `itineraryLocation()` stays plain text beside it because the
@@ -341,8 +343,9 @@ Serve the repo root; clear `gc2026.saved.v1`.
     map; a plan-board hall header opens that hall; the sheet's "open in
     guide" lands on that card, even with "saved only" left on. Cards for
     halls the snapshot lacks show a plain plate with no link. The named
-    halls link too: a queue-priority row, a wristband row and a day-lens
-    stop each land on their own booth, and a directory chip in a drawn
+    halls link too: a queue-priority row, a wristband row, a day-lens
+    stop and a hall-lens booth number each land on their own booth
+    (its "· unconf." suffix stays outside the link), and a directory chip in a drawn
     hall opens that stand's sheet — showing the official filing's name
     when the guide has no card for it. Directory chips in halls 1–4 are
     not links. The `.ics` export still contains no markup.

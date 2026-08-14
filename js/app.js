@@ -1861,11 +1861,14 @@ function renderRoute() {
       const rows = group.items
         .map((ex) => {
           const baseLocation = ex.booth ? ex.booth : ex.hall ? "booth TBA" : "location TBA";
-          const loc = baseLocation + (ex.hall && !ex.locationConfirmed ? " · unconf." : "");
+          /* The booth number is the link; "· unconf." stays outside it. That
+             suffix is a caveat about the data, not part of the address, and
+             underlining it would offer to show you a stand we're not sure of. */
+          const unconf = ex.hall && !ex.locationConfirmed ? " · unconf." : "";
           const crowd = ex.crowd || 0;
           return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}">
             <span class="route-name">${esc(ex.name)}${dayFilter ? "" : routeDayTags(ex)}</span>
-            <span class="route-booth">${esc(loc)}</span>
+            <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation)}${unconf}</span>
             <span class="route-crowd" data-level="${esc(crowd)}">Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}</span>
             <span class="row-actions">
               ${markButton("played", "exhibitor", ex.id, ex.name)}
@@ -1876,8 +1879,8 @@ function renderRoute() {
         })
         .join("");
       const countLabel = `${group.items.length} stop${group.items.length === 1 ? "" : "s"}`;
-      /* One link per hall, on the header — the stops below are a walking
-         order, and a link on every row would bury that. */
+      /* The header opens the whole hall — the overview you want before
+         walking into it. Each stop's booth number below opens that stand. */
       const toMap = hasMap(group.key)
         ? `<a class="route-hall-map" href="${esc(mapLink(group.key))}"
             aria-label="${esc(`Open hall ${group.key} on the map`)}">Map →</a>`
