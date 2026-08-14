@@ -60,6 +60,6 @@ custom_domain = true
 # deploy rather than clobber it, so the old site stays up until you clear the
 # way for the new one.
 #
-# [[routes]]
-# pattern = "gc2026.inventivetalent.org"
-# custom_domain = true
+[[routes]]
+pattern = "gc2026.inventivetalent.org"
+custom_domain = true
