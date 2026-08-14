@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-08-14",
+    "revision": 20,
+    "changes": [
+      "Booth numbers for four booths that had none: SEGA / Atlus (Hall 7.1, A031 and A041/B040), Square Enix (8.1 A021), Plaion (9.1 B030/C031) and Embark Studios (6.1 B041/A040 and B051/A050). All four were on Koelnmesse's own hall plan the whole time.",
+      "Exhibitors with more than one stand now list all of them. Ubisoft has a second, smaller booth across the aisle in Hall 6.1 (B020); Nintendo holds four stands in 9.1, LEGO three, and Headis, Gryphline and KRAFTON two each. Tapping any of them on the map now names the exhibitor instead of saying the stand is not covered.",
+      "Fixed: tapping a booth with an upper floor reported \"no exhibitor filed for this stand\" — the Indie Arena Booth, Razer, Bilibili, Tencent, Gryphline, Infold, PXN, 8BitDo and Eclipse Glow Games, plus 25 booths the guide has no card for. Koelnmesse files the gallery as a second stand on the same outline, and that empty upper one was catching every tap. The two are now one booth, and its sheet names both stand numbers."
+    ]
+  },
+  {
+    "date": "2026-08-14",
     "revision": 19,
     "changes": [
       "Every booth number in the Full directory now opens the hall map on that exact stand — so a studio with no card of its own is one tap from knowing where it stands, not just which hall it is in. Booths in the business halls stay plain text; a consumer ticket does not open those doors.",

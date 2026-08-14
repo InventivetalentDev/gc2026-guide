@@ -14,8 +14,10 @@ draw it; `js/marks.js` holds what the map and the guide must agree on;
 `sw.js` precaches both pages and all seven halls; the guide links out
 from every place it names a hall — card plates, the plan board, queue
 priority, the wristband list and all 1,630 rows of the full directory —
-and the map links back
-to a card. This document records the discovery, the design decisions and
+and the map links back to a card. A card may hold several stands and the
+map lights every one of them; a booth's gallery level, which Koelnmesse
+files as a second stand on the same outline, is drawn as the one booth it
+is. This document records the discovery, the design decisions and
 the test script — the integration steps below are done, kept because they
 say *where* everything is wired.
 
@@ -141,11 +143,46 @@ integration). Nothing from `exhibitors.json` is baked into
   changes (or a tool re-run);
 - the geometry snapshot only changes when Koelnmesse's filing changes.
 
-The tool's join report (42/42 exhibitors matched today) is a QA aid, not
+The tool's join report (68/68 exhibitors matched today) is a QA aid, not
 an artifact. Entries with `"booth": null` correctly match nothing and
 simply don't light up — amber-dashed unconfirmed treatment still applies
 where `locationConfirmed` is false, because where guide honesty and
 official filing disagree, the guide's rules win.
+
+Joining on the code and never on the name is the right call — names are
+spelled three ways across three feeds ("Ubisoft", "Ubisoft GmbH",
+"Nintendo of Europe SE / Accounting"), and matching on them loosely
+enough to be useful is matching them loosely enough to eventually put one
+company's name on another company's booth. But a code join is only as
+complete as the codes, and a card that files one of an exhibitor's stands
+leaves the others reading "not covered by the guide" — Ubisoft's second
+Hall 6.1 booth did exactly that. So a `booth` value may list several
+stands, comma-separated (`C011/B010, B020`), the slash still joining the
+halves of one; and the join report now runs **both** directions, the
+second one matching names purely to ask a human whether a stand belongs
+to a card. Twelve did. The eight cards that grew now agree stand-for-stand
+with the official directory, which is a separate feed from the hall plan.
+
+The same evidence settles the `"booth": null` cases: four cards had a hall
+but no number while the official plan named them on a stand all along.
+
+### 4a. One footprint is one stand
+
+Koelnmesse files a stand's gallery level as a stand of its own on exactly
+the same four corners — `F-010 E-019` and `F-010g E-019g` are one place,
+one floor above the other. Drawn as two, the empty upper one paints on top
+and swallows every tap, so tapping the Indie Arena Booth answered "no
+exhibitor filed for this stand" while the deep link to the very same
+booth was right. 34 such pairs across six halls; hall 10.2 alone had 15.
+
+`mergeLevels()` collapses them at load: one shape, every stand number
+(the sheet reads "Stand F-010 E-019 · also F-010g E-019g"), every name
+filed on either level, and the codes of both — so `#10.2/F010G` and
+`#10.2/F010` land on the same stand. It joins **exact** duplicates only.
+A sub-stand that sits *inside* a larger one (`E-071a` within `E-071`, 30
+of them in hall 10.1) has a footprint of its own, means a different place,
+and stays separate — that is what the paint-biggest-first order is for.
+The snapshot on disk is untouched, as ever.
 
 ### 5. Per-hall lazy files, precached for offline
 
@@ -304,7 +341,13 @@ theatre. None of these change the architecture.
    flashes it, clearing any filter that would otherwise hide it.
 6. **UPDATING.md** has a "Refreshing the hall plans" section: when to
    re-run the tool, how to read the join report, and the rule that booth
-   numbers stay editorial — never hand-edit `data/hallplan/`.
+   numbers stay editorial — never hand-edit `data/hallplan/`. The booth
+   convention (slash joins a stand's halves, comma separates stands) is
+   in the editorial rules, next to the reason it matters.
+7. **`node tools/fetch-hallplan.mjs --report`** runs the QA alone,
+   against the committed snapshot. Booth numbers change far more often
+   than Koelnmesse's layout does, and checking one should not mean
+   fetching the other again.
 
 ## Verification (manual test script)
 
@@ -312,7 +355,8 @@ Serve the repo root; clear `gc2026.saved.v1`.
 
 1. **Cold open** `map.html` — hall 7.1 renders, anchor names visible at
    fit, no horizontal page scroll at 360 px, footer counts read
-   "23 stands · 6 in the guide".
+   "23 stands · 8 in the guide". Counts are of drawn stands, so they are
+   post-merge: 180 in hall 10.1, 79 in 10.2.
 2. **Zoom bands** — pinch/wheel in: mid names appear, then booth codes;
    nothing that was readable at one zoom disappears at the next; strokes
    stay 1 px; pan stays 60 fps-ish during gesture.
@@ -334,7 +378,17 @@ Serve the repo root; clear `gc2026.saved.v1`.
    Xbox's stand lights up in 7.1 (booth-or-game semantics).
 8. **Unconfirmed** — an exhibitor with `locationConfirmed: false` and a
    booth code renders amber-dashed; its sheet says so.
-9. **Density** — hall 10.1's 191 stands render without jank.
+9. **Density** — hall 10.1's 180 drawn stands render without jank.
+9a. **Merged footprints** — tapping the middle of the Indie Arena Booth
+    opens *its* sheet, not an empty one: `elementsFromPoint` at that
+    point finds exactly one `.stand`. `#10.2/F010` and `#10.2/F010G`
+    select the same stand, whose sheet reads "also F-010g E-019g" and
+    lists the names filed on both levels.
+9b. **Multi-stand cards** — every stand of Ubisoft, Embark, SEGA,
+    Nintendo, LEGO, Headis, Gryphline and KRAFTON reads as covered, each
+    naming the same card. The card plate wraps between stands and never
+    inside a code. `--report` is silent in both directions, and each of
+    those cards' codes matches its row in `data/directory.json`.
 10. **Orientation spot-check** (once, on site or against the official map
     side-by-side): Xbox fills hall 7's western end; Nintendo sits at
     A-010 B-009 in 9.1; Razer at E-020 D-021 in 10.2. A mirrored hall
@@ -362,19 +416,24 @@ Serve the repo root; clear `gc2026.saved.v1`.
    right way round. The `CAMPUS` table in the tool (decision 3) is
    correct as filed; a future hall added to it still needs the same
    check, since its signs are a per-hall fact.
-2. **Sub-stand suffix policy.** Suffixed stands ("a" annexes, "g"
-   galleries, "y"…) currently render as filed, layered under the label
-   plane. Merging or dimming them is a data-shape question for the tool,
-   not the client — decide after seeing them on site.
+2. ~~**Sub-stand suffix policy.**~~ Half settled: a suffixed stand
+   sharing its parent's exact footprint is the same place and is merged
+   into it (decision 4a). One that has a footprint of its own is a
+   different place and renders as filed — `E-071a` carries five
+   exhibitors of its own, and hiding it would lose them. What is left is
+   cosmetic: whether an annexe should read as subordinate to its parent
+   rather than as a peer. Decide after seeing them on site.
 3. **The other twelve hall levels.** Koelnmesse files halls 1–5, outdoor
    F-areas and P4 in the same endpoint. `index.json` drives the chip row,
    so adding one is a `HALLS` entry in the tool + re-run — do it when the
    guide covers exhibitors there (business area, cosplay village).
-4. **Feeding confirmations back.** The join report already surfaces
-   official filings the guide lacks (`sega-atlus` today). Worth a tool
-   flag that also lists official stand names fuzzy-matching guide
-   exhibitor names that failed to join — as *suggestions* for the sourced
-   editorial process, never auto-applied.
+4. ~~**Feeding confirmations back.**~~ Built: `unclaimedReport()` lists
+   official stand names matching a guide exhibitor in that hall whose
+   card has not claimed them. It found twelve stands across eight cards
+   on its first run, including the four that had `"booth": null`. It is a
+   suggestion list for the sourced editorial process and is never
+   auto-applied — the match is loose on purpose, which is exactly why a
+   human has to read it.
 5. **A campus overview.** The official page embeds hall-outline
    coordinates for the whole campus (its `hallen` array) — a schematic
    "which hall is where" entry screen is buildable from data if the
