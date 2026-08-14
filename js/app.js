@@ -387,6 +387,52 @@ function buildShareLink() {
   return `${base}#saved?l=${encodedSavedTokens().join(".")}`;
 }
 
+/* Nothing on the old hostname looks broken — it serves the same deploy — which
+   is exactly why a visitor can spend the whole show on an address that is going
+   away without ever noticing. Hence one nudge, and only one: it is remembered
+   the moment they answer it either way, because a banner that returns on every
+   load is a banner people learn to read past.
+
+   It is deliberately not a redirect. Someone mid-plan on a show floor should
+   not have the page pulled out from under them, and a bounce would land anyone
+   holding a saved list on an origin where it does not exist. That is what the
+   second sentence is for: the list is per-origin, Share list is the way across
+   (see buildShareLink above), and the notice says so before opening the door
+   rather than after. */
+const MOVED_KEY = "gc2026.moved.v1";
+
+function moveNoticeAnswered() {
+  try {
+    return localStorage.getItem(MOVED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function rememberMoveNotice() {
+  try {
+    localStorage.setItem(MOVED_KEY, "1");
+  } catch {
+    /* storage blocked (Safari private mode) — the notice returns next load,
+       which is the harmless direction for this to fail in */
+  }
+}
+
+function offerMove() {
+  if (location.host !== LEGACY_HOST || moveNoticeAnswered()) return;
+  showToast(
+    savedCount()
+      ? "The guide has moved to gamescom.guide. Use Share list to bring your saved items along."
+      : "The guide has moved to gamescom.guide.",
+    "Open",
+    () => {
+      rememberMoveNotice();
+      location.assign(`${SHARE_ORIGIN}${location.pathname}${location.hash}`);
+    },
+    { onDismiss: rememberMoveNotice }
+  );
+}
+
 function parseHash() {
   const raw = location.hash.slice(1);
   const i = raw.indexOf("?");
@@ -2154,6 +2200,7 @@ function showToast(message, actionLabel, onAction, options = {}) {
     message,
     actionLabel,
     onAction,
+    onDismiss: options.onDismiss,
     priority: Boolean(options.priority),
   };
   if (toast.hidden || !activeToast || options.replace) {
@@ -2184,7 +2231,15 @@ function hideToast(notification) {
   }
 }
 
-if (toast) $("#toast-dismiss").addEventListener("click", () => hideToast());
+/* onDismiss fires for the ✕ alone, never for a programmatic hide: "the visitor
+   waved this away" and "this toast is finished" are different facts, and only
+   the first one is worth remembering. */
+if (toast)
+  $("#toast-dismiss").addEventListener("click", () => {
+    const dismissed = activeToast;
+    hideToast();
+    dismissed?.onDismiss?.();
+  });
 window.gcToast = { show: showToast, hide: hideToast };
 
 function renderCountdown() {
@@ -2476,6 +2531,9 @@ async function main() {
   showView(incoming ? SAVED_ROUTE : landing.route || VIEWS[0], { push: false });
   if (!incoming) focusExhibitor(landing.params.get("ex"));
   if (offer) offerIncoming(offer);
+  /* Last, so an import prompt is the thing on screen when both apply — that one
+     is priority anyway, and it carries the only Add/Undo the visitor gets. */
+  offerMove();
 }
 
 main();

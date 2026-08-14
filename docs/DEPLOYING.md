@@ -101,8 +101,20 @@ new domain starts with an empty list.
 one: on the legacy hostname it builds the link against `gamescom.guide` instead
 of the current origin (`LEGACY_HOST` / `SHARE_ORIGIN` in `js/app.js`). Left to
 `location.origin` it would return a link to the origin the list is trying to
-leave, which moves nothing. Both constants come out once the old hostname is
-finally retired.
+leave, which moves nothing.
+
+Nothing on the old hostname looks broken, so `offerMove()` (also `js/app.js`)
+tells visitors there once that the guide has moved, with an **Open** action that
+carries the current hash to `gamescom.guide`. It is a toast, not a redirect —
+nobody mid-plan on a show floor gets the page pulled out from under them — and
+anyone holding a saved list is pointed at Share list in the same sentence, since
+a list does not survive the origin change on its own. The notice is remembered
+in `gc2026.moved.v1` as soon as it is answered either way. It appears on the
+guide only; the hall map has no toast of its own, so a visitor who lands
+straight on `map.html` sees it when they next open the guide.
+
+`LEGACY_HOST`, `SHARE_ORIGIN`, `offerMove()` and `gc2026.moved.v1` all come out
+once the old hostname is finally retired.
 
 ## Rolling back
 
