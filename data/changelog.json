@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-08-14",
+    "revision": 22,
+    "changes": [
+      "The business halls are on the map. Halls 2.1, 2.2, 3.2, 4.1 and 4.2 are drawn booth by booth like the rest, which is 366 more stands and most of the Full directory — so a row in hall 3.2 now opens on its stand instead of stopping at plain text. They open under a banner saying what they are: trade and media badge only, and closed after Friday. A consumer ticket still does not open that door; the map just stops pretending the hall isn't there.",
+      "Halls are colour-coded by area, in the same colours the official plan uses: cyan for the entertainment halls your ticket opens, purple for the trade-only business ones. The hall row groups them under those colours and the hall's own structure is washed in it, so it takes no reading to tell which kind of hall you are in. Saved booths are still orange over everything.",
+      "Booth outlines were re-checked against Koelnmesse's data while adding them: the retro block at A-020 in hall 10.2 now names the exhibitors on both its levels, five of which were missing."
+    ]
+  },
+  {
+    "date": "2026-08-14",
     "revision": 21,
     "changes": [
       "Share list now asks who the link is for. Someone else gets your saved list alone — your progress through it is not theirs. Another of my devices brings your day plan and played marks along too, and on arrival offers to replace that device's list instead of adding to it, so removing a booth or moving it to another day finally carries across your own devices. The prompt counts what a replace would remove before anything is touched, and Undo puts all of it back.",

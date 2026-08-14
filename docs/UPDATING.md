@@ -305,9 +305,27 @@ editorial updates above. Re-run it when:
 - a hall is re-laid-out (stands appear in the wrong place, or a booth you
   know exists has no stand);
 - the guide starts covering a hall the snapshot doesn't have — add it to
-  `HALLS` in the tool first (`"3.1": ["3", "1"]`), and it appears in the map's
-  hall row automatically;
+  `HALLS` in the tool first (`"3.1": ["3", "1", "business"]`, i.e. official
+  hall, level and which area it belongs to), and it appears in the map's
+  hall row automatically. A new hall needs one look at the rendered result:
+  the mirror/rotation signs are a per-hall fact, and hall 2.1 already
+  needed a `SIGN_FIX` entry to come out the right way up;
 - the map's credit date is old enough to be embarrassing.
+
+The run also checks the two area colours — the fills the official plan
+gives the entertainment and business halls, which the map re-uses so the
+two agree at a glance — and prints:
+
+```
+colours: entertainment, business still match the official plan
+```
+
+If it *throws* there instead, Koelnmesse repainted an area: put the new
+value in `AREAS` in the tool and re-run. Nothing is written until that
+passes, so the committed snapshot is never half-updated. The line under
+the hall row telling trade visitors the business halls need a badge is
+`AREAS.business.access` in the same table — it is ours, not theirs, and
+editing it is an editorial decision like any other.
 
 Booth *numbers* are editorial and live in `data/exhibitors.json` as always.
 The map joins the two at load time by hall + booth code, so a booth

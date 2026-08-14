@@ -1770,15 +1770,20 @@ function directoryRow(entry, byBooth) {
         s.booth ? ` · ${esc(s.booth)}` : ""
       }</span>${host && host.name !== entry.name ? `<i> at ${esc(host.name)}</i>` : ""}`;
       const cls = `dir-stand${business ? " dir-stand-trade" : ""}`;
+      /* The business halls are drawn now, so their chips link like any
+         other — the map opens them under a trade-only banner, which is a
+         better answer than a dead chip. The warning rides along in the
+         label either way: the plate is amber, and it says why. */
+      const trade = business ? "Business area, trade & media only" : "";
       if (!hasMap(s.hall)) {
-        return `<span class="${cls}"${
-          business ? ' title="Business area — trade &amp; media only"' : ""
-        }>${where}</span>`;
+        return `<span class="${cls}"${trade ? ` title="${esc(trade)}"` : ""}>${where}</span>`;
       }
       return `<a class="${cls}" href="${esc(mapLink(s.hall, s.booth))}"
-        title="Open on the hall map"
+        title="${esc(trade ? `${trade} — open on the hall map` : "Open on the hall map")}"
         aria-label="${esc(
-          `Hall ${s.hall}${s.booth ? `, booth ${s.booth}` : ""} — open the hall map`
+          `Hall ${s.hall}${s.booth ? `, booth ${s.booth}` : ""}${
+            trade ? ", trade & media only" : ""
+          } — open the hall map`
         )}">${where}</a>`;
     })
     .join("");

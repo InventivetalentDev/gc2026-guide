@@ -1,10 +1,23 @@
 {
- "fetched": "2026-08-13",
+ "fetched": "2026-08-14",
  "source": "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+ "areas": {
+  "entertainment": {
+   "label": "Entertainment",
+   "colour": "#00B9FF"
+  },
+  "business": {
+   "label": "Business",
+   "colour": "#7800FF",
+   "trade": true,
+   "access": "trade & media badge only. A consumer ticket does not open these halls, and they close after Friday."
+  }
+ },
  "halls": [
   {
    "id": "5.2",
    "file": "hall-5.2.json",
+   "area": "entertainment",
    "size": [
     179,
     84.5
@@ -14,6 +27,7 @@
   {
    "id": "6.1",
    "file": "hall-6.1.json",
+   "area": "entertainment",
    "size": [
     219.5,
     82
@@ -23,6 +37,7 @@
   {
    "id": "7.1",
    "file": "hall-7.1.json",
+   "area": "entertainment",
    "size": [
     174.5,
     82
@@ -32,6 +47,7 @@
   {
    "id": "8.1",
    "file": "hall-8.1.json",
+   "area": "entertainment",
    "size": [
     174.5,
     82
@@ -41,6 +57,7 @@
   {
    "id": "9.1",
    "file": "hall-9.1.json",
+   "area": "entertainment",
    "size": [
     166.5,
     67
@@ -50,6 +67,7 @@
   {
    "id": "10.1",
    "file": "hall-10.1.json",
+   "area": "entertainment",
    "size": [
     132,
     173
@@ -59,11 +77,62 @@
   {
    "id": "10.2",
    "file": "hall-10.2.json",
+   "area": "entertainment",
    "size": [
     156.4,
     187.5
    ],
-   "stands": 94
+   "stands": 95
+  },
+  {
+   "id": "2.1",
+   "file": "hall-2.1.json",
+   "area": "business",
+   "size": [
+    125,
+    83
+   ],
+   "stands": 83
+  },
+  {
+   "id": "2.2",
+   "file": "hall-2.2.json",
+   "area": "business",
+   "size": [
+    125,
+    82.5
+   ],
+   "stands": 95
+  },
+  {
+   "id": "3.2",
+   "file": "hall-3.2.json",
+   "area": "business",
+   "size": [
+    119,
+    70.5
+   ],
+   "stands": 102
+  },
+  {
+   "id": "4.1",
+   "file": "hall-4.1.json",
+   "area": "business",
+   "size": [
+    179.5,
+    83
+   ],
+   "stands": 55
+  },
+  {
+   "id": "4.2",
+   "file": "hall-4.2.json",
+   "area": "business",
+   "size": [
+    179,
+    83
+   ],
+   "stands": 31
   }
  ]
 }
