@@ -1,5 +1,15 @@
 [
   {
+    "date": "2026-08-14",
+    "revision": 18,
+    "changes": [
+      "New: a Hall map. Every hall you can visit is drawn booth by booth, with names on the booths instead of the blank white boxes the official plan gives you — and your saved booths lit up in orange so you can see your day laid out in the hall.",
+      "Tap the hall plate on any exhibitor card to jump straight to that booth on the map; tap a booth on the map to see its lineup, queue forecast and save it. Saving works the same in both directions.",
+      "The map works offline like the rest of the guide — all seven halls are stored on your device, which is the point when reception dies inside Koelnmesse.",
+      "Booth outlines come from Koelnmesse's official hall-plan data, credited and dated at the foot of the map."
+    ]
+  },
+  {
     "date": "2026-08-13",
     "revision": 17,
     "changes": [

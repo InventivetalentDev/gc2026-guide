@@ -259,6 +259,12 @@ service worker when the window is brought back to the foreground, at most hourly
 for example if a data file is renamed or removed. Changes to `css/`, `js/` and the
 data files propagate on their own.
 
+One list does need editing by hand: a **new hall level** adds a file under
+`data/hallplan/`, and files are only precached if they are named in `DATA`
+(`sw.js`). A hall missing from that list still works online and still
+renders — it just won't be there in a hall with no signal, which is the one
+place it matters.
+
 A caveat worth knowing when a change looks like it did not deploy: a visitor who
 already has the guide open is one load behind by design — the cached copy is served
 first and replaced in the background — and the browser's own HTTP cache holds these
@@ -276,6 +282,56 @@ pip install pillow fonttools brotli && python3 tools/make-icons.py
 # screenshots (optional; needs playwright and the site served locally)
 node tools/make-screenshots.mjs
 ```
+
+## Refreshing the hall plans
+
+`data/hallplan/*.json` holds the booth outlines the Hall map draws — one
+file per hall level, snapshotted from Koelnmesse's own hall-plan data:
+
+```sh
+node tools/fetch-hallplan.mjs      # no dependencies; ~10s
+```
+
+**This is not part of a normal data refresh.** Booth *geometry* only changes
+when Koelnmesse revises the floor layout, which is rare and unrelated to the
+editorial updates above. Re-run it when:
+
+- a hall is re-laid-out (stands appear in the wrong place, or a booth you
+  know exists has no stand);
+- the guide starts covering a hall the snapshot doesn't have — add it to
+  `HALLS` in the tool first (`"3.1": ["3", "1"]`), and it appears in the map's
+  hall row automatically;
+- the map's credit date is old enough to be embarrassing.
+
+Booth *numbers* are editorial and live in `data/exhibitors.json` as always.
+The map joins the two at load time by hall + booth code, so a booth
+correction moves the highlight on the next load with no re-run — never edit
+`data/hallplan/` by hand to fix a booth number.
+
+The tool ends with a join report:
+
+```
+join: 42/42 guide exhibitors matched to a stand
+```
+
+Any exhibitor it names has a `hall` + `booth` in the guide with no matching
+stand in the official data. Usually one of:
+
+- a booth number that has since changed → verify at the source and fix
+  `data/exhibitors.json`;
+- a collective or co-exhibitor filed under the organiser's name → nothing to
+  fix, the stand is real, the guide's booth code just isn't the filed one;
+- a hall whose snapshot predates the exhibitor moving in → re-run the tool.
+
+The reverse case is useful editorially: the official data often names a stand
+before the guide has the booth. `sega-atlus` sat at `"booth": null` while
+SEGA Europe was already filed at concrete hall-7 stands. That is a booth
+confirmation waiting to be sourced — treat it as a lead, not as truth, and
+follow the sourcing rules above before writing it in.
+
+If the endpoint ever changes shape the tool fails loudly and writes nothing,
+leaving the committed snapshot in place; the map keeps working. Nothing at
+runtime talks to Koelnmesse — visitors only ever fetch our own files.
 
 ## Refreshing the webfonts
 

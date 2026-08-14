@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#09090a">
+<title>Hall map · gamescom 2026 guide</title>
+<meta name="description" content="Booth-level hall maps for gamescom 2026, with your saved booths marked. Works offline.">
+
+<!-- No manifest link: the map is inside the guide's scope ("./"), so an
+     install from here is the same installed app. -->
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<!-- same favicon as the guide: one app, one tab icon (index.html:26) -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23ff4d17'/><text x='50' y='72' font-size='58' font-family='monospace' font-weight='700' text-anchor='middle' fill='%230c0c0d'>26</text></svg>">
+
+<link rel="stylesheet" href="css/fonts.css">
+<!-- the guide's tokens and shared components (.chip, .badge) first, then
+     the map's own layer — one palette, no second copy to drift -->
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/map.css">
+</head>
+<body class="map-page">
+
+<header class="map-bar">
+  <a class="map-back" href="./" aria-label="Back to the guide">←</a>
+  <span class="map-wordmark"><span class="map-wordmark-num">GC26</span> Hall map</span>
+  <p class="offline-flag">Offline</p>
+</header>
+
+<nav class="map-halls" id="halls" aria-label="Halls"></nav>
+
+<div id="stage">
+  <p class="map-load" id="load">loading hall …</p>
+  <section id="sheet" aria-labelledby="sheet-name" hidden>
+    <button class="map-sheet-close" id="sheet-close" type="button" aria-label="Close stand details">×</button>
+    <h2 id="sheet-name"></h2>
+    <p class="map-sheet-loc" id="sheet-loc"></p>
+    <div class="map-sheet-badges" id="sheet-badges"></div>
+    <p class="map-sheet-who" id="sheet-who"></p>
+    <div class="map-sheet-actions">
+      <button class="chip" id="sheet-save" type="button" hidden></button>
+      <a class="reset" id="sheet-link" href="./">open in guide →</a>
+    </div>
+  </section>
+</div>
+
+<footer class="map-note">
+  <span id="counts"></span>
+  <span id="srcnote"></span>
+</footer>
+
+<script src="js/marks.js"></script>
+<script src="js/map.js"></script>
+<script src="js/pwa.js" defer></script>
+</body>
+</html>

@@ -297,6 +297,11 @@ highlighting driven from the same `routeGroups()` output, and a visible
 "schematic, not to scale" label. `hallRank()` is the single seam a real
 walking order (with entrance hints) would replace.
 
+**Update:** the "unobtainable" premise fell — booth positions turned out
+to be fetchable from the official map's data endpoint. See
+`docs/PLAN-hall-map.md` for the successor plan and the working prototype
+(`map.html`, `tools/fetch-hallplan.mjs`, `data/hallplan/`).
+
 ## Open questions
 
 1. **Section order** — route as 02 (before Queue priority) is the

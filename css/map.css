@@ -1,0 +1,168 @@
+/* ============================================================
+   gamescom 2026 guide — hall map
+
+   Loaded after css/style.css, which supplies every token and the
+   shared components this page reuses verbatim: .chip / .hall-chip
+   for the hall selector (the same control as the guide's hall
+   filter), .badge for the sheet's tags, .reset for a text button,
+   .offline-flag for the header.
+
+   Everything here is either the fixed full-height layout the guide
+   does not have, or the SVG itself. Map-specific rules are prefixed
+   map- or scoped to #stage / #map so nothing leaks back.
+   ============================================================ */
+
+/* --- fixed viewport: the stage owns the space the page would scroll --- */
+.map-page {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* --- header --- */
+.map-bar {
+  flex: none;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px calc(10px) ;
+  padding-top: calc(10px + env(safe-area-inset-top));
+  border-bottom: 1px solid var(--rule);
+}
+.map-back {
+  color: var(--ink-mid); text-decoration: none;
+  font-family: var(--font-mono); font-size: 1.1rem; line-height: 1;
+  padding: 4px 8px; margin-left: -8px; border-radius: var(--radius-sm);
+}
+.map-back:hover { color: var(--ink); background: var(--ground-2); }
+.map-wordmark {
+  font-family: var(--font-poster);
+  font-size: 1.05rem; letter-spacing: .02em; text-transform: uppercase;
+}
+.map-wordmark-num {
+  background: var(--signal); color: var(--signal-ink);
+  padding: 0 5px; margin-right: 2px;
+}
+.map-bar .offline-flag { margin-left: auto; }
+
+/* --- hall selector: the guide's chips, one scrolling row --- */
+.map-halls {
+  flex: none;
+  display: flex; gap: 6px; padding: 10px 16px; overflow-x: auto;
+  border-bottom: 1px solid var(--rule);
+  scrollbar-width: none;
+}
+.map-halls::-webkit-scrollbar { display: none; }
+.map-halls .chip { white-space: nowrap; }
+.map-halls .chip-saved { color: var(--signal); font-weight: 700; }
+.map-halls .chip.active .chip-saved { color: inherit; }
+
+/* --- stage --- */
+#stage {
+  position: relative; flex: 1; overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  /* a drag on the map is a pan, never a text selection or a native
+     image drag — without this, desktop mouse drags grab the SVG */
+  user-select: none; -webkit-user-select: none;
+}
+#stage.dragging { cursor: grabbing; }
+#map {
+  position: absolute; left: 0; top: 0;
+  transform-origin: 0 0;
+  display: block;
+  -webkit-user-drag: none;
+}
+.map-load {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  color: var(--ink-dim); font-family: var(--font-mono); font-size: .8rem;
+}
+.map-load[hidden] { display: none; }
+
+/* --- the hall itself --- */
+#map .hall-block { fill: var(--ground-2); stroke: var(--rule-soft); }
+#map .stand path { fill: var(--ground-3); stroke: var(--rule); cursor: pointer; }
+#map .stand.official path { fill: #232327; }
+#map .stand.covered path { fill: #2e2e33; }
+#map .stand.saved path { fill: var(--signal); stroke: #ff6a3d; }
+#map .stand.played { opacity: .45; }
+#map .stand.unconf path { stroke: var(--warn); stroke-dasharray: 5 4; }
+#map .stand.sel path { stroke: var(--ink); stroke-width: 2; }
+#map path { vector-effect: non-scaling-stroke; }
+
+#map text {
+  pointer-events: none; user-select: none; -webkit-user-select: none;
+  text-anchor: middle; fill: var(--ink-mid);
+}
+#map .lbl-name { font-family: var(--font-display); font-weight: 600; fill: var(--ink-dim); }
+#map .covered .lbl-name { fill: var(--ink); }
+#map .lbl-code { font-family: var(--font-mono); fill: var(--ink-dim); }
+#map .saved text { fill: var(--signal-ink); }
+#map .saved .lbl-code { fill: rgba(11, 11, 12, .75); }
+
+/* Zoom bands. Which labels survive each band is computed in declutter()
+   — booth size tier AND collisions with higher-priority labels — and
+   written back as nz0/nz1/nz2. Koelnmesse files sub-stands that sit
+   inside (or exactly on top of) their parent, so position alone cannot
+   decide this. */
+#map.z0 .nz0, #map.z1 .nz1, #map.z2 .nz2 { display: none; }
+
+/* --- stand detail sheet --- */
+#sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+  background: var(--ground-2);
+  border-top: 2px solid var(--signal);
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  box-shadow: 0 -6px 0 rgba(255, 255, 255, .03);
+  transform: translateY(105%);
+  transition: transform .18s ease-out;
+}
+#sheet.open { transform: none; }
+
+.map-sheet-close {
+  position: absolute; right: 8px; top: 6px;
+  background: none; border: 0; color: var(--ink-dim);
+  font-size: 1.3rem; line-height: 1; cursor: pointer; padding: 6px 10px;
+}
+.map-sheet-close:hover { color: var(--ink); }
+#sheet h2 {
+  font-family: var(--font-display); font-size: 1.3rem; line-height: 1.15;
+  padding-right: 40px;
+}
+.map-sheet-loc {
+  font-family: var(--font-mono); font-size: .72rem;
+  color: var(--ink-mid); margin-top: 3px;
+}
+.map-sheet-badges { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.map-sheet-badges:empty { display: none; }
+.map-sheet-badges .badge { border-color: var(--rule); color: var(--ink-mid); }
+.map-sheet-badges .badge-saved {
+  background: var(--signal); border-color: var(--signal); color: var(--signal-ink);
+}
+.map-sheet-badges .badge-unconf { border-color: var(--warn); color: var(--warn); }
+.map-sheet-who {
+  margin-top: 9px; font-size: .84rem; color: var(--ink-mid); line-height: 1.45;
+}
+.map-sheet-who b { color: var(--ink); font-weight: 600; }
+.map-sheet-dim { color: var(--ink-dim); }
+.map-sheet-actions { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.map-sheet-actions .chip { font-family: var(--font-mono); font-size: .75rem; padding: 7px 12px; }
+.map-sheet-actions .chip[data-on="true"] {
+  background: var(--signal); border-color: var(--signal); color: var(--signal-ink);
+}
+
+/* --- credit line --- */
+.map-note {
+  flex: none;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px;
+  padding: 6px 16px calc(6px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono); font-size: .62rem; color: var(--ink-dim);
+}
+.map-note a { color: var(--ink-mid); }
+.map-note a:hover { color: var(--ink); }
+
+@media (max-width: 400px) {
+  .map-bar, .map-halls { padding-left: 12px; padding-right: 12px; }
+  .map-note { padding-left: 12px; padding-right: 12px; }
+}

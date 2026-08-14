@@ -393,6 +393,15 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   flex-direction: column;
   transition: background .12s, box-shadow .12s, transform .12s;
 }
+/* Arriving from the hall map's "open in guide": say which of the 53 cards
+   you were sent to, then get out of the way. The global reduced-motion
+   rule collapses this to an instant, which is the right amount of it. */
+@keyframes card-landed {
+  from { box-shadow: 0 0 0 2px var(--signal), var(--plate-shadow); }
+  to   { box-shadow: 0 0 0 2px transparent, var(--plate-shadow); }
+}
+.card-landed { animation: card-landed 1.8s ease-out; }
+
 .card:hover {
   background: var(--ground-3);
   transform: translate(-2px, -2px);
@@ -415,6 +424,19 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .hall-marker[data-state="unconfirmed"] { background: var(--warn); }
 .hall-marker[data-state="tba"],
 .hall-marker[data-state="absent"] { background: var(--ground-3); color: var(--ink-dim); }
+
+/* The plate doubles as the link to that booth on the hall map when the
+   map covers its hall (see hallMarker) — an anchor wearing the same
+   plate, not a new control. */
+a.hall-marker { text-decoration: none; position: relative; }
+.hall-map-cue {
+  font-family: var(--font-mono);
+  font-size: .56rem; letter-spacing: .1em; text-transform: uppercase;
+  opacity: .62;
+  margin-top: 2px;
+}
+a.hall-marker:hover .hall-map-cue,
+a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 
 .hall-kicker {
   font-family: var(--font-mono);
@@ -1074,6 +1096,14 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
+.route-hall-map {
+  font-family: var(--font-mono);
+  font-size: .64rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-dim); text-decoration: none;
+  border: 1px solid var(--rule); border-radius: var(--radius-sm);
+  padding: 2px 7px;
+}
+.route-hall-map:hover, .route-hall-map:focus-visible { color: var(--ink); border-color: var(--ink-dim); }
 .route-hall-count {
   margin-left: auto;
   font-family: var(--font-mono);

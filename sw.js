@@ -27,9 +27,13 @@ const NAV_TIMEOUT = 4000;
    subsets are left to runtime caching — most visitors never request them. */
 const SHELL = [
   "./",
+  "map.html",
   "css/fonts.css",
   "css/style.css",
+  "css/map.css",
+  "js/marks.js",
   "js/app.js",
+  "js/map.js",
   "js/qr.js",
   "js/pwa.js",
   "manifest.webmanifest",
@@ -41,11 +45,24 @@ const SHELL = [
   "fonts/jetbrains-mono-latin.woff2",
 ];
 
+/* The hall plans are ~23 KB gzipped for all seven levels — less than one
+   font — so they are precached rather than fetched on demand. The point
+   of the map is standing in a hall with no reception, and a hall you
+   never happened to open before losing signal is exactly the one you
+   need. */
 const DATA = [
   "data/exhibitors.json",
   "data/event.json",
   "data/meta.json",
   "data/changelog.json",
+  "data/hallplan/index.json",
+  "data/hallplan/hall-5.2.json",
+  "data/hallplan/hall-6.1.json",
+  "data/hallplan/hall-7.1.json",
+  "data/hallplan/hall-8.1.json",
+  "data/hallplan/hall-9.1.json",
+  "data/hallplan/hall-10.1.json",
+  "data/hallplan/hall-10.2.json",
 ];
 
 /* cache.add() would otherwise be answered by the browser's own HTTP cache,
@@ -159,11 +176,17 @@ function staleWhileRevalidate(event, cacheName) {
   })();
 }
 
+/* Two pages now, so a navigation has to fall back to the one that was
+   asked for: everything used to land on "./", which would answer an
+   offline request for the hall map with the guide. */
+const pageKey = (url) => (url.pathname.endsWith("/map.html") ? "map.html" : "./");
+
 /* Race the network against the clock: on a hall's worth of contended 4G an
    unanswered request should not hold the splash for 30s when a perfectly
    good copy of the shell is on disk. */
 async function handleNavigation(request) {
   const cache = await caches.open(SHELL_CACHE);
+  const key = pageKey(new URL(request.url));
   try {
     const response = await Promise.race([
       /* network-first is only meaningful if it reaches the network; the host
@@ -171,10 +194,12 @@ async function handleNavigation(request) {
       fetch(new Request(request, { cache: "no-cache" })),
       new Promise((_, reject) => setTimeout(() => reject(new Error("slow")), NAV_TIMEOUT)),
     ]);
-    if (response.ok) cache.put("./", response.clone());
+    if (response.ok) cache.put(key, response.clone());
     return response;
   } catch (err) {
-    const cached = (await cache.match("./")) || (await cache.match("index.html"));
+    const cached =
+      (await cache.match(key)) ||
+      (key === "./" ? await cache.match("index.html") : await cache.match("./"));
     if (cached) return cached;
     throw err;
   }
