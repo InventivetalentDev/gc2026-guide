@@ -253,8 +253,18 @@ unanswered prompt exactly as a v1 one does.
 | `css/style.css` | mode row, toggle row |
 | `README.md` | sharing section: modes, what each carries, replace semantics |
 | `data/changelog.json`, `data/meta.json` | revision entry |
+| `sw.js` | cache VERSION bump — see below |
 
 `js/qr.js` is untouched — v2 fits the existing encoder for the cases that matter.
+
+One deploy-mechanics lesson, learned by reproducing it: the SW serves
+`index.html` network-first but `js/app.js` stale-while-revalidate, so the
+first load after this deploy pairs the new dialog markup with the old script —
+toggles that render but do nothing. Bumping the cache VERSION makes the new
+worker announce itself through the existing update toast, whose Reload lands a
+coherent shell; and the share bindings tolerate the reverse pairing (new
+script, cached pre-modes markup) by the `bindSourcesDialog` rule, degrading to
+a saved-only share instead of throwing.
 
 ## Verification
 

@@ -966,12 +966,17 @@ function offerIncoming(incoming) {
 
 /* What the dialog's controls currently ask for. Never persisted: the mode
    and its boxes reset on every open, because a played list shared once by
-   accident must not become the quiet default for the next link. */
+   accident must not become the quiet default for the next link.
+
+   Every element access here tolerates a cached pre-modes index.html (the
+   bindSourcesDialog rule): the SW serves markup and script on different
+   cache strategies, so one load can pair them across the format change,
+   and that load must still share saved-only rather than throw. */
 function shareSelection() {
   return {
-    move: $("#share-mode-device").checked,
-    days: $("#share-part-days").checked,
-    played: $("#share-part-played").checked,
+    move: Boolean($("#share-mode-device")?.checked),
+    days: Boolean($("#share-part-days")?.checked),
+    played: Boolean($("#share-part-played")?.checked),
   };
 }
 
@@ -979,15 +984,18 @@ function shareSelection() {
    device gets everything — and the boxes stay live afterwards for the
    in-between cases, like handing a friend the day plan you built together. */
 function applyShareModeDefaults() {
-  const device = $("#share-mode-device").checked;
-  $("#share-part-days").checked = device;
-  $("#share-part-played").checked = device;
+  const device = Boolean($("#share-mode-device")?.checked);
+  const days = $("#share-part-days");
+  const played = $("#share-part-played");
+  if (days) days.checked = device;
+  if (played) played.checked = device;
 }
 
 /* An empty part stays visible but disabled rather than vanishing, so the
    row does not reflow underneath a toggle someone is about to tap. */
 function syncSharePart(part, count) {
   const box = $(`#share-part-${part}`);
+  if (!box) return;
   box.disabled = count === 0;
   if (box.disabled) box.checked = false;
   $(`#share-part-${part}-count`).textContent = `(${count})`;
@@ -1001,7 +1009,8 @@ function renderShareDialog() {
   const playedTotal =
     entries.filter(({ kind, key }) => state.marks.played[kind].has(key)).length +
     encodePlayedOnly().length / TOK_LEN;
-  $("#share-part-saved-count").textContent = `(${entries.length})`;
+  const savedCountEl = $("#share-part-saved-count");
+  if (savedCountEl) savedCountEl.textContent = `(${entries.length})`;
   syncSharePart("days", dayTotal);
   syncSharePart("played", playedTotal);
 
@@ -1044,19 +1053,22 @@ function bindShareDialog() {
 
   $("#share-list").addEventListener("click", () => {
     /* Fresh defaults on every open — see shareSelection. */
-    $("#share-mode-friend").checked = true;
-    applyShareModeDefaults();
+    const friend = $("#share-mode-friend");
+    if (friend) {
+      friend.checked = true;
+      applyShareModeDefaults();
+    }
     renderShareDialog();
     dialog.showModal();
   });
   ["#share-mode-friend", "#share-mode-device"].forEach((selector) =>
-    $(selector).addEventListener("change", () => {
+    $(selector)?.addEventListener("change", () => {
       applyShareModeDefaults();
       renderShareDialog();
     })
   );
   ["#share-part-days", "#share-part-played"].forEach((selector) =>
-    $(selector).addEventListener("change", renderShareDialog)
+    $(selector)?.addEventListener("change", renderShareDialog)
   );
   input.addEventListener("focus", () => input.select());
   bindDialogDismiss(dialog, $("#close-share"));
