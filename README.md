@@ -192,6 +192,26 @@ normalisation that decides which stand lights up.
 
 See [`docs/UPDATING.md`](docs/UPDATING.md) for the data schema and the periodic-refresh playbook (designed to be run by a scheduled Claude Code routine).
 
+## Licensing
+
+Two licences, because the repository holds two different kinds of thing.
+
+| | Licence | |
+|---|---|---|
+| **Code** — `index.html`, `map.html`, `js/`, `css/`, `sw.js`, `tools/` | [MIT](LICENSE) | Take it, fork it for another show, no conditions beyond the notice |
+| **Data** — `data/` | [CC BY 4.0](data/LICENSE) | Credit *gamescom.guide* and say when you took it |
+
+The data licence covers the editorial layer — the selection, the
+confirmed/expected/rumored calls, the crowd forecasts, the sources and check
+dates, and the compilation as a database. It does **not** cover the underlying
+facts, which nobody owns, nor `data/hallplan/*.json`, which is generated from
+Koelnmesse's published hall-plan data and is not this project's to relicense.
+[`data/README.md`](data/README.md) sets out the line in full.
+
+If that split looks fussy for a fan project: it is what keeps the repository
+from claiming more than it can give. A single MIT over everything would have
+offered strangers the right to sublicense Koelnmesse's hall plans.
+
 ## Disclaimer
 
 Not affiliated with gamescom, Koelnmesse or game — Verband der deutschen Games-Branche. Game statuses are labeled: **confirmed** (officially announced for gamescom), **expected** (strongly implied), **rumored** (editorial guess). Crowd levels are estimates.
