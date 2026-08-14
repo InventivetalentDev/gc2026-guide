@@ -104,17 +104,34 @@ of the current origin (`LEGACY_HOST` / `SHARE_ORIGIN` in `js/app.js`). Left to
 leave, which moves nothing.
 
 Nothing on the old hostname looks broken, so `offerMove()` (also `js/app.js`)
-tells visitors there once that the guide has moved, with an **Open** action that
-carries the current hash to `gamescom.guide`. It is a toast, not a redirect —
-nobody mid-plan on a show floor gets the page pulled out from under them — and
-anyone holding a saved list is pointed at Share list in the same sentence, since
-a list does not survive the origin change on its own. The notice is remembered
-in `gc2026.moved.v1` as soon as it is answered either way. It appears on the
-guide only; the hall map has no toast of its own, so a visitor who lands
-straight on `map.html` sees it when they next open the guide.
+tells visitors there once that the guide has moved. It is a toast, not a
+redirect — nobody mid-plan on a show floor gets the page pulled out from under
+them — and its **Open** action brings their plan along rather than asking them
+to move it by hand.
 
-`LEGACY_HOST`, `SHARE_ORIGIN`, `offerMove()` and `gc2026.moved.v1` all come out
-once the old hostname is finally retired.
+`buildMoveLink()` is what carries it: the share payload plus the two things a
+share deliberately leaves behind, because a move is one person's own data rather
+than a plan handed to someone else.
+
+| Param | Carries |
+|---|---|
+| `l` | saved booths and games, same tokens a shared link uses |
+| `m=1` | marks this as a move, so the arrival says so instead of naming a shared link |
+| `p` | played marks, same token vocabulary |
+| `d` | day assignments, as `token~YYYY-MM-DD` pairs |
+
+It all rides in the hash, so none of it is sent to a server, and the arrival goes
+through the existing import path — merged, never replacing, with Undo, and
+anything the guide no longer recognises dropped on the way in. A visitor with
+nothing saved gets a link-free notice and a plain navigation.
+
+The notice is remembered in `gc2026.moved.v1` as soon as it is answered either
+way. It appears on the guide only; the hall map has no toast of its own, so a
+visitor who lands straight on `map.html` sees it when they next open the guide.
+
+`LEGACY_HOST`, `SHARE_ORIGIN`, `offerMove()`, `buildMoveLink()` and
+`gc2026.moved.v1` all come out once the old hostname is finally retired — as do
+the `m`/`p`/`d` branches in `parsePayload()`.
 
 ## Rolling back
 
