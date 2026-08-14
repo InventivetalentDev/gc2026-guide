@@ -274,10 +274,9 @@ place it matters.
 
 A caveat worth knowing when a change looks like it did not deploy: a visitor who
 already has the guide open is one load behind by design — the cached copy is served
-first and replaced in the background — and the browser's own HTTP cache holds these
-files for ten minutes on top of that. So a CSS or JS change can take a few minutes and
-a couple of loads to appear on a device that has been there before. It is not stuck;
-closing the app and reopening it, or accepting the "newer version is ready" prompt,
+first and replaced in the background. So a CSS or JS change can take a couple of loads
+to appear on a device that has been there before. It is not stuck; closing the app and
+reopening it, or accepting the "newer version is ready" prompt,
 takes it immediately. What is *not* normal is never seeing it at all — that was a real
 bug in the caching, fixed in the same commit as this note.
 

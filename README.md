@@ -47,7 +47,22 @@ python3 -m http.server 8000
 
 ## Deploying
 
-Any static host works. For GitHub Pages: repo **Settings → Pages → Source: GitHub Actions** — the included workflow (`.github/workflows/pages.yml`) deploys on every push to `main`.
+Live on **Cloudflare Workers** as an assets-only Worker — static files served from
+the edge, no Worker script. `.github/workflows/cloudflare.yml` deploys every push to
+`main`; `wrangler.toml` is the whole configuration. There is still no build step:
+`tools/build-site.sh` copies the site into `dist/` for upload, because a Worker's
+asset directory has to hold the site and nothing else.
+
+It runs there rather than on GitHub Pages because Pages gives a repository one custom
+domain and the guide answers on two: `gamescom.guide` and the original
+`gc2026.inventivetalent.org`, which is already bookmarked and installed on people's
+phones. `.github/workflows/pages.yml` still deploys the old hostname until that one is
+moved across, so both stay on the same commit in the meantime.
+
+Any static host works, but two routing options are not optional if you move it
+elsewhere: `/map.html` must be served without a redirect, and `/` must serve
+`index.html`. See [`docs/DEPLOYING.md`](docs/DEPLOYING.md) for the setup, the domain
+cutover and why those two matter to the service worker.
 
 ## Design
 

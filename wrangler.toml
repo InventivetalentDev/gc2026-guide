@@ -1,0 +1,65 @@
+# Cloudflare Workers deployment for the gamescom 2026 guide.
+#
+# The site is static, so this is an assets-only Worker: no `main` script, just a
+# directory of files served from Cloudflare's edge.
+#
+# That directory is dist/, staged from the repo root by tools/build-site.sh —
+# run it before deploying. The site still has no build step; dist/ is a copy
+# that holds the site and none of the repo around it, which is what the asset
+# directory has to be.
+#
+# The full setup and domain-cutover runbook is in docs/DEPLOYING.md.
+
+name = "gc2026-guide"
+compatibility_date = "2026-08-14"
+
+# gc2026-guide.<subdomain>.workers.dev — the URL a deploy can be checked on
+# before any domain points at it, and the one that still answers if a custom
+# domain is mid-move. Set false once both hostnames are live if you would rather
+# the guide had exactly two addresses.
+workers_dev = true
+
+[assets]
+directory = "./dist"
+
+# Both handling options below are deliberate, and the defaults actively break
+# this app.
+#
+# html_handling: the default ("auto-trailing-slash") answers /map.html with a
+# 307 to /map, and this app does not survive that.
+#
+# Online, the browser follows the redirect and lands on /map, which sw.js does
+# not recognise as the map — `pageKey` only matches paths ending in /map.html.
+# So the map page is cached under "./" and overwrites the guide's own shell
+# entry, and opening the app offline afterwards serves the hall map where the
+# guide should be.
+#
+# Offline, the precached copy of the map was itself fetched through that
+# redirect, and a redirected response cannot be handed back to a navigation
+# request — so the map does not open at all in a hall with no reception, which
+# is the entire point of having it.
+#
+# "none" serves every path exactly as spelled: the URLs GitHub Pages served, and
+# the ones every shared map.html#hall/booth link already in circulation asks
+# for.
+html_handling = "none"
+
+# ...but "none" also stops "/" resolving to index.html, and the shell is
+# precached under "./". SPA handling puts that back: any request without an
+# exact file match is answered with index.html, so "/" serves the guide and an
+# unknown path renders the app rather than a bare 404.
+not_found_handling = "single-page-application"
+
+[[routes]]
+pattern = "gamescom.guide"
+custom_domain = true
+
+# Cutover, once GitHub Pages is done serving this hostname: delete the DNS
+# record that points it at github.io, then uncomment. A custom domain cannot be
+# created while another record still holds the name — wrangler will refuse the
+# deploy rather than clobber it, so the old site stays up until you clear the
+# way for the new one.
+#
+# [[routes]]
+# pattern = "gc2026.inventivetalent.org"
+# custom_domain = true

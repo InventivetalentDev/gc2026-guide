@@ -1,0 +1,40 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-workers
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The same gate the Pages workflow has, widened to the hall plans and the
+      # manifest. A malformed JSON file does not fail loudly at runtime — it
+      # renders an empty guide — so it must not reach the edge.
+      - name: Validate data files
+        run: |
+          for f in data/*.json data/hallplan/*.json manifest.webmanifest; do
+            python3 -m json.tool "$f" > /dev/null || exit 1
+          done
+
+      # Copies the site into dist/, which is the Worker's asset directory.
+      - name: Stage the site
+        run: tools/build-site.sh
+
+      # Both secrets are required; see docs/DEPLOYING.md for the token scopes.
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
