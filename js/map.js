@@ -101,17 +101,37 @@ function bbox(poly) {
   return { x0, y0, x1, y1, w: x1 - x0, h: y1 - y0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
 }
 
-/* split a name into up to two balanced lines */
-function nameLines(name) {
-  if (name.length <= 11 || !name.includes(" ")) return [name];
-  const mid = name.length / 2;
-  let best = -1, bestD = Infinity;
-  for (let i = 0; i < name.length; i++)
-    if (name[i] === " " && Math.abs(i - mid) < bestD) {
-      best = i;
-      bestD = Math.abs(i - mid);
-    }
-  return [name.slice(0, best), name.slice(best + 1)];
+/* Set a name as large as the booth allows, by trying every way of
+   breaking it across one, two or three lines and keeping whichever fits
+   biggest. Breaking by character count instead — balance the halves,
+   done — reads fine on a square booth and fails on a narrow one: MOZA
+   Racing's stand is 4 m wide, so "MOZA Racing" on one line fitted at
+   0.6 m and got dropped as unreadable, where "MOZA / Racing" fits at
+   1.2 m. Names are short, so trying all the breaks is a handful of
+   candidates per booth. */
+function fitName(name, box, area) {
+  const spaces = [];
+  for (let i = 0; i < name.length; i++) if (name[i] === " ") spaces.push(i);
+  const candidates = [[name]];
+  for (const i of spaces) candidates.push([name.slice(0, i), name.slice(i + 1)]);
+  for (const i of spaces)
+    for (const j of spaces)
+      if (j > i) candidates.push([name.slice(0, i), name.slice(i + 1, j), name.slice(j + 1)]);
+
+  let best = { lines: [name], fs: 0 };
+  for (const lines of candidates) {
+    const longest = Math.max(...lines.map((l) => l.length));
+    /* booth width vs text length, booth height vs line count, and a cap
+       tied to booth size so anchor booths don't shout */
+    const fs = Math.min(
+      (box.w * 0.92) / (longest * 0.52),
+      (box.h * 0.5) / lines.length,
+      Math.sqrt(area) * 0.3,
+      7
+    );
+    if (fs > best.fs) best = { lines, fs };
+  }
+  return best;
 }
 
 /* ================= hall rendering ================= */
@@ -162,17 +182,14 @@ function renderHall(id) {
 
     let cls = "", fs = 0;
     if (name) {
-      const lines = nameLines(name);
-      const longest = Math.max(...lines.map((l) => l.length));
-      /* fit: booth width vs text length, booth height vs line count, and
-         a cap tied to booth size so huge halls don't shout */
-      fs = Math.min(
-        (box.w * 0.92) / (longest * 0.52),
-        (box.h * 0.5) / lines.length,
-        Math.sqrt(s.a || box.w * box.h) * 0.3,
-        7
-      );
-      if (fs >= 0.8) {
+      const fit = fitName(name, box, s.a || box.w * box.h);
+      const lines = fit.lines;
+      fs = fit.fs;
+      /* 0.45 m is the same floor the booth codes use: about 13 px on a
+         phone at full zoom, which is the only band a name this small is
+         offered in anyway. Anything below that is a smudge, and the
+         stand is identified by tapping instead. */
+      if (fs >= 0.45) {
         const t = document.createElementNS(SVGNS, "text");
         t.setAttribute("class", "lbl-name");
         t.setAttribute("x", box.cx);

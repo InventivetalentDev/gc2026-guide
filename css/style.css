@@ -567,6 +567,113 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 .more-games:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ============================================================
+   full official directory
+   ------------------------------------------------------------
+   Deliberately not a second grid: cards are the edited guide, this is the raw
+   list underneath it. It reads as a register — mono booth numbers, ruled rows,
+   no plate shadow — so nothing about it competes with the cards above.
+   ============================================================ */
+
+.directory {
+  margin-top: 34px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--ground-2);
+}
+.directory-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.directory-summary::-webkit-details-marker { display: none; }
+.directory-summary::after {
+  content: "";
+  width: 7px; height: 7px;
+  border-right: 1.5px solid var(--ink-dim);
+  border-bottom: 1.5px solid var(--ink-dim);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform .15s;
+  order: -1;
+  margin-right: -6px;
+}
+.directory[open] > .directory-summary::after { transform: rotate(-135deg) translate(-3px, -3px); }
+.directory[open] > .directory-summary { border-bottom: 1px solid var(--rule-soft); }
+.directory-lede { font-size: .84rem; color: var(--ink-mid); min-width: 0; }
+.directory-summary:hover .directory-lede { color: var(--ink); }
+
+.directory-note {
+  margin: 0;
+  padding: 12px 16px 0;
+  font-size: .8rem;
+  color: var(--ink-dim);
+  line-height: 1.5;
+}
+.directory-note:empty { display: none; }
+
+.dir-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+.dir-row {
+  display: grid;
+  /* name takes the slack; country and stands stay in their own columns so the
+     booth numbers line up into a readable rail down the right */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 130px) minmax(0, 250px);
+  gap: 6px 14px;
+  align-items: baseline;
+  padding: 8px 16px;
+  border-top: 1px solid var(--rule-soft);
+  font-size: .85rem;
+}
+.dir-row:first-child { border-top: none; }
+.dir-row:hover { background: var(--ground-3); }
+
+.dir-name { min-width: 0; color: var(--ink); }
+.dir-name a { color: inherit; text-decoration: none; }
+.dir-name a:hover { color: var(--signal); text-decoration: underline; text-underline-offset: 3px; }
+.dir-country { color: var(--ink-dim); font-size: .78rem; }
+
+.dir-stands { display: flex; flex-wrap: wrap; gap: 4px 10px; min-width: 0; }
+.dir-stand {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .04em;
+  color: var(--ink-mid);
+  white-space: nowrap;
+}
+.dir-stand b { color: var(--ink); font-weight: 700; }
+/* which curated booth this stand actually sits on — the 172 Indie Arena Booth
+   studios are meaningless without it */
+.dir-stand i {
+  font-style: normal;
+  font-family: var(--font-ui);
+  color: var(--ink-dim);
+  white-space: normal;
+}
+.dir-stand-trade { color: var(--ink-dim); }
+.dir-stand-trade b { color: var(--warn); }
+.dir-stand-tba { color: var(--ink-dim); }
+
+.dir-more {
+  display: block;
+  margin: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: .74rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .dir-row { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  .dir-country { font-size: .74rem; }
+}
+
+/* ============================================================
    saved & played marks
    ------------------------------------------------------------
    Saved is the visitor's own emphasis, so it takes the signal colour when set —
@@ -1545,6 +1652,8 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .toolbar-summary { flex-wrap: wrap; row-gap: 4px; }
   .toolbar-summary .row-label { flex: 0 0 auto; }
   .filter-summary { flex: 1 1 100%; order: 3; }
+  .directory-summary { flex-wrap: wrap; row-gap: 4px; }
+  .directory-lede { flex: 1 1 100%; order: 3; }
   .field-sort { border-left: none; border-top: 1px solid var(--rule-soft); }
   .toolbar-search { flex-direction: column; align-items: stretch; }
   .result-count { margin-left: 0; flex-basis: 100%; }

@@ -176,9 +176,14 @@ render path for no user benefit).
 
 ### 7. Labels are the feature
 
-- **Area-scaled names**: font size fitted to booth width/height/area,
-  capped so anchor booths don't shout; names longer than ~11 chars split
-  into two balanced lines.
+- **Area-scaled names**: every way of breaking the name across one, two
+  or three lines is tried and the arrangement that fits the booth
+  largest wins, capped so anchor booths don't shout. Balancing the line
+  lengths instead reads fine on a square booth and fails on a narrow
+  one — MOZA Racing's stand is 4 m wide, where "MOZA Racing" on one line
+  fits at 0.6 m and "MOZA / Racing" at 1.2 m. Below 0.45 m (about 13 px
+  at full zoom on a phone) the name is dropped and the booth carries its
+  code instead.
 - **Zoom bands**: the SVG carries `z0/z1/z2` by zoom factor; CSS decides
   which size tier (`s1…s4`) shows names, and booth codes appear at `z2`.
   Zoomed out you see Xbox/Nintendo/SEGA; zoom in, mid-size names arrive;

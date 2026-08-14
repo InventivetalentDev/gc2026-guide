@@ -30,6 +30,11 @@ const state = {
   planDay: "all",
   /* hall ids the hall map can draw; filled from data/hallplan/index.json */
   mapHalls: new Set(),
+  /* raw official directory: null until the section is first opened */
+  directory: null,
+  directoryError: null,
+  showDirectory: false,
+  directoryLimit: 0,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -40,6 +45,11 @@ const TYPE_LABELS = {
   publisher: "Publishers",
   hardware: "Hardware",
   indie: "Indie",
+  /* Booths whose draw is something you do rather than a game you demo — sim
+     rigs, VR, an RC drift track, a rideable robot. Deliberately one broad
+     category: the flavour ("sim racing", "attraction") lives in tags, so a new
+     kind of stunt next year needs no new type. */
+  experience: "Experiences & Activities",
   media: "Media & Community",
   merch: "Merch & Lifestyle",
 };
@@ -126,10 +136,11 @@ function loadPrefs() {
       age,
       hidePlayed: raw.hidePlayed === true,
       planLens: raw.planLens === "hall" ? "hall" : "day",
+      showDirectory: raw.showDirectory === true,
     };
   } catch {
     /* corrupt entry, or storage blocked entirely (Safari private mode) */
-    return { age: "all", hidePlayed: false, planLens: "day" };
+    return { age: "all", hidePlayed: false, planLens: "day", showDirectory: false };
   }
 }
 
@@ -137,7 +148,12 @@ function persistPrefs() {
   try {
     localStorage.setItem(
       PREFS_KEY,
-      JSON.stringify({ age: state.age, hidePlayed: state.hidePlayed, planLens: state.planLens })
+      JSON.stringify({
+        age: state.age,
+        hidePlayed: state.hidePlayed,
+        planLens: state.planLens,
+        showDirectory: state.showDirectory,
+      })
     );
   } catch {
     /* out of quota or storage denied — the choice still works for this session */
@@ -1048,6 +1064,10 @@ function renderExhibitors() {
       renderExhibitors();
     })
   );
+
+  /* The search box and hall chips filter the directory as well, so it re-renders
+     with the grid rather than being wired to each control separately. */
+  renderDirectory();
 }
 
 /* When the drawer is collapsed this line is the only thing telling you what is
@@ -1125,6 +1145,211 @@ function renderFilters() {
       $(`#age-filters [data-age="${CSS.escape(age)}"]`)?.focus();
     })
   );
+}
+
+/* ---------- the full official directory ----------
+
+   data/directory.json is the raw exhibitor list gamescom publishes — every
+   registered booth, 1600-odd of them, most of which will never earn a card. It
+   stays a separate file for two reasons: it is ~200 KB of names nobody needs to
+   answer "where is Xbox", and it is machine-generated (tools/fetch-directory.py)
+   where the cards are hand-written. The section below is a lookup tool, not a
+   second grid — no crowd ratings, no saving, just "this company exists and it is
+   standing here".
+
+   It is fetched the first time the section is opened and then kept for the
+   session. The service worker caches /data/ network-first, so a visitor who
+   opened it once still has it in a hall with no signal. */
+
+const DIRECTORY_URL = "data/directory.json";
+const DIRECTORY_PAGE = 200;
+
+/* Trade-only halls. The curated cards never reach these, so the hall chips
+   don't list them, but the raw directory is full of them and a visitor holding
+   a consumer ticket cannot get in. */
+const isBusinessHall = (hall) => parseFloat(hall) < 5;
+
+/* The directory writes a shared booth "F010+E019", our cards write
+   "F010/E019", and either side may list the halves in either order. Sorting the
+   parts collapses all of that to one comparable key. */
+function boothKey(hall, booth) {
+  if (!hall || !booth) return "";
+  const parts = String(booth)
+    .toUpperCase()
+    .split(/[+,/]/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .sort();
+  return `${String(hall).trim()}|${parts.join("+")}`;
+}
+
+/* booth → the curated exhibitor standing on it, so a directory row can say
+   "at Indie Arena Booth" instead of stranding 172 studio names with no context. */
+function curatedByBooth() {
+  const map = new Map();
+  for (const ex of state.exhibitors) {
+    const key = boothKey(ex.hall, ex.booth);
+    if (key && !map.has(key)) map.set(key, ex);
+  }
+  return map;
+}
+
+let directoryRequest = null;
+let directorySignature = "";
+
+function loadDirectory() {
+  if (state.directory || directoryRequest) return directoryRequest;
+  directoryRequest = fetch(`${DIRECTORY_URL}?v=${Date.now()}`)
+    .then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
+    .then((payload) => {
+      state.directory = payload;
+      state.directoryError = null;
+    })
+    .catch((err) => {
+      state.directoryError = err.message || "failed to load";
+    })
+    .finally(() => {
+      directoryRequest = null;
+      renderDirectory();
+    });
+  return directoryRequest;
+}
+
+/* Search and the hall chips drive this list too — that is the whole point of a
+   directory, and it means "where is company X" is answered by the box already
+   at the top of the page. The category, age and playable filters are about
+   lineups the directory doesn't have, so they deliberately don't apply. */
+function directoryMatches() {
+  const entries = state.directory?.exhibitors || [];
+  const q = state.query.trim().toLowerCase();
+  const terms = q ? q.split(/\s+/) : [];
+  return entries.filter((entry) => {
+    const stands = entry.stands || [];
+    if (state.hall !== "all" && !stands.some((s) => s.hall === state.hall)) return false;
+    if (!terms.length) return true;
+    const hay = [
+      entry.name,
+      entry.country,
+      ...stands.map((s) => `hall ${s.hall} ${s.booth}`),
+    ]
+      .join(" ")
+      .toLowerCase();
+    return terms.every((term) => hay.includes(term));
+  });
+}
+
+function directoryRow(entry, byBooth) {
+  const base = state.directory?.profileBase || "";
+  const stands = (entry.stands || [])
+    .map((s) => {
+      const host = byBooth.get(boothKey(s.hall, s.booth));
+      const business = isBusinessHall(s.hall);
+      return `<span class="dir-stand${business ? " dir-stand-trade" : ""}"${
+        business ? ' title="Business area — trade &amp; media only"' : ""
+      }>
+        <b>${esc(s.hall)}</b>${s.booth ? ` · ${esc(s.booth)}` : ""}${
+          host && host.name !== entry.name ? `<i> at ${esc(host.name)}</i>` : ""
+        }
+      </span>`;
+    })
+    .join("");
+  const href = base && entry.slug ? `${base}${entry.slug}/` : "";
+  const name = href
+    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(entry.name)}<span aria-hidden="true"> ↗</span><span class="sr-only">, official directory entry, opens in a new tab</span></a>`
+    : esc(entry.name);
+  return `<li class="dir-row">
+    <span class="dir-name">${name}</span>
+    <span class="dir-country">${esc(entry.country || "")}</span>
+    <span class="dir-stands">${stands || '<span class="dir-stand dir-stand-tba">no booth listed</span>'}</span>
+  </li>`;
+}
+
+function renderDirectory() {
+  const section = $("#directory");
+  if (!section) return; // stale cached shell — see the note in renderPlan
+  const count = $("#directory-count");
+  const note = $("#directory-note");
+  const list = $("#directory-list");
+
+  if (!state.showDirectory) {
+    count.textContent = state.directory ? `${state.directory.count} booths` : "";
+    note.textContent = "";
+    list.innerHTML = "";
+    return;
+  }
+
+  if (state.directoryError) {
+    count.textContent = "";
+    note.textContent = `Couldn't load the directory (${state.directoryError}). It needs one online load before it works offline.`;
+    list.innerHTML = "";
+    return;
+  }
+  if (!state.directory) {
+    count.textContent = "";
+    note.textContent = "Loading the official list…";
+    list.innerHTML = "";
+    return;
+  }
+
+  /* A lifted cap belongs to the search that lifted it — changing the query or
+     the hall starts a new list and a new first page. Marking something saved
+     re-renders this too, and must not silently collapse it. */
+  const signature = `${state.query}|${state.hall}`;
+  if (signature !== directorySignature) {
+    directorySignature = signature;
+    state.directoryLimit = DIRECTORY_PAGE;
+  }
+
+  const matches = directoryMatches();
+  const shown = matches.slice(0, state.directoryLimit || DIRECTORY_PAGE);
+  const rest = matches.length - shown.length;
+  const byBooth = curatedByBooth();
+  const trade = matches.filter((e) => (e.stands || []).every((s) => isBusinessHall(s.hall))).length;
+
+  count.textContent =
+    matches.length === state.directory.count
+      ? `${state.directory.count} booths`
+      : `${matches.length} / ${state.directory.count} booths`;
+
+  const bits = [
+    `The raw official list as published on ${esc(state.directory.lastUpdated)} — booths with a card above included, and no lineups, crowd ratings or saving down here.`,
+  ];
+  if (state.hall === "all" && trade) {
+    bits.push(`${trade} of these stand only in the business area (halls 1–4), which a consumer ticket does not open.`);
+  }
+  if (!matches.length) {
+    bits.push("Nothing here matches the current search or hall.");
+  }
+  note.innerHTML = bits.join(" ");
+
+  list.innerHTML = matches.length
+    ? `<ol class="dir-list">${shown.map((e) => directoryRow(e, byBooth)).join("")}</ol>` +
+      (rest > 0
+        ? `<button class="reset dir-more" type="button">Show ${rest} more</button>`
+        : "")
+    : "";
+
+  const more = list.querySelector(".dir-more");
+  if (more) {
+    more.addEventListener("click", () => {
+      state.directoryLimit = matches.length;
+      renderDirectory();
+    });
+  }
+
+  /* "Nothing matches" is a lie when the answer is sitting two hundred pixels
+     further down — searching a booth we never carded is exactly what this
+     section is for. */
+  const gridEmpty = $("#exhibitor-grid").classList.contains("hidden");
+  if (gridEmpty && matches.length) {
+    $("#no-results").textContent =
+      matches.length === 1
+        ? "No card matches — but one booth in the full directory below does."
+        : `No card matches — but ${matches.length} booths in the full directory below do.`;
+  }
 }
 
 /* ---------- planner ---------- */
@@ -1953,7 +2178,7 @@ function syncHash() {
 }
 
 /* The hall map links back as #exhibitors?ex=<id> — a booth you tapped on
-   the map should land on its card, not at the top of 53 of them. The
+   the map should land on its own card, not at the top of the grid. The
    param is consumed like a share payload (syncHash drops it moments
    later anyway), and any filter hiding the card is cleared first: you
    asked for this booth by name, so a stale "saved only" must not answer
@@ -2101,7 +2326,14 @@ function bindControls() {
     if (e.key === null || e.key === MARK_KEYS.saved) state.marks.saved = loadMarks("saved");
     if (e.key === null || e.key === MARK_KEYS.played) state.marks.played = loadMarks("played");
     if (e.key === null || e.key === IT_KEY) state.itinerary = loadItinerary();
-    if (e.key === null || e.key === PREFS_KEY) Object.assign(state, loadPrefs());
+    if (e.key === null || e.key === PREFS_KEY) {
+      Object.assign(state, loadPrefs());
+      /* The <details> holds its own open state, so a pref that arrived from
+         another tab has to be pushed back onto the element. */
+      const directory = $("#directory");
+      if (directory && directory.open !== state.showDirectory) directory.open = state.showDirectory;
+      if (state.showDirectory) loadDirectory();
+    }
     pruneItinerary();
     renderFilters();
     renderExhibitors();
@@ -2123,6 +2355,18 @@ function bindControls() {
 
   /* Desktop has room to keep the filters open; a phone does not. */
   $("#toolbar-more").open = window.matchMedia("(min-width: 760px)").matches;
+
+  const directory = $("#directory");
+  if (directory) {
+    directory.open = state.showDirectory;
+    if (state.showDirectory) loadDirectory();
+    directory.addEventListener("toggle", () => {
+      state.showDirectory = directory.open;
+      persistPrefs();
+      if (directory.open) loadDirectory();
+      renderDirectory();
+    });
+  }
 
   $$(".tab").forEach((tab) => tab.addEventListener("click", () => showView(routeFor(tab.dataset.view))));
   /* push:true here so an unknown or now-stale hash gets rewritten to the route
