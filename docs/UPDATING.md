@@ -91,6 +91,7 @@ This document is the playbook for refreshing the data — written so a scheduled
   - `expected`: strongly implied (e.g. publisher confirmed + game launches in Sept/Oct)
   - `rumored`: our inference only — press speculation, past-year patterns
 - `locationConfirmed: false` + a hall value means "best guess (often from 2025 placement)". The UI marks the hall block amber and suffixes the booth with "· unconf."
+- **In `booth`, the slash joins the halves of one stand and the comma separates stands.** `A030/B029` is a single shared stand; `A030/B029, A040, A029` is LEGO's three. Both the map's highlight and the directory's "at &lt;host&gt;" label read this, so an exhibitor holding several stands needs all of them or the map calls the unlisted ones "not covered by the guide" — which is what happened to Ubisoft's second Hall 6.1 booth. Put the stand a visitor should walk to first: it is the one the card's plate deep-links to. `node tools/fetch-hallplan.mjs --report` names any stand filed under an exhibitor we cover whose card has not claimed it.
 - The tags `not exhibiting` and `offsite` are load-bearing for the hall view of the planner's "Your plan" board. Use those exact strings: `not exhibiting` excludes an entry from the route and lists it in the absent footnote only; `offsite` files a **hall-less** entry under the Offsite bucket. A `hall` value always wins over the `offsite` tag — an entry carrying both (Tencent runs a Hall 8.1 booth *and* the offsite Wassermannhalle exhibition) is routed to its hall, because that is the stop a visitor walks to.
 - `age` is the minimum age for an interactive demo **on the show floor**, not the USK or PEGI rating of the finished game. `ageStatus: "confirmed"` needs an exhibitor statement or official listing; a restriction inferred from the game's rating stays `"expected"`. Keep `age` numeric so lower gates remain expressible, but the current UI only filters and badges values `>= 18`. Use exhibitor-level `ageRestricted: true` only for a gated zone with no single game to attach it to — it is a hand-written assertion that the gate is real, so the UI treats it as confirmed and does *not* mark the booth "18+ expected".
 - The `Hide 18+` filter is a **browsing filter** ("don't show me demos I can't play"), not a content filter: it hides lineup rows, while descriptions, `visitAdvice` and tags stay as written and stay searchable. Don't write data on the assumption that a title is suppressed everywhere when it is hidden.
@@ -149,7 +150,7 @@ This document is the playbook for refreshing the data — written so a scheduled
   "name": "Xbox (Microsoft)",
   "type": "platform",              // platform | publisher | hardware | indie | experience | media | merch
   "hall": "8",                     // string or null (halls can be "4.1" style)
-  "booth": "B010",                 // string or null
+  "booth": "B010",                 // string or null; "/" joins one stand's halves, "," separates stands
   "locationConfirmed": false,      // true only when officially published for 2026
   "officialUrl": "https://www.gamescom.global/en/exhibitor/xbox",  // optional: official profile, omit when there is none
   "ageRestricted": true,           // optional: booth-wide age gate when no game fits
@@ -231,6 +232,12 @@ Booth strings are normalised to the guide's own `A010/B011` form on the way in, 
 the UI can match a directory stand against a card's `hall` + `booth` and label it
 "at Indie Arena Booth". That match is booth-based and needs no maintenance — but it
 is also why `booth` values in `exhibitors.json` should stay in that form.
+
+An exhibitor holding several stands is filed here as **one row carrying every code**
+(`C011/B010/B020` for Ubisoft), so a card answers both to its whole set of codes and
+to each of its stands on its own. That also makes this file a second, independent
+check on a card's `booth`: the hall plan and the directory are separate feeds, and
+where they agree on an exhibitor's stands the number is about as sourced as it gets.
 
 It is written minified (~200 KB, ~43 KB over the wire) and is **not** in the service
 worker's precache list: it is fetched the first time a visitor opens the section, and

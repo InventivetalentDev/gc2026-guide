@@ -54,7 +54,7 @@
     "name": "Nintendo",
     "type": "platform",
     "hall": "9.1",
-    "booth": "A010/B009",
+    "booth": "A010/B009, A020/B019, A009, A019",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/nintendo-of-europe-se",
     "description": "Nintendo's traditional giant Hall 9 booth, all-in on Switch 2 with nine confirmed playable titles 'and more' — headlined by the first publicly playable Call of Duty on Nintendo hardware in over a decade (a native Switch 2 port).",
@@ -79,9 +79,10 @@
       "https://www.techtimes.com/articles/323233/20260805/call-duty-arrives-nintendo-gamescom-2026-booth-native-switch-2-port.htm",
       "https://www.activision.com/de/games",
       "https://www.gamescom.global/en/info/gamescom-cares",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-10"
+    "lastUpdated": "2026-08-14"
   },
   {
     "id": "playstation",
@@ -152,7 +153,7 @@
     "name": "SEGA / Atlus",
     "type": "publisher",
     "hall": "7.1",
-    "booth": null,
+    "booth": "A031, A041/B040",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/sega-europe",
     "description": "SEGA's trademark themed booth in Hall 7: Alien: Isolation 2's European hands-on debut in a claustrophobic sci-fi set, Persona 4 Revival in a recreated Junes shopping center, and Stranger Than Heaven staged as an underground jazz club.",
@@ -173,9 +174,10 @@
     "visitAdvice": "Prioritize Alien: Isolation 2 or Persona 4 Revival first thing in the morning (Alien is also at Xbox — check both queues). Sonic and Crazy Taxi turn over fast and suit afternoons.",
     "sources": [
       "https://sega.prezly.com/sega-announces-huge-gamescom-2026-line-up",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-14"
   },
   {
     "id": "bandai-namco",
@@ -235,7 +237,7 @@
     "name": "Ubisoft",
     "type": "publisher",
     "hall": "6.1",
-    "booth": "C011/B010",
+    "booth": "C011/B010, B020",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/ubisoft-gmbh",
     "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Anno 117 and The Division 2.",
@@ -252,9 +254,10 @@
     "visitAdvice": "Rayman queues are manageable before noon on weekdays. Community Lounge sessions are schedule-based — check Ubisoft's channels for timings.",
     "sources": [
       "https://news.ubisoft.com/en-us/article/6c99kNuqSEWK74Ltt0FJND/ubisoft-at-gamescom-2026-rayman-legends-retold-community-lounge-returns",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-14"
   },
   {
     "id": "ea",
@@ -282,7 +285,7 @@
     "name": "Square Enix",
     "type": "publisher",
     "hall": "8.1",
-    "booth": null,
+    "booth": "A021, C021",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/square-enix-ltd",
     "description": "A Final Fantasy-focused fan booth in Hall 8 with play stations, photo stops and a large merch range — a community and catalog showing, with Dragon Quest VII Reimagined the one genuinely new title.",
@@ -299,9 +302,11 @@
     "visitAdvice": "Merch sells out early in the show — buy on your first pass. Good midday stop; combine with CD Projekt Red in the same hall.",
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
-      "https://nintendowire.com/news/2026/08/10/square-enix-is-bringing-final-fantasy-vii-revelation-to-gamescom-opening-night-live-for-a-new-look/"
+      "https://nintendowire.com/news/2026/08/10/square-enix-is-bringing-final-fantasy-vii-revelation-to-gamescom-opening-night-live-for-a-new-look/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
     ],
-    "lastUpdated": "2026-08-11"
+    "lastUpdated": "2026-08-14"
   },
   {
     "id": "cdpr",
@@ -329,7 +334,7 @@
     "name": "Gryphline (Arknights: Endfield)",
     "type": "publisher",
     "hall": "8.1",
-    "booth": "B021/C030 + C020/B012",
+    "booth": "B021/C030, C020/B012",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/gryph-frontier-pte-ltd",
     "description": "Hypergryph's global publishing brand returns with a much bigger Arknights: Endfield presence across two Hall 8.1 stand blocks: expanded interactive installations and photo spots, plus Boss Speedrun Challenges with exclusive event rewards.",
@@ -379,7 +384,7 @@
     "name": "Plaion (Deep Silver)",
     "type": "publisher",
     "hall": "9.1",
-    "booth": null,
+    "booth": "B030/C031",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/plaion-gmbh",
     "description": "One of Hall 9's largest booths, centered on METRO 2039 from in-house studio 4A Games — also playable at the Xbox booth in Hall 7.",
@@ -390,15 +395,18 @@
     "crowd": 3,
     "crowdNote": "A single high-profile shooter concentrates demand, but dual-location availability splits the queues.",
     "visitAdvice": "Compare queues at Plaion (Hall 9) vs Xbox (Hall 7) — Xbox's 140 stations often move faster.",
-    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"],
-    "lastUpdated": "2026-08-10"
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-14"
   },
   {
     "id": "krafton",
     "name": "KRAFTON",
     "type": "publisher",
     "hall": "9.1",
-    "booth": "B050/C051 + B040/C041",
+    "booth": "B050/C051, B040/C041",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/krafton",
     "description": "One of Hall 9's largest presences, spread over two stand blocks (B050/C051 and B040/C041), with five titles headlined by a still-secret world-premiere FPS from PUBG STUDIOS (set in the Pacific Northwest) plus Neon Giant's cyber-noir shooter NO LAW. Interactive missions earn themed merch.",
@@ -426,7 +434,7 @@
     "name": "Embark Studios",
     "type": "publisher",
     "hall": "6.1",
-    "booth": null,
+    "booth": "B041/A040, B051/A050",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/embark-studios-ab",
     "description": "Riding ARC Raiders' breakout success, the Swedish studio has a Hall 6 booth reportedly twice the size of EA's — its first big gamescom showing, built around its extraction-shooter hit.",
@@ -438,8 +446,11 @@
     "crowd": 4,
     "crowdNote": "Massive active player base and a first big booth — community turnout plus any new-season reveal will pack it.",
     "visitAdvice": "Community events and creator meetups spike traffic unpredictably — check Embark's socials for the stage schedule and go during downtime.",
-    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"],
-    "lastUpdated": "2026-08-06"
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-14"
   },
   {
     "id": "team17-astragon",
@@ -1041,7 +1052,7 @@
     "name": "Headis",
     "type": "experience",
     "hall": "10.2",
-    "booth": "C050/B051",
+    "booth": "C050/B051, B041/C040",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/headis-gmbh",
     "description": "Head-only table tennis, played on a full-size table with a rubber ball — a gamescom regular and the fastest way to get properly sweaty at a games show. Registered across two Hall 10.2 stands (C050/B051 and B041/C040).",
@@ -1052,9 +1063,10 @@
     "visitAdvice": "Not what you want an hour before a big queue — go after you're done playing for the day.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/headis/",
-      "https://www.gamescom.global/en/exhibitor/headis-gmbh"
+      "https://www.gamescom.global/en/exhibitor/headis-gmbh",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-14"
   },
   {
     "id": "xelerate-vr",
@@ -1429,7 +1441,7 @@
     "name": "LEGO Games",
     "type": "publisher",
     "hall": "9.1",
-    "booth": "A040/B029",
+    "booth": "A030/B029, A040, A029",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/lego-gmbh",
     "description": "Multi-stand block in Hall 9.1 next to Nintendo, confirmed returning for 2026. The lineup is unannounced — the 2025 booth featured Batman, One Piece and Super Mario zones, so expect current LEGO video games plus set photo ops.",
@@ -1442,9 +1454,10 @@
     "visitAdvice": "Weekday mornings; weekends are dominated by families.",
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
-      "https://bricksfanz.com/lego-games-returning-for-gamescom-2026/"
+      "https://bricksfanz.com/lego-games-returning-for-gamescom-2026/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-14"
   },
   {
     "id": "wizards-of-the-coast",

@@ -1197,12 +1197,26 @@ function boothKey(hall, booth) {
 }
 
 /* booth → the curated exhibitor standing on it, so a directory row can say
-   "at Indie Arena Booth" instead of stranding 172 studio names with no context. */
+   "at Indie Arena Booth" instead of stranding 172 studio names with no context.
+
+   An exhibitor can hold more than one stand — Ubisoft has a second, smaller
+   booth across the aisle from its main one — and a card lists them separated
+   by commas, the slash still joining the halves of a single shared stand.
+   Both readings have to be registered, because the two sides file such an
+   exhibitor differently: the directory puts every code on one row
+   ("C011/B010/B020"), while a neighbour renting space on one of those stands
+   names only that stand. So the card answers to its whole set of codes and
+   to each stand on its own. */
 function curatedByBooth() {
   const map = new Map();
-  for (const ex of state.exhibitors) {
-    const key = boothKey(ex.hall, ex.booth);
+  const claim = (ex, booth) => {
+    const key = boothKey(ex.hall, booth);
     if (key && !map.has(key)) map.set(key, ex);
+  };
+  for (const ex of state.exhibitors) {
+    claim(ex, ex.booth);
+    const stands = String(ex.booth || "").split(",");
+    if (stands.length > 1) for (const stand of stands) claim(ex, stand);
   }
   return map;
 }

@@ -467,11 +467,16 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 }
 .hall-marker[data-state="tba"] .hall-num,
 .hall-marker[data-state="absent"] .hall-num { font-size: 1rem; letter-spacing: 0; }
+/* A plate can now carry several stands — Nintendo holds four — and the
+   comma is where the line is allowed to turn. break-all broke wherever
+   the 108 px ran out, which split "A020/B019" after its first character
+   and left a booth number nobody could read; break-word keeps each stand
+   whole and only breaks inside one that could not fit a line on its own. */
 .hall-booth {
   font-family: var(--font-mono);
   font-size: .68rem;
   color: inherit; opacity: .78;
-  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .exh-id { padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; justify-content: center; min-width: 0; }

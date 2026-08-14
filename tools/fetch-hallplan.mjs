@@ -15,7 +15,8 @@
 
    Run it from anywhere (no dependencies):
 
-     node tools/fetch-hallplan.mjs
+     node tools/fetch-hallplan.mjs             # re-snapshot, then report
+     node tools/fetch-hallplan.mjs --report    # report on the committed snapshot
 
    It fetches all halls first and only writes when every one validated,
    so a broken or changed endpoint leaves the last committed snapshot in
@@ -219,9 +220,67 @@ function joinReport(halls) {
   console.log(`join: ${inScope.length - misses.length}/${inScope.length} guide exhibitors matched to a stand`);
   if (misses.length)
     console.log(`join: NO stand found for (check the booth code, or the stand may not be filed yet):\n${misses.join("\n")}`);
+  unclaimedReport(halls, exhibitors);
+}
+
+/* Legal forms and the industry filler every third company name carries.
+   Stripped so "Ubisoft GmbH" and "Ubisoft" compare equal — worth it here
+   because a miss costs a booth nobody finds, and a false hit costs a line
+   of output someone reads and dismisses. */
+const NOISE =
+  /\b(gmbh|mbh|ug|haftungsbeschränkt|ag|kg|ohg|e\.?k\.?|se|ltd|limited|llc|inc|corp|co|company|plc|b\.?v\.?|n\.?v\.?|ab|a\/s|as|oy|aps|s\.?a\.?|sas|sarl|s\.?r\.?l\.?|s\.?l\.?|spa|sp|z|o\.?o\.?|pte|pty|holdings?|studios?|entertainment|interactive|games?|gaming|group|europe|deutschland|germany|international|digital|media|software|the)\b/g;
+const nameKey = (s) =>
+  String(s).toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(NOISE, " ").replace(/\s+/g, " ").trim();
+
+/* The direction that actually rots, and the reason this exists: a stand
+   filed under a name the guide already covers, that no card claims.
+   Ubisoft's second Hall 6.1 booth sat unclaimed like that for a while,
+   so the map called a plainly-Ubisoft stand "not covered by the guide"
+   while the big one across the aisle was fine.
+
+   Nothing here joins anything. The comparison is deliberately loose —
+   trusted, it would sooner or later put one company's name on another
+   company's booth, which is the one thing this guide must not do. It
+   prints candidates; a human decides, and the fix is a booth number in
+   exhibitors.json, where the comma separates stands. A card's name is
+   read up to its first "/" or "(" so "SEGA / Atlus" and "Plaion (Deep
+   Silver)" still recognise "SEGA Europe" and "PLAION GmbH". */
+function unclaimedReport(halls, exhibitors) {
+  const found = [];
+  for (const ex of exhibitors) {
+    const hall = halls.find((h) => h.hall === String(ex.hall));
+    if (!hall) continue;
+    const key = nameKey(String(ex.name).split(/[/(]/)[0]);
+    if (!key) continue;
+    const codes = codeSet(ex.booth);
+    const unclaimed = hall.stands.filter(
+      (s) =>
+        ![...codeSet(s.nr)].some((c) => codes.has(c)) &&
+        s.names.some((n) => {
+          const filed = nameKey(n);
+          return filed === key || filed.startsWith(`${key} `);
+        })
+    );
+    for (const s of unclaimed)
+      found.push(`  ${ex.id} — hall ${ex.hall} stand ${s.nr} (~${s.a} m²) filed as "${s.names[0]}"`);
+  }
+  if (!found.length) return console.log("join: no stand names an exhibitor we cover but did not claim");
+  console.log(
+    `join: stands naming an exhibitor we cover, that their card does not claim` +
+      ` (add to that card's booth after a comma, or ignore — names are matched loosely):\n${found.join("\n")}`
+  );
 }
 
 /* ---- main ---- */
+
+/* The QA on its own, against the committed snapshot: booth numbers in
+   exhibitors.json change far more often than Koelnmesse's layout does,
+   and checking one should not mean asking them for the other again. */
+if (process.argv.includes("--report")) {
+  const index = JSON.parse(readFileSync(join(OUT, "index.json"), "utf8"));
+  joinReport(index.halls.map((h) => JSON.parse(readFileSync(join(OUT, h.file), "utf8"))));
+  process.exit(0);
+}
 
 const halls = [];
 for (const id of Object.keys(HALLS)) {
