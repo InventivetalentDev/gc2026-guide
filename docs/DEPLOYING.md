@@ -95,8 +95,14 @@ service worker, the saved list, the itinerary and the played marks are all
 per-origin, so that installation carries on against
 `gc2026.inventivetalent.org` and simply follows it to Cloudflare. It is a
 different origin from `gamescom.guide` though, so anyone who reinstalls from the
-new domain starts with an empty list — the **Share list** link exists for
-exactly that kind of move.
+new domain starts with an empty list.
+
+**Share list** is the way across, but only because `buildShareLink()` makes it
+one: on the legacy hostname it builds the link against `gamescom.guide` instead
+of the current origin (`LEGACY_HOST` / `SHARE_ORIGIN` in `js/app.js`). Left to
+`location.origin` it would return a link to the origin the list is trying to
+leave, which moves nothing. Both constants come out once the old hostname is
+finally retired.
 
 ## Rolling back
 

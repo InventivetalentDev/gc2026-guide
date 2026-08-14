@@ -370,10 +370,20 @@ function encodedSavedTokens() {
   return [...exhibitors, ...games];
 }
 
+/* The guide answers on two hostnames while the old one is retired, and a saved
+   list is per-origin. Built from location.origin, a link shared from the legacy
+   host would hand the recipient — or the sender's own next device — the very
+   origin they are trying to leave, so sharing could never move a list forward.
+   Only that one host is rewritten: gamescom.guide and localhost share
+   themselves, as they should. */
+const LEGACY_HOST = "gc2026.inventivetalent.org";
+const SHARE_ORIGIN = "https://gamescom.guide";
+
 function buildShareLink() {
   /* Search params are not part of the guide state and can contain referral or
      campaign data that should not hitch a ride in somebody else's link. */
-  const base = `${location.origin}${location.pathname}`;
+  const origin = location.host === LEGACY_HOST ? SHARE_ORIGIN : location.origin;
+  const base = `${origin}${location.pathname}`;
   return `${base}#saved?l=${encodedSavedTokens().join(".")}`;
 }
 
