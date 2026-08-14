@@ -12,7 +12,9 @@ exhibitor names, all in metres) is exactly what an honest map needs.
 geometry into `data/hallplan/`; `map.html` + `js/map.js` + `css/map.css`
 draw it; `js/marks.js` holds what the map and the guide must agree on;
 `sw.js` precaches both pages and all seven halls; the guide links out
-from every hall plate and plan-board hall header, and the map links back
+from every place it names a hall — card plates, the plan board, queue
+priority, the wristband list and all 1,630 rows of the full directory —
+and the map links back
 to a card. This document records the discovery, the design decisions and
 the test script — the integration steps below are done, kept because they
 say *where* everything is wired.
@@ -280,6 +282,21 @@ theatre. None of these change the architecture.
    (loaded from `data/hallplan/index.json`, optional — no index, no
    links, guide unchanged). Plan-board hall headers carry a `Map →` link.
    The manifest has a "Hall map" shortcut, second after "Saved list".
+   Everywhere else a hall is *named* rather than plated, `hallLink()`
+   wraps that text: queue-priority rows, the wristband list, and the plan
+   board's day lens (where a game shown at two booths links to each). It
+   is gated on the same `hasMap()`, so an undrawn hall stays plain text,
+   and it takes the row's own label untouched — only a destination is
+   added. `itineraryLocation()` stays plain text beside it because the
+   `.ics` export writes it into a calendar file.
+   The full directory does the same thing one level down: every row's
+   `hall · booth` chip is the link, since the booth number is the answer
+   that section exists to give. 802 of its stands sit in a drawn hall and
+   all 802 resolve to a stand — the last two needed `boothCodes()` to
+   split run-together filings like `F040gE057g`, which it now does
+   without changing any curated booth's codes. Business halls 1–4 are
+   never drawn, so those chips stay plain: a consumer ticket can't open
+   that door and a link would imply it could.
 5. **Cross-links out**: the sheet links to `./#exhibitors?ex=<id>`, and
    `focusExhibitor()` in `js/app.js` scrolls that card into view and
    flashes it, clearing any filter that would otherwise hide it.
@@ -323,7 +340,12 @@ Serve the repo root; clear `gc2026.saved.v1`.
 11. **Cross-links** — a card's hall plate opens that booth's sheet on the
     map; a plan-board hall header opens that hall; the sheet's "open in
     guide" lands on that card, even with "saved only" left on. Cards for
-    halls the snapshot lacks show a plain plate with no link.
+    halls the snapshot lacks show a plain plate with no link. The named
+    halls link too: a queue-priority row, a wristband row and a day-lens
+    stop each land on their own booth, and a directory chip in a drawn
+    hall opens that stand's sheet — showing the official filing's name
+    when the guide has no card for it. Directory chips in halls 1–4 are
+    not links. The `.ics` export still contains no markup.
 12. **Offline** — airplane mode, reopen installed app → map, switch to a
     never-opened hall: renders from precache. Navigating straight to
     `map.html` offline serves the map, not the guide.
@@ -332,10 +354,11 @@ Serve the repo root; clear `gc2026.saved.v1`.
 
 ## Open questions
 
-1. **Orientation ground truth.** The transform matches the official
-   renderer's math, but nobody has eyeballed our halls against the
-   official plan yet (this environment couldn't load their site in a
-   browser). Cheap to check, cheap to fix (decision 3).
+1. ~~**Orientation ground truth.**~~ Settled: checked against the
+   official plan by eye after the first release, and the halls sit the
+   right way round. The `CAMPUS` table in the tool (decision 3) is
+   correct as filed; a future hall added to it still needs the same
+   check, since its signs are a per-hall fact.
 2. **Sub-stand suffix policy.** Suffixed stands ("a" annexes, "g"
    galleries, "y"…) currently render as filed, layered under the label
    plane. Merging or dimming them is a data-shape question for the tool,
