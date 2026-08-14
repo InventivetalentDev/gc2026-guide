@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-14",
+    "revision": 21,
+    "changes": [
+      "Share list now asks who the link is for. Someone else gets your saved list alone — your progress through it is not theirs. Another of my devices brings your day plan and played marks along too, and on arrival offers to replace that device's list instead of adding to it, so removing a booth or moving it to another day finally carries across your own devices. The prompt counts what a replace would remove before anything is touched, and Undo puts all of it back.",
+      "Shared links are much shorter, which brings the QR code back: a 30-stop list had quietly outgrown it as the guide's data doubled, and now fits again with its whole day plan riding along. Links shared before this change keep working."
+    ]
+  },
+  {
+    "date": "2026-08-14",
     "revision": 20,
     "changes": [
       "Booth numbers for four booths that had none: SEGA / Atlus (Hall 7.1, A031 and A041/B040), Square Enix (8.1 A021), Plaion (9.1 B030/C031) and Embark Studios (6.1 B041/A040 and B051/A050). All four were on Koelnmesse's own hall plan the whole time.",

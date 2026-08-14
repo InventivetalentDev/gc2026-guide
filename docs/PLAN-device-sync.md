@@ -80,10 +80,18 @@ What to include
 ## 2. Payload v2 (`js/app.js`, sharing section)
 
 ```
-#saved?v=2&l=<tokens>&d=<days>&p=<mask>&q=<tokens>&m=1
+#s?t=<tokens>&d=<days>&p=<mask>&q=<tokens>&m
 ```
 
-**`l` — the saved list.** Every item, exhibitor or game alike, becomes a
+Versioned by the param name, which is v1's own convention (`l` was v1): `t` is
+v2, and a `v=2&l=` spelling would cost 8 characters the QR budget turns out to
+need. Two more small spends of the same currency, found when the measured link
+came out over budget: `#s` is `#saved` in payload links only — `parseHash()`
+normalises it on arrival, so the alias never reaches the address bar or
+anything that compares routes — and `m` is a bare flag, presence being the
+message (the decoder accepts v1's `m=1` too).
+
+**`t` — the saved list.** Every item, exhibitor or game alike, becomes a
 **5-character base36 prefix** of the FNV-1a-32 hash of its identity string
 (`ex.id` for exhibitors, `gameKey(title)` for games):
 
@@ -132,7 +140,13 @@ are also saved, and ticking `✓` does not require saving first. These ride as
 explicit tokens. Usually empty, costs nothing when it is, and without it a move
 would silently drop part of what it promised to carry.
 
-**`m=1`** marks a self-move (§3). **`v=2`** versions the format.
+**`m`** marks a self-move (§3).
+
+**Presence over emptiness.** A part that rides empty still writes its param:
+`p=` with nothing in it says "the played part came, and it is empty", which on
+a replace is the difference between clearing the local marks and leaving them
+alone. An absent param means the part did not ride, and a replace leaves that
+list untouched — absent is "not moved", never "none".
 
 ## 3. Merge, replace, and Undo (`js/app.js`)
 
@@ -145,6 +159,13 @@ Replace is the whole point: it is the only path on which a removal, a
 rescheduled day, or an untick travels. `applyIncoming()` grows a replace branch
 that assigns the three lists instead of unioning them, then calls
 `pruneItinerary()` and `persistMarks`/`persistItinerary` as it already does.
+
+Merge changes in one deliberate way: an incoming day assignment fills blanks
+only, never overwriting a day the visitor already chose. The move payload's
+`.set()`-over-local behaviour was fine for a one-time migration onto an empty
+device, but a friend's link rescheduling your own booth silently is not an
+addition — overwriting is now exactly what replace is for, and nothing else
+does it.
 
 Undo needs no work — `3f544dc` already snapshots saved, played and itinerary
 together and restores all three, precisely so a move landing on a used device
@@ -161,20 +182,25 @@ Two constraints worth stating rather than discovering:
 
 ## 4. QR capacity (`js/qr.js`)
 
-Measured against the real encoder, 30 saved items with 20 scheduled and 10
-played:
+Measured end-to-end against the real encoder at the production origin, 30
+saved items with 20 scheduled and 10 played:
 
 | | chars | QR |
 |---|---|---|
 | v1 share link, saved only | 279 | no |
 | v1 move link, all three | 749 | no |
-| **v2, saved only** | **177** | yes |
-| **v2, saved + day plan** | **209** | yes |
-| **v2, all three** | **218** | no — 5 over |
+| **v2, saved only** | **178** | yes |
+| **v2, saved + day plan** | **211** | yes |
+| **v2, all three** | **222** | no |
 
 So v2 fixes the common cases: a plain share and a share-with-schedule both
 scan, where today a plain share of 20 items already does not. The full
-three-part move misses by five characters at 30 items and fits at 20.
+three-part move misses at 30 items and fits at around 24 — and it is also the
+one case that least needs a QR, since `q` and the played bitmask only matter
+device-to-device, where the link travels by messenger as easily as by camera.
+The saved + day plan number is why the format is as terse as it is: it fits
+the 213-character cap with 2 to spare, found only by measuring — the estimate
+in the planning stage said 209 and was wrong by enough to matter.
 
 **On base64.** For an ASCII token string it is a straight 4/3 expansion. Packing
 the hashes as raw bits first does help — 103 characters against 116 for the same
@@ -204,11 +230,11 @@ out to matter more than implementation cost.
 
 ## 5. Compatibility
 
-v1 links exist in the wild and must keep working. `v=2` is absent on all of
-them, and their `l` is dot-separated variable-length tokens, so detection is
-unambiguous either way. `parsePayload()` branches once at the top and keeps
-`resolveTokens()`/`resolveDays()` intact for the v1 path; everything downstream
-of `incoming` is shared.
+v1 links exist in the wild and must keep working. They carry `l`, v2 carries
+`t`, so detection is one `has()` call. `parsePayload()` branches once at the
+top and keeps `resolveTokens()`/`resolveDays()` intact for the v1 path;
+everything downstream of `incoming` is shared, including `m=1` from the old
+deploy's move links reading as a move.
 
 `buildShareCodeMap()` builds both vocabularies — v1's variable-length codes for
 decoding old links, v2's 5-char prefixes for everything new. Both derive from

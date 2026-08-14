@@ -235,6 +235,21 @@
     </div>
     <div class="sheet-body">
       <p class="share-count" id="share-count"></p>
+      <!-- The mode sets the defaults — someone else gets the saved list alone,
+           your own device gets everything and is offered replace on arrival —
+           and the boxes stay adjustable for the in-between cases. Nothing here
+           is remembered between opens. -->
+      <fieldset class="share-set">
+        <legend class="field-label">Sharing with</legend>
+        <label class="toggle"><input type="radio" name="share-mode" id="share-mode-friend" checked> Someone else</label>
+        <label class="toggle"><input type="radio" name="share-mode" id="share-mode-device"> Another of my devices</label>
+      </fieldset>
+      <fieldset class="share-set">
+        <legend class="field-label">What to include</legend>
+        <label class="toggle"><input type="checkbox" id="share-part-saved" checked disabled> Saved list <span class="saved-count" id="share-part-saved-count"></span></label>
+        <label class="toggle"><input type="checkbox" id="share-part-days"> Day plan <span class="saved-count" id="share-part-days-count"></span></label>
+        <label class="toggle"><input type="checkbox" id="share-part-played"> Played marks <span class="saved-count" id="share-part-played-count"></span></label>
+      </fieldset>
       <label class="share-link-field" for="share-link">
         <span class="field-label">Share link</span>
         <input id="share-link" type="text" readonly spellcheck="false">
