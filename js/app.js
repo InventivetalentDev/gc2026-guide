@@ -359,16 +359,22 @@ function buildShareCodeMap() {
   });
 }
 
-function encodedSavedTokens() {
-  const exhibitors = [...state.marks.saved.exhibitors]
+/* Both marks encode through the same vocabulary. A shared link carries the saved
+   list alone — someone else's plan is not their progress through it — but a move
+   to the new hostname is the same person's own data, so it carries the played
+   marks by the same codes. */
+function encodedTokens(mark) {
+  const exhibitors = [...state.marks[mark].exhibitors]
     .filter((id) => shareCodes.exhibitorIds.has(id))
     .sort();
-  const games = [...state.marks.saved.games]
+  const games = [...state.marks[mark].games]
     .map((key) => shareCodes.gameToCode.get(key))
     .filter(Boolean)
     .sort();
   return [...exhibitors, ...games];
 }
+
+const encodedSavedTokens = () => encodedTokens("saved");
 
 /* The guide answers on two hostnames while the old one is retired, and a saved
    list is per-origin. Built from location.origin, a link shared from the legacy
@@ -385,6 +391,91 @@ function buildShareLink() {
   const origin = location.host === LEGACY_HOST ? SHARE_ORIGIN : location.origin;
   const base = `${origin}${location.pathname}`;
   return `${base}#saved?l=${encodedSavedTokens().join(".")}`;
+}
+
+/* Day assignments as token~date pairs. The date is carried literally rather
+   than as an index into the event days: an index means something different the
+   moment a day is added to data/event.json, and the receiving side already
+   knows how to throw out a date that is not a day of the show. */
+function encodedDays() {
+  const pairs = [];
+  state.itinerary.exhibitors.forEach((date, id) => {
+    if (shareCodes.exhibitorIds.has(id)) pairs.push(`${id}~${date}`);
+  });
+  state.itinerary.games.forEach((date, key) => {
+    const code = shareCodes.gameToCode.get(key);
+    if (code) pairs.push(`${code}~${date}`);
+  });
+  return pairs.sort();
+}
+
+/* Where the move notice sends people. It is the share link plus the two things
+   a share deliberately leaves behind, because this is not a share: it is one
+   person's own plan following them to an address that is going to outlive the
+   old one. Everything the guide holds for them is per-origin and does not
+   survive the hop on its own.
+
+   Payload lives in the hash, so none of it is ever sent to a server — the same
+   reason a shared list can be built offline.
+
+   Null when there is nothing saved to carry, and the notice just navigates.
+   Played marks and day assignments both hang off saved items, so an empty saved
+   list means an empty move; it is also the rule the Share control already uses
+   to decide it has nothing to offer. */
+function buildMoveLink() {
+  const saved = encodedSavedTokens();
+  if (!saved.length) return null;
+  const parts = [`l=${saved.join(".")}`, "m=1"];
+  const played = encodedTokens("played");
+  if (played.length) parts.push(`p=${played.join(".")}`);
+  const days = encodedDays();
+  if (days.length) parts.push(`d=${days.join(".")}`);
+  return `${SHARE_ORIGIN}${location.pathname}#saved?${parts.join("&")}`;
+}
+
+/* Nothing on the old hostname looks broken — it serves the same deploy — which
+   is exactly why a visitor can spend the whole show on an address that is going
+   away without ever noticing. Hence one nudge, and only one: it is remembered
+   the moment they answer it either way, because a banner that returns on every
+   load is a banner people learn to read past.
+
+   It is deliberately not a redirect. Someone mid-plan on a show floor should
+   not have the page pulled out from under them, and a move is a decision worth
+   taking on purpose: everything the guide holds is per-origin, so accepting is
+   what carries it (buildMoveLink above) and ignoring leaves it here. */
+const MOVED_KEY = "gc2026.moved.v1";
+
+function moveNoticeAnswered() {
+  try {
+    return localStorage.getItem(MOVED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function rememberMoveNotice() {
+  try {
+    localStorage.setItem(MOVED_KEY, "1");
+  } catch {
+    /* storage blocked (Safari private mode) — the notice returns next load,
+       which is the harmless direction for this to fail in */
+  }
+}
+
+function offerMove() {
+  if (location.host !== LEGACY_HOST || moveNoticeAnswered()) return;
+  const move = buildMoveLink();
+  showToast(
+    move
+      ? "The guide has moved to gamescom.guide. Your list comes with you."
+      : "The guide has moved to gamescom.guide.",
+    "Open",
+    () => {
+      rememberMoveNotice();
+      location.assign(move || `${SHARE_ORIGIN}${location.pathname}${location.hash}`);
+    },
+    { onDismiss: rememberMoveNotice }
+  );
 }
 
 function parseHash() {
@@ -404,6 +495,37 @@ function resolveTokens(payload) {
     else if (shareCodes.codeToGame.has(token)) incoming.games.add(shareCodes.codeToGame.get(token));
     else incoming.unresolved += 1;
   });
+  return incoming;
+}
+
+/* A day nobody is exhibiting on is dropped rather than imported: dates come
+   from data/event.json and an old link can outlive a schedule change, exactly
+   as loadItinerary already guards the stored copy. */
+function resolveDays(payload) {
+  const valid = new Set((state.event.days || []).map((d) => d.date));
+  const days = { exhibitors: new Map(), games: new Map() };
+  String(payload)
+    .split(".")
+    .filter(Boolean)
+    .forEach((pair) => {
+      const [token, date] = pair.split("~");
+      if (!valid.has(date)) return;
+      if (shareCodes.exhibitorIds.has(token)) days.exhibitors.set(token, date);
+      else if (shareCodes.codeToGame.has(token)) days.games.set(shareCodes.codeToGame.get(token), date);
+    });
+  return days;
+}
+
+/* One payload shape for both arrivals. A shared link carries `l` alone; a move
+   adds `m=1` and, when there are any, `p` and `d`. Anything the guide no longer
+   recognises falls out here rather than reaching the stored lists. */
+function parsePayload(query) {
+  const params = new URLSearchParams(query);
+  if (!params.has("l")) return null;
+  const incoming = resolveTokens(params.get("l") || "");
+  incoming.moved = params.get("m") === "1";
+  incoming.played = resolveTokens(params.get("p") || "");
+  incoming.days = resolveDays(params.get("d") || "");
   return incoming;
 }
 
@@ -433,28 +555,41 @@ function takeIncomingList() {
   const { route, params } = parseHash();
   if (route !== SAVED_ROUTE || !params.has("l")) return null;
 
-  const payload = params.get("l") || "";
-  rememberPending(payload);
+  /* The whole query, not just the list: a move's played marks and day
+     assignments have to survive an unanswered prompt the same way. */
+  const query = params.toString();
+  rememberPending(query);
   /* Consume the payload before any rendering can synchronise the route, so a
      refresh cannot import twice and the link is not left lying in the bar. */
   history.replaceState(null, "", "#saved");
-  return resolveTokens(payload);
+  return parsePayload(query);
 }
 
 /* An offer this tab was made but never answered — a dismissed prompt, or a
    reload before the visitor decided. */
 function pendingIncomingList() {
-  let payload = null;
+  let query = null;
   try {
-    payload = sessionStorage.getItem(PENDING_KEY);
+    query = sessionStorage.getItem(PENDING_KEY);
   } catch {
     /* storage denied */
   }
-  return payload === null ? null : resolveTokens(payload);
+  return query === null ? null : parsePayload(query);
 }
 
 const incomingCount = (incoming) => incoming.exhibitors.size + incoming.games.size;
+const dayCount = (days) => days.exhibitors.size + days.games.size;
 const itemLabel = (n) => `${n} saved item${n === 1 ? "" : "s"}`;
+
+/* The saved list is what the counts are about, so what else rode along is said
+   separately rather than folded into a number nobody can check. */
+function carriedNote(incoming) {
+  if (!incoming.moved) return "";
+  const also = [];
+  if (dayCount(incoming.days)) also.push("day plan");
+  if (incomingCount(incoming.played)) also.push("played marks");
+  return also.length ? ` Your ${also.join(" and ")} came too.` : "";
+}
 
 function unresolvedNote(n) {
   if (!n) return "";
@@ -469,14 +604,38 @@ function renderBookmarkViews() {
   renderPlan();
 }
 
+/* Everything is merged, never replaced, and the snapshot covers all three lists
+   so Undo puts back exactly what was here — a move landing on a device that had
+   already been used has to be as reversible as a shared list is. */
 function applyIncoming(incoming) {
   const before = {
     exhibitors: new Set(state.marks.saved.exhibitors),
     games: new Set(state.marks.saved.games),
+    played: {
+      exhibitors: new Set(state.marks.played.exhibitors),
+      games: new Set(state.marks.played.games),
+    },
+    itinerary: {
+      exhibitors: new Map(state.itinerary.exhibitors),
+      games: new Map(state.itinerary.games),
+    },
+    moved: incoming.moved,
   };
   incoming.exhibitors.forEach((id) => state.marks.saved.exhibitors.add(id));
   incoming.games.forEach((key) => state.marks.saved.games.add(key));
   persistMarks("saved");
+  if (incomingCount(incoming.played)) {
+    incoming.played.exhibitors.forEach((id) => state.marks.played.exhibitors.add(id));
+    incoming.played.games.forEach((key) => state.marks.played.games.add(key));
+    persistMarks("played");
+  }
+  /* Applied after the saved list, because an assignment only survives
+     loadItinerary/pruneItinerary while the item it points at is saved. */
+  if (dayCount(incoming.days)) {
+    incoming.days.exhibitors.forEach((date, id) => state.itinerary.exhibitors.set(id, date));
+    incoming.days.games.forEach((date, key) => state.itinerary.games.set(key, date));
+    persistItinerary();
+  }
   renderBookmarkViews();
   /* Answered. Undo is a correction to a decision already made, not a reason to
      put the offer back on the table. */
@@ -490,10 +649,23 @@ function restoreBookmarks(snapshot) {
     games: new Set(snapshot.games),
   };
   persistMarks("saved");
+  state.marks.played = {
+    exhibitors: new Set(snapshot.played.exhibitors),
+    games: new Set(snapshot.played.games),
+  };
+  persistMarks("played");
+  state.itinerary = {
+    exhibitors: new Map(snapshot.itinerary.exhibitors),
+    games: new Map(snapshot.itinerary.games),
+  };
+  persistItinerary();
   /* Undo can take away items the visitor already placed on a day. */
   pruneItinerary();
   renderBookmarkViews();
-  showToast("Shared list import undone.", null, null, { priority: true, replace: true });
+  showToast(snapshot.moved ? "Move undone." : "Shared list import undone.", null, null, {
+    priority: true,
+    replace: true,
+  });
 }
 
 function offerIncoming(incoming) {
@@ -507,13 +679,14 @@ function offerIncoming(incoming) {
   }
 
   const stale = unresolvedNote(incoming.unresolved);
+  const source = incoming.moved ? "the old address" : "a shared link";
   /* Old localStorage entries can outlive a renamed/removed guide item. They
      remain stored in case the data returns, but do not make the visible local
      list count as non-empty for import decisions. */
   if (encodedSavedTokens().length === 0) {
     const before = applyIncoming(incoming);
     showToast(
-      `Loaded ${itemLabel(total)} from a shared link.${stale}`,
+      `Loaded ${itemLabel(total)} from ${source}.${carriedNote(incoming)}${stale}`,
       "Undo",
       () => restoreBookmarks(before),
       { priority: true }
@@ -529,18 +702,25 @@ function offerIncoming(incoming) {
      offering the button would only produce an import of nothing. */
   if (newCount === 0) {
     forgetPending();
-    showToast(`You already have everything in this shared link.${stale}`, null, null, {
-      priority: true,
-    });
+    showToast(
+      incoming.moved
+        ? `You already have everything from the old address.${stale}`
+        : `You already have everything in this shared link.${stale}`,
+      null,
+      null,
+      { priority: true }
+    );
     return;
   }
   showToast(
-    `A shared link has ${itemLabel(total)} — ${newCount} new to you.${stale}`,
+    incoming.moved
+      ? `Your list from the old address has ${itemLabel(total)} — ${newCount} new to you.${stale}`
+      : `A shared link has ${itemLabel(total)} — ${newCount} new to you.${stale}`,
     "Add to my list",
     () => {
       const before = applyIncoming(incoming);
       showToast(
-        `Added ${itemLabel(newCount)} from the shared link.${stale}`,
+        `Added ${itemLabel(newCount)} from ${source}.${carriedNote(incoming)}${stale}`,
         "Undo",
         () => restoreBookmarks(before),
         { priority: true, replace: true }
@@ -2154,6 +2334,7 @@ function showToast(message, actionLabel, onAction, options = {}) {
     message,
     actionLabel,
     onAction,
+    onDismiss: options.onDismiss,
     priority: Boolean(options.priority),
   };
   if (toast.hidden || !activeToast || options.replace) {
@@ -2184,7 +2365,15 @@ function hideToast(notification) {
   }
 }
 
-if (toast) $("#toast-dismiss").addEventListener("click", () => hideToast());
+/* onDismiss fires for the ✕ alone, never for a programmatic hide: "the visitor
+   waved this away" and "this toast is finished" are different facts, and only
+   the first one is worth remembering. */
+if (toast)
+  $("#toast-dismiss").addEventListener("click", () => {
+    const dismissed = activeToast;
+    hideToast();
+    dismissed?.onDismiss?.();
+  });
 window.gcToast = { show: showToast, hide: hideToast };
 
 function renderCountdown() {
@@ -2476,6 +2665,9 @@ async function main() {
   showView(incoming ? SAVED_ROUTE : landing.route || VIEWS[0], { push: false });
   if (!incoming) focusExhibitor(landing.params.get("ex"));
   if (offer) offerIncoming(offer);
+  /* Last, so an import prompt is the thing on screen when both apply — that one
+     is priority anyway, and it carries the only Add/Undo the visitor gets. */
+  offerMove();
 }
 
 main();

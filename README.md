@@ -172,6 +172,11 @@ Played marks are deliberately **not** part of a shared link. A shared list is a 
 you hand to someone else, and your progress through it is not theirs — `?l=` carries
 saved booths and games only.
 
+Moving yourself between the guide's two hostnames is the one case that is not a
+share, so it carries everything: accepting the notice on `gc2026.inventivetalent.org`
+brings the saved list, the played marks and the day assignments over to
+`gamescom.guide` in one step. See [`docs/DEPLOYING.md`](docs/DEPLOYING.md).
+
 ## Architecture
 
 All content lives in `data/` as JSON; the app (`index.html`, `js/app.js`, `css/`) is a thin renderer. **Updating the guide never requires code changes — only edit the JSON files.** `js/pwa.js` (install, update and offline state) and `sw.js` (caching) are separate from the renderer and untouched by data work.
