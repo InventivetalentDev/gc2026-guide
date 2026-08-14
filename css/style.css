@@ -1647,6 +1647,62 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 .wrap { padding-left: max(24px, env(safe-area-inset-left)); padding-right: max(24px, env(safe-area-inset-right)); }
 
 /* ============================================================
+   legal pages — imprint, privacy
+   Prose, not app chrome: one narrow column on the same ground, so
+   these read as part of the guide without pulling in the masthead.
+   ============================================================ */
+/* body is a flex column, so main has to grow or the footer floats up the
+   page on a short document */
+.legal-page main { flex: 1; padding-top: 40px; padding-bottom: 64px; }
+.legal-bar { border-bottom: 1px solid var(--rule); padding: 16px 0; }
+.legal-bar .wrap { display: flex; align-items: baseline; gap: 14px; }
+.legal-back {
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: .74rem;
+}
+.legal-back:hover { color: var(--ink); }
+.legal-doc { max-width: 68ch; }
+.legal-doc h1 {
+  font-family: var(--font-poster);
+  font-size: clamp(2rem, 6vw, 2.9rem);
+  line-height: 1.05;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.legal-doc h2 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 34px 0 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule-soft);
+}
+.legal-doc h3 {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 18px 0 4px;
+}
+.legal-doc p, .legal-doc li { color: var(--ink-mid); font-size: .9rem; }
+.legal-doc p { margin-bottom: 10px; }
+.legal-doc ul { margin: 0 0 12px 18px; display: flex; flex-direction: column; gap: 5px; }
+.legal-doc a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+.legal-doc a:hover { text-decoration-color: var(--signal); }
+.legal-doc address { font-style: normal; color: var(--ink); line-height: 1.7; }
+.legal-doc code { font-family: var(--font-mono); font-size: .8rem; color: var(--ink); }
+/* the one thing on these pages worth reading first */
+.legal-lede { color: var(--ink) !important; font-size: 1rem !important; border-left: 2px solid var(--signal); padding-left: 14px; }
+.legal-updated { font-family: var(--font-mono); font-size: .7rem; color: var(--ink-dim); margin-bottom: 26px; }
+
+@media (max-width: 620px) {
+  .legal-page main { padding-top: 26px; }
+  .legal-doc h2 { margin-top: 26px; }
+}
+
+/* ============================================================
    responsive
    ============================================================ */
 @media (max-width: 860px) {

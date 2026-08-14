@@ -28,6 +28,10 @@ const NAV_TIMEOUT = 4000;
 const SHELL = [
   "./",
   "map.html",
+  /* Legal pages are precached rather than left to runtime: they have to stay
+     reachable in the halls, where the app is most often offline. */
+  "imprint.html",
+  "privacy.html",
   "css/fonts.css",
   "css/style.css",
   "css/map.css",
@@ -176,10 +180,13 @@ function staleWhileRevalidate(event, cacheName) {
   })();
 }
 
-/* Two pages now, so a navigation has to fall back to the one that was
+/* Several pages now, so a navigation has to fall back to the one that was
    asked for: everything used to land on "./", which would answer an
-   offline request for the hall map with the guide. */
-const pageKey = (url) => (url.pathname.endsWith("/map.html") ? "map.html" : "./");
+   offline request for the hall map with the guide. Anything not listed is
+   still the guide itself, which is what a bare "/" or a #hash link is. */
+const SHELL_PAGES = ["map.html", "imprint.html", "privacy.html"];
+const pageKey = (url) =>
+  SHELL_PAGES.find((page) => url.pathname.endsWith(`/${page}`)) || "./";
 
 /* Race the network against the clock: on a hall's worth of contended 4G an
    unanswered request should not hold the splash for 30s when a perfectly
