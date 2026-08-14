@@ -118,29 +118,35 @@ redirect — nobody mid-plan on a show floor gets the page pulled out from under
 them — and its **Open** action brings their plan along rather than asking them
 to move it by hand.
 
-`buildMoveLink()` is what carries it: the share payload plus the two things a
-share deliberately leaves behind, because a move is one person's own data rather
-than a plan handed to someone else.
+`buildMoveLink()` is what carries it: the share dialog's device-mode link with
+every part switched on, because a move is one person's own data rather than a
+plan handed to someone else. The format is the dialog's own (the sharing
+section in `js/app.js`):
 
 | Param | Carries |
 |---|---|
-| `l` | saved booths and games, same tokens a shared link uses |
-| `m=1` | marks this as a move, so the arrival says so instead of naming a shared link |
-| `p` | played marks, same token vocabulary |
-| `d` | day assignments, as `token~YYYY-MM-DD` pairs |
+| `t` | saved booths and games, as fixed-width 5-character hash tokens |
+| `d` | day assignments — one day-of-month character per token, `-` for none |
+| `p` | played marks on saved items, a base36 bitmask over the token order |
+| `q` | played marks on items that are not saved, as explicit tokens |
+| `m` | marks this as a move, so the arrival offers replace instead of merge |
 
-It all rides in the hash, so none of it is sent to a server, and the arrival goes
-through the existing import path — merged, never replacing, with Undo, and
-anything the guide no longer recognises dropped on the way in. A visitor with
-nothing saved gets a link-free notice and a plain navigation.
+It all rides in the hash, so none of it is sent to a server, and the arrival
+goes through the existing import path — with Undo, and anything the guide no
+longer recognises dropped on the way in. A device with nothing saved imports
+straight away; one already holding a list is offered **Replace my list**, the
+cost counted out in the prompt first. A visitor with nothing saved gets a
+link-free notice and a plain navigation.
 
 The notice is remembered in `gc2026.moved.v1` as soon as it is answered either
 way. It appears on the guide only; the hall map has no toast of its own, so a
 visitor who lands straight on `map.html` sees it when they next open the guide.
 
 `LEGACY_HOST`, `SHARE_ORIGIN`, `offerMove()`, `buildMoveLink()` and
-`gc2026.moved.v1` all come out once the old hostname is finally retired — as do
-the `m`/`p`/`d` branches in `parsePayload()`.
+`gc2026.moved.v1` all come out once the old hostname is finally retired. The
+`t`/`d`/`p`/`q`/`m` params stay — they are the share dialog's own format now —
+and only the v1 `l=` decode path goes, once links made before the format
+change stop turning up.
 
 ## Rolling back
 

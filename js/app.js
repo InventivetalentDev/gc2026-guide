@@ -312,19 +312,35 @@ function renderMarkControls() {
   $("#goto-plan")?.classList.toggle("hidden", saved === 0);
   $("#hide-played").checked = state.hidePlayed;
   $("#priority-hide-played").checked = state.hidePlayed;
-  $("#share-list").classList.toggle("hidden", encodedSavedTokens().length === 0);
+  $("#share-list").classList.toggle("hidden", encodeEntries().length === 0);
 }
 
 /* ---------- sharing ----------
 
-   A shared URL contains only stable exhibitor ids and short hashes of the
-   normalised game titles. Both maps are rebuilt from the guide data, so the
-   link needs no server and works from the offline cache. */
+   A shared URL carries only guide identifiers — exhibitor ids and hashes of
+   the normalised game titles — never the names themselves. Every vocabulary
+   is rebuilt from the guide data, so a link needs no server and works from
+   the offline cache.
+
+   Two wire formats coexist. v1 (dot-separated: exhibitor ids verbatim, games
+   as variable-length hashes) is decode-only now, for links that predate v2
+   and are still pinned to chats and fridge doors. v2 writes every item,
+   exhibitor or game alike, as a fixed-width 5-char base36 hash prefix: fixed
+   width needs no separators, and an id like tencent-worlds-of-play stops
+   costing 22 characters. That is what lets a 30-item list back into the QR
+   code, which the v1 format quietly outgrew as the data doubled. */
+
+const TOK_LEN = 5;
 
 const shareCodes = {
+  /* v1, decode only */
   exhibitorIds: new Set(),
   gameToCode: new Map(),
   codeToGame: new Map(),
+  /* v2 */
+  exhibitorTok: new Map(),
+  gameTok: new Map(),
+  tokItem: new Map(),
 };
 
 function hash32(s) {
@@ -336,16 +352,25 @@ function hash32(s) {
   return h;
 }
 
+const tok36 = (identity) => hash32(identity).toString(36).padStart(7, "0").slice(0, TOK_LEN);
+
 function buildShareCodeMap() {
   shareCodes.exhibitorIds = new Set(state.exhibitors.map((ex) => ex.id));
   shareCodes.gameToCode.clear();
   shareCodes.codeToGame.clear();
+  shareCodes.exhibitorTok.clear();
+  shareCodes.gameTok.clear();
+  shareCodes.tokItem.clear();
 
   const gameKeys = [
     ...new Set(state.exhibitors.flatMap((ex) => (ex.games || []).map((game) => gameKey(game.title)))),
   ].sort();
-  const taken = new Set(shareCodes.exhibitorIds);
 
+  /* v1 salted its collisions, which is relational: which item gets the salt
+     depends on what else is in the dataset, so adding an exhibitor could
+     silently repoint a token in links already shared. Decoding stays exact
+     for the tokens v1 actually emitted, so the map is rebuilt the same way. */
+  const taken = new Set(shareCodes.exhibitorIds);
   gameKeys.forEach((key) => {
     let salt = 0;
     let code;
@@ -357,24 +382,45 @@ function buildShareCodeMap() {
     shareCodes.gameToCode.set(key, code);
     shareCodes.codeToGame.set(code, key);
   });
+
+  /* v2 shares one flat namespace and resolves collisions by exclusion: a
+     prefix claimed twice is abandoned by every claimant — never emitted,
+     never resolved — so a token can be lost but never mistranslated, and the
+     loss surfaces through the "no longer in the guide" counts the UI already
+     shows. Zero of the current 217 items collide; head-room runs to about a
+     thousand before 5 characters wants revisiting. */
+  const claims = new Map();
+  const claim = (kind, key) => {
+    const tok = tok36(key);
+    if (!claims.has(tok)) claims.set(tok, []);
+    claims.get(tok).push({ kind, key });
+  };
+  state.exhibitors.forEach((ex) => claim("exhibitors", ex.id));
+  gameKeys.forEach((key) => claim("games", key));
+  claims.forEach((items, tok) => {
+    if (items.length !== 1) return;
+    const item = items[0];
+    (item.kind === "exhibitors" ? shareCodes.exhibitorTok : shareCodes.gameTok).set(item.key, tok);
+    shareCodes.tokItem.set(tok, item);
+  });
 }
 
-/* Both marks encode through the same vocabulary. A shared link carries the saved
-   list alone — someone else's plan is not their progress through it — but a move
-   to the new hostname is the same person's own data, so it carries the played
-   marks by the same codes. */
-function encodedTokens(mark) {
-  const exhibitors = [...state.marks[mark].exhibitors]
-    .filter((id) => shareCodes.exhibitorIds.has(id))
-    .sort();
-  const games = [...state.marks[mark].games]
-    .map((key) => shareCodes.gameToCode.get(key))
-    .filter(Boolean)
-    .sort();
-  return [...exhibitors, ...games];
+/* The saved list as sorted {tok, kind, key} entries. The order is the
+   contract: `d` and `p` in the payload are positional over exactly this
+   sequence, and sorting is what keeps the same list producing the same
+   link byte for byte. */
+function encodeEntries() {
+  const entries = [];
+  state.marks.saved.exhibitors.forEach((id) => {
+    const tok = shareCodes.exhibitorTok.get(id);
+    if (tok) entries.push({ tok, kind: "exhibitors", key: id });
+  });
+  state.marks.saved.games.forEach((key) => {
+    const tok = shareCodes.gameTok.get(key);
+    if (tok) entries.push({ tok, kind: "games", key });
+  });
+  return entries.sort((a, b) => (a.tok < b.tok ? -1 : 1));
 }
-
-const encodedSavedTokens = () => encodedTokens("saved");
 
 /* The guide answers on two hostnames while the old one is retired, and a saved
    list is per-origin. Built from location.origin, a link shared from the legacy
@@ -385,52 +431,111 @@ const encodedSavedTokens = () => encodedTokens("saved");
 const LEGACY_HOST = "gc2026.inventivetalent.org";
 const SHARE_ORIGIN = "https://gamescom.guide";
 
-function buildShareLink() {
+/* One character per day: the base36 day of month. Absolute like a literal
+   date — an index into event.days means something else the moment a day is
+   added — at a twentieth of the cost of "token~2026-08-26". Null when two
+   show days would share a character (a show spanning a month boundary into
+   the same day-of-month); then the day plan simply does not ride. */
+function dayCodeMaps() {
+  const toChar = new Map();
+  const toDate = new Map();
+  for (const day of state.event?.days || []) {
+    const ch = Number(String(day.date).slice(8, 10)).toString(36);
+    if (toDate.has(ch)) return null;
+    toChar.set(day.date, ch);
+    toDate.set(ch, day.date);
+  }
+  return { toChar, toDate };
+}
+
+/* Positional over the entry order: one character per saved item, "-" for
+   unscheduled, trailing blanks trimmed. A 30-item schedule costs 30
+   characters where the v1 pairs cost ~370 — the difference between a day
+   plan that fits a QR code and one that does not. */
+function encodeDays(entries) {
+  const maps = dayCodeMaps();
+  if (!maps) return null;
+  return entries
+    .map(({ kind, key }) => maps.toChar.get(state.itinerary[kind].get(key)) || "-")
+    .join("")
+    .replace(/-+$/, "");
+}
+
+/* Played-and-saved as a bitmask over the entry order, 5 bits per base36
+   character, trailing zeros trimmed. */
+function encodePlayedMask(entries) {
+  let bits = "";
+  entries.forEach(({ kind, key }) => {
+    bits += state.marks.played[kind].has(key) ? "1" : "0";
+  });
+  let mask = "";
+  for (let i = 0; i < bits.length; i += 5) {
+    mask += parseInt(bits.slice(i, i + 5).padEnd(5, "0"), 2).toString(36);
+  }
+  return mask.replace(/0+$/, "");
+}
+
+/* The ✓ does not require saving first, so played marks the bitmask cannot
+   reach ride as explicit tokens. Usually empty, and costs nothing then. */
+function encodePlayedOnly() {
+  const toks = [];
+  state.marks.played.exhibitors.forEach((id) => {
+    if (state.marks.saved.exhibitors.has(id)) return;
+    const tok = shareCodes.exhibitorTok.get(id);
+    if (tok) toks.push(tok);
+  });
+  state.marks.played.games.forEach((key) => {
+    if (state.marks.saved.games.has(key)) return;
+    const tok = shareCodes.gameTok.get(key);
+    if (tok) toks.push(tok);
+  });
+  return toks.sort().join("");
+}
+
+/* A part that rides empty still writes its param: `p=` with nothing in it
+   says "the played part came along, and it is empty", which on a replacing
+   import is the difference between clearing the local marks and leaving
+   them alone. An absent param means the part did not ride at all. */
+function buildShareLink({ move = false, days = false, played = false } = {}) {
   /* Search params are not part of the guide state and can contain referral or
      campaign data that should not hitch a ride in somebody else's link. */
   const origin = location.host === LEGACY_HOST ? SHARE_ORIGIN : location.origin;
-  const base = `${origin}${location.pathname}`;
-  return `${base}#saved?l=${encodedSavedTokens().join(".")}`;
+  const entries = encodeEntries();
+  /* Versioned by the param name, v1's own convention: `l` is v1, `t` is v2.
+     A `v=2&l=` spelling would cost 8 characters, and the QR budget is
+     exactly 8 characters too tight for a 30-item list with its day plan. */
+  const params = [`t=${entries.map((entry) => entry.tok).join("")}`];
+  if (days) {
+    const encoded = encodeDays(entries);
+    if (encoded !== null) params.push(`d=${encoded}`);
+  }
+  if (played) {
+    params.push(`p=${encodePlayedMask(entries)}`);
+    const only = encodePlayedOnly();
+    if (only) params.push(`q=${only}`);
+  }
+  /* Bare flag — presence is the message. v1 spelled it m=1, and the decoder
+     accepts either. */
+  if (move) params.push("m");
+  return `${origin}${location.pathname}#s?${params.join("&")}`;
 }
 
-/* Day assignments as token~date pairs. The date is carried literally rather
-   than as an index into the event days: an index means something different the
-   moment a day is added to data/event.json, and the receiving side already
-   knows how to throw out a date that is not a day of the show. */
-function encodedDays() {
-  const pairs = [];
-  state.itinerary.exhibitors.forEach((date, id) => {
-    if (shareCodes.exhibitorIds.has(id)) pairs.push(`${id}~${date}`);
-  });
-  state.itinerary.games.forEach((date, key) => {
-    const code = shareCodes.gameToCode.get(key);
-    if (code) pairs.push(`${code}~${date}`);
-  });
-  return pairs.sort();
-}
+/* Where the move notice sends people. Everything rides — played marks and
+   day assignments included — because this is not a share: it is one person's
+   own plan following them to an address that is going to outlive the old
+   one, the exact case the played and day toggles exist to default off for.
+   The legacy-origin rewrite in buildShareLink aims it at gamescom.guide.
 
-/* Where the move notice sends people. It is the share link plus the two things
-   a share deliberately leaves behind, because this is not a share: it is one
-   person's own plan following them to an address that is going to outlive the
-   old one. Everything the guide holds for them is per-origin and does not
-   survive the hop on its own.
-
-   Payload lives in the hash, so none of it is ever sent to a server — the same
-   reason a shared list can be built offline.
+   Payload lives in the hash, so none of it is ever sent to a server — the
+   same reason a shared list can be built offline.
 
    Null when there is nothing saved to carry, and the notice just navigates.
-   Played marks and day assignments both hang off saved items, so an empty saved
-   list means an empty move; it is also the rule the Share control already uses
-   to decide it has nothing to offer. */
+   Played marks and day assignments both hang off saved items, so an empty
+   saved list means an empty move; it is also the rule the Share control
+   already uses to decide it has nothing to offer. */
 function buildMoveLink() {
-  const saved = encodedSavedTokens();
-  if (!saved.length) return null;
-  const parts = [`l=${saved.join(".")}`, "m=1"];
-  const played = encodedTokens("played");
-  if (played.length) parts.push(`p=${played.join(".")}`);
-  const days = encodedDays();
-  if (days.length) parts.push(`d=${days.join(".")}`);
-  return `${SHARE_ORIGIN}${location.pathname}#saved?${parts.join("&")}`;
+  if (!encodeEntries().length) return null;
+  return buildShareLink({ move: true, days: true, played: true });
 }
 
 /* Nothing on the old hostname looks broken — it serves the same deploy — which
@@ -481,8 +586,12 @@ function offerMove() {
 function parseHash() {
   const raw = location.hash.slice(1);
   const i = raw.indexOf("?");
+  const route = i === -1 ? raw : raw.slice(0, i);
   return {
-    route: i === -1 ? raw : raw.slice(0, i),
+    /* "s" is "saved" in payload links, where "#saved?" against "#s?" is four
+       characters of QR budget. Consuming normalises it, so the alias never
+       reaches the address bar, syncHash or anything that compares routes. */
+    route: route === "s" ? SAVED_ROUTE : route,
     params: new URLSearchParams(i === -1 ? "" : raw.slice(i + 1)),
   };
 }
@@ -516,16 +625,74 @@ function resolveDays(payload) {
   return days;
 }
 
-/* One payload shape for both arrivals. A shared link carries `l` alone; a move
-   adds `m=1` and, when there are any, `p` and `d`. Anything the guide no longer
-   recognises falls out here rather than reaching the stored lists. */
+/* v2: fixed-width tokens, no separators. `d` and `p` are positional over the
+   token order of `l` — a position is kept even when its token no longer
+   resolves, so one stale item cannot shift every day and tick after it. */
+function resolveV2(params) {
+  const incoming = {
+    exhibitors: new Set(),
+    games: new Set(),
+    unresolved: 0,
+    played: { exhibitors: new Set(), games: new Set(), unresolved: 0 },
+    days: { exhibitors: new Map(), games: new Map() },
+  };
+
+  const list = String(params.get("t") || "");
+  const items = [];
+  for (let i = 0; i + TOK_LEN <= list.length; i += TOK_LEN) {
+    const item = shareCodes.tokItem.get(list.slice(i, i + TOK_LEN)) || null;
+    items.push(item);
+    if (item) incoming[item.kind].add(item.key);
+    else incoming.unresolved += 1;
+  }
+  /* A truncated tail is a lost item, not nothing. */
+  if (list.length % TOK_LEN) incoming.unresolved += 1;
+
+  const maps = dayCodeMaps();
+  const days = String(params.get("d") || "");
+  for (let i = 0; maps && i < days.length && i < items.length; i++) {
+    const item = items[i];
+    const date = maps.toDate.get(days[i]);
+    if (item && date) incoming.days[item.kind].set(item.key, date);
+  }
+
+  const mask = String(params.get("p") || "");
+  for (let ci = 0; ci < mask.length; ci++) {
+    const value = parseInt(mask[ci], 36);
+    if (Number.isNaN(value)) continue;
+    for (let bit = 0; bit < 5; bit++) {
+      if (!(value & (16 >> bit))) continue;
+      const item = items[ci * 5 + bit];
+      if (item) incoming.played[item.kind].add(item.key);
+    }
+  }
+
+  const only = String(params.get("q") || "");
+  for (let i = 0; i + TOK_LEN <= only.length; i += TOK_LEN) {
+    const item = shareCodes.tokItem.get(only.slice(i, i + TOK_LEN));
+    if (item) incoming.played[item.kind].add(item.key);
+    else incoming.played.unresolved += 1;
+  }
+
+  return incoming;
+}
+
+/* One payload shape for every arrival, whichever format and parts it rode
+   with. Anything the guide no longer recognises falls out here rather than
+   reaching the stored lists. */
 function parsePayload(query) {
   const params = new URLSearchParams(query);
-  if (!params.has("l")) return null;
-  const incoming = resolveTokens(params.get("l") || "");
-  incoming.moved = params.get("m") === "1";
-  incoming.played = resolveTokens(params.get("p") || "");
-  incoming.days = resolveDays(params.get("d") || "");
+  if (!params.has("t") && !params.has("l")) return null;
+  const incoming = params.has("t")
+    ? resolveV2(params)
+    : Object.assign(resolveTokens(params.get("l") || ""), {
+        played: resolveTokens(params.get("p") || ""),
+        days: resolveDays(params.get("d") || ""),
+      });
+  incoming.moved = params.has("m");
+  /* Presence, not emptiness — see buildShareLink on empty params. */
+  incoming.hasPlayed = params.has("p") || params.has("q");
+  incoming.hasDays = params.has("d");
   return incoming;
 }
 
@@ -553,7 +720,7 @@ function forgetPending() {
 
 function takeIncomingList() {
   const { route, params } = parseHash();
-  if (route !== SAVED_ROUTE || !params.has("l")) return null;
+  if (route !== SAVED_ROUTE || (!params.has("t") && !params.has("l"))) return null;
 
   /* The whole query, not just the list: a move's played marks and day
      assignments have to survive an unanswered prompt the same way. */
@@ -582,13 +749,13 @@ const dayCount = (days) => days.exhibitors.size + days.games.size;
 const itemLabel = (n) => `${n} saved item${n === 1 ? "" : "s"}`;
 
 /* The saved list is what the counts are about, so what else rode along is said
-   separately rather than folded into a number nobody can check. */
+   separately rather than folded into a number nobody can check. Worded for
+   any link — the day-plan toggle lets a plain share carry one now. */
 function carriedNote(incoming) {
-  if (!incoming.moved) return "";
   const also = [];
-  if (dayCount(incoming.days)) also.push("day plan");
+  if (dayCount(incoming.days)) also.push("a day plan");
   if (incomingCount(incoming.played)) also.push("played marks");
-  return also.length ? ` Your ${also.join(" and ")} came too.` : "";
+  return also.length ? ` It carries ${also.join(" and ")} too.` : "";
 }
 
 function unresolvedNote(n) {
@@ -604,10 +771,16 @@ function renderBookmarkViews() {
   renderPlan();
 }
 
-/* Everything is merged, never replaced, and the snapshot covers all three lists
-   so Undo puts back exactly what was here — a move landing on a device that had
-   already been used has to be as reversible as a shared list is. */
-function applyIncoming(incoming) {
+/* The snapshot covers all three lists so Undo puts back exactly what was
+   here — an import landing on a device that had already been used has to be
+   reversible whichever mode it applied in.
+
+   Merge unions and never removes: a friend's link is an offer, not an
+   authority over what you already chose. Replace assigns: a move is the same
+   person's newer state, and replacing is the only way a removal or a
+   rescheduled day ever travels between their devices. Parts that did not
+   ride are left alone in both modes — absent means "not moved", not "none". */
+function applyIncoming(incoming, mode = "merge") {
   const before = {
     exhibitors: new Set(state.marks.saved.exhibitors),
     games: new Set(state.marks.saved.games),
@@ -621,20 +794,51 @@ function applyIncoming(incoming) {
     },
     moved: incoming.moved,
   };
-  incoming.exhibitors.forEach((id) => state.marks.saved.exhibitors.add(id));
-  incoming.games.forEach((key) => state.marks.saved.games.add(key));
-  persistMarks("saved");
-  if (incomingCount(incoming.played)) {
-    incoming.played.exhibitors.forEach((id) => state.marks.played.exhibitors.add(id));
-    incoming.played.games.forEach((key) => state.marks.played.games.add(key));
-    persistMarks("played");
-  }
-  /* Applied after the saved list, because an assignment only survives
-     loadItinerary/pruneItinerary while the item it points at is saved. */
-  if (dayCount(incoming.days)) {
-    incoming.days.exhibitors.forEach((date, id) => state.itinerary.exhibitors.set(id, date));
-    incoming.days.games.forEach((date, key) => state.itinerary.games.set(key, date));
-    persistItinerary();
+  if (mode === "replace") {
+    state.marks.saved = {
+      exhibitors: new Set(incoming.exhibitors),
+      games: new Set(incoming.games),
+    };
+    persistMarks("saved");
+    if (incoming.hasPlayed) {
+      state.marks.played = {
+        exhibitors: new Set(incoming.played.exhibitors),
+        games: new Set(incoming.played.games),
+      };
+      persistMarks("played");
+    }
+    if (incoming.hasDays) {
+      state.itinerary = {
+        exhibitors: new Map(incoming.days.exhibitors),
+        games: new Map(incoming.days.games),
+      };
+      persistItinerary();
+    }
+    /* When the day plan stayed home, local assignments survive for items
+       still saved and fall away with the items the replace removed. */
+    pruneItinerary();
+  } else {
+    incoming.exhibitors.forEach((id) => state.marks.saved.exhibitors.add(id));
+    incoming.games.forEach((key) => state.marks.saved.games.add(key));
+    persistMarks("saved");
+    if (incomingCount(incoming.played)) {
+      incoming.played.exhibitors.forEach((id) => state.marks.played.exhibitors.add(id));
+      incoming.played.games.forEach((key) => state.marks.played.games.add(key));
+      persistMarks("played");
+    }
+    /* Applied after the saved list, because an assignment only survives
+       loadItinerary/pruneItinerary while the item it points at is saved.
+       Blanks only: an addition must not reschedule what the visitor already
+       placed — overwriting is what replace is for. */
+    if (dayCount(incoming.days)) {
+      incoming.days.exhibitors.forEach((date, id) => {
+        if (!state.itinerary.exhibitors.has(id)) state.itinerary.exhibitors.set(id, date);
+      });
+      incoming.days.games.forEach((date, key) => {
+        if (!state.itinerary.games.has(key)) state.itinerary.games.set(key, date);
+      });
+      persistItinerary();
+    }
   }
   renderBookmarkViews();
   /* Answered. Undo is a correction to a decision already made, not a reason to
@@ -679,14 +883,15 @@ function offerIncoming(incoming) {
   }
 
   const stale = unresolvedNote(incoming.unresolved);
-  const source = incoming.moved ? "the old address" : "a shared link";
   /* Old localStorage entries can outlive a renamed/removed guide item. They
      remain stored in case the data returns, but do not make the visible local
      list count as non-empty for import decisions. */
-  if (encodedSavedTokens().length === 0) {
+  if (encodeEntries().length === 0) {
     const before = applyIncoming(incoming);
     showToast(
-      `Loaded ${itemLabel(total)} from ${source}.${carriedNote(incoming)}${stale}`,
+      incoming.moved
+        ? `Loaded ${itemLabel(total)} you moved over.${carriedNote(incoming)}${stale}`
+        : `Loaded ${itemLabel(total)} from a shared link.${carriedNote(incoming)}${stale}`,
       "Undo",
       () => restoreBookmarks(before),
       { priority: true }
@@ -697,30 +902,59 @@ function offerIncoming(incoming) {
   const newCount =
     [...incoming.exhibitors].filter((id) => !state.marks.saved.exhibitors.has(id)).length +
     [...incoming.games].filter((key) => !state.marks.saved.games.has(key)).length;
-  /* Someone re-opening a link they already imported, or the other half of a
-     phone/desktop pair that is already in sync. There is nothing to add, so
-     offering the button would only produce an import of nothing. */
-  if (newCount === 0) {
-    forgetPending();
+
+  /* A move landing where a list already lives offers replace, not merge —
+     it is the only path on which a removal or a moved day travels, and a
+     union here would resurrect on this device exactly what was deleted on
+     the other one. Destructive in a way nothing else in the guide is, so
+     the toast counts what goes before anything is touched, and the count
+     only names items the visitor can see — entries the guide no longer
+     recognises are invisible to them and would make the number a lie. */
+  if (incoming.moved) {
+    const drops =
+      [...state.marks.saved.exhibitors].filter(
+        (id) => shareCodes.exhibitorIds.has(id) && !incoming.exhibitors.has(id)
+      ).length +
+      [...state.marks.saved.games].filter(
+        (key) => shareCodes.gameToCode.has(key) && !incoming.games.has(key)
+      ).length;
+    const news = newCount ? ` — ${newCount} new to you` : "";
+    const cost = drops
+      ? ` Replacing removes ${drops} item${drops === 1 ? "" : "s"} you only have here.`
+      : "";
     showToast(
-      incoming.moved
-        ? `You already have everything from the old address.${stale}`
-        : `You already have everything in this shared link.${stale}`,
-      null,
-      null,
+      `Your moved plan has ${itemLabel(total)}${news}.${cost}${stale}`,
+      "Replace my list",
+      () => {
+        const before = applyIncoming(incoming, "replace");
+        showToast(
+          `Your list now matches the moved plan.${carriedNote(incoming)}${stale}`,
+          "Undo",
+          () => restoreBookmarks(before),
+          { priority: true, replace: true }
+        );
+      },
       { priority: true }
     );
     return;
   }
+
+  /* Someone re-opening a link they already imported. There is nothing to
+     add, so offering the button would only produce an import of nothing. */
+  if (newCount === 0) {
+    forgetPending();
+    showToast(`You already have everything in this shared link.${stale}`, null, null, {
+      priority: true,
+    });
+    return;
+  }
   showToast(
-    incoming.moved
-      ? `Your list from the old address has ${itemLabel(total)} — ${newCount} new to you.${stale}`
-      : `A shared link has ${itemLabel(total)} — ${newCount} new to you.${stale}`,
+    `A shared link has ${itemLabel(total)} — ${newCount} new to you.${stale}`,
     "Add to my list",
     () => {
       const before = applyIncoming(incoming);
       showToast(
-        `Added ${itemLabel(newCount)} from ${source}.${carriedNote(incoming)}${stale}`,
+        `Added ${itemLabel(newCount)} from the shared link.${carriedNote(incoming)}${stale}`,
         "Undo",
         () => restoreBookmarks(before),
         { priority: true, replace: true }
@@ -730,11 +964,60 @@ function offerIncoming(incoming) {
   );
 }
 
+/* What the dialog's controls currently ask for. Never persisted: the mode
+   and its boxes reset on every open, because a played list shared once by
+   accident must not become the quiet default for the next link.
+
+   Every element access here tolerates a cached pre-modes index.html (the
+   bindSourcesDialog rule): the SW serves markup and script on different
+   cache strategies, so one load can pair them across the format change,
+   and that load must still share saved-only rather than throw. */
+function shareSelection() {
+  return {
+    move: Boolean($("#share-mode-device")?.checked),
+    days: Boolean($("#share-part-days")?.checked),
+    played: Boolean($("#share-part-played")?.checked),
+  };
+}
+
+/* The mode sets the defaults — someone else gets the list alone, your own
+   device gets everything — and the boxes stay live afterwards for the
+   in-between cases, like handing a friend the day plan you built together. */
+function applyShareModeDefaults() {
+  const device = Boolean($("#share-mode-device")?.checked);
+  const days = $("#share-part-days");
+  const played = $("#share-part-played");
+  if (days) days.checked = device;
+  if (played) played.checked = device;
+}
+
+/* An empty part stays visible but disabled rather than vanishing, so the
+   row does not reflow underneath a toggle someone is about to tap. */
+function syncSharePart(part, count) {
+  const box = $(`#share-part-${part}`);
+  if (!box) return;
+  box.disabled = count === 0;
+  if (box.disabled) box.checked = false;
+  $(`#share-part-${part}-count`).textContent = `(${count})`;
+}
+
 function renderShareDialog() {
-  const link = buildShareLink();
+  const entries = encodeEntries();
+  const dayTotal = dayCodeMaps()
+    ? entries.filter(({ kind, key }) => state.itinerary[kind].has(key)).length
+    : 0;
+  const playedTotal =
+    entries.filter(({ kind, key }) => state.marks.played[kind].has(key)).length +
+    encodePlayedOnly().length / TOK_LEN;
+  const savedCountEl = $("#share-part-saved-count");
+  if (savedCountEl) savedCountEl.textContent = `(${entries.length})`;
+  syncSharePart("days", dayTotal);
+  syncSharePart("played", playedTotal);
+
+  const link = buildShareLink(shareSelection());
   const input = $("#share-link");
   input.value = link;
-  const shareable = encodedSavedTokens().length;
+  const shareable = entries.length;
   const unavailable = savedCount() - shareable;
   $("#share-count").textContent = unavailable
     ? `${itemLabel(shareable)} ready to share. ${unavailable} older item${
@@ -769,9 +1052,24 @@ function bindShareDialog() {
   const input = $("#share-link");
 
   $("#share-list").addEventListener("click", () => {
+    /* Fresh defaults on every open — see shareSelection. */
+    const friend = $("#share-mode-friend");
+    if (friend) {
+      friend.checked = true;
+      applyShareModeDefaults();
+    }
     renderShareDialog();
     dialog.showModal();
   });
+  ["#share-mode-friend", "#share-mode-device"].forEach((selector) =>
+    $(selector)?.addEventListener("change", () => {
+      applyShareModeDefaults();
+      renderShareDialog();
+    })
+  );
+  ["#share-part-days", "#share-part-played"].forEach((selector) =>
+    $(selector)?.addEventListener("change", renderShareDialog)
+  );
   input.addEventListener("focus", () => input.select());
   bindDialogDismiss(dialog, $("#close-share"));
 

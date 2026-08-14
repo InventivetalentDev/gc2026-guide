@@ -103,14 +103,23 @@ nothing leaves the device unless you share a link yourself. Two tabs of the guid
 in sync via the `storage` event, and if storage is blocked altogether (Safari private
 mode) the list still works for the session instead of throwing.
 
-Shared links encode guide identifiers only — exhibitor IDs and compact game codes. The
-link and its QR code are built entirely in your browser, so no saved-list data is
-uploaded or sent anywhere by the guide. Opening one never replaces an existing list:
-it asks before adding to a non-empty list, while an empty list imports immediately with
-an Undo option. Opening the link consumes it — it does not stay in the address bar to be
-forwarded on — so until the question is answered the tab keeps its own copy: dismissing
-the prompt costs a reload rather than the whole list. Answer it, or close the tab, and
-the copy is gone.
+Shared links encode guide identifiers only — compact fixed-width hashes of exhibitor
+ids and game titles, never the names themselves. The link and its QR code are built
+entirely in your browser, so no saved-list data is uploaded or sent anywhere by the
+guide. The dialog asks who the link is for. **Someone else** carries the saved list
+alone by default — a plan you hand to a friend, and your progress through it is not
+theirs. **Another of my devices** brings the day plan and played marks along too, and
+on arrival offers **Replace my list** instead of adding: replacing is what lets a
+removed booth or a rescheduled day carry across your own devices, and the prompt
+counts what it would remove before anything is touched. The include boxes stay
+adjustable in either mode, and nothing about the choice is remembered between opens.
+
+A link for someone else never replaces an existing list: it asks before adding to a
+non-empty list, while an empty list imports immediately with an Undo option — and a
+replace is undone the same way, day plan and played marks included. Opening a link
+consumes it — it does not stay in the address bar to be forwarded on — so until the
+question is answered the tab keeps its own copy: dismissing the prompt costs a reload
+rather than the whole list. Answer it, or close the tab, and the copy is gone.
 
 The Visit Planner turns those bookmarks into a plan — one board, two arrangements.
 The day view is the itinerary: assign each stop a day, see that day's hours and crowd
@@ -168,9 +177,15 @@ from the saved list; **Hide played** is a view preference rather than a mark, so
 sits in `gc2026.prefs.v1` next to the age filter. All of it works offline, stays in
 sync between tabs, and never leaves the device.
 
-Played marks are deliberately **not** part of a shared link. A shared list is a plan
-you hand to someone else, and your progress through it is not theirs — `?l=` carries
-saved booths and games only.
+Played marks are deliberately **not** part of a shared link by default. A shared list
+is a plan you hand to someone else, and your progress through it is not theirs.
+Moving between your own devices is what the **Played marks** box in the share dialog
+exists for — there your progress follows you, alongside the day plan.
+
+Moving yourself between the guide's two hostnames is the one case that is not a
+share, so it carries everything: accepting the notice on `gc2026.inventivetalent.org`
+brings the saved list, the played marks and the day assignments over to
+`gamescom.guide` in one step. See [`docs/DEPLOYING.md`](docs/DEPLOYING.md).
 
 Moving yourself between the guide's two hostnames is the one case that is not a
 share, so it carries everything: accepting the notice on `gc2026.inventivetalent.org`

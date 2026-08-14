@@ -18,7 +18,11 @@
    - fonts/, icons/   cache-first. They only ever change by filename.
 */
 
-const VERSION = "v1";
+/* Bump when the shell's halves must land together. A new index.html arrives
+   network-first while the old app.js is served stale-while-revalidate, so a
+   markup change that needs its matching script (rev 21's share dialog) rides
+   one load with dead controls unless the version change announces it. */
+const VERSION = "v2";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
