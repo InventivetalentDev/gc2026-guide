@@ -438,6 +438,20 @@ a.hall-marker { text-decoration: none; position: relative; }
 a.hall-marker:hover .hall-map-cue,
 a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 
+/* The same link, in running text: every hall named in the planner rows opens
+   that hall on the map (see hallLink). These sit inside dense lists, so the
+   affordance is a quiet underline rather than another plate — it keeps the
+   row's own colour until you reach for it, then takes the accent. */
+.hall-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.hall-link:hover,
+.hall-link:focus-visible { color: var(--signal); text-decoration-color: currentColor; }
+
 .hall-kicker {
   font-family: var(--font-mono);
   font-size: .58rem; letter-spacing: .16em; text-transform: uppercase;
@@ -647,6 +661,22 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
   white-space: nowrap;
 }
 .dir-stand b { color: var(--ink); font-weight: 700; }
+/* A stand in a hall the map draws is a link on the whole chip — the
+   underline rides on the hall/booth alone, so the "at <host>" tail stays
+   a note rather than looking like part of the destination. */
+a.dir-stand { text-decoration: none; }
+a.dir-stand .dir-stand-where {
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+a.dir-stand:hover .dir-stand-where,
+a.dir-stand:focus-visible .dir-stand-where { text-decoration-color: currentColor; }
+a.dir-stand:hover,
+a.dir-stand:focus-visible { color: var(--signal); }
+a.dir-stand:hover b,
+a.dir-stand:focus-visible b { color: var(--signal); }
 /* which curated booth this stand actually sits on — the 172 Indie Arena Booth
    studios are meaningless without it */
 .dir-stand i {

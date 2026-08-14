@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-14",
+    "revision": 19,
+    "changes": [
+      "Every booth number in the Full directory now opens the hall map on that exact stand — so a studio with no card of its own is one tap from knowing where it stands, not just which hall it is in. Booths in the business halls stay plain text; a consumer ticket does not open those doors.",
+      "The halls and booth numbers named in Your plan, Queue priority and the 18+ wristband list are links to the map too. Tapping \"Hall 9.1\" on a stop takes you to that booth, not just that hall — and a game shown at two booths links to both. In the by-hall walking order, the header still opens the whole hall and each stop's booth number opens its stand."
+    ]
+  },
+  {
+    "date": "2026-08-14",
     "revision": 18,
     "changes": [
       "New: a Hall map. Every hall you can visit is drawn booth by booth, with names on the booths instead of the blank white boxes the official plan gives you — and your saved booths lit up in orange so you can see your day laid out in the hall.",

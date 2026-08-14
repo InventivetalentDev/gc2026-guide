@@ -61,12 +61,19 @@ const GCMarks = (() => {
 
   /* Booth codes, from either side, reduced to a comparable set:
      the guide writes "A061/C060", Koelnmesse files "A-061 C-060", and
-     both mean the same two stands. */
+     both mean the same two stands.
+
+     The separator is not always there. The official directory files a few
+     shared booths as "F040gE057g" — two codes run together — so each part
+     is also scanned for letter+digits runs, and only falls back to
+     stripping punctuation when it holds none (that keeps hyphenated
+     "A-061" and non-code text such as "Freifläche" reading as they did). */
   const boothCodes = (str) =>
     new Set(
       String(str || "")
         .split(/[\s/,+]+/)
-        .map((code) => code.replace(/[^0-9a-z]/gi, "").toUpperCase())
+        .flatMap((part) => part.match(/[A-Za-z]\d+[a-z]?/g) || [part.replace(/[^0-9a-z]/gi, "")])
+        .map((code) => code.toUpperCase())
         .filter(Boolean)
     );
 

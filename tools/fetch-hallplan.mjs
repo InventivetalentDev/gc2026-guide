@@ -190,11 +190,13 @@ ${stands}
 
 /* ---- join QA: which guide exhibitors will land on the map? ---- */
 
+/* mirror of GCMarks.boothCodes in js/marks.js — keep the two identical */
 const codeSet = (str) =>
   new Set(
     String(str || "")
       .split(/[\s/,+]+/)
-      .map((c) => c.replace(/[^0-9a-z]/gi, "").toUpperCase())
+      .flatMap((part) => part.match(/[A-Za-z]\d+[a-z]?/g) || [part.replace(/[^0-9a-z]/gi, "")])
+      .map((c) => c.toUpperCase())
       .filter(Boolean)
   );
 

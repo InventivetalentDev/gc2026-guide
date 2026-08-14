@@ -892,6 +892,19 @@ const mapLink = (hall, booth) =>
   `map.html#${encodeURIComponent(hall)}` +
   (booth ? `/${encodeURIComponent([...GCMarks.boothCodes(booth)][0] || "")}` : "");
 
+/* Every other place a hall is named — the planner rows, the directory — is
+   also a way to that hall on the map. One helper so all of them make the
+   same promise: plain text when the snapshot can't draw that hall, and a
+   link that says out loud where it goes when it can. The visible label is
+   left exactly as the row wrote it; only the destination is added. */
+function hallLink(hall, booth, label) {
+  if (!hasMap(hall)) return esc(label);
+  const where = `Hall ${hall}${booth ? `, booth ${booth}` : ""}`;
+  return `<a class="hall-link" href="${esc(mapLink(hall, booth))}"
+    title="Open on the hall map"
+    aria-label="${esc(`${where} — open the hall map`)}">${esc(label)}</a>`;
+}
+
 /* The hall number is the one thing you read while walking, so it gets
    set like a wayfinding sign rather than tucked into a badge. */
 function hallMarker(ex) {
@@ -1247,13 +1260,24 @@ function directoryRow(entry, byBooth) {
     .map((s) => {
       const host = byBooth.get(boothKey(s.hall, s.booth));
       const business = isBusinessHall(s.hall);
-      return `<span class="dir-stand${business ? " dir-stand-trade" : ""}"${
-        business ? ' title="Business area — trade &amp; media only"' : ""
-      }>
-        <b>${esc(s.hall)}</b>${s.booth ? ` · ${esc(s.booth)}` : ""}${
-          host && host.name !== entry.name ? `<i> at ${esc(host.name)}</i>` : ""
-        }
-      </span>`;
+      /* The booth number is the answer this section exists to give, so it is
+         also the way to see it: a chip in a mapped hall opens the map on that
+         stand. The host suffix stays outside the underline — it names a
+         neighbour, not a place. */
+      const where = `<span class="dir-stand-where"><b>${esc(s.hall)}</b>${
+        s.booth ? ` · ${esc(s.booth)}` : ""
+      }</span>${host && host.name !== entry.name ? `<i> at ${esc(host.name)}</i>` : ""}`;
+      const cls = `dir-stand${business ? " dir-stand-trade" : ""}`;
+      if (!hasMap(s.hall)) {
+        return `<span class="${cls}"${
+          business ? ' title="Business area — trade &amp; media only"' : ""
+        }>${where}</span>`;
+      }
+      return `<a class="${cls}" href="${esc(mapLink(s.hall, s.booth))}"
+        title="Open on the hall map"
+        aria-label="${esc(
+          `Hall ${s.hall}${s.booth ? `, booth ${s.booth}` : ""} — open the hall map`
+        )}">${where}</a>`;
     })
     .join("");
   const href = base && entry.slug ? `${base}${entry.slug}/` : "";
@@ -1418,14 +1442,26 @@ function compareItineraryRows(a, b) {
   return itineraryPlayed(a) - itineraryPlayed(b) || compareItineraryItems(a, b);
 }
 
-function itineraryItemLocation(item) {
+/* Returns markup, not text: the hall reads through to the map, the same way
+   the card's plate does. itineraryLocation() above stays plain text — the
+   calendar export writes it into an .ics file, where a link is just noise.
+   A game shown at two booths links each of them separately. */
+function itineraryItemLocationHtml(item) {
   if (item.kind === "game") {
     return item.at.length
-      ? item.at.map((ex) => `${ex.name} — ${itineraryLocation(ex, { booth: false })}`).join(" · ")
+      ? item.at
+          .map(
+            (ex) =>
+              `${esc(ex.name)} — ${hallLink(ex.hall, ex.booth, itineraryLocation(ex, { booth: false }))}`
+          )
+          .join(" · ")
       : "Booth TBA";
   }
   const crowd = item.ex.crowd || 0;
-  return `${itineraryLocation(item.ex)} · Queue ${crowd ? `${crowd}/5 ${CROWD_LABELS[crowd] || "?"}` : "unknown"}`;
+  return (
+    hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex)) +
+    ` · Queue ${esc(crowd ? `${crowd}/5 ${CROWD_LABELS[crowd] || "?"}` : "unknown")}`
+  );
 }
 
 function itineraryDayChips(item) {
@@ -1452,7 +1488,7 @@ function itineraryItem(item) {
       <span class="it-kind">${esc(kindLabel)}</span>
       <span class="it-name">${esc(item.name)}</span>
     </span>
-    <span class="it-loc">${esc(itineraryItemLocation(item))}</span>
+    <span class="it-loc">${itineraryItemLocationHtml(item)}</span>
     ${itineraryDayChips(item)}
     ${markButton("saved", item.kind, item.key, item.name)}
   </div>`;
@@ -1548,9 +1584,11 @@ function renderWristband() {
       const games = titles.length
         ? titles.map((g) => esc(g.title)).join(" · ")
         : "Booth-wide age-restricted zone";
-      const location = `${e.hall ? `Hall ${esc(e.hall)}` : "Hall TBA"} · ${
-        e.booth ? esc(e.booth) : "booth TBA"
-      }`;
+      const location = hallLink(
+        e.hall,
+        e.booth,
+        `${e.hall ? `Hall ${e.hall}` : "Hall TBA"} · ${e.booth || "booth TBA"}`
+      );
       const expected = boothAgeStatus(e) !== "confirmed";
       /* The "expected" marker sits inside the titles cell rather than in a column
          of its own: every row is its own grid, so a column that only some rows
@@ -1590,7 +1628,9 @@ function renderPriority() {
       (e) => `<div class="priority-item" data-saved="${hasSaved(e)}" data-played="${hasPlayed(e)}">
         <span class="priority-rank">${String(busiest.indexOf(e) + 1).padStart(2, "0")}</span>
         <span class="priority-name">${esc(e.name)}${hasAdult(e) ? ageBadge(boothAgeStatus(e)) : ""}</span>
-        <span class="priority-loc">${e.hall ? `Hall ${esc(e.hall)}` : "TBA"}</span>
+        <span class="priority-loc">${
+          e.hall ? hallLink(e.hall, e.booth, `Hall ${e.hall}`) : "TBA"
+        }</span>
         <span class="priority-advice">${esc(e.visitAdvice || e.crowdNote || "")}</span>
         <span class="row-actions">
           ${markButton("played", "exhibitor", e.id, e.name)}
@@ -1821,11 +1861,14 @@ function renderRoute() {
       const rows = group.items
         .map((ex) => {
           const baseLocation = ex.booth ? ex.booth : ex.hall ? "booth TBA" : "location TBA";
-          const loc = baseLocation + (ex.hall && !ex.locationConfirmed ? " · unconf." : "");
+          /* The booth number is the link; "· unconf." stays outside it. That
+             suffix is a caveat about the data, not part of the address, and
+             underlining it would offer to show you a stand we're not sure of. */
+          const unconf = ex.hall && !ex.locationConfirmed ? " · unconf." : "";
           const crowd = ex.crowd || 0;
           return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}">
             <span class="route-name">${esc(ex.name)}${dayFilter ? "" : routeDayTags(ex)}</span>
-            <span class="route-booth">${esc(loc)}</span>
+            <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation)}${unconf}</span>
             <span class="route-crowd" data-level="${esc(crowd)}">Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}</span>
             <span class="row-actions">
               ${markButton("played", "exhibitor", ex.id, ex.name)}
@@ -1836,8 +1879,8 @@ function renderRoute() {
         })
         .join("");
       const countLabel = `${group.items.length} stop${group.items.length === 1 ? "" : "s"}`;
-      /* One link per hall, on the header — the stops below are a walking
-         order, and a link on every row would bury that. */
+      /* The header opens the whole hall — the overview you want before
+         walking into it. Each stop's booth number below opens that stand. */
       const toMap = hasMap(group.key)
         ? `<a class="route-hall-map" href="${esc(mapLink(group.key))}"
             aria-label="${esc(`Open hall ${group.key} on the map`)}">Map →</a>`
