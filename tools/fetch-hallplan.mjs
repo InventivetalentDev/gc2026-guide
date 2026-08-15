@@ -26,6 +26,11 @@
    joins by hall + booth code at runtime, so booth edits in
    data/exhibitors.json move highlights without re-running this.
 
+   Each hall also carries the area it belongs to — entertainment or
+   business — and the index repeats the area colours the official plan
+   paints those halls with, so the map can tell a hall a consumer ticket
+   opens from one it does not.
+
    Coordinates: the endpoint's polygons live in a per-hall metre frame
    with hall-specific mirror/rotation quirks. We replicate the official
    renderer's transform (its buildLatLangs()) so our halls match the
@@ -38,29 +43,79 @@ const SOURCE =
   "https://exhibitors.gamescom.global/global/asdb.php" +
   "?sV=0480&sJ=2026&sS=3&route=hallenplan2/api&useNoSession=1&fw_ajax=1";
 
-/* Guide hall id → official (halle, level). The guide's "10.2" is
+/* The page that endpoint belongs to: the map credits it, and the area
+   colours are checked against it (see checkAreaColours). */
+const PLAN_PAGE = "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/";
+
+/* Guide hall id → official (halle, level, area). The guide's "10.2" is
    Koelnmesse's hall 10, upper storey — verified against live data
-   (Xbox A061 in 7/1, Bilibili A-090 in 10/1, Razer E-020 D-021 in 10/2). */
+   (Xbox A061 in 7/1, Bilibili A-090 in 10/1, Razer E-020 D-021 in 10/2).
+
+   Order is the order of the map's hall row: the entertainment halls a
+   consumer ticket opens first, the trade-only business halls after. */
 const HALLS = {
-  "5.2": ["5", "2"],
-  "6.1": ["6", "1"],
-  "7.1": ["7", "1"],
-  "8.1": ["8", "1"],
-  "9.1": ["9", "1"],
-  "10.1": ["10", "1"],
-  "10.2": ["10", "2"],
+  "5.2": ["5", "2", "entertainment"],
+  "6.1": ["6", "1", "entertainment"],
+  "7.1": ["7", "1", "entertainment"],
+  "8.1": ["8", "1", "entertainment"],
+  "9.1": ["9", "1", "entertainment"],
+  "10.1": ["10", "1", "entertainment"],
+  "10.2": ["10", "2", "entertainment"],
+  "2.1": ["2", "1", "business"],
+  "2.2": ["2", "2", "business"],
+  "3.2": ["3", "2", "business"],
+  "4.1": ["4", "1", "business"],
+  "4.2": ["4", "2", "business"],
+};
+
+/* The two areas the drawn halls fall into, with the colour the official
+   plan fills that area's halls with — checked against the source on every
+   run (see checkAreaColours), so a repaint by Koelnmesse stops this tool
+   rather than quietly leaving the map a season behind.
+
+   Only `access` is ours: the map has to say out loud that a business hall
+   is a door a consumer ticket does not open, and no colour says that. */
+const AREAS = {
+  entertainment: { label: "Entertainment", colour: "#00B9FF" },
+  business: {
+    label: "Business",
+    colour: "#7800FF",
+    trade: true,
+    access:
+      "trade & media badge only. A consumer ticket does not open these halls, " +
+      "and they close after Friday.",
+  },
 };
 
 /* Fallback mirror/rotation per hall, lifted from the official page's
    campus `hallen` array. Only consulted when a hall's API response
    carries no scalex/scaley/rotation of its own (halls 6, 8, 9 today). */
 const CAMPUS = {
+  2: { rot: 0, dx: -1, dy: 1 },
+  3: { rot: 0, dx: -1, dy: 1 },
+  4: { rot: 0, dx: -1, dy: 1 },
   5: { rot: 0, dx: -1, dy: 1 },
   6: { rot: 0, dx: -1, dy: 1 },
   7: { rot: 0, dx: -1, dy: 1 },
   8: { rot: 0, dx: -1, dy: 1 },
   9: { rot: 0, dx: -1, dy: 1 },
   10: { rot: 90, dx: -1, dy: 1 },
+};
+
+/* Per-level overrides of the signs the API filed, for the one case where
+   following it faithfully draws a hall upside down.
+
+   Hall 2 is filed with scaley −0.92 on level 1 and +0.89 on level 2, so
+   the two storeys of one building come out mirrored against each other.
+   Two independent checks agree that level 1 is the odd one: its stand
+   rows run E→A up the hall where every other level of every hall filed
+   with a sign of its own runs A→E, and flipping it raises the overlap of
+   the two levels' structural blocks — the same walls, so they should
+   coincide — from 0.72 to 0.80. Every other hall's levels agree as
+   filed. Ground truth is a walk through hall 2 with the map open;
+   until then this is a documented guess, and it is one sign to undo. */
+const SIGN_FIX = {
+  "2.1": { dy: 1 },
 };
 
 import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
@@ -106,12 +161,12 @@ async function fetchHall(halle, level) {
 
 /* The official transform, magnitudes dropped (see header). Returns a
    function point → [x, y] in a y-down frame; bbox-normalised later. */
-function transformer(minmax, campus) {
+function transformer(minmax, campus, fix = {}) {
   const { minx, miny, w, h } = minmax;
   const dw = minmax.dw || 0;
   const dh = minmax.dh || 0;
-  const sx = sign(minmax.scalex ? minmax.scalex : campus.dx);
-  const sy = sign(minmax.scaley ? minmax.scaley : campus.dy);
+  const sx = fix.dx ?? sign(minmax.scalex ? minmax.scalex : campus.dx);
+  const sy = fix.dy ?? sign(minmax.scaley ? minmax.scaley : campus.dy);
   const rot = minmax.rotation ? parseInt(minmax.rotation, 10) : campus.rot;
   const th = (-(rot + 180) * Math.PI) / 180;
   const cos = Math.cos(th);
@@ -125,7 +180,7 @@ function transformer(minmax, campus) {
 
 function trimHall(id, raw) {
   const [halle] = HALLS[id];
-  const t = transformer(raw.minmax, CAMPUS[halle]);
+  const t = transformer(raw.minmax, CAMPUS[halle], SIGN_FIX[id]);
 
   const polys = [];
   const collect = (pl) => {
@@ -158,7 +213,63 @@ function trimHall(id, raw) {
 
   stands.sort((a, b) => a.nr.localeCompare(b.nr));
   blocks.sort((a, b) => a[0][0] - b[0][0] || a[0][1] - b[0][1]);
-  return { hall: id, official: { halle, level: HALLS[id][1] }, size, blocks, stands };
+  return {
+    hall: id,
+    official: { halle, level: HALLS[id][1] },
+    area: HALLS[id][2],
+    size,
+    blocks,
+    stands,
+  };
+}
+
+/* The area colours in AREAS, checked against their source.
+
+   The official plan carries a `farbenvorgabe` table in the hall-plan
+   page — hall (or hall_level) → fill colour — and it is what paints
+   halls 6–9 cyan and halls 2–4 purple on Koelnmesse's own map. We ship
+   the colours as constants rather than reading them at runtime, because
+   two of the halls we draw are missing from that table: halls 5 and 10
+   hold several areas each (merch, cards, indie, retro, campus) and are
+   left uncoloured there, while the guide treats them as what they are, a
+   consumer ticket's halls. So the constants are the map's palette and
+   this only checks that the halls the table *does* colour still agree —
+   a repaint by Koelnmesse fails the run instead of leaving our map a
+   season behind.
+
+   A page that no longer parses is a warning, not an error: booth
+   geometry is the point of this tool, and a markup change at the source
+   is not a reason to refuse to refresh it. */
+async function checkAreaColours() {
+  let html;
+  try {
+    const res = await fetch(PLAN_PAGE, {
+      headers: { "user-agent": "gc2026-guide hall-map snapshot (github.com/InventivetalentDev/gc2026-guide)" },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    html = await res.text();
+  } catch (err) {
+    console.log(`colours: could not read the hall-plan page (${err.message}) — keeping the committed area colours`);
+    return;
+  }
+  const table = html.match(/var\s+farbenvorgabe\s*=\s*(\{.*?\})\s*;/s);
+  if (!table) {
+    console.log("colours: no farbenvorgabe table on the hall-plan page — keeping the committed area colours");
+    return;
+  }
+  const official = JSON.parse(table[1]);
+  const seen = new Set();
+  for (const [id, [halle, level, area]] of Object.entries(HALLS)) {
+    const theirs = official[`${halle}_${level}`] || official[halle];
+    if (!theirs) continue;
+    seen.add(area);
+    if (theirs.toUpperCase() !== AREAS[area].colour.toUpperCase())
+      throw new Error(
+        `hall ${id}: official plan now fills the ${area} area ${theirs}, ` +
+          `AREAS says ${AREAS[area].colour} — check the plan and update the constant`
+      );
+  }
+  console.log(`colours: ${[...seen].join(", ")} still match the official plan`);
 }
 
 function validate(hall) {
@@ -178,6 +289,7 @@ function serialise(hall) {
   return `{
 "hall": ${JSON.stringify(hall.hall)},
 "official": ${JSON.stringify(hall.official)},
+"area": ${JSON.stringify(hall.area)},
 "size": ${JSON.stringify(hall.size)},
 "blocks": [
 ${blocks}
@@ -293,6 +405,8 @@ for (const id of Object.keys(HALLS)) {
   await sleep(300);
 }
 
+await checkAreaColours();
+
 mkdirSync(OUT, { recursive: true });
 for (const hall of halls) writeFileSync(join(OUT, `hall-${hall.hall}.json`), serialise(hall));
 writeFileSync(
@@ -300,8 +414,19 @@ writeFileSync(
   JSON.stringify(
     {
       fetched: new Date().toISOString().slice(0, 10),
-      source: "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
-      halls: halls.map((h) => ({ id: h.hall, file: `hall-${h.hall}.json`, size: h.size, stands: h.stands.length })),
+      source: PLAN_PAGE,
+      /* Only the areas actually drawn, so the map's legend can be built
+         from this file alone without listing a key nothing uses. */
+      areas: Object.fromEntries(
+        Object.entries(AREAS).filter(([key]) => halls.some((h) => h.area === key))
+      ),
+      halls: halls.map((h) => ({
+        id: h.hall,
+        file: `hall-${h.hall}.json`,
+        area: h.area,
+        size: h.size,
+        stands: h.stands.length,
+      })),
     },
     null,
     1

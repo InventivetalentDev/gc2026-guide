@@ -1,6 +1,7 @@
 {
 "hall": "6.1",
 "official": {"halle":"6","level":"1"},
+"area": "entertainment",
 "size": [219.5,82],
 "blocks": [
   [[0,3],[0,0],[8.5,0],[8.5,3]],

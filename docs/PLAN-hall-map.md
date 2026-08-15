@@ -11,7 +11,7 @@ exhibitor names, all in metres) is exactly what an honest map needs.
 **Status: built and integrated.** `tools/fetch-hallplan.mjs` snapshots the
 geometry into `data/hallplan/`; `map.html` + `js/map.js` + `css/map.css`
 draw it; `js/marks.js` holds what the map and the guide must agree on;
-`sw.js` precaches both pages and all seven halls; the guide links out
+`sw.js` precaches both pages and all twelve hall levels; the guide links out
 from every place it names a hall — card plates, the plan board, queue
 priority, the wristband list and all 1,630 rows of the full directory —
 and the map links back to a card. A card may hold several stands and the
@@ -55,20 +55,25 @@ normalisation — guide `A061/C060` vs official `A-061 C-060`.
 
 Measured, after trimming to what we render (see the tool):
 
-| hall level | stands | file (raw) | gzipped |
-|---|---|---|---|
-| 5.2 | 90 | 11 KB | 3.2 KB |
-| 6.1 | 35 | 5 KB | 1.4 KB |
-| 7.1 | 23 | 3 KB | 1.1 KB |
-| 8.1 | 35 | 5 KB | 1.5 KB |
-| 9.1 | 21 | 3 KB | 0.9 KB |
-| 10.1 | 191 | 25 KB | 7.0 KB |
-| 10.2 | 94 | 24 KB | 8.2 KB |
-| **total** | **489** | **76 KB** | **~23 KB** |
+| hall level | area | stands | file (raw) | gzipped |
+|---|---|---|---|---|
+| 5.2 | entertainment | 90 | 11 KB | 3.2 KB |
+| 6.1 | entertainment | 35 | 5 KB | 1.4 KB |
+| 7.1 | entertainment | 23 | 3 KB | 1.1 KB |
+| 8.1 | entertainment | 35 | 5 KB | 1.5 KB |
+| 9.1 | entertainment | 21 | 3 KB | 0.9 KB |
+| 10.1 | entertainment | 191 | 25 KB | 7.0 KB |
+| 10.2 | entertainment | 95 | 24 KB | 8.2 KB |
+| 2.1 | business | 83 | 10 KB | 3.0 KB |
+| 2.2 | business | 95 | 12 KB | 3.3 KB |
+| 3.2 | business | 102 | 16 KB | 5.3 KB |
+| 4.1 | business | 55 | 13 KB | 5.2 KB |
+| 4.2 | business | 31 | 5 KB | 1.5 KB |
+| **total** | | **856** | **132 KB** | **~42 KB** |
 
-The whole entertainment area costs less than one webfont. "Lazy-loading
-because it might be a lot of data" inverted into "lazy-load for first
-paint, precache the lot for offline".
+The whole show costs about one webfont. "Lazy-loading because it might be
+a lot of data" inverted into "lazy-load for first paint, precache the lot
+for offline".
 
 ## Design decisions
 
@@ -130,6 +135,18 @@ One consequence to verify by eyeball (open question 1): if a hall ever
 renders mirrored relative to reality, the fix is one sign in the tool's
 `CAMPUS` table and a regenerated snapshot — the client never changes.
 
+The business halls brought the first case where following the source
+faithfully draws a hall upside down. Hall 2 is filed with `scaley` −0.92
+on level 1 and +0.89 on level 2, so one building's two storeys come out
+mirrored against each other. Two independent checks say level 1 is the
+odd one: its stand rows run E→A up the hall where every other level
+filed with a sign of its own runs A→E, and flipping it raises the
+overlap of the two levels' structural blocks — the same walls, so they
+should coincide — from 0.72 to 0.80. So the tool carries a `SIGN_FIX`
+table beside `CAMPUS`, one entry, `"2.1": { dy: 1 }`. It is a documented
+guess until someone walks hall 2 with the map open, and it is one sign
+to undo.
+
 ### 4. The join is client-side, at load — geometry files stay editorial-free
 
 Stands and guide exhibitors meet by `hall` + normalised booth code
@@ -186,12 +203,53 @@ The snapshot on disk is untouched, as ever.
 
 ### 5. Per-hall lazy files, precached for offline
 
-One JSON per hall level, fetched on first open (0.9–8.2 KB gz), prefetched
-for the rest on idle. Integration adds all seven + `index.json` to the
-service worker's `DATA` list (`sw.js:44`) — 23 KB gz buys "the map works
+One JSON per hall level, fetched on first open (0.9–8.4 KB gz), prefetched
+for the rest on idle. Integration adds all twelve + `index.json` to the
+service worker's `DATA` list (`sw.js:44`) — 42 KB gz buys "the map works
 in a dead-reception hall before you ever opened it", which is the whole
 point of the PWA. Runtime updates come free: the `/data/` path rule
 (`sw.js:194`) already serves them network-first with cache fallback.
+
+### 5a. Both areas, told apart by the official colours
+
+The map draws every hall the show occupies, not only the halls the guide
+writes cards about — it already drew 5.2, which no curated card sits in,
+because a map that answers "what is in this hall" is worth more than one
+that only answers "where is my saved booth". The same argument reaches
+the business halls (2.1, 2.2, 3.2, 4.1, 4.2): 820 of the full
+directory's stands are in them, every one of those rows already links to
+a hall, and a trade visitor loses reception in hall 3 exactly like
+everyone else. Hall 1 (Event Arena, 20 stands, one directory row) is
+still left out — it is a venue rather than a floor of stands.
+
+That doubles the halls in the row, so the row now has to say which is
+which, and there is an existing vocabulary for it: the official plan
+fills halls by area (`farbenvorgabe` in the hall-plan page — entertainment
+`#00B9FF`, business `#7800FF`). The snapshot carries the area per hall and
+the palette in `index.json`, and the map spends it in three places: the
+hall row groups by area behind a swatch, the hall's structural blocks are
+washed 22 % in its colour, and a business hall opens under a banner
+saying a consumer ticket does not open these halls and they close after
+Friday. Booth state stays the loud channel — saved is still signal
+orange over everything.
+
+Two notes on the palette. It is *checked*, not read at runtime: the
+colours live in the tool's `AREAS` constant and a mismatch with the
+official page fails the run (`checkAreaColours`), because a table we
+parse blind can also repaint our map blind. And halls 5 and 10 are
+missing from the official table entirely — they hold several areas each
+(merch, cards, indie, retro, campus) and Koelnmesse leaves them
+uncoloured — so the guide files them as what a visitor's ticket makes
+them, entertainment halls, which is also what `data/event.json` has
+always called them.
+
+Rejected: drawing halls in the official *fill* at full strength (a purple
+hall and an orange saved booth fight, and the colour would read as a
+booth state); a separate legend panel (the hall row is already a list of
+halls, so it is the legend); leaving the business halls out and letting
+their directory rows stay dead text (the honest reason to link was
+missing wayfinding, not missing permission — the banner supplies the
+permission part).
 
 ### 6. It stays its own page
 
@@ -330,12 +388,14 @@ theatre. None of these change the architecture.
    `.ics` export writes it into a calendar file.
    The full directory does the same thing one level down: every row's
    `hall · booth` chip is the link, since the booth number is the answer
-   that section exists to give. 802 of its stands sit in a drawn hall and
-   all 802 resolve to a stand — the last two needed `boothCodes()` to
-   split run-together filings like `F040gE057g`, which it now does
-   without changing any curated booth's codes. Business halls 1–4 are
-   never drawn, so those chips stay plain: a consumer ticket can't open
-   that door and a link would imply it could.
+   that section exists to give. 1,622 of its stands sit in a drawn hall
+   and all 1,622 resolve to a stand — two of them needed `boothCodes()`
+   to split run-together filings like `F040gE057g`, which it now does
+   without changing any curated booth's codes. The business halls are
+   drawn now (decision 5a), so their chips link too, and they keep the
+   amber plate and the "trade & media only" they always carried — the
+   map they open says the same thing in a banner. Hall 1 and the outdoor
+   F-areas are still undrawn, so those few chips stay plain text.
 5. **Cross-links out**: the sheet links to `./#exhibitors?ex=<id>`, and
    `focusExhibitor()` in `js/app.js` scrolls that card into view and
    flashes it, clearing any filter that would otherwise hide it.
@@ -356,7 +416,7 @@ Serve the repo root; clear `gc2026.saved.v1`.
 1. **Cold open** `map.html` — hall 7.1 renders, anchor names visible at
    fit, no horizontal page scroll at 360 px, footer counts read
    "23 stands · 8 in the guide". Counts are of drawn stands, so they are
-   post-merge: 180 in hall 10.1, 79 in 10.2.
+   post-merge: 180 in hall 10.1, 80 in 10.2, 93 in 3.2.
 2. **Zoom bands** — pinch/wheel in: mid names appear, then booth codes;
    nothing that was readable at one zoom disappears at the next; strokes
    stay 1 px; pan stays 60 fps-ish during gesture.
@@ -392,7 +452,18 @@ Serve the repo root; clear `gc2026.saved.v1`.
 10. **Orientation spot-check** (once, on site or against the official map
     side-by-side): Xbox fills hall 7's western end; Nintendo sits at
     A-010 B-009 in 9.1; Razer at E-020 D-021 in 10.2. A mirrored hall
-    means one sign in the tool's `CAMPUS` table, then re-snapshot.
+    means one sign in the tool's `CAMPUS` table, then re-snapshot. Hall
+    2.1 is the one level we deliberately draw against its filing
+    (decision 3, open question 1) — check it first, and if it is wrong
+    the fix is deleting its `SIGN_FIX` entry.
+10a. **Areas** — the hall row groups into Entertainment and Business
+    behind a coloured swatch, the business group is flagged trade-only,
+    and the chips of a group carry that colour on their edge. Opening
+    2.1/2.2/3.2/4.1/4.2 shows the trade banner under the row and washes
+    the hall's blocks purple; every entertainment hall is cyan and shows
+    no banner. `node tools/fetch-hallplan.mjs` prints "colours: …
+    still match the official plan" — if it throws instead, Koelnmesse
+    repainted and `AREAS` needs the new value.
 11. **Cross-links** — a card's hall plate opens that booth's sheet on the
     map; a plan-board hall header opens that hall; the sheet's "open in
     guide" lands on that card, even with "saved only" left on. Cards for
@@ -401,8 +472,10 @@ Serve the repo root; clear `gc2026.saved.v1`.
     stop and a hall-lens booth number each land on their own booth
     (its "· unconf." suffix stays outside the link), and a directory chip in a drawn
     hall opens that stand's sheet — showing the official filing's name
-    when the guide has no card for it. Directory chips in halls 1–4 are
-    not links. The `.ics` export still contains no markup.
+    when the guide has no card for it. A business-hall directory chip
+    links too, keeps its amber plate, and says "trade & media only" in
+    its title and its accessible name; chips in hall 1 and the F-areas
+    are still not links. The `.ics` export still contains no markup.
 12. **Offline** — airplane mode, reopen installed app → map, switch to a
     never-opened hall: renders from precache. Navigating straight to
     `map.html` offline serves the map, not the guide.
@@ -411,11 +484,14 @@ Serve the repo root; clear `gc2026.saved.v1`.
 
 ## Open questions
 
-1. ~~**Orientation ground truth.**~~ Settled: checked against the
-   official plan by eye after the first release, and the halls sit the
-   right way round. The `CAMPUS` table in the tool (decision 3) is
-   correct as filed; a future hall added to it still needs the same
-   check, since its signs are a per-hall fact.
+1. **Orientation ground truth.** Settled for the entertainment halls:
+   checked against the official plan by eye after the first release, and
+   they sit the right way round. Open again for hall 2.1, the one level
+   whose filed signs disagree with its own second storey — the tool
+   flips it on the evidence in decision 3, and only a walk through hall
+   2 (or Koelnmesse's printed plan) settles it. The other four business
+   levels are as filed. The `CAMPUS`/`SIGN_FIX` tables in the tool are
+   where any correction goes; the client never changes.
 2. ~~**Sub-stand suffix policy.**~~ Half settled: a suffixed stand
    sharing its parent's exact footprint is the same place and is merged
    into it (decision 4a). One that has a footprint of its own is a
@@ -423,10 +499,14 @@ Serve the repo root; clear `gc2026.saved.v1`.
    exhibitors of its own, and hiding it would lose them. What is left is
    cosmetic: whether an annexe should read as subordinate to its parent
    rather than as a peer. Decide after seeing them on site.
-3. **The other twelve hall levels.** Koelnmesse files halls 1–5, outdoor
-   F-areas and P4 in the same endpoint. `index.json` drives the chip row,
-   so adding one is a `HALLS` entry in the tool + re-run — do it when the
-   guide covers exhibitors there (business area, cosplay village).
+3. **The other hall levels.** Mostly answered: the five business-area
+   levels are drawn (decision 5a), which leaves hall 1 (Event Arena,
+   20 stands and a single directory row — a venue, not a floor of
+   stands), hall 5.1 (Cosplay Village and the merch halls, 61 directory
+   stands — the strongest remaining candidate), and the outdoor F-areas
+   and P4, which have 11 directory stands between them. Each is a
+   `HALLS` entry in the tool plus a re-run, and each needs its own
+   orientation check, since the signs are a per-hall fact.
 4. ~~**Feeding confirmations back.**~~ Built: `unclaimedReport()` lists
    official stand names matching a guide exhibitor in that hall whose
    card has not claimed them. It found twelve stands across eight cards

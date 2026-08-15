@@ -27,6 +27,7 @@ const DEFAULT_HALL = "7.1";
 
 const state = {
   index: null,          // data/hallplan/index.json
+  areas: {},            // area key -> {label, colour, trade?, access?}
   exhibitors: [],       // data/exhibitors.json
   halls: new Map(),     // hall id -> hall json
   byStand: new Map(),   // "hall:CODE" -> [exhibitor, …]
@@ -198,6 +199,9 @@ function renderHall(id) {
   svg.setAttribute("height", H);
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", `Schematic plan of hall ${id}`);
+  /* The hall's structure is washed in its area colour — the only thing
+     on the map that carries it, so booth state stays the loud channel. */
+  svg.style.setProperty("--area", areaOf(id).colour || "");
 
   const blocks = document.createElementNS(SVGNS, "g");
   for (const b of hall.blocks) {
@@ -405,8 +409,32 @@ function refreshMarks() {
   }
   const covered = state.stands.filter((r) => r.exs.length).length;
   $("#counts").textContent =
-    `${state.stands.length} stands · ${covered} in the guide` + (saved ? ` · ${saved} saved` : "");
+    `${state.stands.length} stands · ${covered || "none"} in the guide` +
+    (saved ? ` · ${saved} saved` : "");
   renderChips();
+}
+
+/* ================= areas ================= */
+
+/* The halls fall into two areas, and which one you are looking at is not
+   cosmetic: a consumer ticket opens the entertainment halls and does not
+   open the business ones. The colours are Koelnmesse's own — the hall
+   fills from the official plan, carried through the snapshot — so the
+   two maps agree at a glance; the access line is ours, because no colour
+   says "you cannot walk in here". */
+const areaOf = (id) => state.areas[state.index.halls.find((h) => h.id === id)?.area] || {};
+
+/* Named in the source as the hall's whole area ("Business"), read on the
+   page as the place ("Business area"). */
+const areaName = (area) => (area.label ? `${area.label} area` : "");
+
+function renderAccess(id) {
+  const area = areaOf(id);
+  const note = $("#access");
+  note.hidden = !area.access;
+  if (!area.access) return;
+  note.style.setProperty("--area", area.colour || "");
+  note.innerHTML = `<b>${esc(areaName(area))}</b> — ${esc(area.access)}`;
 }
 
 /* ================= hall chips ================= */
@@ -420,13 +448,37 @@ function hallSavedCount(id) {
   return n;
 }
 
+/* One scrolling row, but grouped: the halls of an area sit behind that
+   area's name in that area's colour, so the row doubles as the legend
+   and the business halls can't be mistaken for more of the show. The
+   index is written area-major, so grouping is just a change of key
+   between chips. */
 function renderChips() {
+  let last = null;
   $("#halls").innerHTML = state.index.halls
     .map((h) => {
+      const area = state.areas[h.area] || {};
+      let head = "";
+      /* An index.json from before the areas existed (a cached copy in an
+         installed app) simply has none, and the row falls back to the
+         flat list of chips it always was. */
+      if (h.area !== last) {
+        last = h.area;
+        if (area.label)
+          head = `<span class="hall-group" style="--area:${esc(area.colour || "")}"
+            aria-hidden="true">${esc(area.label)}${
+            area.trade ? ' <i class="hall-group-trade">trade only</i>' : ""
+          }</span>`;
+      }
       const n = hallSavedCount(h.id);
-      const label = `Hall ${h.id}${n ? `, ${n} saved` : ""}`;
-      return `<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}" type="button"
-        data-hall="${esc(h.id)}" aria-label="${esc(label)}">Hall ${esc(h.id)}${
+      /* Screen readers get no group heading — the row is one flat list to
+         them — so each chip names its own area, and the trade-only ones
+         say so before you are taken there. */
+      const label = `Hall ${h.id}${area.label ? `, ${areaName(area)}` : ""}` +
+        (area.trade ? ", trade visitors only" : "") + (n ? `, ${n} saved` : "");
+      return `${head}<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}" type="button"
+        data-hall="${esc(h.id)}" style="--area:${esc(area.colour || "")}"
+        aria-label="${esc(label)}">Hall ${esc(h.id)}${
         n ? ` <span class="chip-saved" aria-hidden="true">●${n}</span>` : ""
       }</button>`;
     })
@@ -707,6 +759,12 @@ async function showHall(id, { standCode = null } = {}) {
     state.sel = null;
     $("#sheet").classList.remove("open");
     renderChips();
+    /* Twelve halls no longer fit the row, so a hall opened from a deep
+       link or a chip at the far end is scrolled to rather than left off
+       screen. Only on a hall change: doing it from refreshMarks would
+       yank the row back while someone is reading along it. */
+    $("#halls .chip.active")?.scrollIntoView({ inline: "center", block: "nearest" });
+    renderAccess(id);
     if (!state.halls.has(id)) $("#load").hidden = false;
     await loadHall(id);
     renderHall(id);
@@ -743,6 +801,7 @@ async function main() {
     fetch(`data/exhibitors.json${bust}`).then((r) => r.json()),
   ]);
   state.index = index;
+  state.areas = index.areas || {};
   state.exhibitors = exhibitors;
   buildJoin();
   renderSourceNote();
