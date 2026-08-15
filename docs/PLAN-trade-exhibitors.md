@@ -1,0 +1,408 @@
+# Implementation plan: trade exhibitors
+
+Picks up the seam left by `docs/PLAN-hall-map.md`'s business-hall work: the
+map now draws halls 2.1–4.2 in the official area colours, under a banner
+saying a consumer ticket does not open them — but the guide itself still
+treats the ~815 exhibitors *in* those halls as inert directory rows. For a
+visitor holding a trade or media badge, that is most of their show reduced
+to name, country and booth number.
+
+**Status: planned, not built.** Unlike the other PLAN docs, this one is
+written before the feature; each stage below flips to "built" as it lands.
+The design decisions are settled — the discovery work (endpoint behaviour,
+payload sizes, share-token collision measurement) was done against the live
+source and the current tree, and file:line references are to the tree as of
+this writing.
+
+## What is being built
+
+- **A trade exhibitor list** on the main page, shaped like the Full
+  directory but saveable and plannable, covering every exhibitor with a
+  business-hall stand. Its rows show what a trade exhibitor *offers* —
+  the official product-group categories, country, booth, profile link —
+  because trade exhibitors have no games to list.
+- **Curated trade cards** in `data/exhibitors.json` for the notable booths
+  (pavilions, platforms, interesting offers), rendered in the main grid
+  with an Offers block where consumer cards have a Lineup. Researched and
+  sourced the same way every existing card was.
+- **One setting** — "I have a trade badge" — off by default. Consumer
+  visitors never see any of it; turning it on lazy-loads the data and
+  merges trade content into the guide.
+- **Full integration**: a saved trade booth is a stop like any other — it
+  appears in Your plan's day and hall lenses, colours its stand on the
+  map, rides share links, and lands in the `.ics` export. The planner
+  warns when a trade stop is assigned to a day the business area is
+  closed. Queue priority and the 18+ wristband list exclude trade entries,
+  which have neither queues nor wristbands.
+
+## Why build it
+
+The guide's one-liner is "plan your gamescom visit"; for a trade visitor
+the plan runs through halls the guide currently walks past. The map
+already answers *where* (`map.html#3.2/D050` works today); the directory
+already answers *who is there*; what is missing is the loop the whole app
+is built around — save it, put it on a day, walk the route. And the data
+to close that loop is already flowing: the trade rows are in
+`data/directory.json`, their halls are drawn, and their stand chips link.
+What they lack is saveability and something to say beyond a booth number.
+
+Integrated rather than parallel, because a trade visitor's day is not
+split into modes: devcom meeting in 4.1, hands-on appointment in 8.1,
+evening round through the indie hall. Two separate planners would each
+hold half a day. One planner holding both is also what makes the best
+warning in this feature possible: the business area closes after Friday,
+and only a planner that sees both kinds of stop can catch a trade meeting
+scheduled for Saturday.
+
+## The data source
+
+The trade list needs one thing the directory rows don't carry: what an
+exhibitor actually does. The official exhibitor search has it as a filter
+— "product groups", a two-level taxonomy — and the same paginated endpoint
+`tools/fetch-directory.py` already sweeps accepts it:
+
+```
+?route=aussteller/blaettern&fw_ajax=1&start=N
+  &paginatevalues={"hauptwarengruppe":"601","hauptwarengruppe2":"601",…}
+```
+
+Verified against the live endpoint: the category filter composes with the
+hall filter (cat 601 alone: 180 rows; cat 601 ∩ hall 2.2: 19 rows), so
+category membership is harvestable by running the existing sweep once per
+top-level group — about 28 groups, ~150 requests at the tool's existing
+pacing, no per-profile scraping. Two quirks to handle:
+
+- Group ids come in near-duplicate pairs per label ("600" and "601" are
+  both *Service firms, contractors*); dedupe by label, keep the lowest id.
+- Membership overlaps — an exhibitor can be both *Development* and
+  *Service firms* — so it is a list per exhibitor, not a single group.
+
+The profile pages carry more (brands, target markets, addresses), but
+that is one fetch per exhibitor for detail the profile link on the row
+already provides. Deliberately skipped.
+
+## Design decisions
+
+### 1. Enrich `data/directory.json` — no second data file
+
+The trade rows *are* directory rows; a separate `trade.json` would
+duplicate 816 of them and let two generated files drift. Instead the
+fetch tool adds two fields to the file that already exists:
+
+```jsonc
+{
+  "groups": { "100": "Hardware", "204": "Development", … },  // id → label, deduped
+  "exhibitors": [
+    { "name": "…", "country": "…", "slug": "…",
+      "stands": [{ "hall": "3.2", "booth": "D050/F051" }],
+      "cats": ["204", "600"] }                                // omitted when empty
+  ]
+}
+```
+
+Cost ≈ +6–8 KB gzipped on today's 43 KB, paid only by people who open the
+Full directory or the trade list — the file stays lazy. The lazy-load the
+setting needs already exists: `loadDirectory()` (`js/app.js:1715`) is a
+single-flight fetch triggered on first need, and the service worker
+serves `/data/` network-first with cache fallback (`sw.js:239`). Turning
+the pref on calls a loader that is already there.
+
+Categories are harvested for all 1630 rows, not just the business halls:
+the harvest yields both for the same requests, and business-only would
+foreclose ever showing categories in the Full directory (open question 1).
+
+### 2. Identity: `dir:<slug>` in the existing sets; curated cards claim their row
+
+A saveable thing needs a stable id. Directory rows have one — `slug`,
+unique across all 1630 (verified) — and it enters the existing storage
+prefixed: `dir:<slug>` in `saved.exhibitors` and as an itinerary key. The
+prefix keeps the namespace honest (no curated id can collide, and the v1
+share decoder that matches raw ids can never misread one), and
+`js/marks.js` needs no change at all: `readMarks` stores strings
+verbatim, and `hasSaved(marks, ex)` works on any record whose `id` is the
+key.
+
+Curated trade cards (part A) are ordinary `exhibitors.json` entries with
+a new `type: "trade"` — not a new classification axis. `renderFilters()`
+derives the type chips from `e.type` (`js/app.js:1592`), so the "Trade &
+Business" chip comes free, and one predicate (`type === "trade"`) is the
+whole gate everywhere a gate is needed. New fields on such a card:
+
+- `offers: ["…"]` — what the booth is for, rendered as an **Offers**
+  block where consumer cards render the Lineup;
+- `country` (optional), shown where a consumer card shows nothing;
+- `dirSlug` (required) — the directory row this card upgrades.
+
+`dirSlug` is the dedup rule: the trade list suppresses rows claimed by a
+curated card, and saving resolves through the curated id. A `dir:` key
+saved before the card existed (from the map, or a share link) resolves to
+the card via the alias, and `toggleMark` migrates the stored key on the
+next write — one booth, one save, whichever door it came in through.
+
+Rejected: a parallel `kind` field beside `type` (second schema dimension,
+bespoke chip logic, and `docs/UPDATING.md` would have to explain when to
+use which for no expressive gain).
+
+### 3. Share links: same `t=` tokens — measured, not hoped
+
+The v2 share format encodes each saved item as a 5-character FNV-1a token
+(`buildShareCodeMap()`, `js/app.js:357`), and its collision policy is
+strict: a token claimed twice is abandoned by every claimant. The comment
+at the definition put the headroom at "about a thousand" identities;
+adding 816 trade slugs to today's 217 lands at 1033 — close enough that
+this was measured rather than assumed: **hashing all 1033 identities (75
+curated ids, 142 game keys, 816 `dir:` slugs) with the repo's own hash
+produces zero collisions.** The implementation re-verifies this at
+generation time: `tools/fetch-directory.py` gains a check that mirrors
+`tok36` (the same mirrored-constant convention as `boothCodes`/`codeSet`)
+and warns before a colliding dataset ships.
+
+So trade items ride the existing wire format unchanged, which buys the
+compatibility that matters:
+
+- **Old cached builds** decode new links losslessly for everything they
+  know: `resolveV2` (`js/app.js:631`) keeps unresolved tokens' positions,
+  so the positional day plan (`d=`) and played bitmask (`p=`) stay
+  aligned, and trade items surface as the existing "N aren't in the guide
+  any more" count.
+- **New builds** receiving trade tokens before the directory has loaded
+  hold the raw payload (it already sits in sessionStorage), load the
+  directory, rebuild the code map, and re-parse before offering the
+  import. Offline with a cold cache degrades to the old-build behaviour.
+
+Rejected: a separate `x=` parameter for trade tokens (the day plan is
+positional over `t=`'s entry order — trade stops could not carry day
+assignments without duplicating that machinery); excluding trade items
+from shares (a trade visitor's plan is exactly the thing they'd move to a
+second device).
+
+### 4. The pref gates discovery, never resolution
+
+One boolean, `trade`, in the existing prefs blob (`loadPrefs`/
+`persistPrefs`, `js/app.js:131/147`), off by default, synced cross-tab by
+the storage listener that already re-applies prefs.
+
+What it gates is **discovery**: the trade list's contents, curated
+`type:"trade"` cards and their type chip, the business-hall chips in the
+hall filter, and the map joining *unsaved* business stands for browsing.
+
+What it must never gate is **resolution**. A `dir:` key can enter the
+saved set with the pref off — tapped on the map, imported from a share —
+and today's behaviour for an unresolvable exhibitor id is silent
+invisibility (`itineraryItems()` drops it, `js/app.js:1908`). So: if the
+saved set contains any `dir:` key, the directory is loaded at boot and
+those items resolve in the planner, the map and the share dialog
+regardless of the pref. Saved things never vanish because a setting is
+off; the setting only decides whether *more* of them are offered.
+
+The toggle lives where its effect is: the trade section itself. Closed,
+the section explains what the business area is (trade & media badge only,
+closed after Friday) and offers one button — "I have a trade badge — show
+trade exhibitors". No toolbar clutter for the consumer majority, and
+finding the switch *is* finding the feature.
+
+### 5. The trade list is its own section; the Full directory keeps its contract
+
+The Full directory's block comment and note copy promise a lookup tool —
+"no lineups, crowd ratings or saving down here" (`js/app.js:1651`). Making
+its rows conditionally saveable would turn that copy, the row renderer
+and the paging logic into mode soup. Instead the trade list is a sibling
+`<details id="trade">` above it, reusing the directory's visual language
+with its own row shape:
+
+- name, linked to the official profile (same pattern as `directoryRow`,
+  `js/app.js:1759`), country;
+- stand chips — `standChips()` factored out of `directoryRow` and shared,
+  amber trade plates and map links included;
+- category tags from the `groups` table;
+- a save button: `markButton("saved", "exhibitor", "dir:"+slug, name)` —
+  the delegated `[data-mark]` listener (`js/app.js:2867`) handles it with
+  zero new wiring.
+
+Search and the hall chips apply exactly as `directoryMatches()` does
+(`js/app.js:1740`), plus a section-local category chip row. Paging
+mirrors the directory: 200 per page, page reset keyed on
+`query|hall|category`. Membership: every row with at least one
+business-hall stand (816), minus rows claimed by a curated `dirSlug`.
+The Full directory itself changes only its note, which gains a pointer
+sentence when trade mode is on.
+
+### 6. Planner: one merged lookup, not parallel branches
+
+Everything downstream of saving resolves ids in one of two ways: the
+single resolver in `itineraryItems()` (`js/app.js:1905`), or an inverted
+iteration over `state.exhibitors` + `hasSaved` (`routeGroups`
+`js/app.js:2303`, `renderPlanDayFilter` `:2456`). Both get one merged
+answer instead of a second code path:
+
+- `resolveSavedExhibitor(key)` — curated card, else curated-via-`dirSlug`
+  alias, else a trade record built from the directory cache:
+  `{ id: "dir:"+slug, name, country, hall, booth, stands, cats,
+  trade: true, officialUrl }`, with `hall`/`booth` from the first
+  business stand and `stands` kept whole for the map.
+- `plannedExhibitors()` — `state.exhibitors` plus resolved saved trade
+  records — feeds the hall lens and the day filter. `hallRank` is
+  `parseFloat`, so hall 2.1 leads the walking route naturally.
+
+Queue priority (`js/app.js:2124`) and the wristband list (`:2079`) keep
+iterating `state.exhibitors`, so directory-backed entries are excluded by
+construction; they additionally skip `type === "trade"` so a curated
+trade card stays out even if it someday carries a crowd note.
+
+**The closed-days warning**: `isBusinessOpenDay(d)` lands beside
+`isTradeDay` (`js/app.js:1888`), reading `data/event.json`'s own day
+entries (the business area runs Wed–Fri; Sat/Sun say "business area
+closed"). Assigning a trade stop to a closed day is warned, not blocked —
+the guide's job is honesty, not enforcement, and a visitor may well plan
+a Saturday walk *past* a booth to photograph a stand. The stop's day
+chips mark closed days, and an assigned-anyway stop carries an amber note
+on its row and a count in the day group's header. The `.ics` export
+includes trade stops with no extra work — it is built from
+`itineraryItems()`.
+
+One more honesty fix that falls out: when saved `dir:` keys exist but the
+directory hasn't loaded (first boot offline), the plan's empty state says
+the trade data needs one online load — instead of today's misleading
+"nothing you saved is in the current lineup anymore".
+
+### 7. Map: join the second source, keep the sheet honest
+
+`buildJoin()` (`js/map.js:69`) needs only `{hall, booth}` and already
+de-dupes per stand, so trade records join the same way — iterating
+`stands[]` where a record has one (directory rows can hold several
+stands; curated records keep the scalar `hall`/`booth`). The map loads
+the directory lazily when trade mode is on *or* any saved key starts with
+`dir:` — same rule as the guide, same never-vanish guarantee.
+
+Three parts of the map assume every joined record is a curated card and
+get a branch:
+
+- the sheet (`js/map.js:660` region) reads `crowd` and `games` and links
+  `./#exhibitors?ex=<id>` — a trade record instead shows country,
+  category labels and the trade-only line, and links the official
+  profile, since no card exists to deep-link;
+- `hallSavedCount()`'s not-yet-loaded fallback (`js/map.js:442`) counts
+  by scalar `ex.hall` — it learns `stands[]`;
+- the storage listener (`js/map.js:728`) watches only the mark keys — it
+  additionally watches the prefs key, and a cross-tab save of a `dir:`
+  key with no directory loaded triggers the lazy load before recolouring.
+
+The pref itself is read through a small helper in `js/marks.js` — the
+same justification that put `boothCodes` there: two pages answering the
+same question must answer it identically.
+
+### 8. Caching: runtime, not precache
+
+`data/directory.json` stays out of the service worker's precache list.
+The consumer majority never enables the pref, and precaching ~50 KB gz
+for everyone inverts the economics that justified precaching the hall
+plans (tiny files, everyone's map). The trade user's offline story still
+holds: enabling the toggle *is* the first fetch, which warms the runtime
+cache — the same one-online-load contract the directory's error copy
+already states (`js/app.js:1817`). No `VERSION` bump: every new DOM
+lookup guards on the element existing, per the cached-shell tolerance the
+directory section already practices.
+
+## Deliberately not built
+
+- **Per-profile scraping** (brands, target markets, addresses) — one
+  request per exhibitor for detail the profile link already serves.
+- **A category filter in the Full directory** — the directory stays a
+  lookup tool; categories are the trade list's vocabulary. The data
+  supports adding it later (decision 1).
+- **Blocking closed-day assignments** — warn, don't block (decision 6).
+- **A trade-only map mode** — the map's area colours and banner already
+  say what kind of hall you are in; hiding entertainment halls from trade
+  visitors would just break their evening plan.
+- **Trade-only crowd forecasts / queue integration** — business booths
+  run on appointments, not queues; pretending otherwise would put fake
+  numbers in the one list whose honesty matters most.
+
+## How it is wired (stages, each independently shippable)
+
+1. **Data pipeline** — `tools/fetch-directory.py`: category harvest
+   (per-group sweep, label dedupe), `groups` + `cats` in the payload, a
+   `--skip-categories` flag for the fast path, and the share-token
+   collision check mirroring `tok36`. Regenerate `data/directory.json`;
+   document the fields in `docs/UPDATING.md`.
+2. **Core loop** — the pref (`js/app.js:131/147`), the `#trade` section
+   in `index.html` + styles, `standChips()` factored out of
+   `directoryRow`, `tradeRow`/`renderTrade` mirroring `renderDirectory`,
+   boot-time directory load when the pref is on or saved `dir:` keys
+   exist, `resolveSavedExhibitor`/`plannedExhibitors` into
+   `itineraryItems` (`:1905`), `routeGroups` (`:2303`),
+   `renderPlanDayFilter` (`:2456`), exclusions in `renderPriority`
+   (`:2124`) and `renderWristband` (`:2079`), business-hall chips in
+   `renderFilters` (`:1610`) when on, plan-empty copy.
+3. **Curated trade cards** — researched and sourced like every existing
+   card (candidates: country/regional pavilions, the gamescom biz/devcom
+   presences, major service platforms); `TYPE_LABELS.trade`, the Offers
+   block in `card()` (`:1484`), `dirSlug` aliasing + trade-list
+   suppression + key migration in `toggleMark`; schema in
+   `docs/UPDATING.md`.
+4. **Share** — claim `dir:` tokens in `buildShareCodeMap` (`:357`),
+   rebuild when the directory lands; decode path lazy-loads and re-parses
+   before `offerIncoming`.
+5. **Map** — decision 7's list (`js/map.js:69`, `:442`, sheet branch,
+   listener, `css/map.css` sheet touches).
+6. **Closed-day warnings + polish** — `isBusinessOpenDay`, chip marking,
+   row/header notes; changelog + README.
+
+## Verification (manual test script)
+
+Serve the repo root; fresh profile = cleared `gc2026.*` keys. Playwright
+is available at `/opt/node22/lib/node_modules/playwright` for the
+scripted steps.
+
+1. **Off by default** — fresh profile: the trade section shows only the
+   explainer and enable button; no business-hall chips, no Trade type
+   chip, no trade cards in the grid; priority and wristband lists
+   unchanged from the parent branch.
+2. **Enable** — exactly one `directory.json` request; count reads ~816
+   booths; rows show name ↗, country, amber stand chips, category tags,
+   save button. The pref survives a reload, and a second tab flips live
+   via the storage event.
+3. **Filters compose** — search + hall chip + category chip narrow
+   together; "Show N more" pages; a query change resets the page.
+4. **Save → plan** — save a hall 2.1 row: saved count increments; the day
+   lens shows the stop with hall · booth; the hall lens groups it under
+   Hall 2.1 *before* Hall 5.2; Sat/Sun day chips carry the closed
+   marking; assigning Saturday renders the warning on the row and in the
+   day header; the `.ics` export contains the stop; the stop's hall link
+   opens `map.html` on the stand.
+5. **Exclusions hold** — no `dir:` row and no `type:"trade"` card appears
+   in queue priority or the wristband list.
+6. **Curated card** — visible only with the pref on; Offers block, no
+   Lineup; its directory row is suppressed in the trade list; a
+   pre-saved `dir:` key shows the card as saved, and toggling migrates
+   the stored key (inspect `gc2026.saved.v1`).
+7. **Share round-trip** — save 2 curated + 2 trade + 1 game; open the
+   link in a fresh profile with the pref off: the prompt offers all 5
+   (directory fetched lazily), the import lands, the plan shows the trade
+   stops, and the pref is still off. Scripted: recompute the FNV tokens
+   over all ids + game keys + `dir:` slugs and assert zero collisions
+   (mirrors the tool's generation-time check).
+8. **Map** — a saved trade booth: hall chip shows ●1, stand colours
+   signal, sheet shows country/categories/profile link and a working
+   save button. With the pref on, tapping an unsaved business stand names
+   its exhibitor and can save it. With the pref off and nothing saved,
+   business halls render exactly as on the parent branch.
+9. **Offline** — enable online once, then airplane mode: the trade list
+   renders from cache; a fresh profile offline shows the one-online-load
+   note; the map still draws the business halls from precache.
+10. **Escaping** — official names, countries and category labels reach
+    the DOM only through `esc()`/`textContent`.
+
+## Open questions
+
+1. **`cats` scope** — harvested for all 1630 rows (recommended: same
+   requests, keeps a future directory category filter possible) or
+   business-only (~10 KB raw smaller).
+2. **Toggle wording** — "I have a trade badge" (personal, honest about
+   who it's for) vs a neutral "Show the business halls". Should the Event
+   view's tickets block mention the switch exists?
+3. **Closed-day UX** — confirm warn-don't-block is the intended
+   behaviour once it's visible on a real plan.
+4. **Curation list** — which booths get cards first, and whether any
+   trade booth deserves a crowd note (it stays out of the priority list
+   either way under the `type` exclusion).
