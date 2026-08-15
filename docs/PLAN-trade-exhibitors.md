@@ -451,12 +451,49 @@ The four questions this doc opened with, as settled during implementation:
    through for a business-area stop, an assigned one carries an amber note on
    the row, the day group heads with a count, and the `.ics` description says
    "business area CLOSED this day" so it survives leaving the guide.
-4. **Curation list** — ten cards: five Hall 4.2 compounds (Xbox, Nintendo,
-   Tencent, NVIDIA — each claiming its directory row via `dirSlug`) and five
-   pavilions (Spain/ICEX, GamingMalta, Denmark/NIMBI, the UK collective, the
-   Nordic & Baltic stand, Games Hubs Hessen). Pavilion cards deliberately
-   claim **no** `dirSlug`: a pavilion is a stand, not a row, and its members
-   stay listed individually below. No trade booth gets a crowd note.
+4. **Curation list** — 32 cards, and the criterion turned out not to be the
+   one this doc assumed. See "What earns a card" below. No trade booth gets a
+   crowd note.
+
+## What earns a card
+
+The obvious answer was "the big ones", and it is wrong. Stand size and
+occupancy answer *is the door open* — they do not answer *do I care*. Sorted
+by area, the business halls put a 560 m² closed Xbox compound at the top and
+bury the names a trade visitor is actually hunting for:
+
+| | |
+|---|---|
+| Unity Technologies | **12 m²** |
+| Reddit | 16 m² |
+| Wargaming, Kakao Games, Poki | 20 m² |
+| Denuvo | 24 m² |
+| IGN + Humble Bundle (one stand) | 30 m² |
+| Amazon Web Services | 45 m² |
+| Cloudflare | 63 m² |
+
+A 12 m² Unity desk matters more to a trade visitor than any compound in 4.2.
+So cards are curated the way the consumer cards always were — **by
+recognition** — and the shape of the business halls only decides what a card
+*says*, never whether one exists.
+
+The 32 break down as: 22 recognisable B2B names with no consumer card at all
+(infrastructure, platforms, payments, dev services, media, industry bodies),
+6 national and regional pavilions, and 4 Hall 4.2 compounds. Pavilion cards
+deliberately claim **no** `dirSlug` — a pavilion is a stand, not a row, so its
+members stay listed individually below it.
+
+Deliberately **not** done: a card per pavilion. There are 50 pavilion stands,
+and carding the other 44 would have added forty near-identical entries that
+pushed Cloudflare and Unity off the screen — a worse overview, not a better
+one. The remaining pavilions stay in the list, marked by their `shared · N`
+count.
+
+Brands that already hold a consumer card and *also* keep a business booth
+(Atari, HoYoverse, GIANTS, Corsair, Samsung, Wargaming, Bloober, Coffee Stain,
+Raw Fury) are a reasonable next batch, named "— business booth" like the four
+compounds already are. They are lower priority because the guide at least
+already contains them.
 
 ## Still open
 

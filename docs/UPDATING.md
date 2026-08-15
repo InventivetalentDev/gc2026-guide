@@ -245,6 +245,13 @@ neither means anything for a business booth: the **Lineup** becomes an
   and the 18+ wristband exclude `type: "trade"` outright — business booths run
   on appointments, not queues, and inventing a number for one would put a
   fiction in the list that most needs to be trusted.
+- **What earns a trade card is recognition, not size.** Stand area is a good
+  guide to whether a booth is open or closed and a terrible guide to whether
+  anyone is looking for it: Unity exhibits on 12 m², Reddit on 16, Cloudflare
+  on 63, while the largest stands in the halls are closed compounds nobody can
+  walk into. Pick the names a trade visitor would search for and be annoyed to
+  miss. Resist carding pavilions wholesale — there are 50 of them and forty
+  near-identical cards would bury the twenty names worth surfacing.
 
 ### `data/event.json`
 

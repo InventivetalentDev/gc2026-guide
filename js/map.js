@@ -83,10 +83,35 @@ function buildJoin() {
       if (!at.includes(ex)) at.push(ex);
     }
   };
-  for (const ex of [...state.exhibitors, ...state.trade]) {
+  for (const ex of [...state.exhibitors.filter(offered), ...state.trade]) {
     add(ex, ex.hall, ex.booth);
     for (const s of ex.stands || []) add(ex, s.hall, s.booth);
   }
+}
+
+/* Curated business-area cards are trade content, so they follow the guide's
+   rule rather than the map's convenience: offered only in trade mode — else a
+   consumer taps a Hall 2.1 stand, gets a card name, and follows a link into a
+   grid that is hiding it. Saved ones always join, because that rule gates
+   discovery and never resolution. */
+const offered = (ex) =>
+  ex.type !== "trade" ||
+  GCMarks.tradeMode() ||
+  state.marks.saved.exhibitors.has(ex.id) ||
+  state.marks.played.exhibitors.has(ex.id);
+
+/* Anything that changes who joins to a stand — new rows arriving, trade mode
+   flipped in the other tab — invalidates the hall on screen, because both the
+   chip counts and the stand records read the join. Re-selecting afterwards
+   keeps an open sheet pointing at the same stand. */
+function redrawJoin() {
+  buildJoin();
+  if (!state.hall || !$("#map")) return;
+  const code = state.sel ? [...state.sel.codes][0] : null;
+  renderHall(state.hall);
+  if (!code) return;
+  const rec = state.stands.find((r) => r.codes.has(code));
+  if (rec) selectStand(rec);
 }
 
 /* ================= trade exhibitors =================
@@ -138,18 +163,7 @@ function loadTrade() {
     .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
     .then((payload) => {
       state.trade = tradeRecords(payload);
-      buildJoin();
-      /* The hall on screen was drawn before these rows existed, so it has to
-         be rebuilt — the chip counts and the stand records both read the
-         join. Re-selecting keeps an open sheet pointing at the same stand. */
-      if (state.hall && $("#map")) {
-        const code = state.sel ? [...state.sel.codes][0] : null;
-        renderHall(state.hall);
-        if (code) {
-          const rec = state.stands.find((r) => r.codes.has(code));
-          if (rec) selectStand(rec);
-        }
-      }
+      redrawJoin();
     })
     .catch(() => {
       /* offline with a cold cache: the business halls simply stay as they
@@ -859,8 +873,10 @@ window.addEventListener("storage", (e) => {
   loadMarks();
   /* Trade mode turned on in the guide, or a trade booth saved there — either
      way this page now needs rows it has not fetched. loadTrade() redraws the
-     hall itself once they land. */
-  if (wantsTrade()) loadTrade();
+     hall itself once they land; when it has nothing to fetch, the join still
+     has to be rebuilt, because which curated cards are offered just changed. */
+  if (wantsTrade() && !state.trade.length) loadTrade();
+  else if (e.key === null || e.key === GCMarks.PREFS_KEY) redrawJoin();
   refreshMarks();
   if (state.sel) selectStand(state.sel);
 });

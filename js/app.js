@@ -1579,11 +1579,16 @@ function tradeBlocks(ex) {
         <ul class="offers">${offers.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
       </div>`
     : "";
+  /* The card's own note always wins. Failing that, only the two states that
+     need explaining carry the default: "walk-up" says everything a sentence
+     would, and repeating the same line down twenty open stands turns the one
+     line that matters — the closed ones — into wallpaper. */
+  const note = ex.accessNote || (ex.access === "open" ? "" : access?.note) || "";
   const line = access
     ? `<div class="trade-access" data-access="${esc(ex.access)}">
         <span class="row-label">Access</span>
-        <span class="trade-access-val">${esc(access.label)}</span>
-        <span class="trade-access-note">${esc(ex.accessNote || access.note)}</span>
+        <span class="trade-access-val" title="${esc(access.note)}">${esc(access.label)}</span>
+        ${note ? `<span class="trade-access-note">${esc(note)}</span>` : ""}
       </div>`
     : "";
   return { list, line };
@@ -2227,6 +2232,8 @@ function migrateDirAliases() {
 
    The row shows the number. What it means is said once in the section note,
    and per booth only on a curated card, where it can be sourced. */
+const TRADE_SHARED_MIN = 5;
+
 let standShareCache = null;
 
 function standShare() {
@@ -2303,11 +2310,15 @@ function tradeRow(entry, byBooth) {
     .map((label) => `<span class="tag">${esc(label)}</span>`)
     .join("");
   const share = sharedWith(entry);
-  /* Three or more, so a pair of companies splitting a desk isn't announced as
-     a pavilion. The label states the count and nothing else. */
-  const shared = share >= 3
+  /* Five, not three. At three the number is just as true but means something
+     else entirely — CurseForge shares a stand with Overwolf, its own parent,
+     which is a company and its subsidiary rather than a collective. The
+     pavilions this is worth flagging run from a dozen exhibitors to seventy,
+     so the threshold sits above the noise, and the label states the count
+     without telling you what to conclude from it. */
+  const shared = share >= TRADE_SHARED_MIN
     ? `<span class="trade-shared" title="${esc(
-        `${share} exhibitors list this stand — usually a national or regional pavilion, staffed and open to walk up to`
+        `${share} exhibitors are listed on this stand — a collective, usually a national or regional pavilion`
       )}">shared · ${share}</span>`
     : "";
   return `<li class="dir-row trade-row" data-saved="${isSaved("exhibitor", key)}">
@@ -2402,7 +2413,7 @@ function renderTrade() {
 
   const bits = [
     "The business area (halls 2–4), where the industry does its trading. A trade or media badge opens these halls; a consumer ticket does not, and they close after Friday.",
-    "Booths here come in two shapes: shared stands — national and regional pavilions with a dozen or more companies on them, staffed all day and meant to be walked up to — and single-occupant stands, which in Hall 4.2 are mostly publishers' closed meeting buildings. The “shared” count says which is which; the cards above say what a booth is actually for.",
+    "Almost all of it is walk-up: a dozen or more companies share each national and regional pavilion, and the small stands in halls 2.1 and 2.2 are counters you can just talk to. Only about twenty booths — the big single-occupant compounds in Hall 4.2 — are closed rooms you need an appointment for. The “shared” count marks the collectives; the cards above say what a booth is actually for.",
     "Save a booth and it plans like any other stop.",
   ];
   if (!matches.length) bits.push("Nothing here matches the current search, hall or category.");

@@ -4,15 +4,16 @@
     "revision": 23,
     "changes": [
       "New: trade exhibitors. Turn on \"I have a trade badge\" and the ~820 business-hall booths become saveable, plannable stops — with their own list, product-group filters, curated cards and map coverage. Off by default; a consumer ticket does not open halls 2–4.",
-      "Ten curated business-area cards: the Hall 4.2 publisher compounds (Xbox, Nintendo, Tencent, NVIDIA) and the national pavilions (Spain/ICEX, GamingMalta, Denmark/NIMBI, the UK collective, the Nordic & Baltic stand, Games Hubs Hessen).",
-      "Every trade booth now says whether you can walk up to it or need an appointment — pavilions share a stand with a dozen or more companies and are staffed all day; a 500 m² stand with a single occupant is a closed meeting building.",
+      "32 curated business-area cards, chosen for the names a trade visitor is actually looking for: Cloudflare, AWS, servers.com, G-Core, Unity, CurseForge & Overwolf, Xsolla, Keywords, Sumo Digital, Virtuos, Denuvo, Sensor Tower, IGN & Humble Bundle, Fandom, Reddit, Opera, Owlchemy, Poki, Blacknut, Kakao Games, the IGDA and Women in Games International.",
+      "Plus the national pavilions (Spain/ICEX, GamingMalta, Denmark/NIMBI, the UK collective, the Nordic & Baltic stand, Games Hubs Hessen) and the Hall 4.2 publisher compounds (Xbox, Nintendo, Tencent, NVIDIA).",
+      "Every trade booth says whether you can walk up or need an appointment. Almost all of them are walk-up — only about twenty of the 821 are closed meeting compounds — so the guide marks the collectives and names the closed ones rather than making you guess.",
       "The planner warns when a business-hall stop lands on Saturday or Sunday, when the business area is shut. It warns rather than blocks — and the calendar export says so too.",
       "Exhibitor rows now carry the official product-group tags (Development, Service firms, eSports…), filterable in the trade list.",
       "Hall map: the business halls fill in. Hall 2.1 went from almost no coverage to 60 of its 78 stands named, and tapping one shows the exhibitor, its country and its product groups.",
       "Fix: hall 1 is the public Event Arena, not the business area — its one directory booth is no longer labelled trade-only."
     ]
   },
-  {
+    {
     "date": "2026-08-14",
     "revision": 22,
     "changes": [
