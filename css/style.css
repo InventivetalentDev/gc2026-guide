@@ -356,6 +356,11 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .chip.hall-chip-trade { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 34%, var(--rule)); }
 .chip.hall-chip-trade:hover { border-color: var(--warn); }
 .chip.hall-chip-trade.active { background: var(--warn); border-color: var(--warn); color: var(--signal-ink); }
+/* The badge pair sits above the filter rows and carries the same amber on its
+   trade side, so the switch and the halls it unlocks read as one idea. */
+.chip.badge-chip-trade { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 34%, var(--rule)); }
+.chip.badge-chip-trade:hover { border-color: var(--warn); }
+.chip.badge-chip-trade.active { background: var(--warn); border-color: var(--warn); color: var(--signal-ink); }
 
 .toggle {
   display: inline-flex; align-items: center; gap: 8px;
@@ -1505,6 +1510,25 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   font-family: var(--font-mono);
   font-size: .78rem; color: var(--ink-dim); letter-spacing: .04em;
 }
+/* The same switch as the toolbar's, offered again where the other badge and
+   access facts live — the semantically right home for a setting that
+   describes you rather than the list, and reachable from any view. */
+#badge-toggle { margin-top: 14px; }
+/* Same pill as .trade-enable so the two states read as one control, in plain
+   ink rather than amber — turning it off is not the offer being made. */
+.badge-off {
+  padding: 10px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-mid);
+  font-family: var(--font-mono);
+  font-size: .76rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.badge-off:hover { border-color: var(--ink-dim); color: var(--ink); }
 
 .area-list { list-style: none; border-top: 1px solid var(--rule-soft); }
 .area-list li {

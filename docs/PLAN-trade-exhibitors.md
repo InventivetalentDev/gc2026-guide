@@ -245,6 +245,39 @@ closed after Friday) and offers one button — "I have a trade badge — show
 trade exhibitors". No toolbar clutter for the consumer majority, and
 finding the switch *is* finding the feature.
 
+**Revised after first use.** That reasoning holds for *finding* the
+feature and fails for *using* it. The section sits below the whole grid —
+measured at 47,764 px down a 390 px-wide viewport — so the only switch,
+on or off, was a scroll past every card in the guide, and the off button
+sat further down still, inside the section's note. Discovery and control
+are different jobs. The section keeps the first: it is still the only
+place that explains what the business area is, and it still carries the
+enable button. The second moved to two remote controls:
+
+- **A "Badge" chip pair at the top of the Filters drawer** — Consumer /
+  Trade & media, above Category, Hall and Age. Two chips rather than a
+  checkbox in the "Only show" row, because that row is filters (things
+  that *hide* cards) and this hides nothing; stated as a pair it reads as
+  a setting with two answers rather than a box you might have left
+  ticked. The trade side carries the same amber as the business-hall
+  chips below it. The collapsed drawer's summary line leads with "Trade
+  badge · …" so the mode is legible without opening it — prefixed rather
+  than joined to the constraint list, because it widens the pool instead
+  of narrowing it, and the "nothing is filtered" reassurance has to
+  survive beside it.
+- **A "Your badge" block in Event info**, between Tickets and Halls &
+  areas, where the other badge and access facts already live — the
+  semantically right home for a setting that describes you rather than
+  the list, and the only one reachable from every view.
+
+Both call `setTrade(on, {announce: true})`, which raises a toast: the
+thing that just changed is off screen (a section far below the fold, or
+another view entirely), unlike the in-section button, where you are
+standing in the result. The "on" toast offers "Show the list →". A second
+flip drops the first toast rather than queueing behind it — left queued,
+"Trade exhibitors on · Show the list →" would surface *after* you turned
+it off and offer to scroll you to an empty section.
+
 ### 5. The trade list is its own section; the Full directory keeps its contract
 
 The Full directory's block comment and note copy promise a lookup tool —
@@ -444,9 +477,14 @@ The four questions this doc opened with, as settled during implementation:
 1. **`cats` scope** — all rows. 1621 of 1658 carry at least one group, for
    ~+7 KB gzipped, and the Full directory can grow a category filter later
    without another sweep.
-2. **Toggle wording** — "I have a trade badge — show trade exhibitors". The
-   Event view is deliberately left alone: the switch lives where its effect
-   is, and a second mention would be a second thing to keep in sync.
+2. **Toggle wording** — "I have a trade badge — show trade exhibitors".
+   The Event view was deliberately left alone at first, on the grounds that
+   a second mention is a second thing to keep in sync. Reversed once the
+   feature was in use: see the revision under decision 4. There is now a
+   "Your badge" block there and a Badge chip pair in the Filters drawer,
+   and they stay in sync because they are rendered from `state.trade`
+   rather than holding state of their own — `setTrade()` re-renders both,
+   including across tabs via the storage listener.
 3. **Closed-day UX** — warn, don't block, confirmed. Sat/Sun chips are struck
    through for a business-area stop, an assigned one carries an amber note on
    the row, the day group heads with a count, and the `.ics` description says
