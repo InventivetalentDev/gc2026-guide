@@ -20,6 +20,60 @@
 
 const GCMarks = (() => {
   const MARK_KEYS = { saved: "gc2026.saved.v1", played: "gc2026.played.v1" };
+  const PREFS_KEY = "gc2026.prefs.v1";
+
+  /* Trade exhibitors, the three facts both pages must agree on.
+
+     A booth in the business halls has no card of its own, so it is saved
+     under its directory slug. If the map minted a different key shape than
+     the guide reads, a booth saved on one would be invisible on the other —
+     the same class of silent drift boothCodes() is here to prevent. And
+     which halls *are* the business area decides which rows get a key at
+     all, so that predicate is shared too rather than written twice.
+
+     Halls 2-4, per gamescom's own "business area/halls 2-4". Hall 1 is the
+     public Event Arena, and parseFloat leaves the open-air "F8"/"FI" sites
+     as NaN, which fails both comparisons. */
+  const DIR_PREFIX = "dir:";
+  const dirKey = (slug) => DIR_PREFIX + slug;
+  const isDirKey = (key) => typeof key === "string" && key.startsWith(DIR_PREFIX);
+  const dirSlug = (key) => String(key).slice(DIR_PREFIX.length);
+  const isBusinessHall = (hall) => {
+    const level = parseFloat(hall);
+    return level >= 2 && level < 5;
+  };
+
+  /* Read-only here: the guide owns writing prefs. The map only needs to know
+     whether trade mode is on, so it never has to guess at the blob's shape. */
+  function tradeMode() {
+    try {
+      return JSON.parse(localStorage.getItem(PREFS_KEY) || "{}").trade === true;
+    } catch {
+      return false;
+    }
+  }
+
+  /* Read-modify-write, never a bare `{trade: on}`: the guide keeps its filter
+     and section state in the same blob and writes it whole from memory, so a
+     switch thrown on the map must hand the rest back untouched. The guide's
+     own storage listener picks the change up; this tab gets no storage event
+     for its own write and has to redraw itself. */
+  function setTradeMode(on) {
+    let prefs = {};
+    try {
+      const raw = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
+      if (raw && typeof raw === "object") prefs = raw;
+    } catch {
+      /* corrupt entry — replaced below, same as the guide's loadPrefs() */
+    }
+    prefs.trade = on === true;
+    try {
+      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    } catch {
+      /* storage blocked (Safari private mode): the switch does not stick,
+         which is the same deal every other preference on this site gets */
+    }
+  }
 
   /* Games are keyed by normalised title, not by booth: eight titles this
      year are shown at two booths at once (Alien: Isolation 2 sits at
@@ -77,5 +131,8 @@ const GCMarks = (() => {
         .filter(Boolean)
     );
 
-  return { MARK_KEYS, gameKey, readMarks, writeMarks, savedGames, hasSaved, boothCodes };
+  return {
+    MARK_KEYS, PREFS_KEY, gameKey, readMarks, writeMarks, savedGames, hasSaved, boothCodes,
+    DIR_PREFIX, dirKey, isDirKey, dirSlug, isBusinessHall, tradeMode, setTradeMode,
+  };
 })();
