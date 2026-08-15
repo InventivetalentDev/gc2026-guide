@@ -773,15 +773,20 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 /* One more column than a directory row (tags) and the save button riding the
    end of the first row, so the booth rail still lines up down the list. */
 .trade-row {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 110px) minmax(0, 210px) auto;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 110px) minmax(0, 230px) auto;
+  align-items: baseline;
 }
+/* Tags run under the name on their own row; the save button is pinned to the
+   end of the first row so the right rail stays a rail rather than the button
+   being pushed below the tags. */
 .trade-row .trade-tags {
   grid-column: 1 / -1;
+  grid-row: 2;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
+.trade-row > .bm { grid-column: 4; grid-row: 1; justify-self: end; }
 .trade-row .trade-tags:empty { display: none; }
 /* A count, not a verdict — how many exhibitors list this stand. */
 .trade-shared {
@@ -800,8 +805,10 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 
 @media (max-width: 640px) {
   .trade-row { grid-template-columns: minmax(0, 1fr) auto; }
-  .trade-row .dir-country,
-  .trade-row .dir-stands { grid-column: 1; }
+  .trade-row .dir-country { grid-column: 1; grid-row: 2; }
+  .trade-row .dir-stands { grid-column: 1; grid-row: 3; }
+  .trade-row .trade-tags { grid-row: 4; }
+  .trade-row > .bm { grid-column: 2; grid-row: 1; }
 }
 
 /* ---- curated trade cards ---- */

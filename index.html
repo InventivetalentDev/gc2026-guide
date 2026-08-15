@@ -126,7 +126,12 @@
           <span class="directory-lede">The business halls — publishing, dev services, platforms. Trade &amp; media badge only</span>
           <span class="result-count" id="trade-count"></span>
         </summary>
-        <div class="trade-gate" id="trade-gate" hidden>
+        <!-- Visible by default, hidden by JS once trade mode is on. That way
+             round — rather than hidden until JS shows it — because the service
+             worker refreshes this file and app.js independently, and a fresh
+             shell paired with the previous app.js should open on the
+             explanation rather than on an empty box. -->
+        <div class="trade-gate" id="trade-gate">
           <p>Halls 2–4 are gamescom's <strong>business area</strong>: around 800 exhibitors doing the industry's trading — publishers taking pitches, outsourcing and localisation studios, engines and platforms, national pavilions and associations. It runs Wednesday to Friday and is closed at the weekend.</p>
           <p>A <strong>trade or media badge</strong> opens it. A consumer ticket does not, so it stays off by default — turn it on and these booths become saveable, plannable stops like any other, with their own list below and their own cards in the grid above.</p>
           <button class="trade-enable" id="trade-enable" type="button">I have a trade badge — show trade exhibitors</button>
