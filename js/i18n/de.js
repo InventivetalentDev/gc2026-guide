@@ -329,8 +329,8 @@ window.GC_STRINGS.de = {
   "share.added": "Du hast {items} aus dem geteilten Link hinzugefügt.",
   "toast.moveUndone": "Übernahme rückgängig gemacht.",
   "toast.importUndone": "Hinzufügen aus dem geteilten Link rückgängig gemacht.",
-  "moved.withList": "Der Guide ist auf gamescom.guide umgezogen. Deine Liste kommt mit.",
-  "moved.plain": "Der Guide ist auf gamescom.guide umgezogen.",
+  "moved.withList": "Der Guide ist auf gc26.guide umgezogen. Deine Liste kommt mit.",
+  "moved.plain": "Der Guide ist auf gc26.guide umgezogen.",
   "moved.open": "Öffnen",
 
   /* ---------- sources & attribution ---------- */
@@ -525,7 +525,7 @@ window.GC_STRINGS.de = {
   "map.officialProfile": "offizielles Profil ↗",
 
   "footer.feedback":
-    'Etwas falsch, fehlend oder veraltet? Schick Korrekturen an <a class="subtle-link" href="mailto:content@gamescom.guide?subject=gamescom%20guide%20feedback">content@gamescom.guide</a>.',
+    'Etwas falsch, fehlend oder veraltet? Schick Korrekturen an <a class="subtle-link" href="mailto:content@gc26.guide?subject=gamescom%20guide%20feedback">content@gc26.guide</a>.',
 
   /* ---------- accessibility ---------- */
   "a11y.newTab": ", öffnet in einem neuen Tab",

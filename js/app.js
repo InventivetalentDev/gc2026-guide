@@ -591,14 +591,25 @@ function encodeEntries() {
   return entries.sort((a, b) => (a.tok < b.tok ? -1 : 1));
 }
 
-/* The guide answers on two hostnames while the old one is retired, and a saved
-   list is per-origin. Built from location.origin, a link shared from the legacy
-   host would hand the recipient — or the sender's own next device — the very
-   origin they are trying to leave, so sharing could never move a list forward.
-   Only that one host is rewritten: gamescom.guide and localhost share
-   themselves, as they should. */
-const LEGACY_HOST = "gc2026.inventivetalent.org";
-const SHARE_ORIGIN = "https://gamescom.guide";
+/* The guide answers on several hostnames while the retired ones drain, and a
+   saved list is per-origin. Built from location.origin, a link shared from a
+   legacy host would hand the recipient — or the sender's own next device — the
+   very origin they are trying to leave, so sharing could never move a list
+   forward.
+
+   Two hosts are draining, not one. gamescom.guide was the intended home for
+   about a day: "gamescom" is a registered mark of game — Verband der deutschen
+   Games-Branche e.V., which licenses it to exhibitors and has had unofficial
+   sites warned off carrying it in a domain name. It sits on this list for the
+   same reason the original hostname does — people are on it, and their lists
+   have to be able to leave. Only these two are rewritten; gc26.guide and
+   localhost share themselves, as they should. */
+const LEGACY_HOSTS = ["gc2026.inventivetalent.org", "gamescom.guide"];
+const SHARE_ORIGIN = "https://gc26.guide";
+
+function onLegacyHost() {
+  return LEGACY_HOSTS.includes(location.host);
+}
 
 /* One character per day: the base36 day of month. Absolute like a literal
    date — an index into event.days means something else the moment a day is
@@ -668,7 +679,7 @@ function encodePlayedOnly() {
 function buildShareLink({ move = false, days = false, played = false } = {}) {
   /* Search params are not part of the guide state and can contain referral or
      campaign data that should not hitch a ride in somebody else's link. */
-  const origin = location.host === LEGACY_HOST ? SHARE_ORIGIN : location.origin;
+  const origin = onLegacyHost() ? SHARE_ORIGIN : location.origin;
   const entries = encodeEntries();
   /* Versioned by the param name, v1's own convention: `l` is v1, `t` is v2.
      A `v=2&l=` spelling would cost 8 characters, and the QR budget is
@@ -693,7 +704,7 @@ function buildShareLink({ move = false, days = false, played = false } = {}) {
    day assignments included — because this is not a share: it is one person's
    own plan following them to an address that is going to outlive the old
    one, the exact case the played and day toggles exist to default off for.
-   The legacy-origin rewrite in buildShareLink aims it at gamescom.guide.
+   The legacy-origin rewrite in buildShareLink aims it at gc26.guide.
 
    Payload lives in the hash, so none of it is ever sent to a server — the
    same reason a shared list can be built offline.
@@ -716,8 +727,14 @@ function buildMoveLink() {
    It is deliberately not a redirect. Someone mid-plan on a show floor should
    not have the page pulled out from under them, and a move is a decision worth
    taking on purpose: everything the guide holds is per-origin, so accepting is
-   what carries it (buildMoveLink above) and ignoring leaves it here. */
-const MOVED_KEY = "gc2026.moved.v1";
+   what carries it (buildMoveLink above) and ignoring leaves it here.
+
+   Bumped to v2 because the destination changed under the people who already
+   answered v1. Whichever way they answered it, they are now on a host that is
+   itself being retired — the ones who accepted moved to gamescom.guide, the
+   ones who dismissed stayed put — and a remembered v1 answer would mean never
+   hearing about gc26.guide at all. One more nudge each, then quiet again. */
+const MOVED_KEY = "gc2026.moved.v2";
 
 function moveNoticeAnswered() {
   try {
@@ -737,7 +754,7 @@ function rememberMoveNotice() {
 }
 
 function offerMove() {
-  if (location.host !== LEGACY_HOST || moveNoticeAnswered()) return;
+  if (!onLegacyHost() || moveNoticeAnswered()) return;
   const move = buildMoveLink();
   showToast(
     move ? t("moved.withList") : t("moved.plain"),
@@ -1308,7 +1325,7 @@ function bindShareDialog() {
 function siteShareUrl() {
   const canonical = document.querySelector('link[rel="canonical"]')?.href;
   if (isHttpUrl(canonical)) return canonical;
-  return `${location.host === LEGACY_HOST ? SHARE_ORIGIN : location.origin}/`;
+  return `${onLegacyHost() ? SHARE_ORIGIN : location.origin}/`;
 }
 
 function renderSiteShare() {

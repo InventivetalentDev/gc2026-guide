@@ -24,8 +24,15 @@
    network-first while the old app.js is served stale-while-revalidate, so a
    markup change that needs its matching script (rev 21's share dialog, and
    the header's share-the-guide button after it) rides one load with dead
-   controls unless the version change announces it. */
-const VERSION = "v6";
+   controls unless the version change announces it.
+
+   v7 is the gc26.guide move, and it is the same problem pointed at the two
+   hosts being retired: the move notice lives in app.js and the i18n files,
+   all three served stale-while-revalidate. Left at v6, a visitor already
+   holding the old shell gets the old app.js — which has never heard of
+   gc26.guide — and the one nudge they were owed does not fire until some
+   later load. The bump is what makes it the first one. */
+const VERSION = "v7";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
