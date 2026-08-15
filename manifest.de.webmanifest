@@ -1,0 +1,75 @@
+{
+  "name": "gamescom 2026 Guide",
+  "short_name": "gamescom 26",
+  "description": "Inoffizieller Guide zur gamescom 2026 — Aussteller, Spiele, Hallen- und Standnummern, erwarteter Andrang und Besuchsplanung.",
+  "id": "/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#09090a",
+  "theme_color": "#09090a",
+  "lang": "de",
+  "dir": "ltr",
+  "categories": ["travel", "entertainment", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    {
+      "src": "icons/screenshot-narrow.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Ausstellerliste mit Hallennummern, Lineups, erwartetem Andrang sowie „Gemerkt“- und „Gespielt“-Markierungen"
+    },
+    {
+      "src": "icons/screenshot-wide.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Ausstellerliste mit Suche, Hallenfiltern, erwartetem Andrang und Markierungen"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Merkliste",
+      "short_name": "Gemerkt",
+      "description": "Nur deine gemerkten Stände und Spiele",
+      "url": "./#saved",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Hallenplan",
+      "short_name": "Karte",
+      "description": "Hallenpläne mit Standnummern und deinen gemerkten Ständen",
+      "url": "./map.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Besuchsplaner",
+      "short_name": "Planer",
+      "description": "Tipps für jeden Tag und Stände mit hohem Andrang",
+      "url": "./#planner",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Event-Infos",
+      "short_name": "Event",
+      "description": "Termine, Öffnungszeiten, Tickets, Hallen und besondere Bereiche",
+      "url": "./#event",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Updates",
+      "short_name": "Updates",
+      "description": "Was sich mit jeder Datenrevision geändert hat",
+      "url": "./#updates",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

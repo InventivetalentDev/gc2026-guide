@@ -1876,6 +1876,44 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 .install-btn:hover { background: var(--signal); color: var(--signal-ink); }
 
+/* The language toggle sits beside the install button in the masthead and
+   wears the same stamped-label shape, in the quieter rule/ink pair: it is
+   a preference, not an invitation, and the signal colour belongs to the
+   one control asking to be pressed. Labelled with the language it switches
+   *to*, in that language, which is the one word every reader recognises. */
+.lang-switch {
+  align-self: flex-end;
+  margin-top: 6px;
+  background: none;
+  border: 1px solid var(--rule);
+  color: var(--ink-mid);
+  border-radius: var(--radius-sm);
+  padding: 3px 10px;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .12s, color .12s;
+}
+.lang-switch:hover { border-color: var(--ink-mid); color: var(--ink); }
+
+/* The footer copy runs as prose, so the backstop switcher there reads as
+   one more link in the Imprint · Privacy row rather than a second button. */
+.lang-switch-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  color: var(--ink-dim);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+}
+.lang-switch-link:hover { color: var(--ink); }
+
 /* Only meaningful while the network is gone, so it is absent — not merely
    dimmed — the rest of the time. */
 .offline-flag {

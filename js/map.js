@@ -21,13 +21,37 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 const SVGNS = "http://www.w3.org/2000/svg";
-/* mirrors CROWD_LABELS in js/app.js — the queue forecast vocabulary */
-const CROWD_LABELS = ["Unknown", "Calm", "Light", "Moderate", "Busy", "Extreme"];
+
+/* Same string registry as the guide (js/i18n.js runs first on this page
+   too), so the queue vocabulary is one set of crowd.* keys rather than a
+   second copy to drift. The shim keeps a stale cached shell booting. */
+const GCI18N = window.GCI18N || {
+  lang: "en",
+  t: (key) => key,
+  apply() {},
+  dayName: String,
+  formatDate: String,
+};
+const t = GCI18N.t;
+const formatDate = GCI18N.formatDate || ((date) => String(date));
+/* Country and product-group names arrive in English from the generated
+   data/directory.json; their display names live in the locale overlay the
+   guide loads. The map fetches that overlay only for these two maps — see
+   loadLabels below. */
+const countryLabel = (c) => state.labels.countries?.[c] || c;
+const groupLabel = (id, fallback) => state.labels.dirGroups?.[id] || fallback || "";
+
+const crowdLabel = (level) => {
+  const label = t(`crowd.${level}`);
+  return label === `crowd.${level}` ? "" : label;
+};
+
 const DEFAULT_HALL = "7.1";
 
 const state = {
   index: null,          // data/hallplan/index.json
   areas: {},            // area key -> {label, colour, trade?, access?}
+  labels: {},           // {countries, dirGroups} from data/i18n/<lang>.json
   exhibitors: [],       // data/exhibitors.json
   trade: [],            // business-hall rows from data/directory.json, once loaded
   halls: new Map(),     // hall id -> hall json
@@ -157,7 +181,7 @@ function tradeRecords(payload) {
       name: entry.name,
       trade: true,
       country: entry.country || "",
-      cats: (entry.cats || []).map((id) => payload.groups?.[id]).filter(Boolean),
+      cats: (entry.cats || []).map((id) => groupLabel(id, payload.groups?.[id])).filter(Boolean),
       profile: payload.profileBase && entry.slug ? `${payload.profileBase}${entry.slug}/` : "",
       stands,
       games: [],
@@ -166,11 +190,32 @@ function tradeRecords(payload) {
   return out;
 }
 
+/* Country and product-group display names, fetched alongside the directory
+   rather than at boot: they are only ever rendered for a business stand, and
+   that is exactly the case that already pays for a directory fetch. English
+   rides along in the directory itself as the fallback, so a failed overlay
+   costs the translation and nothing else. */
+function loadLabels() {
+  if (GCI18N.lang === "en" || Object.keys(state.labels).length) return Promise.resolve();
+  return fetch(`data/i18n/${GCI18N.lang}.json?v=${Date.now()}`)
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+    .then((overlay) => {
+      state.labels = { countries: overlay.countries || {}, dirGroups: overlay.dirGroups || {} };
+    })
+    .catch(() => {
+      state.labels = { countries: {}, dirGroups: {} };
+    });
+}
+
 function loadTrade() {
   if (state.trade.length || directoryRequest) return directoryRequest;
-  directoryRequest = fetch(`${DIRECTORY_URL}?v=${Date.now()}`)
-    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-    .then((payload) => {
+  directoryRequest = Promise.all([
+    fetch(`${DIRECTORY_URL}?v=${Date.now()}`).then((r) =>
+      r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))
+    ),
+    loadLabels(),
+  ])
+    .then(([payload]) => {
       state.trade = tradeRecords(payload);
       redrawJoin();
     })
@@ -304,7 +349,7 @@ function renderHall(id) {
   svg.setAttribute("width", W);
   svg.setAttribute("height", H);
   svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", `Schematic plan of hall ${id}`);
+  svg.setAttribute("aria-label", t("map.planAria", { hall: id }));
   /* The hall's structure is washed in its area colour — the only thing
      on the map that carries it, so booth state stays the loud channel. */
   svg.style.setProperty("--area", areaOf(id).colour || "");
@@ -409,7 +454,7 @@ function renderHall(id) {
        taps, and counting stands must not count it twice. */
     lg.setAttribute("class", `stand-labels ${cls}`);
     g.setAttribute("role", "button");
-    g.setAttribute("aria-label", `${name || "Stand"} — stand ${s.nr}`);
+    g.setAttribute("aria-label", t("map.standAria", { name: name || t("map.stand"), nr: s.nr }));
 
     rec.g = g;
     rec.lg = lg;
@@ -515,8 +560,8 @@ function refreshMarks() {
   }
   const covered = state.stands.filter((r) => r.exs.length).length;
   $("#counts").textContent =
-    `${state.stands.length} stands · ${covered || "none"} in the guide` +
-    (saved ? ` · ${saved} saved` : "");
+    t("map.counts", { n: state.stands.length, covered: covered || t("map.coveredNone") }) +
+    (saved ? t("map.countsSaved", { n: saved }) : "");
   renderChips();
 }
 
@@ -528,11 +573,29 @@ function refreshMarks() {
    fills from the official plan, carried through the snapshot — so the
    two maps agree at a glance; the access line is ours, because no colour
    says "you cannot walk in here". */
-const areaOf = (id) => state.areas[state.index.halls.find((h) => h.id === id)?.area] || {};
+const areaOf = (id) => {
+  const key = state.index.halls.find((h) => h.id === id)?.area;
+  const area = state.areas[key];
+  return area ? { ...area, id: key } : {};
+};
 
 /* Named in the source as the hall's whole area ("Business"), read on the
    page as the place ("Business area"). */
-const areaName = (area) => (area.label ? `${area.label} area` : "");
+const areaName = (area) => {
+  if (!area.id) return area.label ? t("map.areaSuffix", { label: area.label }) : "";
+  const label = t(`map.area.${area.id}.label`);
+  return t("map.areaSuffix", { label: label === `map.area.${area.id}.label` ? area.label : label });
+};
+
+/* The access sentence lives in js/i18n/<lang>.js keyed by area id rather than
+   in data/hallplan/index.json: that file is regenerated by
+   tools/fetch-hallplan.mjs and would lose a hand-added translation on the
+   next refresh. The generated English rides along as the fallback. */
+const areaAccess = (area) => {
+  if (!area.id) return area.access || "";
+  const s = t(`map.area.${area.id}.access`);
+  return s === `map.area.${area.id}.access` ? area.access || "" : s;
+};
 
 /* The banner is this page's switch as well as its warning. It already appears
    on exactly the five halls where trade mode changes anything and never on
@@ -551,10 +614,10 @@ function renderAccess(id) {
   note.style.setProperty("--area", area.colour || "");
   const on = GCMarks.tradeMode();
   note.innerHTML =
-    `<b>${esc(areaName(area))}</b> — ${esc(area.access)}` +
+    `<b>${esc(areaName(area))}</b> — ${esc(areaAccess(area))}` +
     (area.trade
       ? ` <button class="map-access-btn${on ? " is-on" : ""}" id="access-trade" type="button">${
-          on ? "hide exhibitors" : "I have a badge — show exhibitors"
+          esc(on ? t("map.hideExhibitors") : t("map.showExhibitors"))
         }</button>`
       : "");
   $("#access-trade")?.addEventListener("click", () => setTrade(!GCMarks.tradeMode()));
@@ -611,18 +674,21 @@ function renderChips() {
         if (area.label)
           head = `<span class="hall-group" style="--area:${esc(area.colour || "")}"
             aria-hidden="true">${esc(area.label)}${
-            area.trade ? ' <i class="hall-group-trade">trade only</i>' : ""
+            area.trade ? ` <i class="hall-group-trade">${esc(t("map.tradeOnlyLabel"))}</i>` : ""
           }</span>`;
       }
       const n = hallSavedCount(h.id);
       /* Screen readers get no group heading — the row is one flat list to
          them — so each chip names its own area, and the trade-only ones
          say so before you are taken there. */
-      const label = `Hall ${h.id}${area.label ? `, ${areaName(area)}` : ""}` +
-        (area.trade ? ", trade visitors only" : "") + (n ? `, ${n} saved` : "");
+      const label =
+        t("where.hall", { hall: h.id }) +
+        (area.label ? `, ${areaName(area)}` : "") +
+        (area.trade ? t("map.tradeVisitorsOnly") : "") +
+        (n ? t("map.chipSavedAria", { n }) : "");
       return `${head}<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}" type="button"
         data-hall="${esc(h.id)}" style="--area:${esc(area.colour || "")}"
-        aria-label="${esc(label)}">Hall ${esc(h.id)}${
+        aria-label="${esc(label)}">${esc(t("where.hall", { hall: h.id }))}${
         n ? ` <span class="chip-saved" aria-hidden="true">●${n}</span>` : ""
       }</button>`;
     })
@@ -802,17 +868,19 @@ function selectStand(rec, { zoom = false } = {}) {
 
   const s = rec.data;
   const ex = rec.exs[0];
-  $("#sheet-name").textContent = ex ? ex.name : (s.names[0] || `Stand ${s.nr}`);
+  $("#sheet-name").textContent = ex ? ex.name : (s.names[0] || t("map.standNr", { nr: s.nr }));
   $("#sheet-loc").textContent =
-    `Hall ${state.hall} · Stand ${s.nr}` +
-    (s.also ? ` · also ${s.also.join(", ")}` : "") +
+    t("map.sheetLoc", { hall: state.hall, nr: s.nr }) +
+    (s.also ? t("map.sheetAlso", { list: s.also.join(", ") }) : "") +
     (s.a ? ` · ~${s.a} m²` : "");
 
   const badges = [];
-  if (rec.exs.some(exSaved)) badges.push('<span class="badge badge-saved">Saved</span>');
+  if (rec.exs.some(exSaved))
+    badges.push(`<span class="badge badge-saved">${esc(t("mark.saved"))}</span>`);
   if (ex && ex.locationConfirmed === false)
-    badges.push('<span class="badge badge-unconf">Location unconfirmed</span>');
-  if (rec.exs.length && rec.exs.every(exPlayed)) badges.push('<span class="badge">Played</span>');
+    badges.push(`<span class="badge badge-unconf">${esc(t("map.unconfBadge"))}</span>`);
+  if (rec.exs.length && rec.exs.every(exPlayed))
+    badges.push(`<span class="badge">${esc(t("mark.played"))}</span>`);
   $("#sheet-badges").innerHTML = badges.join("");
 
   let who;
@@ -821,31 +889,32 @@ function selectStand(rec, { zoom = false } = {}) {
        editorial at all — what it does have is a country, its product groups
        and the fact that you need a badge to be standing here. */
     who = `<b>${esc(ex.name)}</b>`;
-    if (ex.country) who += ` · ${esc(ex.country)}`;
+    if (ex.country) who += ` · ${esc(countryLabel(ex.country))}`;
     if (ex.cats.length) {
       who += `<br>${esc(ex.cats.slice(0, 4).join(", "))}` +
-        (ex.cats.length > 4 ? `, +${ex.cats.length - 4} more` : "");
+        (ex.cats.length > 4 ? esc(t("map.plusMore", { n: ex.cats.length - 4 })) : "");
     }
     /* Shared business stands run large — one 837 m² stand in hall 2.1 holds
        fourteen companies — so the neighbours are capped the way the official
        plan's own name list is, rather than filling the sheet. */
     if (rec.exs.length > 1) {
       const rest = rec.exs.slice(1);
-      who += `<br>also here: ${rest.slice(0, 6).map((x) => esc(x.name)).join(", ")}` +
-        (rest.length > 6 ? `, +${rest.length - 6} more` : "");
+      who += `<br>${esc(t("map.alsoHere"))}: ${rest.slice(0, 6).map((x) => esc(x.name)).join(", ")}` +
+        (rest.length > 6 ? esc(t("map.plusMore", { n: rest.length - 6 })) : "");
     }
-    who += '<br><span class="map-sheet-dim">business area — trade &amp; media badge only</span>';
+    who += `<br><span class="map-sheet-dim">${esc(t("directory.businessArea"))}</span>`;
   } else if (ex) {
     const games = ex.games || [];
     who = `<b>${esc(ex.name)}</b>`;
-    if (ex.crowd) who += ` · queue forecast Q${esc(ex.crowd)} ${esc(CROWD_LABELS[ex.crowd] || "")}`;
+    if (ex.crowd)
+      who += ` · ${esc(t("map.queueForecast", { n: ex.crowd, label: crowdLabel(ex.crowd) }))}`;
     if (games.length) {
       const titles = games.slice(0, 3).map((g) => esc(g.title)).join(", ");
-      who += `<br>${games.length} game${games.length === 1 ? "" : "s"}: ${titles}` +
-        (games.length > 3 ? `, +${games.length - 3} more` : "");
+      who += `<br>${esc(t("map.gamesCount", { n: games.length }))}: ${titles}` +
+        (games.length > 3 ? esc(t("map.plusMore", { n: games.length - 3 })) : "");
     }
     if (rec.exs.length > 1)
-      who += `<br>also here: ${rec.exs.slice(1).map((x) => esc(x.name)).join(", ")}`;
+      who += `<br>${esc(t("map.alsoHere"))}: ${rec.exs.slice(1).map((x) => esc(x.name)).join(", ")}`;
   } else if (s.names.length) {
     /* Named in the official plan but not in the guide — say so rather
        than leave a blank booth looking like a data bug.
@@ -858,13 +927,15 @@ function selectStand(rec, { zoom = false } = {}) {
        switch on re-renders this sheet with whichever answer is true. */
     const gated = GCMarks.isBusinessHall(state.hall) && !GCMarks.tradeMode();
     who = s.names.slice(0, 6).map(esc).join(", ") +
-      (s.names.length > 6 ? `, +${s.names.length - 6} more` : "") +
+      (s.names.length > 6 ? esc(t("map.plusMore", { n: s.names.length - 6 })) : "") +
       (gated
-        ? '<br><span class="map-sheet-dim">business area — most of these are in the guide with trade exhibitors on</span>' +
-          '<br><button class="map-sheet-enable" id="sheet-trade" type="button">show trade exhibitors</button>'
-        : '<br><span class="map-sheet-dim">not covered by the guide</span>');
+        ? `<br><span class="map-sheet-dim">${esc(t("map.gatedHint"))}</span>` +
+          `<br><button class="map-sheet-enable" id="sheet-trade" type="button">${esc(
+            t("map.showTrade")
+          )}</button>`
+        : `<br><span class="map-sheet-dim">${esc(t("map.notCovered"))}</span>`);
   } else {
-    who = '<span class="map-sheet-dim">no exhibitor filed for this stand</span>';
+    who = `<span class="map-sheet-dim">${esc(t("map.noExhibitor"))}</span>`;
   }
   $("#sheet-who").innerHTML = who;
   /* setTrade() redraws the join and re-selects this stand, so the sheet
@@ -876,7 +947,7 @@ function selectStand(rec, { zoom = false } = {}) {
   if (ex) {
     const on = state.marks.saved.exhibitors.has(ex.id);
     save.dataset.on = on;
-    save.textContent = on ? "− Remove from saved" : "+ Save booth";
+    save.textContent = on ? t("map.unsaveBooth") : t("map.saveBooth");
     save.onclick = () => {
       toggleSaved(ex.id);
       selectStand(rec);
@@ -889,12 +960,12 @@ function selectStand(rec, { zoom = false } = {}) {
   const link = $("#sheet-link");
   if (ex && ex.trade && ex.profile) {
     link.href = ex.profile;
-    link.textContent = "official profile ↗";
+    link.textContent = t("map.officialProfile");
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener nofollow");
   } else {
     link.href = ex && !ex.trade ? `./#exhibitors?ex=${encodeURIComponent(ex.id)}` : "./#exhibitors";
-    link.textContent = "open in guide →";
+    link.textContent = t("map.openInGuide");
     link.removeAttribute("target");
     link.removeAttribute("rel");
   }
@@ -943,13 +1014,11 @@ window.addEventListener("storage", (e) => {
    re-dates it without anyone remembering to. */
 function renderSourceNote() {
   const { source, fetched } = state.index;
-  const when = new Date(`${fetched}T00:00:00Z`);
-  const date = isNaN(when) ? fetched : when.toLocaleDateString("en-GB", {
-    day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
-  });
+  const date = formatDate(fetched);
   $("#srcnote").innerHTML =
-    `booth outlines: <a href="${esc(source)}" target="_blank" rel="noopener nofollow">official hall plan</a>` +
-    ` · checked ${esc(date)} · schematic, unofficial`;
+    `${esc(t("map.outlines"))}: <a href="${esc(source)}" target="_blank" rel="noopener nofollow">${esc(
+      t("map.officialHallPlan")
+    )}</a> · ${esc(t("map.checkedOn", { date }))}`;
 }
 
 /* ================= boot ================= */
@@ -1039,5 +1108,5 @@ async function main() {
 
 main().catch((err) => {
   $("#load").hidden = false;
-  $("#load").textContent = `could not load the hall plan — ${err.message}`;
+  $("#load").textContent = t("map.loadFailed", { error: err.message });
 });

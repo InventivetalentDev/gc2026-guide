@@ -23,7 +23,7 @@ jobs:
       # renders an empty guide — so it must not reach the edge.
       - name: Validate data files
         run: |
-          for f in data/*.json data/hallplan/*.json manifest.webmanifest; do
+          for f in data/*.json data/hallplan/*.json manifest*.webmanifest; do
             python3 -m json.tool "$f" > /dev/null || exit 1
           done
 

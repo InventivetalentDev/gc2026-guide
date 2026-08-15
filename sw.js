@@ -22,7 +22,7 @@
    network-first while the old app.js is served stale-while-revalidate, so a
    markup change that needs its matching script (rev 21's share dialog) rides
    one load with dead controls unless the version change announces it. */
-const VERSION = "v3";
+const VERSION = "v5";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
@@ -39,12 +39,19 @@ const SHELL = [
   "css/fonts.css",
   "css/style.css",
   "css/map.css",
+  /* Both locales' UI strings, always: en.js is the fallback chain for every
+     language, and the ~5 KB of de.js is what lets someone switch language
+     in a hall with no reception. */
+  "js/i18n.js",
+  "js/i18n/en.js",
+  "js/i18n/de.js",
   "js/marks.js",
   "js/app.js",
   "js/map.js",
   "js/qr.js",
   "js/pwa.js",
   "manifest.webmanifest",
+  "manifest.de.webmanifest",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "fonts/anton-latin.woff2",
@@ -63,6 +70,12 @@ const DATA = [
   "data/event.json",
   "data/meta.json",
   "data/changelog.json",
+  /* The base files above are structure only — every description, queue note
+     and visit tip lives in these two. Both are precached for the same reason
+     as the hall plans: ~25 KB gzipped together, and switching language in a
+     hall with no signal has to work. */
+  "data/i18n/en.json",
+  "data/i18n/de.json",
   "data/hallplan/index.json",
   "data/hallplan/hall-5.2.json",
   "data/hallplan/hall-6.1.json",

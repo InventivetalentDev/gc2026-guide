@@ -7,36 +7,33 @@
     "booth": "A061/C060",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/xbox",
-    "description": "Xbox's biggest gamescom booth ever, celebrating 25 years of Xbox: 25 games on ~140 stations, a Fable live-demo theater, daily livestreams and an Xbox FanFest on Aug 26. Bethesda/Activision titles fold into this booth. Booth open Thu/Fri 10:00–20:00, Sat/Sun 09:00–20:00 — closed on trade Wednesday except the evening FanFest (Aug 26, 20:00–23:00).",
     "games": [
-      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "confirmed", "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"], "note": "First public 6v6 multiplayer hands-on — expected to be the single biggest queue of the show." },
-      { "title": "Gears of War: E-Day", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"], "note": "First public campaign hands-on ahead of the Oct 6, 2026 release." },
-      { "title": "Fable", "status": "confirmed", "playable": false, "platforms": ["Xbox Series X|S", "PC"], "note": "Live gameplay theater by Playground Games — not hands-on (reported release Feb 2027)." },
-      { "title": "Minecraft Dungeons II", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC", "Switch 2", "PS5"], "note": "First public playable build." },
-      { "title": "METRO 2039", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"], "note": "First hands-on anywhere; also at Plaion's Hall 9 booth." },
-      { "title": "Stranger Than Heaven", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "Sega/RGG Studio — also at SEGA's Hall 7 booth." },
-      { "title": "Halo: Campaign Evolved", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Campaign remaster hands-on." },
-      { "title": "Forza Horizon 6", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "Drift Attack mode demo." },
-      { "title": "Microsoft Flight Simulator 2024", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"], "note": "National Championship Air Races content." },
-      { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Also at SEGA's booth — compare queues." },
-      { "title": "Alien Deathstorm", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Gameplay demo." },
-      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Rebel Wolves' vampire RPG — also at Bandai Namco's booth." },
-      { "title": "STAR WARS Zero Company", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Tactical strategy from Bit Reactor/Respawn." },
-      { "title": "Turok: Origins", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Saber's co-op dino shooter." },
-      { "title": "Castlevania: Belmont's Curse", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Also at Konami's Hall 7 booth." },
-      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Launches Aug 27 — mid-show." },
-      { "title": "Valor Mortis", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"], "note": "Napoleonic soulslike from One More Level." },
-      { "title": "Crowsworn", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Metroidvania demo." },
-      { "title": "Genigods: Nezha", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Action demo." },
-      { "title": "Terrible Lizards", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Demo at the booth." },
-      { "title": "Armatus", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "On the official Xbox Wire booth lineup." },
-      { "title": "Bad Magpie", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"], "note": "Indie title at the booth." },
-      { "title": "Unannounced titles (~3 slots)", "status": "rumored", "playable": null, "platforms": ["Xbox"], "note": "Xbox says 25 games but has named ~22 — reveals expected around Opening Night Live." }
+      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "confirmed", "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"] },
+      { "title": "Gears of War: E-Day", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"] },
+      { "title": "Fable", "status": "confirmed", "playable": false, "platforms": ["Xbox Series X|S", "PC"] },
+      { "title": "Minecraft Dungeons II", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC", "Switch 2", "PS5"] },
+      { "title": "METRO 2039", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"] },
+      { "title": "Stranger Than Heaven", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"] },
+      { "title": "Halo: Campaign Evolved", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "Forza Horizon 6", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"] },
+      { "title": "Microsoft Flight Simulator 2024", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"] },
+      { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "Alien Deathstorm", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
+      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "STAR WARS Zero Company", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "Turok: Origins", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "Castlevania: Belmont's Curse", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
+      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "Valor Mortis", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "Crowsworn", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
+      { "title": "Genigods: Nezha", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
+      { "title": "Terrible Lizards", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
+      { "title": "Armatus", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
+      { "title": "Bad Magpie", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
+      { "title": "Unannounced titles (~3 slots)", "status": "rumored", "playable": null, "platforms": ["Xbox"] }
     ],
     "tags": ["AAA", "console", "shooter", "playable demos", "25 years of Xbox"],
     "crowd": 5,
-    "crowdNote": "Largest platform booth of the show; MW4, Gears E-Day and the Fable theater will draw 2–4 h queues.",
-    "visitAdvice": "Be at Hall 7 right at the 10:00 booth opening Thu or Fri, head straight to CoD MW4 or Gears E-Day; do the Fable theater (higher throughput) midday. Avoid Saturday entirely. Trade badges: don't plan around Wednesday — the booth only opens Thursday (its Wednesday has traditionally been an invited-press preview).",
     "sources": [
       "https://news.xbox.com/en-us/2026/07/28/xbox-gamescom-2026/",
       "https://www.activision.com/de/games",
@@ -57,23 +54,20 @@
     "booth": "A010/B009, A020/B019, A009, A019",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/nintendo-of-europe-se",
-    "description": "Nintendo's traditional giant Hall 9 booth, all-in on Switch 2 with nine confirmed playable titles 'and more' — headlined by the first publicly playable Call of Duty on Nintendo hardware in over a decade (a native Switch 2 port).",
     "games": [
-      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Switch 2"], "note": "Native Switch 2 build (Infinity Ward + Digital Legends) — not cloud streaming." },
-      { "title": "007 First Light", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "IO Interactive's Bond game, hands-on all five days." },
-      { "title": "EA Sports FC 27", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Full FC experience on Switch 2." },
-      { "title": "Metaphor: ReFantazio", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Atlus RPG port hands-on." },
-      { "title": "Minecraft Dungeons II", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Switch 2 version; also at the Xbox booth." },
-      { "title": "Nintendo Switch Sports Resort", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "First-party family title — big weekend draw." },
-      { "title": "Orbitals", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Hands-on demo." },
-      { "title": "Pokémon Pokopia (Expansion Pass)", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Expansion Pass content playable — expect huge Pokémon queues." },
-      { "title": "Splatoon Raiders", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "First-party spin-off hands-on." },
-      { "title": "Additional unannounced titles", "status": "expected", "playable": null, "platforms": ["Switch 2"], "note": "Nintendo's announcement explicitly says 'and more'." }
+      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Switch 2"] },
+      { "title": "007 First Light", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "EA Sports FC 27", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "Metaphor: ReFantazio", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "Minecraft Dungeons II", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "Nintendo Switch Sports Resort", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "Orbitals", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "Pokémon Pokopia (Expansion Pass)", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "Splatoon Raiders", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "Additional unannounced titles", "status": "expected", "playable": null, "platforms": ["Switch 2"] }
     ],
     "tags": ["Switch 2", "family-friendly", "console", "playable demos"],
     "crowd": 5,
-    "crowdNote": "Historically the most-queued family destination at gamescom; the MW4-on-Switch-2 novelty, Pokémon and Splatoon add up to 2 h+ waits, worst Sat/Sun.",
-    "visitAdvice": "Thu or Fri at opening; hit MW4 or 007 First Light first. Nintendo often runs virtual queue tickets via booth/app — grab a slot early. Avoid the weekend.",
     "sources": [
       "https://nintendoeverything.com/nintendo-announces-gamescom-2026-lineup/",
       "https://www.techtimes.com/articles/323233/20260805/call-duty-arrives-nintendo-gamescom-2026-booth-native-switch-2-port.htm",
@@ -92,12 +86,9 @@
     "booth": null,
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/sony-europe-bv",
-    "description": "NOT exhibiting with a consumer booth — Sony skips a PlayStation booth for the seventh year running (last appearance 2019), favoring its own State of Play streams and Tokyo Game Show. Sony's only registrations in the official directory are trade- or partner-facing: SIE Deutschland on a shared industry stand in business Hall 4.1 (trade only), Sony Pictures co-located at Capcom's Hall 9.1 booth, and 'Sony Europe' plots on the open-air site north of Hall 8. PS5 titles are still playable at third-party booths (Blood of Dawnwalker, Turok, 007 First Light and more).",
     "games": [],
     "tags": ["not exhibiting"],
     "crowd": 1,
-    "crowdNote": "No booth to queue for.",
-    "visitAdvice": "Don't look for PlayStation on the floor — play multi-platform PS5 titles at Xbox, Bandai Namco, SEGA and other publisher booths. A surprise ONL trailer is always possible.",
     "sources": [
       "https://playfront.de/en/gamescom-2026-sony-playstation-sagt-auftritt-in-koeln-ab/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
@@ -112,15 +103,14 @@
     "booth": "A011/B010",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/google-uk-ltd",
-    "description": "A stand near Xbox in Hall 7.1. Expect mobile and Google Play Games on PC partner titles, demo stations and giveaways — the specific lineup is not announced yet.",
     "games": [
-      { "title": "Partner mobile/PC titles", "status": "expected", "playable": true, "platforms": ["Android", "PC (Google Play Games)"], "note": "No titles named yet." }
+      { "title": "Partner mobile/PC titles", "status": "expected", "playable": true, "platforms": ["Android", "PC (Google Play Games)"] }
     ],
     "tags": ["mobile", "platform"],
     "crowd": 2,
-    "crowdNote": "Steady but modest traffic; queues mostly for merch and giveaways.",
-    "visitAdvice": "Easy walk-in most of the day — convenient to combine with the Xbox booth in the same hall.",
-    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
     "lastUpdated": "2026-08-06"
   },
   {
@@ -131,17 +121,14 @@
     "booth": "A070/C079",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/capcom-entertainment-germany-gmbh",
-    "description": "One of Hall 9's biggest footprints (~950 m², ~60 demo stations) with two world-first hands-ons — Dragon's Dogma 2: Dark Arisen and Mega Man: Dual Override — plus Onimusha a week before launch. Rocket Beans runs the stage program.",
     "games": [
-      { "title": "Dragon's Dogma 2: Dark Arisen", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "World-first public hands-on of the expansion (launches Oct 9, 2026)." },
-      { "title": "Mega Man: Dual Override", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"], "note": "First playable demo of the 12th mainline Mega Man." },
-      { "title": "Onimusha: Way of the Sword", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Playable weeks before its late-September release — likely the booth's biggest draw." },
-      { "title": "Street Fighter 6", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "PS4", "Xbox Series X|S", "Switch 2"], "note": "Casual play stations and community matches." }
+      { "title": "Dragon's Dogma 2: Dark Arisen", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Mega Man: Dual Override", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"] },
+      { "title": "Onimusha: Way of the Sword", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Street Fighter 6", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "PS4", "Xbox Series X|S", "Switch 2"] }
     ],
     "tags": ["AAA", "RPG", "action", "world premiere", "playable demos"],
     "crowd": 5,
-    "crowdNote": "Two world-first demos plus near-launch Onimusha in the most congested hall — expect 1–3 h queues for Dark Arisen and Onimusha.",
-    "visitAdvice": "Go straight to Capcom at hall opening on a weekday: Dark Arisen first (fewest stations vs demand), then Onimusha. Street Fighter 6 queues stay short all day. Trade badges on Wednesday: in 2025 the booth admitted only press until about 11:00, so plan any Wednesday visit for late morning onwards.",
     "sources": [
       "https://www.gematsu.com/2026/06/capcom-announces-gamescom-2026-lineup-including-playable-dragons-dogma-ii-dark-arisen-and-mega-man-dual-override",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
@@ -156,22 +143,19 @@
     "booth": "A031, A041/B040",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/sega-europe",
-    "description": "SEGA's trademark themed booth in Hall 7: Alien: Isolation 2's European hands-on debut in a claustrophobic sci-fi set, Persona 4 Revival in a recreated Junes shopping center, and Stranger Than Heaven staged as an underground jazz club.",
     "games": [
-      { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "European hands-on debut of the prologue; also at the Xbox booth — compare queues." },
-      { "title": "Persona 4 Revival", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First Western public hands-on, in a Junes-themed area." },
-      { "title": "Stranger Than Heaven", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First public hands-on of RGG Studio's new game; jazz-club themed area." },
-      { "title": "Crazy Taxi: World Tour", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"], "note": "Early hands-on with a brand-new city map." },
-      { "title": "Total War: Warhammer 40,000", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Hands-on debut with three Space Marine scenarios." },
-      { "title": "Sonic Racing: CrossWorlds", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"], "note": "Latest build incl. the TMNT pack." },
-      { "title": "Sonic Pico Park", "status": "confirmed", "playable": true, "platforms": ["TBC"], "note": "New co-op Sonic title." },
-      { "title": "Metaphor: ReFantazio (Switch 2)", "status": "confirmed", "playable": true, "platforms": ["Switch 2"], "note": "Also at Nintendo's Hall 9 booth." },
-      { "title": "Total War: Warhammer III – Lords of the End Times", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Expansion showcase." }
+      { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Persona 4 Revival", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Stranger Than Heaven", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Crazy Taxi: World Tour", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"] },
+      { "title": "Total War: Warhammer 40,000", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Sonic Racing: CrossWorlds", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"] },
+      { "title": "Sonic Pico Park", "status": "confirmed", "playable": true, "platforms": ["TBC"] },
+      { "title": "Metaphor: ReFantazio (Switch 2)", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "Total War: Warhammer III – Lords of the End Times", "status": "confirmed", "playable": true, "platforms": ["PC"] }
     ],
     "tags": ["AAA", "RPG", "horror", "world premiere", "playable demos"],
     "crowd": 4,
-    "crowdNote": "Three first-time hands-ons — long individual queues but the load spreads across a big varied lineup.",
-    "visitAdvice": "Prioritize Alien: Isolation 2 or Persona 4 Revival first thing in the morning (Alien is also at Xbox — check both queues). Sonic and Crazy Taxi turn over fast and suit afternoons.",
     "sources": [
       "https://sega.prezly.com/sega-announces-huge-gamescom-2026-line-up",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
@@ -187,18 +171,15 @@
     "booth": "A020/B021",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/bandai-namco-entertainment",
-    "description": "Fully playable lineup next to Ubisoft and EA in Hall 6, headlined by the world's first open hands-on of The Blood of Dawnwalker (out Sept 3) and the first playable Ace Combat 8, plus the usual spectacular photo-op builds.",
     "games": [
-      { "title": "Ace Combat 8: Wings of Theve", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First-ever public hands-on; launches Oct 2, 2026." },
-      { "title": "Dragon Ball Xenoverse 3", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First playable in Europe; full release 2027." },
-      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "World-first open sessions days before its Sept 3 launch; also at the Xbox booth." },
-      { "title": "Elden Ring: Tarnished Edition", "status": "rumored", "playable": null, "platforms": ["Switch 2"], "note": "Releases Aug 28, mid-show; floated by German trade press, not in the announced lineup." },
-      { "title": "One Piece: Grand Gourmet", "status": "rumored", "playable": null, "platforms": ["TBC"], "note": "Oct 23 release makes it a candidate; unannounced for the booth." }
+      { "title": "Ace Combat 8: Wings of Theve", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Dragon Ball Xenoverse 3", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Elden Ring: Tarnished Edition", "status": "rumored", "playable": null, "platforms": ["Switch 2"] },
+      { "title": "One Piece: Grand Gourmet", "status": "rumored", "playable": null, "platforms": ["TBC"] }
     ],
     "tags": ["AAA", "RPG", "anime", "world premiere", "playable demos"],
     "crowd": 4,
-    "crowdNote": "Three first-time hands-ons including a hot RPG launching during show week — Dawnwalker queues among Hall 6's longest.",
-    "visitAdvice": "Hit The Blood of Dawnwalker at opening, or use the Xbox booth's stations in Hall 7 as overflow. Do Ace Combat 8 the morning after its ONL showing.",
     "sources": [
       "https://en.bandainamcoent.eu/events/news/bandai-namco-entertainment-details-fully-playable-gamescom-2026-line",
       "https://en.bandainamcoent.eu/dawnwalker/the-blood-of-dawnwalker",
@@ -215,17 +196,14 @@
     "booth": "A021/B020",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/konami-digital-entertainment-bv",
-    "description": "Main Hall 7 booth with an immersive Silent Hill: Townfall walk-through experience (new trailer at ONL), playable Castlevania: Belmont's Curse and a Metal Gear photo spot — plus a separate Yu-Gi-Oh! TCG stand in Hall 5.2 (B021/A020).",
     "games": [
-      { "title": "Silent Hill: Townfall", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Interactive walk-through experience, not a demo; new trailer at ONL Aug 25." },
-      { "title": "Castlevania: Belmont's Curse", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"], "note": "Playable throughout the show; also at the Xbox booth." },
-      { "title": "Metal Gear Solid: Master Collection Vol. 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Photo opportunity in front of a Metal Gear unit." },
-      { "title": "Yu-Gi-Oh! Trading Card Game", "status": "confirmed", "playable": true, "platforms": ["TCG", "Digital"], "note": "Learn-to-play sessions at the Hall 5.2 card-game stand." }
+      { "title": "Silent Hill: Townfall", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Castlevania: Belmont's Curse", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"] },
+      { "title": "Metal Gear Solid: Master Collection Vol. 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Yu-Gi-Oh! Trading Card Game", "status": "confirmed", "playable": true, "platforms": ["TCG", "Digital"] }
     ],
     "tags": ["AAA", "horror", "TCG", "photo ops"],
     "crowd": 4,
-    "crowdNote": "The Townfall experience will queue like a theme-park attraction after its ONL trailer; Castlevania concentrates the demo demand.",
-    "visitAdvice": "Do the Silent Hill experience in the first hour of the day or the last; on a trade badge, Wednesday is better still — before the ONL trailer turns into foot traffic. Castlevania is also playable at Xbox — use the shorter queue.",
     "sources": [
       "https://www.konami.com/games/eu/en/topics/19215/",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/"
@@ -240,18 +218,15 @@
     "booth": "C011/B010, B020",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/ubisoft-gmbh",
-    "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Anno 117 and The Division 2.",
     "games": [
-      { "title": "Rayman Legends Retold", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"], "note": "Demo: opening level, a new dragon-ride sequence and a classic musical level." },
-      { "title": "Assassin's Creed Black Flag Resynced", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Community Lounge showcase of the Black Flag remake." },
-      { "title": "Anno 117: Pax Romana", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Community Lounge sessions." },
-      { "title": "Rainbow Six Siege", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Community Lounge sessions rather than a demo queue." },
-      { "title": "The Division 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Live-service community sessions." }
+      { "title": "Rayman Legends Retold", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"] },
+      { "title": "Assassin's Creed Black Flag Resynced", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Anno 117: Pax Romana", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Rainbow Six Siege", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "The Division 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AAA", "platformer", "community", "playable demos"],
     "crowd": 3,
-    "crowdNote": "One playable title plus a lounge format — moderate queues, no giant new AAA hands-on this year.",
-    "visitAdvice": "Rayman queues are manageable before noon on weekdays. Community Lounge sessions are schedule-based — check Ubisoft's channels for timings.",
     "sources": [
       "https://news.ubisoft.com/en-us/article/6c99kNuqSEWK74Ltt0FJND/ubisoft-at-gamescom-2026-rayman-legends-retold-community-lounge-returns",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
@@ -267,17 +242,16 @@
     "booth": null,
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/ea-swiss-sarl",
-    "description": "Back as an exhibitor with a booth at the Hall 6 entrance next to Ubisoft, though the lineup is unannounced. EA Sports FC 27, launching weeks after the show, is the near-certain centerpiece.",
     "games": [
-      { "title": "EA Sports FC 27", "status": "expected", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"], "note": "Launches weeks after gamescom; Switch 2 version separately confirmed at Nintendo's booth." },
-      { "title": "Battlefield 6 (seasonal content)", "status": "rumored", "playable": null, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "German trade press says BF6 'may play a role' at the booth." },
-      { "title": "skate.", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "PS4", "Xbox"], "note": "Live-service title in active rollout; plausible but unannounced." }
+      { "title": "EA Sports FC 27", "status": "expected", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
+      { "title": "Battlefield 6 (seasonal content)", "status": "rumored", "playable": null, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "skate.", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "PS4", "Xbox"] }
     ],
     "tags": ["AAA", "sports", "shooter"],
     "crowd": 3,
-    "crowdNote": "FC 27 stations traditionally draw steady but fast-moving queues; busy rather than overwhelming without a big reveal.",
-    "visitAdvice": "FC has many stations and short rotations — fine midday.",
-    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"],
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"
+    ],
     "lastUpdated": "2026-08-10"
   },
   {
@@ -288,18 +262,15 @@
     "booth": "A021, C021",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/square-enix-ltd",
-    "description": "A Final Fantasy-focused fan booth in Hall 8 with play stations, photo stops and a large merch range — a community and catalog showing, with Dragon Quest VII Reimagined the one genuinely new title.",
     "games": [
-      { "title": "Dragon Quest VII Reimagined", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"], "note": "The booth's one new title — its only likely long queue." },
-      { "title": "Final Fantasy VII Rebirth", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Switch 2", "Xbox"], "note": "Play stations, likely new-platform versions." },
-      { "title": "Final Fantasy XIV", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox"], "note": "MMO community presence." },
-      { "title": "Final Fantasy X/X-2 HD Remaster", "status": "confirmed", "playable": true, "platforms": ["Multi"], "note": "Catalog play station." },
-      { "title": "Final Fantasy VII Revelation", "status": "confirmed", "playable": false, "platforms": ["TBA"], "note": "'New Look' presentation at Opening Night Live (Aug 25), led by director Naoki Hamaguchi with fresh footage — an ONL segment, not a show-floor demo." }
+      { "title": "Dragon Quest VII Reimagined", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"] },
+      { "title": "Final Fantasy VII Rebirth", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Switch 2", "Xbox"] },
+      { "title": "Final Fantasy XIV", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox"] },
+      { "title": "Final Fantasy X/X-2 HD Remaster", "status": "confirmed", "playable": true, "platforms": ["Multi"] },
+      { "title": "Final Fantasy VII Revelation", "status": "confirmed", "playable": false, "platforms": ["TBA"] }
     ],
     "tags": ["AAA", "RPG", "merch", "photo ops"],
     "crowd": 3,
-    "crowdNote": "Strong brand pull but no world premieres on the show floor — steady traffic for photo ops and merch; the ONL FF7 Revelation reveal (Aug 25) may bring extra attention the next morning.",
-    "visitAdvice": "Merch sells out early in the show — buy on your first pass. Good midday stop; combine with CD Projekt Red in the same hall.",
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
       "https://nintendowire.com/news/2026/08/10/square-enix-is-bringing-final-fantasy-vii-revelation-to-gamescom-opening-night-live-for-a-new-look/",
@@ -315,14 +286,11 @@
     "hall": "8.1",
     "booth": "B030/A031",
     "locationConfirmed": true,
-    "description": "CDPR's first gamescom booth since 2019: extended theater presentations of The Witcher 3: Wild Hunt — Songs of the Past (the third Witcher 3 expansion, due 2027), running Wed–Sun after its trailer debut at Opening Night Live.",
     "games": [
-      { "title": "The Witcher 3: Songs of the Past", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Cinema-style presentation, not hands-on; first trailer at ONL Aug 25; releases 2027." }
+      { "title": "The Witcher 3: Songs of the Past", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AAA", "RPG", "world premiere", "theater"],
     "crowd": 4,
-    "crowdNote": "CDPR theaters historically generate multi-hour lines (see Cyberpunk 2077 in 2019); a new Witcher reveal right after ONL will be a hall-wide magnet.",
-    "visitAdvice": "Treat it like a timed show: queue at Hall 8 opening on your first day (Wednesday on a trade badge, otherwise Thursday), or try the final showings late Sunday. Hall 8 sits at the North entrance — enter there, not via the Boulevard.",
     "sources": [
       "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/"
@@ -337,14 +305,11 @@
     "booth": "B021/C030, C020/B012",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/gryph-frontier-pte-ltd",
-    "description": "Hypergryph's global publishing brand returns with a much bigger Arknights: Endfield presence across two Hall 8.1 stand blocks: expanded interactive installations and photo spots, plus Boss Speedrun Challenges with exclusive event rewards.",
     "games": [
-      { "title": "Arknights: Endfield", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Boss Speedrun Challenge stations with exclusive event rewards." }
+      { "title": "Arknights: Endfield", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"] }
     ],
     "tags": ["gacha", "anime", "action-RPG"],
     "crowd": 4,
-    "crowdNote": "Endfield's community is huge and last year's smaller booth was packed; challenge stations are the bottleneck.",
-    "visitAdvice": "Do the speedrun challenge first thing — reward stock and queue caps bite by midday; the photo installations stay accessible all day.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/gryphline/",
       "https://www.gamespress.com/en-US/Arknights-Endfield-to-Make-Anime-NYC-Debut-and-Return-to-gamescom-with",
@@ -360,18 +325,15 @@
     "booth": "A041",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/snail-games-usa",
-    "description": "The ARK publisher's Hall 8.1 stand: new ARK: Survival Ascended content alongside open-universe MMO For The Stars, medieval survival sim Bellwright and sandbox builder Honeycomb: The World Beyond — plus a first public look at an unannounced, internally developed AAA title.",
     "games": [
-      { "title": "ARK: Survival Ascended", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "New content and franchise developments for the survival flagship." },
-      { "title": "For The Stars", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Open-universe MMO." },
-      { "title": "Bellwright", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Medieval survival/colony sim, 1M+ players on Steam." },
-      { "title": "Honeycomb: The World Beyond", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Sci-fi sandbox builder." },
-      { "title": "Unannounced Snail AAA title", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "First look promised for media and attendees." }
+      { "title": "ARK: Survival Ascended", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "For The Stars", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Bellwright", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Honeycomb: The World Beyond", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Unannounced Snail AAA title", "status": "confirmed", "playable": null, "platforms": ["TBA"] }
     ],
     "tags": ["survival", "MMO", "world premiere"],
     "crowd": 3,
-    "crowdNote": "ARK's community is large and a AAA reveal pulls walk-up interest, but it's a mid-size stand rather than a mega-booth.",
-    "visitAdvice": "If the unannounced title lands a splashy reveal, the stand will busy up the next morning — otherwise ARK fans can drop in most times.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/snail_games_usa/",
       "https://investor.snail.com/news-releases/news-release-details/snail-games-attend-gamescom-2026-expanded-product-pipeline-and",
@@ -387,14 +349,11 @@
     "booth": "B030/C031",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/plaion-gmbh",
-    "description": "One of Hall 9's largest booths, centered on METRO 2039 from in-house studio 4A Games — also playable at the Xbox booth in Hall 7.",
     "games": [
-      { "title": "METRO 2039", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Focus title; also at Xbox's Hall 7 stand." }
+      { "title": "METRO 2039", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AAA", "shooter", "18+"],
     "crowd": 3,
-    "crowdNote": "A single high-profile shooter concentrates demand, but dual-location availability splits the queues.",
-    "visitAdvice": "Compare queues at Plaion (Hall 9) vs Xbox (Hall 7) — Xbox's 140 stations often move faster.",
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -409,18 +368,15 @@
     "booth": "B050/C051, B040/C041",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/krafton",
-    "description": "One of Hall 9's largest presences, spread over two stand blocks (B050/C051 and B040/C041), with five titles headlined by a still-secret world-premiere FPS from PUBG STUDIOS (set in the Pacific Northwest) plus Neon Giant's cyber-noir shooter NO LAW. Interactive missions earn themed merch.",
     "games": [
-      { "title": "Untitled PUBG STUDIOS project", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "World-premiere reveal of a new PUBG-universe FPS at the show." },
-      { "title": "NO LAW", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Open-world FPS from The Ascent developer Neon Giant — hands-on demo." },
-      { "title": "Project ZETA", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "Part of the five-title showcase." },
-      { "title": "Age Twisters", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "Part of the five-title showcase." },
-      { "title": "TARAE: The Unbound", "status": "confirmed", "playable": null, "platforms": ["TBA"], "note": "Dark-fantasy action RPG." }
+      { "title": "Untitled PUBG STUDIOS project", "status": "confirmed", "playable": null, "platforms": ["TBA"] },
+      { "title": "NO LAW", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Project ZETA", "status": "confirmed", "playable": null, "platforms": ["TBA"] },
+      { "title": "Age Twisters", "status": "confirmed", "playable": null, "platforms": ["TBA"] },
+      { "title": "TARAE: The Unbound", "status": "confirmed", "playable": null, "platforms": ["TBA"] }
     ],
     "tags": ["shooter", "world premiere", "merch missions"],
     "crowd": 4,
-    "crowdNote": "A PUBG-universe world premiere in the show's most congested hall guarantees heavy traffic once the reveal lands.",
-    "visitAdvice": "Go first thing Thursday, or Wednesday on a trade badge, before the PUBG premiere is fully publicized; do the merch mission circuit early, before stock runs low.",
     "sources": [
       "https://www.invenglobal.com/articles/24454/krafton-unveils-5-titles-for-gamescom-2026",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
@@ -437,15 +393,12 @@
     "booth": "B041/A040, B051/A050",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/embark-studios-ab",
-    "description": "Riding ARC Raiders' breakout success, the Swedish studio has a Hall 6 booth reportedly twice the size of EA's — its first big gamescom showing, built around its extraction-shooter hit.",
     "games": [
-      { "title": "ARC Raiders", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Booth focus; expect new-content showcases for the live-service hit." },
-      { "title": "THE FINALS", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Embark's other live title; not yet listed for the booth." }
+      { "title": "ARC Raiders", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "THE FINALS", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["shooter", "live-service", "community"],
     "crowd": 4,
-    "crowdNote": "Massive active player base and a first big booth — community turnout plus any new-season reveal will pack it.",
-    "visitAdvice": "Community events and creator meetups spike traffic unpredictably — check Embark's socials for the stage schedule and go during downtime.",
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -460,18 +413,15 @@
     "booth": "B060/C061",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/team17-digital-ltd",
-    "description": "A group booth at B060/C061, in a stand block shared with Focus Entertainment: Team17's creature-collector LumenTale and Silver Pines alongside astragon's simulator lineup (Bus Simulator 27, Construction Simulator Evolution, Firefighting Simulator: Ignite).",
     "games": [
-      { "title": "LumenTale: Memories of Trey", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Team17's headline demo." },
-      { "title": "Silver Pines", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Second confirmed Team17 title." },
-      { "title": "Bus Simulator 27", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "astragon side; launches days after the show." },
-      { "title": "Construction Simulator Evolution", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "astragon simulator lineup." },
-      { "title": "Firefighting Simulator: Ignite", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "astragon simulator lineup." }
+      { "title": "LumenTale: Memories of Trey", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Silver Pines", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Bus Simulator 27", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Construction Simulator Evolution", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Firefighting Simulator: Ignite", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] }
     ],
     "tags": ["indie", "simulation", "playable demos"],
     "crowd": 2,
-    "crowdNote": "Indie-scale titles at a shared booth — queues short outside peak Saturday hours.",
-    "visitAdvice": "An easy low-queue stop while waiting out timed queues elsewhere in Hall 6.",
     "sources": [
       "https://www.astragon.com/news/detail/astragon-and-team17-return-to-gamescom-2026-with-beloved-brands-and-exciting-newcomers",
       "https://exhibitors.gamescom.global/exhibitor/team17_digital_ltd/"
@@ -486,15 +436,12 @@
     "booth": "B061",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/giants-software-entertainment-gmbh",
-    "description": "Farming Simulator's developer-publisher with its traditional community booth (plus a business-area stand in Hall 4.2). The booth program is unannounced — Farming Simulator 26 (Switch/mobile, out May 2026) and FS25 expansion content fresh from FarmCon are the likeliest showings, alongside merch.",
     "games": [
-      { "title": "Farming Simulator 26", "status": "expected", "playable": null, "platforms": ["Switch", "Mobile"], "note": "The Switch/mobile edition released May 19, 2026 — likely demo stations." },
-      { "title": "Farming Simulator 25: Beans & Alpacas", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "First gameplay was shown July 28 at FarmCon; a gamescom showing fits its pre-release window." }
+      { "title": "Farming Simulator 26", "status": "expected", "playable": null, "platforms": ["Switch", "Mobile"] },
+      { "title": "Farming Simulator 25: Beans & Alpacas", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["simulation", "family-friendly"],
     "crowd": 3,
-    "crowdNote": "One of the most loyal German communities at the show — steady all-day traffic rather than spike queues.",
-    "visitAdvice": "Easy to combine with the surrounding Hall 6.1 AAA booths; merch tends to sell out on weekend days.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/giants_software/",
       "https://www.univers-simu.com/en/news/la-gamescom-2026-affiche-complet-giants-aerosoft-et-lopening-night-live-se-devoilent-124784/"
@@ -509,16 +456,13 @@
     "booth": "B060/C061",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/focus-entertainment-publishing-sas",
-    "description": "A Hall 6.1 stand at B060/C061, in a stand block shared with Team17 and astragon, plus a trade-only business-area stand (Hall 4.2, A028). Its big release Resonance: A Plague Tale Legacy launches Aug 27, mid-show, and is playable at the Xbox booth.",
     "games": [
-      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Launches Aug 27; confirmed at Xbox's Hall 7 booth, likely also at Focus' own Hall 6.1 stand." },
-      { "title": "Edge of Memories", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "2026 JRPG-style title, plausible booth candidate." },
-      { "title": "Warhammer 40,000: Space Marine 3", "status": "rumored", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Too early for hands-on; trailer presence possible." }
+      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Edge of Memories", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Warhammer 40,000: Space Marine 3", "status": "rumored", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AA", "adventure"],
     "crowd": 2,
-    "crowdNote": "No announced blockbuster hands-on at its own stand; Resonance demand mostly absorbed by the Xbox booth.",
-    "visitAdvice": "Queue for Resonance at the Xbox booth, where it's confirmed playable. Focus' own stand has no announced program yet.",
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
@@ -536,18 +480,15 @@
     "booth": "B030",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/hoyoverse",
-    "description": "One of the biggest Asian booths of the show (~660 m², plus a business-area stand in Hall 4.2): five titles across themed zones — a Snezhnaya-themed Genshin area, Honkai: Star Rail's Planarcadia, Zenless Zone Zero, and world-premiere hands-ons for Honkai: Nexus Anima and Petit Planet.",
     "games": [
-      { "title": "Genshin Impact", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Mobile"], "note": "Snezhnaya-themed zone with railway and Statue of The Seven builds; exclusive merch." },
-      { "title": "Honkai: Star Rail", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Planarcadia-themed zone (Version 4.4 era)." },
-      { "title": "Zenless Zone Zero", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Mobile"], "note": "Dedicated exhibition area with latest content." },
-      { "title": "Honkai: Nexus Anima", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "World-premiere hands-on of the new creature-collecting strategy game." },
-      { "title": "Petit Planet", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "Cozy life-sim hands-on with world exploration." }
+      { "title": "Genshin Impact", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Mobile"] },
+      { "title": "Honkai: Star Rail", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"] },
+      { "title": "Zenless Zone Zero", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Mobile"] },
+      { "title": "Honkai: Nexus Anima", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"] },
+      { "title": "Petit Planet", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"] }
     ],
     "tags": ["gacha", "anime", "merch", "photo ops", "world premiere"],
     "crowd": 5,
-    "crowdNote": "Historically among the longest queues at gamescom — limited-edition merch reliably produces 1–3 h lines and capacity-controlled entry, especially Sat/Sun.",
-    "visitAdvice": "Go at hall opening Thu/Fri and head straight for the merch counter or the Nexus Anima demo; photo zones are easier mid-afternoon. Budget half a day for demos plus merch.",
     "sources": [
       "https://www.hoyoverse.com/en-us/news/165264",
       "https://finalweapon.net/2026/07/17/hoyoverse-gamescom-2026-lineup-honkai-nexus-anima-petit-planet/"
@@ -562,16 +503,13 @@
     "booth": "C071/A070",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/level-infinite",
-    "description": "Tencent's global publishing brand, next door to HoYoverse, with a fully playable three-game lineup headlined by the world-first public hands-on of Remedy's CONTROL Resonant. Themed photo spaces, a prize wheel, dev meet-and-greets and a Hunt: Showdown cosplay showcase.",
     "games": [
-      { "title": "CONTROL Resonant", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S", "PC"], "note": "First time playable anywhere; launches Sept 24, 2026 — the booth's biggest draw." },
-      { "title": "Dune: Awakening (console)", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S"], "note": "First public hands-on of the console build." },
-      { "title": "Hunt: Showdown 1896", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Playable with devs present; new in-game event preview." }
+      { "title": "CONTROL Resonant", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S", "PC"] },
+      { "title": "Dune: Awakening (console)", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S"] },
+      { "title": "Hunt: Showdown 1896", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AAA", "world premiere", "playable demos"],
     "crowd": 4,
-    "crowdNote": "CONTROL Resonant's world-first demo two months before launch will pull 60–120 min lines; adjacency to HoYoverse makes Hall 6.1 one of the most congested areas.",
-    "visitAdvice": "Queue for CONTROL Resonant first thing in the morning; Dune and Hunt stations move faster and are fine late afternoon.",
     "sources": [
       "https://www.levelinfinite.com/news/level-infinite-gamescom-2026-lineup/",
       "https://usk.de/en/usktitle/55381/",
@@ -587,15 +525,12 @@
     "booth": "B050/A051",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/tencent-games",
-    "description": "Tencent Games has a show-floor stand in Hall 8.1 with no announced program, plus the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27–29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's playable games are at Level Infinite in Hall 6.1.",
     "games": [
-      { "title": "Worlds of Play (40-title art exhibition)", "status": "confirmed", "playable": false, "platforms": [], "note": "Art exhibition Aug 27–29, off the main show floor." },
-      { "title": "Tencent Hall 8.1 booth (program TBA)", "status": "confirmed", "playable": null, "platforms": [], "note": "Registered stand at Hall 8.1, B050/A051 — what's shown there hasn't been announced yet." }
+      { "title": "Worlds of Play (40-title art exhibition)", "status": "confirmed", "playable": false, "platforms": [] },
+      { "title": "Tencent Hall 8.1 booth (program TBA)", "status": "confirmed", "playable": null, "platforms": [] }
     ],
     "tags": ["art", "exhibition", "offsite"],
     "crowd": 3,
-    "crowdNote": "Timed/curated and off the main floor — moderate queues; the real crowds gather at Level Infinite.",
-    "visitAdvice": "A calmer palate-cleanser between hall sessions; check whether entry needs free time-slot registration closer to the show.",
     "sources": [
       "https://www.gameshub.com/news/news/tencent-worlds-of-play-game-art-exhibition-gamescom-2026-2887179/",
       "https://exhibitors.gamescom.global/exhibitor/tencent_games/"
@@ -610,17 +545,14 @@
     "booth": "A051/B050",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/netease-interactive",
-    "description": "Two Hall 7.1 booths: A051 for Sea of Remnants, and B050 for Marvel Rivals (Season 9.5 content, Jeff the Landshark statue, photo booth) and Where Winds Meet's Hidden Mountain finale. NetEase also runs a separate trade-only stand in the business area (Hall 4.2, D050), previewing Once Human's next expansion plus one unannounced title.",
     "games": [
-      { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Multi-station 6v6 setups; Season 9.5 content at booth B050." },
-      { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"], "note": "Wuxia open-world RPG; Hidden Mountain finale content at booth B050." },
-      { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles"], "note": "Stylized pirate adventure RPG, own booth A051; hands-on status not detailed in NetEase's release." },
-      { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "platforms": ["PC", "Consoles"], "note": "Hands-on preview at NetEase's business-area stand (Hall 4.2, D050) — trade & media only, not reachable on a public ticket." }
+      { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"] },
+      { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles"] },
+      { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "platforms": ["PC", "Consoles"] }
     ],
     "tags": ["live-service", "shooter", "RPG"],
     "crowd": 4,
-    "crowdNote": "Marvel Rivals is one of the biggest live-service shooters right now; 6v6 sessions cycle slowly — 45–90 min waits at peak.",
-    "visitAdvice": "Marvel Rivals seats 12 per cycle, so lines move in bursts — join right after a session starts. Sea of Remnants is at a separate booth (A051) from Marvel Rivals and Where Winds Meet (B050), both in Hall 7.1 near Xbox.",
     "sources": [
       "https://x.com/NetEaseGames_EN/status/2078511437178380513",
       "https://www.neteasegames.com/news/Corporate/20260811/37075_1310671.html",
@@ -636,14 +568,11 @@
     "booth": "B010/C011",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/pearl-abyss-corp",
-    "description": "Showcasing Crimson Desert (6M+ sales) in partnership with Samsung: 30 demo PCs on Samsung's new 6K Odyssey G8 monitors, plus stage events, giveaways and cosplay. Samsung is co-registered at the stand as its tech partner.",
     "games": [
-      { "title": "Crimson Desert", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Current release build on 30 Samsung Odyssey G8 6K/165 Hz stations." }
+      { "title": "Crimson Desert", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["action", "RPG", "tech showcase"],
     "crowd": 4,
-    "crowdNote": "30 stations give decent throughput, but the 6K showcase plus a hit game means steady 30–60 min lines, longer on the weekend.",
-    "visitAdvice": "The 30-station setup clears queues faster than most AAA booths — late morning Thu/Fri is a good window.",
     "sources": [
       "https://www.invenglobal.com/articles/23511/pearl-abyss-to-showcase-crimson-desert-at-gamescom-in-partnership-with-samsung-electronics",
       "https://exhibitors.gamescom.global/exhibitor/pearl_abyss/"
@@ -658,15 +587,12 @@
     "booth": "A054/B055",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/infold-pte-ltd",
-    "description": "Publisher of Infinity Nikki and Love and Deepspace. The Infinity Nikki booth hosts meet-and-greets with Nikki and Momo, activity stations with exclusive merch rewards and special events with guest appearances; Love and Deepspace shared Infold's booth in 2025 and is expected back.",
     "games": [
-      { "title": "Infinity Nikki", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Mobile"], "note": "Official booth events, activities and exclusive merch — expect activity queues rather than demo stations." },
-      { "title": "Love and Deepspace", "status": "expected", "playable": null, "platforms": ["Mobile"], "note": "Not yet officially named for 2026; shared the Infold booth in 2025." }
+      { "title": "Infinity Nikki", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Mobile"] },
+      { "title": "Love and Deepspace", "status": "expected", "playable": null, "platforms": ["Mobile"] }
     ],
     "tags": ["gacha", "anime", "cozy", "merch"],
     "crowd": 4,
-    "crowdNote": "Both games have enormous, dedicated fandoms; merch and photo-op lines at comparable booths ran 60+ min in 2025.",
-    "visitAdvice": "Go at hall opening for limited daily merch and event slots — activity rewards tend to run out by early afternoon on public days.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/_infoldgames/",
       "https://x.com/InfinityNikkiEN/status/2076260312672805024"
@@ -681,16 +607,13 @@
     "booth": "B043",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/aerosoft-gmbh",
-    "description": "The Paderborn simulation specialist brings Winter Resort 3 and Professional Ship Simulator, plus five simulators revealed for the first time at the show — police work, mining, firefighting, crab fishing and roadmaking. A compact stand among Hall 9.1's big booths (plus a business-area stand in Hall 4.2).",
     "games": [
-      { "title": "Winter Resort 3", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Alpine ski-resort sim sequel." },
-      { "title": "Professional Ship Simulator", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "Part of the confirmed lineup." },
-      { "title": "Five unannounced simulators", "status": "confirmed", "playable": null, "platforms": ["PC"], "note": "First reveals: police work, mining, firefighting, crab fishing and roadmaking." }
+      { "title": "Winter Resort 3", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Professional Ship Simulator", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Five unannounced simulators", "status": "confirmed", "playable": null, "platforms": ["PC"] }
     ],
     "tags": ["simulation", "German"],
     "crowd": 2,
-    "crowdNote": "Dedicated sim niche — steady interest but rarely long lines.",
-    "visitAdvice": "Pairs into a sim circuit with GIANTS and the Team17 × astragon stand in Hall 6.1; reveal stations are busiest right after doors.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/aerosoft/",
       "https://www.gamesmarket.global/aerosoft-confirms-gamescom-2026-presence/",
@@ -706,14 +629,11 @@
     "booth": "B031",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/grinding-gear-games-ltd",
-    "description": "A Path of Exile 2 booth in Hall 6.1 with a demo built for the show, an 'eerie display' photo op and exclusive merchandise. GGG also runs a new content reveal on the official gamescom Twitch channel on Aug 25, 20:00 CEST, the night before the show floor opens.",
     "games": [
-      { "title": "Path of Exile 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Special demo exclusive to gamescom, post-'Return of the Ancients' era; new content reveal streams on gamescom's Twitch Aug 25, 20:00 CEST." }
+      { "title": "Path of Exile 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["ARPG", "PC", "merch"],
     "crowd": 4,
-    "crowdNote": "Very large, dedicated European PC-ARPG audience and a venue-exclusive demo — long, steady lines plus merch demand.",
-    "visitAdvice": "Hit it early on a weekday; ask staff whether merch has a separate line from the demo queue. Catch the Aug 25 Twitch reveal beforehand for a preview of what's playable.",
     "sources": [
       "https://www.pathofexile.com/forum/view-thread/3980614",
       "https://www.nat-games.de/2026/08/11/gamescom-2026-alle-games-aussteller-in-der-uebersicht/",
@@ -730,14 +650,11 @@
     "booth": "B050",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/eclipse-glow-games",
-    "description": "The Chinese studio behind Arthurian action game Tides of Annihilation runs a hands-on demo booth in Hall 6.1 — one of the notable new Chinese single-player entrants. The booth number comes from trade-press reports rather than the official directory, so check it against the hall plan on site.",
     "games": [
-      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Expanded event-exclusive demo, Hall 6.1, booth B050, running Aug 27–30." }
+      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["action", "single-player"],
     "crowd": 3,
-    "crowdNote": "High-profile trailer buzz but a single-title booth — moderate lines, spiking after any ONL appearance.",
-    "visitAdvice": "If it appears at Opening Night Live, queue early the next morning before word spreads.",
     "sources": [
       "https://www.invenglobal.com/articles/23789/eclipse-glow-games-to-host-tides-of-annihilation-demo-booth-at-gamescom-2026",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
@@ -753,24 +670,21 @@
     "booth": "F010/E019",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/indie-arena-booth",
-    "description": "The world's biggest indie booth — 2026 theme 'Democratree: games for everyone': ~200 games from 182 developers across 41 countries, with publisher pods (11 bit, Fireshine, Headup, Wired Productions) and a Nintendo section with Switch/Switch 2 stations. Audio brand beyerdynamic is this year's 'First Presenter' sponsor, kitting out 230+ developer stations with MMX 300 PRO headsets and running a vinyl soundtrack listening station.",
     "games": [
-      { "title": "Stronghold 4", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Firefly's castle-sim revival — a headline title of the booth." },
-      { "title": "Paralives", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Highly wishlisted life sim — expect one of the longer indie lines." },
-      { "title": "Moonlighter 2: The Endless Vault", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Shopkeeping/roguelite sequel." },
-      { "title": "Neon Abyss 2", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Punk action roguelite sequel." },
-      { "title": "Escape Academy 2: Back 2 School", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Co-op escape-room sequel." },
-      { "title": "Unrailed 2: Back on Track", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Chaotic co-op track-building." },
-      { "title": "Hidden Folks 2", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "Hand-drawn hidden-object sequel." },
-      { "title": "Dungeon Clawler", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "Claw-machine deckbuilder." },
-      { "title": "We Were Here Tomorrow", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"], "note": "Co-op puzzle series entry." },
-      { "title": "The 9th Dragon", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Voxel close-quarters action." },
-      { "title": "Crowded", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "City-builder where crows are the units." }
+      { "title": "Stronghold 4", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Paralives", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Moonlighter 2: The Endless Vault", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Neon Abyss 2", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Escape Academy 2: Back 2 School", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Unrailed 2: Back on Track", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Hidden Folks 2", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"] },
+      { "title": "Dungeon Clawler", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"] },
+      { "title": "We Were Here Tomorrow", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "The 9th Dragon", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Crowded", "status": "confirmed", "playable": true, "platforms": ["PC"] }
     ],
     "tags": ["indie", "playable demos", "meet the devs"],
     "crowd": 2,
-    "crowdNote": "Busy but far more bearable than AAA halls; short rotating lines per station, worst Saturday afternoon.",
-    "visitAdvice": "Thu/Fri morning is ideal. Browse the lineup on indiearena.org or the IAB Steam curator page beforehand and pick targets — devs are at their stations, so it's the best place to actually talk to the people making the games. Combine with the Retro & Family area in the same hall.",
     "sources": [
       "https://indiearena.org/",
       "https://www.gamesmarket.global/indie-arena-booth-full-gamescom-2026-lineup/",
@@ -786,15 +700,14 @@
     "booth": null,
     "locationConfirmed": false,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/korea-creative-content-agency",
-    "description": "Umbrella pavilion organized by the Korea Creative Content Agency, bundling small and mid-size Korean studios in the indie area (plus a B2B zone) — the best single stop for discovering Korean PC/mobile titles beyond Krafton and Pearl Abyss.",
     "games": [
-      { "title": "Various Korean indie/mobile titles", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"], "note": "Rotating multi-studio showcase; individual titles announced closer to the show." }
+      { "title": "Various Korean indie/mobile titles", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"] }
     ],
     "tags": ["indie", "discovery"],
     "crowd": 2,
-    "crowdNote": "Pavilion format spreads visitors across many small stands — walk-up friendly.",
-    "visitAdvice": "Browse any time of day; a good low-queue option even on the weekend.",
-    "sources": ["https://www.invenglobal.com/articles/24045/gamescom-2026-exhibitor-lineup-revealed-expected-to-be-largest-ever"],
+    "sources": [
+      "https://www.invenglobal.com/articles/24045/gamescom-2026-exhibitor-lineup-revealed-expected-to-be-largest-ever"
+    ],
     "lastUpdated": "2026-08-06"
   },
   {
@@ -805,15 +718,14 @@
     "booth": "E043",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/koeitecmo",
-    "description": "A small Hall 10.2 stand, registered alongside Japanese partner Gentle Giants — the program is unannounced, and Koei Tecmo's main autumn stage is Tokyo Game Show. With Attack on Titan 3 due winter 2026, some presence for it is plausible but unconfirmed.",
     "games": [
-      { "title": "Attack on Titan 3", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Winter 2026 release timing makes a showing plausible — our inference, nothing announced." }
+      { "title": "Attack on Titan 3", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["Japanese", "action"],
     "crowd": 2,
-    "crowdNote": "Small stand in the indie/merch hall — browsing traffic unless something playable turns up.",
-    "visitAdvice": "Check on-site: a playable Attack on Titan 3 or Nioh 3 station would queue fast; otherwise a quick stop on your Indie Arena Booth round.",
-    "sources": ["https://exhibitors.gamescom.global/exhibitor/koeitecmoisken/"],
+    "sources": [
+      "https://exhibitors.gamescom.global/exhibitor/koeitecmoisken/"
+    ],
     "lastUpdated": "2026-08-12"
   },
   {
@@ -824,15 +736,14 @@
     "booth": "A090",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/bilibili-hk-ltd",
-    "description": "Chinese video/community platform and game publisher, with a booth in the indie-focused Hall 10.1. Its 2026 game lineup hasn't been announced yet.",
     "games": [
-      { "title": "Bilibili-published titles (lineup TBA)", "status": "expected", "playable": null, "platforms": ["PC", "Mobile"], "note": "Expect an indie-scale showcase similar to prior years." }
+      { "title": "Bilibili-published titles (lineup TBA)", "status": "expected", "playable": null, "platforms": ["PC", "Mobile"] }
     ],
     "tags": ["mobile", "indie"],
     "crowd": 2,
-    "crowdNote": "Modest indie-area booth; short waits except during signing/creator events.",
-    "visitAdvice": "Easy walk-up while touring the indie hall; check the app on-site for stage or giveaway schedules.",
-    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
     "lastUpdated": "2026-08-06"
   },
   {
@@ -843,14 +754,11 @@
     "booth": "B030/C031",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/aternos",
-    "description": "The free Minecraft server host (Bonn-based, one of the largest in the world) runs 'MC Party' together with the Cytooxien team: four custom-built minigames — Dragon Escape, Farming, Dungeons and Paintball — played solo or in groups via a player-card queue system. Rounds earn coins to trade at the booth for Aternos/Cytooxien merch and MGA's Miniverse 'Make It Mini Minecraft' collectibles.",
     "games": [
-      { "title": "MC Party (Minecraft minigames)", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Dragon Escape, Farming, Dungeons and Paintball — every round earns coins redeemable for merch and prizes." }
+      { "title": "MC Party (Minecraft minigames)", "status": "confirmed", "playable": true, "platforms": ["PC"] }
     ],
     "tags": ["Minecraft", "community", "family-friendly", "minigames"],
     "crowd": 3,
-    "crowdNote": "Minecraft pulls kids and families hard — steady queues for minigame rounds, heaviest on the weekend family days.",
-    "visitAdvice": "Grab a player card early and drop into rounds between hall runs — coins accumulate across the day, so split visits work well. Hall 10.1 is calmest in the morning.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/aternos_gmbh/",
       "https://www.gamescom.global/en/exhibitor/aternos"
@@ -865,14 +773,11 @@
     "booth": "E072",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/behaviour-interactive",
-    "description": "Dead by Daylight's studio takes a Hall 10.1 stand in the game's 10th-anniversary year. The booth program is unannounced — expect anniversary content and community activities rather than a AAA-style demo floor.",
     "games": [
-      { "title": "Dead by Daylight", "status": "expected", "playable": null, "platforms": ["PC", "Consoles", "Mobile"], "note": "Nothing announced for the stand yet; an anniversary-year community presence is the likeliest showing." }
+      { "title": "Dead by Daylight", "status": "expected", "playable": null, "platforms": ["PC", "Consoles", "Mobile"] }
     ],
     "tags": ["horror", "multiplayer", "community"],
     "crowd": 3,
-    "crowdNote": "60M+ players and a devoted community — steady lines if meet-and-greets or photo ops run.",
-    "visitAdvice": "Check DbD's socials during the show for timed community events; otherwise an easy drop-in between Hall 10 indie sessions.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/behaviour/",
       "https://mobilesyrup.com/2026/06/14/montreal-behaviour-interactive-dead-by-daylight-10-year-anniversary-big-game-updates/"
@@ -887,16 +792,15 @@
     "booth": "B022/C023",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/scs-software-sro",
-    "description": "The Euro Truck Simulator 2 / American Truck Simulator studio brings its traditional community stand — truck-seat driving rigs, team meet-and-greets and merch, a gamescom fixture for years (plus a business-area stand in Hall 4.1).",
     "games": [
-      { "title": "Euro Truck Simulator 2", "status": "expected", "playable": true, "platforms": ["PC"], "note": "Driving rigs are the stand's tradition; specific 2026 program unannounced." },
-      { "title": "American Truck Simulator", "status": "expected", "playable": true, "platforms": ["PC"], "note": "Usually shown alongside ETS2 on the rigs." }
+      { "title": "Euro Truck Simulator 2", "status": "expected", "playable": true, "platforms": ["PC"] },
+      { "title": "American Truck Simulator", "status": "expected", "playable": true, "platforms": ["PC"] }
     ],
     "tags": ["simulation", "community"],
     "crowd": 2,
-    "crowdNote": "Limited driving rigs mean moderate rotating queues; fans linger to chat with the team.",
-    "visitAdvice": "Rigs turn over slowly — come at hall opening if you want seat time.",
-    "sources": ["https://exhibitors.gamescom.global/exhibitor/scs_software/"],
+    "sources": [
+      "https://exhibitors.gamescom.global/exhibitor/scs_software/"
+    ],
     "lastUpdated": "2026-08-12"
   },
   {
@@ -907,15 +811,14 @@
     "booth": "C040/D041",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/bloober-team-spolka-akcyjna",
-    "description": "The Silent Hill 2 remake and Cronos: The New Dawn studio takes a Hall 10.1 stand (plus a business-area stand); its 2026 booth program is unannounced — Cronos content or a look at its next horror project are the plausible showings. Cronos art also features in Tencent's offsite Worlds of Play exhibition.",
     "games": [
-      { "title": "Cronos: The New Dawn", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Nothing announced for the stand yet; Bloober's flagship since its Sept 2025 release." }
+      { "title": "Cronos: The New Dawn", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["horror", "single-player"],
     "crowd": 2,
-    "crowdNote": "A small stand with a devoted horror crowd — short lines unless a new reveal drops at ONL.",
-    "visitAdvice": "If Bloober shows anything at Opening Night Live, expect the stand to spike the next morning — otherwise a quick stop.",
-    "sources": ["https://exhibitors.gamescom.global/exhibitor/bloober_team/"],
+    "sources": [
+      "https://exhibitors.gamescom.global/exhibitor/bloober_team/"
+    ],
     "lastUpdated": "2026-08-12"
   },
   {
@@ -926,14 +829,11 @@
     "booth": "A062/B063",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/coffee-stain-publishing",
-    "description": "The Satisfactory studio — also the publisher of Valheim and Deep Rock Galactic — takes a Hall 10.1 stand; its program is unannounced. Satisfactory's 1.2 update shipped in June and an official Satisfactory board game is due late 2026 — demo stations and merch are the safe bets.",
     "games": [
-      { "title": "Satisfactory", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Nothing announced for the stand yet; the 1.2 update (June 2026) makes it the obvious centerpiece." }
+      { "title": "Satisfactory", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["indie", "co-op", "simulation"],
     "crowd": 2,
-    "crowdNote": "Beloved catalog but a low-key stand — browsing traffic more than queues.",
-    "visitAdvice": "Easy drop-in next to the other Hall 10.1 publisher stands (SCS, Bloober, Kepler).",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/coffee_stain_publishu-food_association/",
       "https://www.gamescom.global/en/exhibitor/coffee-stain-publishing"
@@ -948,14 +848,11 @@
     "booth": "B093",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/kepler-interactive",
-    "description": "The publisher collective behind Clair Obscur: Expedition 33 brings ONTOS as its featured title: a sci-fi narrative mystery from Frictional Games (SOMA, Amnesia), set aboard the repurposed moon hotel Samsara and due 2026. Expect a presentation-style stand rather than a mass demo floor.",
     "games": [
-      { "title": "ONTOS", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "SOMA spiritual successor from Frictional Games, releasing 2026; listed on Kepler's official gamescom profile." }
+      { "title": "ONTOS", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AA", "narrative", "sci-fi"],
     "crowd": 2,
-    "crowdNote": "Strong word-of-mouth brand but a small Hall 10.1 stand — short lines except right after any stage or ONL showing.",
-    "visitAdvice": "Pair with the Indie Arena Booth one level up; afternoons are quieter once the school groups thin out.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/kepler_interactive/",
       "https://www.gamescom.global/en/exhibitor/kepler-interactive",
@@ -971,12 +868,9 @@
     "booth": "B041",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/atari",
-    "description": "Anchor of Hall 10.1's retro corner: Atari's stand sits in a cluster with the revived Commodore (C059/B050) and MicroProse (A060/B061) — expect classic and modern-retro hardware, re-releases and collector merch across all three.",
     "games": [],
     "tags": ["retro", "hardware", "merch"],
     "crowd": 2,
-    "crowdNote": "Browsing traffic and nostalgic dwell time rather than queues.",
-    "visitAdvice": "A good low-energy stop while sitting out peak queues elsewhere; merch lines grow on Saturday.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/atari/",
       "https://www.gamescom.global/en/exhibitor/atari"
@@ -991,14 +885,11 @@
     "booth": "A022",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/shenzhen-gudsen-technology-co-ltd",
-    "description": "Sim-racing and flight-sim rigs, registered under parent company Gudsen Technology: six simulator stations running the 2026 hardware line — R16 Ultra and R5 Pro wheelbases, MOZA's first motion platform, an AI motion-feedback system and an AI driving coach. Sessions are free but bookable in advance on MOZA's own gamescom page, one guest per slot, and you're asked to arrive five minutes early.",
     "games": [
-      { "title": "MOZA sim racing & flight rigs", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Six stations split between racing and flight sim. Book a slot on MOZA's site — walk-up seat time is whatever the no-shows leave behind." }
+      { "title": "MOZA sim racing & flight rigs", "status": "confirmed", "playable": true, "platforms": ["PC"] }
     ],
     "tags": ["sim racing", "flight sim", "hardware", "hands-on", "bookable"],
     "crowd": 3,
-    "crowdNote": "Six rigs and long individual sessions mean the walk-up queue moves slowly, even though the booth never draws platform-holder crowds.",
-    "visitAdvice": "Book before the show — it costs nothing and is the whole difference between sitting down and watching. Note MOZA's own page offers Wednesday slots and quotes 09:00 openings: Wednesday is trade & media only, and the entertainment area opens at 13:00 that day and 10:00 on Thu/Fri, so treat their times as booth-side optimism and check the day's real hours.",
     "sources": [
       "https://eu.mozaracing.com/de/pages/gamescom-2026",
       "https://exhibitors.gamescom.global/en/exhibitor/gudsen_technology_co/",
@@ -1014,12 +905,9 @@
     "booth": "D010",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/kawasaki-heavy-industries-ltd",
-    "description": "Kawasaki Heavy Industries holds a stand in the middle of Hall 10.1 under a single registered brand: CORLEO, its four-legged rideable robot concept, which the company confirmed for commercial development this year. Kawasaki has said the CORLEO riding simulator — built from motion data and 3D models captured during development — is aimed at the games and esports industries and targeted for 2027, so expect the machine and a simulator rather than a ride on the real thing.",
     "games": [],
     "tags": ["attraction", "robotics", "photo spot"],
     "crowd": 3,
-    "crowdNote": "A rideable robot horse in a games hall is a photo magnet — expect a scrum around it rather than an orderly queue.",
-    "visitAdvice": "Worth the detour if you're in 10.1 for the hardware row anyway. Early morning or the last hour for a clear photo; the booth program is unannounced, so don't plan a day around riding it.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/kawasaki_heavy_indus/",
       "https://www.gamescom.global/en/exhibitor/kawasaki-heavy-industries-ltd",
@@ -1035,12 +923,9 @@
     "booth": "B050/A059",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/rc-drift-games",
-    "description": "A radio-controlled drift track in Hall 10.2's Retro & Family half, registered as a club rather than a company. No screen involved, and one of the few things on the floor small children can do properly.",
     "games": [],
     "tags": ["family-friendly", "hands-on", "attraction"],
     "crowd": 2,
-    "crowdNote": "Limited controllers and a fixed track — short rotating waits, longest on the family-heavy weekend days.",
-    "visitAdvice": "Good filler while someone else queues for the Indie Arena Booth two aisles over.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/rc_drift_games/",
       "https://www.gamescom.global/en/exhibitor/rc-drift-games"
@@ -1055,12 +940,9 @@
     "booth": "C050/B051, B041/C040",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/headis-gmbh",
-    "description": "Head-only table tennis, played on a full-size table with a rubber ball — a gamescom regular and the fastest way to get properly sweaty at a games show. Registered across two Hall 10.2 stands (C050/B051 and B041/C040).",
     "games": [],
     "tags": ["family-friendly", "hands-on", "attraction"],
     "crowd": 2,
-    "crowdNote": "Spectators outnumber players; the wait to actually get on a table is short.",
-    "visitAdvice": "Not what you want an hour before a big queue — go after you're done playing for the day.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/headis/",
       "https://www.gamescom.global/en/exhibitor/headis-gmbh",
@@ -1076,12 +958,9 @@
     "booth": "F086",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/xeleratevr-gmbh",
-    "description": "A German VR stand at the back of Hall 10.1, registered across portable VR hardware, action/adventure, role-playing, simulation and sports — a headset experience rather than a game booth. The 2026 program is unannounced.",
     "games": [],
     "tags": ["VR", "hands-on"],
     "crowd": 2,
-    "crowdNote": "VR sessions run one visitor at a time, so even a short line is a slow one.",
-    "visitAdvice": "Ask how long a session runs before joining the queue — that number matters more than the queue length.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/xeleratevr_gmbh/",
       "https://www.gamescom.global/en/exhibitor/xeleratevr-gmbh"
@@ -1096,12 +975,9 @@
     "booth": "E071/E071a",
     "locationConfirmed": true,
     "officialUrl": "https://lan.gamescom.global/en/",
-    "description": "The team behind gamescom LAN — the separate BYOC LAN and esports weekend held at Koelnmesse in March — runs an on-site area in Hall 10.1. It is registered for trading card games, organisations and agency services rather than a LAN party, and hosts the partner activations filed at E071a: TikTok, EDEKA, L'Oréal and Backforce seating. Don't come expecting to plug a tower in; the LAN itself is a different event on different dates.",
     "games": [],
     "tags": ["community", "TCG", "esports"],
     "crowd": 2,
-    "crowdNote": "Partner activations and card tables draw a steady trickle, not a queue.",
-    "visitAdvice": "Worth a pass if you play TCGs or want the giveaway-shaped part of the show; skip it if you came for demos.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/gamescom_lan/",
       "https://lan.gamescom.global/en/"
@@ -1116,12 +992,9 @@
     "booth": "C059/B050",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/commodore-international-corporation",
-    "description": "The revived Commodore brand takes a full stand in Hall 10.1's retro corner, registered for the Commodore 64 Ultimate — the FPGA-based, cycle-accurate C64 re-creation — with the C64C Edition announced to ship late 2026. Directly alongside Atari (B041) and MicroProse (A060/B061).",
     "games": [],
     "tags": ["retro", "hardware", "merch"],
     "crowd": 3,
-    "crowdNote": "Small stand, heavy nostalgia pull and a machine people want to put their hands on — steady browsing rather than a managed queue.",
-    "visitAdvice": "Do the whole retro corner in one pass: Commodore, Atari and MicroProse sit within a few metres of each other.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/commodore_internatio/",
       "https://www.gamescom.global/en/exhibitor/commodore-international-corporation",
@@ -1137,12 +1010,9 @@
     "booth": "A060/B061",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/microprose-software-pty-ltd",
-    "description": "The revived MicroProse — the Sid Meier-era sim and strategy label, relaunched out of Australia — takes a stand in Hall 10.1's retro corner, registered across action/adventure, RPG, simulation and strategy. The 2026 lineup is unannounced.",
     "games": [],
     "tags": ["retro", "simulation", "strategy"],
     "crowd": 2,
-    "crowdNote": "A niche audience that knows exactly why it's there; expect conversation, not queues.",
-    "visitAdvice": "Pair it with Commodore and Atari a few stands away.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/microprose/",
       "https://www.gamescom.global/en/exhibitor/microprose-software-pty-ltd"
@@ -1156,14 +1026,11 @@
     "hall": "10.1",
     "booth": "F061",
     "locationConfirmed": true,
-    "description": "Freemode's stand is registered under three brands — Embracer Freemode, RedOctane and Stage Tour — and for input peripherals as well as games. Stage Tour is the relaunched Guitar Hero team's new plastic-instrument rhythm game: guitar, drums and vocals, up to four players in any combination, announced for autumn 2026 with its own Kramer-style guitar, drum kit and microphone.",
     "games": [
-      { "title": "Stage Tour", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"], "note": "Registered as a brand on the official exhibitor profile, which is not the same as a confirmed hands-on demo. A closed alpha ran in summer 2026." }
+      { "title": "Stage Tour", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] }
     ],
     "tags": ["rhythm", "peripherals", "retro"],
     "crowd": 3,
-    "crowdNote": "If the instruments are out on the floor this is a booth people queue for; if it's a display stand, barely a wait. Unknown until the show.",
-    "visitAdvice": "Check the stand early in the day to see whether it's playable, then come back — plastic-instrument demos build the longest queues in the afternoon.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/_stagetour/",
       "https://www.engadget.com/gaming/guitar-hero-vets-redoctane-reveal-their-new-music-game-220809719.html"
@@ -1178,12 +1045,9 @@
     "booth": "A044",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/rocketwerkz",
-    "description": "Dean Hall's New Zealand studio — the DayZ creator, since then Stationeers and Icarus — takes a small Hall 10.1 stand, registered for action/adventure, simulation and strategy. Lineup unannounced.",
     "games": [],
     "tags": ["simulation", "survival", "AA"],
     "crowd": 2,
-    "crowdNote": "A small stand with a devoted but not enormous following.",
-    "visitAdvice": "Low-queue stop; go when the big halls are at their worst.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/rocketwerkz4_fleet_group/",
       "https://www.gamescom.global/en/exhibitor/rocketwerkz"
@@ -1198,14 +1062,11 @@
     "booth": "A042",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/frozen-district",
-    "description": "The House Flipper studio, registered at Hall 10.1 under both its own name and House Flipper 2 — and, fittingly for a cleaning-simulator developer, filed under the directory's care and cleaning product group as well as games.",
     "games": [
-      { "title": "House Flipper 2", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Registered as a brand on the official exhibitor profile; the demo program is unannounced." }
+      { "title": "House Flipper 2", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["simulation", "cozy", "AA"],
     "crowd": 2,
-    "crowdNote": "Cozy-sim fans browse rather than queue.",
-    "visitAdvice": "Two stands from Raw Fury and three from MOZA — worth folding into one pass along the A row.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/frozen_district/",
       "https://www.gamescom.global/en/exhibitor/frozen-district"
@@ -1220,12 +1081,9 @@
     "booth": "B021",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/raw-fury-ab",
-    "description": "The Swedish indie publisher behind Kingdom, Sable, Norco and Blue Prince runs a consumer stand in Hall 10.1 alongside its business stand in Hall 2.1. The 2026 lineup is unannounced.",
     "games": [],
     "tags": ["indie", "narrative", "publisher"],
     "crowd": 2,
-    "crowdNote": "Indie-publisher stands draw curious traffic rather than queues.",
-    "visitAdvice": "Good discovery stop between the bigger 10.1 stands; ask what's on the machines rather than reading the signage.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/raw_fury/",
       "https://www.gamescom.global/en/exhibitor/raw-fury-ab"
@@ -1240,15 +1098,12 @@
     "booth": "C070/D071",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/area-35-inc",
-    "description": "The Japanese studio behind the TINY METAL tactics games takes a Hall 10.1 stand, registered under TINY METAL, TINY METAL 2 and PROJECT BLITZ.",
     "games": [
-      { "title": "PROJECT BLITZ", "status": "expected", "playable": null, "platforms": ["TBA"], "note": "Registered as a brand on the official exhibitor profile; nothing else announced." },
-      { "title": "TINY METAL 2", "status": "expected", "playable": null, "platforms": ["TBA"], "note": "Registered as a brand on the official exhibitor profile." }
+      { "title": "PROJECT BLITZ", "status": "expected", "playable": null, "platforms": ["TBA"] },
+      { "title": "TINY METAL 2", "status": "expected", "playable": null, "platforms": ["TBA"] }
     ],
     "tags": ["Japanese", "strategy", "AA"],
     "crowd": 2,
-    "crowdNote": "Turn-based tactics is a slow-burn crowd — people sit down and stay.",
-    "visitAdvice": "If a machine is free, take it; the demos run long and turnover is poor.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/_area35east/",
       "https://www.gamescom.global/en/exhibitor/area-35-inc"
@@ -1263,12 +1118,9 @@
     "booth": "A030",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/corsair-memory",
-    "description": "Consumer stand at the front of Hall 10.1's hardware row, with a second business stand in Hall 2.2. Registered across the whole range: keyboards, mice, headsets, displays, chairs and sim-racing wheels and pedals.",
     "games": [],
     "tags": ["hardware", "peripherals", "sim racing"],
     "crowd": 2,
-    "crowdNote": "Try-before-you-buy stations turn over quickly; merch drops are the only thing that draws a line.",
-    "visitAdvice": "Any afternoon. Worth pairing with MOZA and PXN if you're shopping for a wheel.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/corsair_memory/",
       "https://www.gamescom.global/en/exhibitor/corsair-memory"
@@ -1283,12 +1135,9 @@
     "booth": "A024",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/pny-technologies-quadro-gmbh",
-    "description": "Graphics cards, memory and storage. PNY has trailed slim-format GeForce RTX 50 models, DDR4 and DDR5 memory, microSD Express cards for Switch 2 and a previously unannounced console SSD for its Hall 10.1 stand.",
     "games": [],
     "tags": ["hardware", "components"],
     "crowd": 2,
-    "crowdNote": "Component stands draw lookers, not queues.",
-    "visitAdvice": "Quick stop; the Switch 2 microSD Express cards are the part worth asking about in person.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/pny_technologies_gmbpny/",
       "https://www.gamescom.global/en/exhibitor/pny-technologies-quadro-gmbh",
@@ -1304,12 +1153,9 @@
     "booth": "D060/E061",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/thermaltake-germany-gmbh",
-    "description": "One of the larger stands in Hall 10.1's hardware row — cases, cooling and modded build showcases.",
     "games": [],
     "tags": ["hardware", "components", "modding"],
     "crowd": 2,
-    "crowdNote": "Show builds pull photographers; nothing to queue for.",
-    "visitAdvice": "Any time. Good stop if you want build ideas rather than demos.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/thermaltake_germany/",
       "https://www.gamescom.global/en/exhibitor/thermaltake-germany-gmbh"
@@ -1324,12 +1170,9 @@
     "booth": "B060",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/asrock-europe-bv",
-    "description": "Motherboards, graphics cards and monitors on a compact Hall 10.1 stand.",
     "games": [],
     "tags": ["hardware", "components"],
     "crowd": 1,
-    "crowdNote": "One of the quieter hardware stands.",
-    "visitAdvice": "Any time; a two-minute stop unless you're shopping.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/asrock_europe/",
       "https://www.gamescom.global/en/exhibitor/asrock-europe-bv"
@@ -1344,12 +1187,9 @@
     "booth": "C041",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/shenzhen-pxn-electronics-technology",
-    "description": "Budget sim-racing gear — wheels and pedal sets — a few rows from MOZA's rigs in the same hall. PXN's own announcement gave booth C029; C041 is what the official directory lists, so go by the hall plan.",
     "games": [],
     "tags": ["hardware", "sim racing", "peripherals"],
     "crowd": 2,
-    "crowdNote": "Hands-on wheels with quick turnover.",
-    "visitAdvice": "The cheap end of the wheel market — useful to try back-to-back with MOZA at A022 before you spend anything.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/shenzhen_pxn_electro/",
       "https://www.gamescom.global/en/exhibitor/shenzhen-pxn-electronics-technology"
@@ -1364,12 +1204,9 @@
     "booth": "E046",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/shenzhen-8bitdo-tech-co-ltd",
-    "description": "Retro-styled controllers, keyboards and adapters, sharing Clear River Games' stand in Hall 10.2 — a short walk from the Indie Arena Booth and in the same half of the hall as the Retro & Family area.",
     "games": [],
     "tags": ["hardware", "retro", "peripherals"],
     "crowd": 2,
-    "crowdNote": "Small shared stand; browsing traffic that thickens at the weekend.",
-    "visitAdvice": "Fold it into an Indie Arena Booth trip rather than making a separate journey.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/shenzhen_8bitdo_tech/",
       "https://www.gamescom.global/en/exhibitor/shenzhen-8bitdo-tech-co-ltd"
@@ -1384,12 +1221,9 @@
     "booth": "A070",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/konsolenfande-gmbh",
-    "description": "A shared hi-fi stand that is genuinely odd for a games show: konsolenfan.de hosts Yamaha, Genelec, ELAC, Canton, clearaudio, Oehlbach and Sharp under one booth number, with LiberNovo seating alongside. Eight separate companies are registered at A070.",
     "games": [],
     "tags": ["hardware", "audio", "hi-fi"],
     "crowd": 1,
-    "crowdNote": "Almost nobody comes to gamescom for loudspeakers — one of the quietest corners of a busy hall.",
-    "visitAdvice": "A good place to sit out someone else's queue, and about the only stand on the floor where you can hear anything properly.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/konsolenfande_gmbhpersiehl/",
       "https://www.gamescom.global/en/exhibitor/konsolenfande-gmbh"
@@ -1404,12 +1238,9 @@
     "booth": "E030/D031",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/a-maze",
-    "description": "The Berlin independent-games festival's third Digital PlayGround at gamescom: experimental and art games curated well outside what the Indie Arena Booth covers, a few stands away in the same hall.",
     "games": [],
     "tags": ["indie", "experimental", "art games", "playable demos"],
     "crowd": 2,
-    "crowdNote": "Small, curated and quiet next to the Indie Arena Booth — machines free up quickly.",
-    "visitAdvice": "The best antidote to a day of AAA queues. Go when the Indie Arena Booth is at its busiest.",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/a_maze/",
       "https://www.gamescom.global/en/exhibitor/a-maze"
@@ -1424,12 +1255,9 @@
     "booth": "D020/E021",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/program/areas/gamescom-campus",
-    "description": "Roughly half of Hall 10.1 is not a games floor at all. The Campus area runs education and recruiting — universities, SAE, PIXL VISN and IU alongside employers from the Bundeswehr and Rheinmetall to Siemens, Airbus, DATEV and several state police forces — plus a large community and youth-work block at D020/E021: jfc Medienzentrum, Gaming Ohne Grenzen, AbleGamers, youth-protection groups and the city of Cologne. Worth knowing before you walk into 10.1 expecting demos.",
     "games": [],
     "tags": ["careers", "education", "community"],
     "crowd": 1,
-    "crowdNote": "Busy with school groups on the trade days, quiet at the weekend — never a queue.",
-    "visitAdvice": "Skip it unless you're job-hunting or studying. It is, however, a genuinely calm place to sit down mid-day, and the accessibility and youth-work stands are worth a look.",
     "sources": [
       "https://www.gamescom.global/en/program/areas/gamescom-campus",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-hallenplan-erklaert-210726/"
@@ -1444,14 +1272,11 @@
     "booth": "A030/B029, A040, A029",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/lego-gmbh",
-    "description": "Multi-stand block in Hall 9.1 next to Nintendo, confirmed returning for 2026. The lineup is unannounced — the 2025 booth featured Batman, One Piece and Super Mario zones, so expect current LEGO video games plus set photo ops.",
     "games": [
-      { "title": "LEGO video game lineup (TBC)", "status": "expected", "playable": true, "platforms": ["Multi"], "note": "LEGO historically reveals new games at gamescom/ONL; 2026 titles unannounced." }
+      { "title": "LEGO video game lineup (TBC)", "status": "expected", "playable": true, "platforms": ["Multi"] }
     ],
     "tags": ["family-friendly", "photo ops"],
     "crowd": 4,
-    "crowdNote": "Family magnet in the same hall as Nintendo — photo-op and demo lines get long on the weekend.",
-    "visitAdvice": "Weekday mornings; weekends are dominated by families.",
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
       "https://bricksfanz.com/lego-games-returning-for-gamescom-2026/",
@@ -1467,14 +1292,11 @@
     "booth": "B011/A010",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/wizards-of-the-coast",
-    "description": "Wizards of the Coast anchors the trading-card corner of Hall 5.2, sharing its stand block with European distributor ADC Blackfire. Expect learn-to-play tables and 2026-set demos (this year's slate includes Reality Fracture and previews of The Hobbit crossover). Konami's separate Yu-Gi-Oh! stand, Ravensburger, Pegasus and Panini fill out the same hall.",
     "games": [
-      { "title": "Magic: The Gathering", "status": "confirmed", "playable": true, "platforms": [], "note": "Learn-to-play and casual play tables; promo cards usually while daily stocks last." }
+      { "title": "Magic: The Gathering", "status": "confirmed", "playable": true, "platforms": [] }
     ],
     "tags": ["TCG", "tabletop", "family-friendly"],
     "crowd": 3,
-    "crowdNote": "The card-game hall gets dense on public days, and promo giveaways cause morning rushes.",
-    "visitAdvice": "Morning for promos, late afternoon for a relaxed learn-to-play seat.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/_wearecollider/",
       "https://articles.starcitygames.com/magic-the-gathering/magic-the-gathering-full-set-release-schedule-for-2026/"
@@ -1489,13 +1311,12 @@
     "booth": "B041/C040",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/asus-global-pte-ltd",
-    "description": "Large Hall 8.1 presence plus an outdoor area at Hall 8 North: ROG laptops, monitors and the ROG Xbox Ally handheld family playable on-site.",
     "games": [],
     "tags": ["hardware", "handheld", "PC"],
     "crowd": 3,
-    "crowdNote": "ROG handheld try-out stations build 15–45 min lines; the rest flows freely.",
-    "visitAdvice": "Morning visit if you want hands-on time with the ROG Ally handhelds.",
-    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
     "lastUpdated": "2026-08-06"
   },
   {
@@ -1505,12 +1326,9 @@
     "hall": "9.1",
     "booth": "B020/C029",
     "locationConfirmed": true,
-    "description": "Odyssey gaming monitors and SSDs with partner-game demo stations in Hall 9.1. Samsung is also co-registered at Pearl Abyss's B010/C011 stand nearby, which it powers with 6K Odyssey G8 displays.",
     "games": [],
     "tags": ["hardware", "monitors"],
     "crowd": 3,
-    "crowdNote": "Big footprint and Hall 9 foot traffic keep it busy, but station turnover is fast.",
-    "visitAdvice": "Combine with your Nintendo Hall 9 visit; no need to rush it at opening.",
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
       "https://exhibitors.gamescom.global/exhibitor/samsungtechwin/"
@@ -1525,13 +1343,12 @@
     "booth": "E020/D021",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/razer-europe-gmbh",
-    "description": "Two locations: the consumer stand in Hall 10.2 and a business stand in Hall 2.2. Hands-on with the 2026 peripheral line from its big CES slate, plus esports events and merch drops.",
     "games": [],
     "tags": ["hardware", "peripherals", "merch"],
     "crowd": 3,
-    "crowdNote": "Solid fan traffic for limited merch and giveaway drops, but nothing like platform-holder queues.",
-    "visitAdvice": "For limited merch, go early on the first public day; otherwise any weekday afternoon.",
-    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
     "lastUpdated": "2026-08-06"
   },
   {
@@ -1542,13 +1359,12 @@
     "booth": "A065",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/logitech-ireland-services-ltd",
-    "description": "Listed under both Logitech and Logitech G, with a second, larger stand in Hall 10.1 at E074/F077: gaming mice, keyboards, headsets and sim-racing rigs with try-before-you-buy stations.",
     "games": [],
     "tags": ["hardware", "peripherals", "sim racing"],
     "crowd": 2,
-    "crowdNote": "Browse-through booth; only sim-racing rigs generate short waits.",
-    "visitAdvice": "Any time works; sim rigs are quietest weekday mornings.",
-    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
     "lastUpdated": "2026-08-06"
   },
   {
@@ -1559,13 +1375,12 @@
     "booth": "C060",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/aoc-international-europe-bv",
-    "description": "AOC's gaming-monitor brand with its latest high-refresh OLED and Mini-LED monitors on demo stations.",
     "games": [],
     "tags": ["hardware", "monitors"],
     "crowd": 2,
-    "crowdNote": "Low-queue browse stop.",
-    "visitAdvice": "Walk in anytime; pairs well with Logitech and ASUS in the same hall.",
-    "sources": ["https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
     "lastUpdated": "2026-08-06"
   },
   {
@@ -1575,12 +1390,9 @@
     "hall": "7.1",
     "booth": "B041/C040",
     "locationConfirmed": true,
-    "description": "AMD shares a Hall 7.1 stand block with Webedia's community area, Vodafone, ZOTAC and the Driveball Arena — expect Ryzen/Radeon rigs powering partner setups rather than a standalone AMD mega-booth. AMD also hosts its own Cologne event on Aug 23, teasing a Radeon announcement right before the show.",
     "games": [],
     "tags": ["hardware", "PC", "community"],
     "crowd": 2,
-    "crowdNote": "Traffic on the shared block follows the community-stage program and creator meetups more than AMD itself.",
-    "visitAdvice": "Worth a pass if you're PC-hardware shopping; check the community area's stage schedule for creator sessions.",
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/amd_int_sales/",
       "https://www.tweaktown.com/news/99792/amd-is-hosting-mysterious-gamescom-event-on-august-23-new-radeon-announcement-coming/index.html"
@@ -1594,14 +1406,11 @@
     "hall": null,
     "booth": null,
     "locationConfirmed": false,
-    "description": "NOT exhibiting on the show floor: Wargaming cancelled the Hall 1 Event Arena presence it had in 2025, and the official directory lists only B2B stands in trade halls 3.2 and 2.2, nothing in the entertainment area. Its one public appearance is the offsite Wargaming Community Party on Aug 28 at HERBRAND's Ehrenfeld (~€10, Eventbrite), covering WoT, WoWs, Blitz and World of Tanks: HEAT.",
     "games": [
-      { "title": "World of Tanks / Warships / HEAT", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles", "Mobile"], "note": "No show-floor demo booth in 2026 — appearing only at the offsite Community Party (Aug 28), not in the entertainment area." }
+      { "title": "World of Tanks / Warships / HEAT", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles", "Mobile"] }
     ],
     "tags": ["live-service", "offsite event", "not exhibiting"],
     "crowd": 1,
-    "crowdNote": "No show-floor booth in 2026, so nothing to queue for on-site; the offsite party is ticketed and capped separately.",
-    "visitAdvice": "Skip the show floor for Wargaming — grab Community Party tickets on Eventbrite early if you're a player, since it's capped.",
     "sources": [
       "https://www.eventbrite.co.uk/e/wargaming-community-party-cologne-2026-tickets-1991050336153",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
@@ -1616,15 +1425,14 @@
     "hall": null,
     "booth": null,
     "locationConfirmed": false,
-    "description": "Wuthering Waves developer exhibited in 2024 and 2025 but has made no gamescom 2026 announcement — attendance looks doubtful; its current focus is the WuWa 3.6 broadcast and the new Elysium anime.",
     "games": [
-      { "title": "Wuthering Waves", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Mobile"], "note": "Expected only from past-year patterns; no 2026 booth confirmed." }
+      { "title": "Wuthering Waves", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Mobile"] }
     ],
     "tags": ["gacha", "unconfirmed"],
     "crowd": 1,
-    "crowdNote": "Nothing confirmed to queue for; if a booth materializes expect HoYoverse-style merch crowds.",
-    "visitAdvice": "Don't plan around Kuro Games; re-check the official directory and @Wuthering_Waves socials in the final two weeks.",
-    "sources": ["https://wutheringwaves.kurogames.com/en/main"],
+    "sources": [
+      "https://wutheringwaves.kurogames.com/en/main"
+    ],
     "lastUpdated": "2026-08-06"
   },
   {
@@ -1634,15 +1442,12 @@
     "hall": null,
     "booth": null,
     "locationConfirmed": false,
-    "description": "No consumer booth: Take-Two's only registration in the official directory is a shared industry stand in business Hall 4.1 (trade only). The GTA 6 moment happens offsite: an 'Extended Look' premieres on Netflix on Thursday Aug 27 (YouTube six hours later), deliberately timed to gamescom week. GTA 6 launches Nov 19, 2026.",
     "games": [
-      { "title": "Grand Theft Auto VI — Extended Look", "status": "confirmed", "playable": false, "platforms": ["PS5", "Xbox Series X|S"], "note": "Streaming showcase on Netflix Aug 27, 21:00 CEST — not at the show." },
-      { "title": "NBA 2K27 / 2K catalog", "status": "rumored", "playable": null, "platforms": ["Multi"], "note": "2K exhibited in 2025 but has made no 2026 announcement." }
+      { "title": "Grand Theft Auto VI — Extended Look", "status": "confirmed", "playable": false, "platforms": ["PS5", "Xbox Series X|S"] },
+      { "title": "NBA 2K27 / 2K catalog", "status": "rumored", "playable": null, "platforms": ["Multi"] }
     ],
     "tags": ["not exhibiting", "GTA 6"],
     "crowd": 1,
-    "crowdNote": "No confirmed physical presence.",
-    "visitAdvice": "Watch the GTA 6 Extended Look on Netflix/YouTube on Aug 27 during the show; keep an eye on late exhibitor updates in case 2K books space.",
     "sources": [
       "https://variety.com/2026/gaming/news/gta-6-trailer-netflix-youtube-aug-27-1236789693/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
@@ -1656,15 +1461,14 @@
     "hall": null,
     "booth": null,
     "locationConfirmed": true,
-    "description": "NOT attending — officially cancelled its gamescom 2026 presence (July 8), citing a lack of showcase-ready titles; it hopes to return in 2027. Its Digital Showcase on Aug 7 (Titan Quest II, Wreckfest 2, Gothic Remake) replaces the physical showing.",
     "games": [
-      { "title": "Titan Quest II / Wreckfest 2 / Gothic Remake", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"], "note": "Digital Showcase (streamed Aug 7) only — no gamescom booth." }
+      { "title": "Titan Quest II / Wreckfest 2 / Gothic Remake", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["not exhibiting"],
     "crowd": 1,
-    "crowdNote": "No booth.",
-    "visitAdvice": "Watch the THQ Nordic Digital Showcase stream instead; partner titles may still surface at other booths.",
-    "sources": ["https://www.gameswirtschaft.de/gamescom/gamescom-2026-thq-nordic-absage-080726/"],
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-thq-nordic-absage-080726/"
+    ],
     "lastUpdated": "2026-08-06"
   },
   {
@@ -1675,15 +1479,12 @@
     "booth": "B053a",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/paradox-interactive-ab",
-    "description": "No booth of its own: Paradox co-presents Transport Fever 3 with Urban Games, whose stand is in Hall 8.1 at B053a — complete with a London double-decker bus as the eye-catcher. Paradox is separately registered at Level Infinite's shared Hall 6.1 stand, so a presence in the Tencent area looks likely.",
     "games": [
-      { "title": "Transport Fever 3", "status": "confirmed", "playable": true, "platforms": ["PC"], "note": "Shown with Urban Games in Hall 8; double-decker photo op." },
-      { "title": "Paradox grand-strategy catalog", "status": "rumored", "playable": null, "platforms": ["PC"], "note": "Paradox's own registration sits at Level Infinite's Hall 6.1 stand; nothing announced about what it shows there." }
+      { "title": "Transport Fever 3", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Paradox grand-strategy catalog", "status": "rumored", "playable": null, "platforms": ["PC"] }
     ],
     "tags": ["simulation", "strategy", "PC"],
     "crowd": 2,
-    "crowdNote": "Niche-but-devoted audience — steady sim fans rather than mass queues.",
-    "visitAdvice": "Queues reasonable even at peak; combine with CDPR and Square Enix in the same hall.",
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
       "https://exhibitors.gamescom.global/exhibitor/urban_games/"
@@ -1701,18 +1502,8 @@
     "dirSlug": "microsoft",
     "country": "United States",
     "access": "appointment",
-    "accessNote": "A 560 m² closed structure with no co-exhibitors and nothing on show from the aisle — partner and press meetings are booked in advance through Xbox, not taken at the door.",
-    "description": "Microsoft's business-side presence, entirely separate from the consumer Xbox booth in Hall 7.1. One of the largest single stands in the business area and one of the ~180 that no other exhibitor shares, which in Hall 4.2 means a meeting building rather than a stand you can walk into.",
-    "offers": [
-      "Partner and publisher meetings, by prior appointment",
-      "Press appointments — the consumer booth in Hall 7.1 is where hands-on demos live",
-      "ID@Xbox and Game Pass business conversations"
-    ],
     "games": [],
-    "tags": [
-      "closed stand",
-      "platform holder"
-    ],
+    "tags": ["closed stand", "platform holder"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/microsoft/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -1730,17 +1521,8 @@
     "dirSlug": "nintendo",
     "country": "Germany",
     "access": "appointment",
-    "accessNote": "541 m², sole occupant, no co-exhibitors. Nintendo does not take walk-ups on the business side; the Hall 9.1 booth is the public one.",
-    "description": "Nintendo of Europe's trade presence in Hall 4.2, distinct from the large consumer booth in Hall 9.1. Registered to the European headquarters entity rather than to a brand stand, which is the usual shape of a publisher meeting compound here.",
-    "offers": [
-      "Publisher and retail partner meetings by appointment",
-      "Trade press appointments"
-    ],
     "games": [],
-    "tags": [
-      "closed stand",
-      "platform holder"
-    ],
+    "tags": ["closed stand", "platform holder"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/nintendo/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -1757,16 +1539,8 @@
     "dirSlug": "tencent_games",
     "country": "China",
     "access": "appointment",
-    "accessNote": "At 702 m² this is the largest single-occupant stand in the business area — a closed meeting complex, not a show floor.",
-    "description": "Tencent's business compound, the biggest private stand in the business halls. Its consumer-facing work is elsewhere: Level Infinite in Hall 6.1 and the Worlds of Play area in Hall 8.1, both of which have their own cards.",
-    "offers": [
-      "Publishing, investment and partnership meetings by appointment",
-      "Level Infinite business conversations"
-    ],
     "games": [],
-    "tags": [
-      "closed stand"
-    ],
+    "tags": ["closed stand"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/tencent_games/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -1783,18 +1557,8 @@
     "dirSlug": "nvidia",
     "country": "Germany",
     "access": "appointment",
-    "accessNote": "420 m², sole occupant. NVIDIA has no consumer booth this year, so everything it is doing at the show is behind this door.",
-    "description": "NVIDIA's only registered stand at gamescom 2026, and it is in the business area rather than the entertainment halls — developer relations, RTX and cloud partnerships rather than a demo wall.",
-    "offers": [
-      "Developer relations and engine partnership meetings",
-      "GeForce NOW and RTX technology briefings",
-      "Press appointments"
-    ],
     "games": [],
-    "tags": [
-      "closed stand",
-      "hardware"
-    ],
+    "tags": ["closed stand", "hardware"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/nvidia/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -1810,18 +1574,8 @@
     "locationConfirmed": true,
     "country": "Spain",
     "access": "open",
-    "accessNote": "A national collective: 33 companies sharing one 240 m² stand, each with its own desk. Staffed all day and meant to be walked into — that is what a pavilion is for.",
-    "description": "Spain's national stand, organised around ICEX, the Spanish export agency. The single most densely shared stand in the business area: 33 studios and service companies, every one of them Spanish, listed individually in the trade list below.",
-    "offers": [
-      "33 Spanish studios and service companies at one stand",
-      "Publishing and co-development conversations without an appointment",
-      "ICEX export and funding advice"
-    ],
     "games": [],
-    "tags": [
-      "pavilion",
-      "walk-up"
-    ],
+    "tags": ["pavilion", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/icex_espan/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/icex_espan/",
@@ -1838,18 +1592,8 @@
     "locationConfirmed": true,
     "country": "Malta",
     "access": "open",
-    "accessNote": "21 exhibitors on one stand, hosted by a public foundation whose job is to be approachable. Walk up.",
-    "description": "Malta's national stand, run by the Gaming Malta Foundation with the Malta Game Developers Association. Nineteen of its twenty-one exhibitors are Maltese — studios, the American University of Malta, and the agencies that sell Malta as a place to set up a studio.",
-    "offers": [
-      "Maltese studios and the Malta Game Developers Association",
-      "Relocation, licensing and tax advice from GamingMalta",
-      "Games education — American University of Malta"
-    ],
     "games": [],
-    "tags": [
-      "pavilion",
-      "walk-up"
-    ],
+    "tags": ["pavilion", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/gaming_mal/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/gaming_mal/",
@@ -1867,18 +1611,8 @@
     "locationConfirmed": true,
     "country": "Denmark",
     "access": "open",
-    "accessNote": "17 exhibitors, all Danish, on one shared stand — a collective built for walk-up conversation.",
-    "description": "Denmark's national stand, anchored by NIMBI, the country's institute for game development. Seventeen Danish studios share it, including Ghost Ship Games and Bedtime Digital Games.",
-    "offers": [
-      "17 Danish studios at one stand",
-      "NIMBI — Denmark's Institute for Game Development",
-      "Co-development and publishing conversations"
-    ],
     "games": [],
-    "tags": [
-      "pavilion",
-      "walk-up"
-    ],
+    "tags": ["pavilion", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/nimbi_denmarks_inst/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/nimbi_denmarks_inst/",
@@ -1895,17 +1629,8 @@
     "locationConfirmed": true,
     "country": "United Kingdom",
     "access": "open",
-    "accessNote": "A 1,004 m² shared stand carrying 23 exhibitors — one of the two biggest collectives in the business area, and staffed throughout.",
-    "description": "The British collective in Hall 3.2, seventeen of its twenty-three exhibitors registered in the UK. A mix of publishers (505 Games), specialist services and PR agencies rather than a single company's compound.",
-    "offers": [
-      "23 UK publishers, studios and service companies",
-      "Publishing and PR conversations without an appointment"
-    ],
     "games": [],
-    "tags": [
-      "pavilion",
-      "walk-up"
-    ],
+    "tags": ["pavilion", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
@@ -1920,18 +1645,8 @@
     "booth": "D033",
     "locationConfirmed": true,
     "access": "open",
-    "accessNote": "40 exhibitors share this one stand — the most crowded collective in the business area. Nothing about it is closed.",
-    "description": "A joint Nordic and Baltic stand: 40 exhibitors, mostly Finnish, Norwegian, Estonian and Swedish, brought together by regional development agencies such as Business Tampere and Arctic Game Skellefteå rather than by one country's export body.",
-    "offers": [
-      "40 Nordic and Baltic studios and regional agencies",
-      "Regional funding, relocation and cluster advice",
-      "Co-development conversations without an appointment"
-    ],
     "games": [],
-    "tags": [
-      "pavilion",
-      "walk-up"
-    ],
+    "tags": ["pavilion", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/business_tampere_ltd/",
       "https://exhibitors.gamescom.global/en/exhibitor/arctic_game/",
@@ -1949,18 +1664,8 @@
     "dirSlug": "games_hubs_hessenhouse_of_communicati",
     "country": "Germany",
     "access": "open",
-    "accessNote": "A regional cluster stand shared by 18 exhibitors, including the Frankfurter Buchmesse — open, staffed and used for introductions.",
-    "description": "The German state of Hessen's games cluster, sharing one Hall 4.1 stand with 17 other exhibitors — studios, service firms and, unusually for a games hall, the Frankfurt Book Fair.",
-    "offers": [
-      "Hessen studios and service companies",
-      "Regional funding and location advice",
-      "Cross-media contacts — Frankfurter Buchmesse shares the stand"
-    ],
     "games": [],
-    "tags": [
-      "pavilion",
-      "walk-up"
-    ],
+    "tags": ["pavilion", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/games_hubs_hessenhouse_of_communicati/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/games_hubs_hessenhouse_of_communicati/",
@@ -1978,17 +1683,8 @@
     "dirSlug": "cloudflare_germany_g",
     "country": "Germany",
     "access": "open",
-    "description": "The CDN and edge platform a large share of the industry's launch-day traffic runs through, here on the games side of the business: DDoS protection for live services, edge compute for matchmaking and telemetry, and Workers as a backend for smaller studios. A 63 m² stand in the services half of Hall 2.2 — no appointment, just a counter.",
-    "offers": [
-      "DDoS protection and traffic delivery for live-service games",
-      "Workers / edge compute as a game backend",
-      "Zero Trust and internal tooling for studios"
-    ],
     "games": [],
-    "tags": [
-      "infrastructure",
-      "walk-up"
-    ],
+    "tags": ["infrastructure", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/cloudflare_germany_g/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/cloudflare_germany_g/",
@@ -2006,18 +1702,8 @@
     "dirSlug": "curseforge_for_studigioiella",
     "country": "Israel",
     "access": "open",
-    "description": "The mod-distribution side of the industry. CurseForge is the platform most PC modding communities actually publish through, and Overwolf — which owns it — builds the in-game overlay and creator-monetisation layer around it. Both are registered to the same Hall 2.2 stand, which is where studios go to talk about opening a game up to mods.",
-    "offers": [
-      "CurseForge for Studios — official mod support and distribution",
-      "Overwolf's in-game overlay app platform",
-      "Creator and modder monetisation programs"
-    ],
     "games": [],
-    "tags": [
-      "platform",
-      "modding",
-      "walk-up"
-    ],
+    "tags": ["platform", "modding", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/curseforge_for_studigioiella/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/curseforge_for_studigioiella/",
@@ -2036,18 +1722,8 @@
     "dirSlug": "serverscom",
     "country": "Netherlands",
     "access": "mixed",
-    "accessNote": "At 196 m² this is one of the larger service stands in Hall 2.2 — an open counter with meeting space behind it, so walk up to ask and book if you need a real conversation.",
-    "description": "Bare-metal and hybrid hosting aimed squarely at game studios — dedicated servers for multiplayer backends, global points of presence for latency, and the kind of capacity planning a launch week needs. One of the bigger infrastructure stands in the business area.",
-    "offers": [
-      "Bare-metal and dedicated servers for game backends",
-      "Global low-latency hosting and capacity planning",
-      "Launch-window scaling conversations"
-    ],
     "games": [],
-    "tags": [
-      "infrastructure",
-      "hosting"
-    ],
+    "tags": ["infrastructure", "hosting"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/serverscom/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/serverscom/",
@@ -2065,18 +1741,8 @@
     "dirSlug": "unity_technologies",
     "country": "Denmark",
     "access": "open",
-    "accessNote": "A 12 m² desk — one of the smallest stands in the business area, and about as walk-up as a booth gets.",
-    "description": "The engine, on a stand you could miss if you blinked. Worth knowing it is there: for all the size of Unity's footprint in the industry, its gamescom presence is a single desk in the Hall 2.2 services row rather than a compound.",
-    "offers": [
-      "Engine, licensing and Unity 6 questions",
-      "Ads, monetisation and LevelPlay conversations",
-      "Developer relations contacts"
-    ],
     "games": [],
-    "tags": [
-      "engine",
-      "walk-up"
-    ],
+    "tags": ["engine", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/unity_technologies/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/unity_technologies/",
@@ -2094,17 +1760,8 @@
     "dirSlug": "amazon_web",
     "country": "United States",
     "access": "open",
-    "description": "AWS for Games on a 45 m² stand in Hall 3.2 — game servers, GameLift, analytics pipelines and the cloud-build side of production. Smaller than you would expect for the size of the business, and in the developer hall rather than the publisher one.",
-    "offers": [
-      "Game server hosting and GameLift",
-      "Analytics, data pipelines and live-ops tooling",
-      "Cloud build and CI for large projects"
-    ],
     "games": [],
-    "tags": [
-      "infrastructure",
-      "walk-up"
-    ],
+    "tags": ["infrastructure", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/amazon_web/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/amazon_web/",
@@ -2122,18 +1779,8 @@
     "dirSlug": "xsolla",
     "country": "United States",
     "access": "mixed",
-    "accessNote": "162 m² with meeting space — Xsolla runs scheduled partner meetings at the show, but the front of the stand is staffed for walk-ups.",
-    "description": "Payments, web shops and direct-to-consumer storefronts for games — the company most studios talk to when they want to sell outside a platform holder's store. One of the larger commerce stands in Hall 2.2.",
-    "offers": [
-      "Payments and global cash-out for game sales",
-      "Web shops and direct-to-consumer storefronts",
-      "Publishing and funding programs"
-    ],
     "games": [],
-    "tags": [
-      "payments",
-      "commerce"
-    ],
+    "tags": ["payments", "commerce"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/xsolla/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/xsolla/",
@@ -2151,18 +1798,8 @@
     "dirSlug": "keywords",
     "country": "Ireland",
     "access": "mixed",
-    "accessNote": "122 m² with meeting space behind an open front — the co-development conversations are usually booked, the stand itself is not.",
-    "description": "The largest games service group in the industry: art, co-development, localisation, QA, audio and player support, assembled from dozens of studios. If a game shipped in eight languages, there is a fair chance some part of it passed through here.",
-    "offers": [
-      "Co-development and external art production",
-      "Localisation, QA and certification",
-      "Audio, voice and player support services"
-    ],
     "games": [],
-    "tags": [
-      "services",
-      "co-development"
-    ],
+    "tags": ["services", "co-development"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/keywords/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/keywords/",
@@ -2180,18 +1817,8 @@
     "dirSlug": "sumo_digital",
     "country": "United Kingdom",
     "access": "mixed",
-    "accessNote": "133 m² in Hall 2.1 — an open stand with meeting space; project conversations are usually pre-booked.",
-    "description": "One of the largest independent co-development studios in Europe, with a long history of building and co-building other people's games. A work-for-hire partner rather than a publisher, which is why it stands in the services hall rather than the publisher row.",
-    "offers": [
-      "Co-development and full-project outsourcing",
-      "Porting and platform work",
-      "Studio partnership conversations"
-    ],
     "games": [],
-    "tags": [
-      "co-development",
-      "services"
-    ],
+    "tags": ["co-development", "services"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/sumo_digital/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/sumo_digital/",
@@ -2209,18 +1836,8 @@
     "dirSlug": "virtuos_holdings",
     "country": "Singapore",
     "access": "open",
-    "description": "A global co-development and art-production group — remasters, ports and large-scale asset work for AAA projects. A 66 m² stand in the Hall 2.2 services row.",
-    "offers": [
-      "Co-development, remasters and ports",
-      "Art production and asset pipelines at scale",
-      "Technical outsourcing conversations"
-    ],
     "games": [],
-    "tags": [
-      "co-development",
-      "services",
-      "walk-up"
-    ],
+    "tags": ["co-development", "services", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/virtuos_holdings/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/virtuos_holdings/",
@@ -2238,17 +1855,8 @@
     "dirSlug": "denuvo_by_irdeto",
     "country": "Germany",
     "access": "open",
-    "description": "The anti-tamper and anti-cheat company whose name turns up in more PC storefront discussions than it would probably like. A 24 m² stand in Hall 2.1 — protection, anti-cheat and mobile security, sold to studios rather than argued about with players.",
-    "offers": [
-      "Anti-tamper and anti-piracy protection",
-      "Anti-cheat for PC and console",
-      "Mobile app and games security"
-    ],
     "games": [],
-    "tags": [
-      "security",
-      "walk-up"
-    ],
+    "tags": ["security", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/denuvo_by_irdeto/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/denuvo_by_irdeto/",
@@ -2266,18 +1874,8 @@
     "dirSlug": "ign_entertainment",
     "country": "United States",
     "access": "open",
-    "description": "Two sibling businesses on one 30 m² stand: IGN, for coverage and media partnerships, and Humble Bundle, for bundle placement and charity promotions. This is the press-and-promotion end of Hall 2.1, and it is a stand you talk your way onto rather than book.",
-    "offers": [
-      "Media and coverage conversations with IGN",
-      "Humble Bundle placement and charity bundles",
-      "Creator and campaign partnerships"
-    ],
     "games": [],
-    "tags": [
-      "media",
-      "promotion",
-      "walk-up"
-    ],
+    "tags": ["media", "promotion", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/ign_entertainment/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/ign_entertainment/",
@@ -2296,18 +1894,8 @@
     "dirSlug": "fandom_inc",
     "country": "United States",
     "access": "open",
-    "description": "The wiki network that most games end up documented on whether or not anyone planned it, here as a media and advertising business. A 78 m² stand in Hall 2.1, near the rest of the games press.",
-    "offers": [
-      "Wiki and community partnership programs",
-      "Advertising and audience campaigns",
-      "Editorial and coverage conversations"
-    ],
     "games": [],
-    "tags": [
-      "media",
-      "community",
-      "walk-up"
-    ],
+    "tags": ["media", "community", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/fandom_inc/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/fandom_inc/",
@@ -2325,18 +1913,8 @@
     "dirSlug": "reddit",
     "country": "United States",
     "access": "open",
-    "accessNote": "16 m² — a desk, not a compound. Walk up.",
-    "description": "Registered as media, on one of the smallest stands in the business area. For a platform where a game's subreddit is often its most active community, the gamescom footprint is a single desk in Hall 2.2.",
-    "offers": [
-      "Advertising and campaign conversations",
-      "Community and subreddit partnership programs"
-    ],
     "games": [],
-    "tags": [
-      "media",
-      "community",
-      "walk-up"
-    ],
+    "tags": ["media", "community", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/reddit/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/reddit/",
@@ -2354,18 +1932,8 @@
     "dirSlug": "opera_softwaresino-dental_2027",
     "country": "Norway",
     "access": "open",
-    "description": "The browser company, here on the strength of Opera GX — the gaming browser with a genuinely large young audience, and an advertising and partnership business attached to it. An 85 m² stand in Hall 2.2.",
-    "offers": [
-      "Opera GX advertising and integrations",
-      "Audience and campaign partnerships",
-      "Distribution conversations for browser-reachable games"
-    ],
     "games": [],
-    "tags": [
-      "platform",
-      "media",
-      "walk-up"
-    ],
+    "tags": ["platform", "media", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/opera_softwaresino-dental_2027/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/opera_softwaresino-dental_2027/",
@@ -2383,18 +1951,8 @@
     "dirSlug": "sensor_tower",
     "country": "United States",
     "access": "open",
-    "accessNote": "A 12 m² desk in the Hall 2.2 services row.",
-    "description": "Market intelligence for mobile and games — the download, revenue and ad-spend estimates that turn up in half the industry's slide decks. Small stand, disproportionately consulted product.",
-    "offers": [
-      "Market and competitor intelligence",
-      "Ad-spend and user-acquisition data",
-      "Licensing and demo conversations"
-    ],
     "games": [],
-    "tags": [
-      "analytics",
-      "walk-up"
-    ],
+    "tags": ["analytics", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/sensor_tower/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/sensor_tower/",
@@ -2412,18 +1970,8 @@
     "dirSlug": "_igda",
     "country": "United States",
     "access": "open",
-    "description": "The International Game Developers Association, on a 45 m² stand in Hall 3.2 — with the IGDA Foundation next door at C014/D015 and Women in Games International beside them at C012/D013. Three developer-advocacy organisations in a row, which makes that corner of 3.2 the place to go for careers, community and support rather than deals.",
-    "offers": [
-      "Membership, chapters and developer advocacy",
-      "The IGDA Foundation's scholarship and support programs",
-      "Careers and community conversations"
-    ],
     "games": [],
-    "tags": [
-      "association",
-      "careers",
-      "walk-up"
-    ],
+    "tags": ["association", "careers", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/_igda/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/_igda/",
@@ -2442,18 +1990,8 @@
     "dirSlug": "women_in_games_inter",
     "country": "United States",
     "access": "open",
-    "description": "Advocacy, mentorship and hiring support for women in the games industry, on a 45 m² stand in Hall 3.2 immediately beside the IGDA and the IGDA Foundation.",
-    "offers": [
-      "Mentorship and career programs",
-      "Hiring and recruitment conversations",
-      "Membership and chapter information"
-    ],
     "games": [],
-    "tags": [
-      "association",
-      "careers",
-      "walk-up"
-    ],
+    "tags": ["association", "careers", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/women_in_games_inter/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/women_in_games_inter/",
@@ -2471,17 +2009,8 @@
     "dirSlug": "owlchemy_labs",
     "country": "United States",
     "access": "open",
-    "description": "The VR studio behind Job Simulator and Vacation Simulator, and one of the few names in Hall 3.2 that consumers would recognise. Google-owned, and here on the developer side rather than with a demo booth.",
-    "offers": [
-      "VR development and platform conversations",
-      "Studio and partnership contacts"
-    ],
     "games": [],
-    "tags": [
-      "VR",
-      "studio",
-      "walk-up"
-    ],
+    "tags": ["VR", "studio", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/owlchemy_labs/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/owlchemy_labs/",
@@ -2499,19 +2028,8 @@
     "dirSlug": "puki",
     "country": "Netherlands",
     "access": "open",
-    "accessNote": "A 20 m² stand in Hall 4.1, among the indie and developer collectives rather than the publisher compounds.",
-    "description": "One of the largest browser-games platforms in the world, and a real distribution route for small web-playable titles. Worth knowing it exhibits at all — it is easy to miss between the national pavilions in Hall 4.1.",
-    "offers": [
-      "Publishing and revenue share for web games",
-      "Playtesting and audience data",
-      "Developer onboarding conversations"
-    ],
     "games": [],
-    "tags": [
-      "platform",
-      "web games",
-      "walk-up"
-    ],
+    "tags": ["platform", "web games", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/puki/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/puki/",
@@ -2529,18 +2047,8 @@
     "dirSlug": "blacknut_cloud_gamin",
     "country": "France",
     "access": "open",
-    "description": "A cloud-gaming subscription platform that distributes through telcos and TV operators rather than direct to players — which makes it a distribution channel most studios never think to ask about. 90 m² in Hall 3.2.",
-    "offers": [
-      "Cloud-gaming distribution and licensing",
-      "Telco and operator bundle placement",
-      "Catalogue conversations for existing titles"
-    ],
     "games": [],
-    "tags": [
-      "cloud gaming",
-      "distribution",
-      "walk-up"
-    ],
+    "tags": ["cloud gaming", "distribution", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/blacknut_cloud_gamin/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/blacknut_cloud_gamin/",
@@ -2558,18 +2066,8 @@
     "dirSlug": "g-core_labs",
     "country": "Luxembourg",
     "access": "open",
-    "description": "Edge infrastructure and CDN built around game hosting — server capacity, streaming delivery and DDoS protection, sitting a few stands from Cloudflare in the same Hall 2.2 row. If you are comparing hosting at the show, they are next to each other on purpose.",
-    "offers": [
-      "Game server hosting and edge delivery",
-      "CDN and streaming infrastructure",
-      "DDoS protection for live services"
-    ],
     "games": [],
-    "tags": [
-      "infrastructure",
-      "hosting",
-      "walk-up"
-    ],
+    "tags": ["infrastructure", "hosting", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/g-core_labs/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/g-core_labs/",
@@ -2587,18 +2085,8 @@
     "dirSlug": "kakao_games_corp",
     "country": "Korea, Republic of",
     "access": "open",
-    "accessNote": "A 20 m² stand — small enough that it is a conversation, not a booking.",
-    "description": "The Korean publisher behind Odin and the Western operation of several large Korean titles, here on a small Hall 2.2 stand for publishing and licensing conversations rather than a demo presence.",
-    "offers": [
-      "Publishing and licensing for Korean and Western markets",
-      "Co-publishing conversations"
-    ],
     "games": [],
-    "tags": [
-      "publisher",
-      "licensing",
-      "walk-up"
-    ],
+    "tags": ["publisher", "licensing", "walk-up"],
     "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/kakao_games_corp/",
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/kakao_games_corp/",
@@ -2617,16 +2105,8 @@
     "dirSlug": "capcom",
     "country": "Germany",
     "access": "appointment",
-    "accessNote": "276 m² with no co-exhibitors — a meeting building. The Hall 9.1 booth is where the demos are.",
-    "description": "Capcom's trade presence, registered to its German entity and a full hall away from the consumer booth in 9.1. Publisher, retail and press meetings rather than anything you can play.",
-    "offers": [
-      "Retail and distribution meetings",
-      "Trade press appointments"
-    ],
     "games": [],
-    "tags": [
-      "closed stand"
-    ],
+    "tags": ["closed stand"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/capcom/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2644,17 +2124,8 @@
     "dirSlug": "ubisoft",
     "country": "Germany",
     "access": "appointment",
-    "accessNote": "403 m², sole occupant. Nothing on show from the aisle — the two Hall 6.1 stands are the public ones.",
-    "description": "Ubisoft's German entity on a large closed stand in the publisher row of Hall 4.2, separate from its consumer booths across the grounds in 6.1.",
-    "offers": [
-      "Publisher, retail and partner meetings",
-      "Trade press appointments",
-      "Esports and brand partnership conversations"
-    ],
     "games": [],
-    "tags": [
-      "closed stand"
-    ],
+    "tags": ["closed stand"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/ubisoft/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2672,16 +2143,8 @@
     "dirSlug": "bandainamco",
     "country": "Germany",
     "access": "appointment",
-    "accessNote": "543 m² and no co-exhibitors — the third-largest single stand in the business area, and entirely closed.",
-    "description": "One of the biggest private stands in Hall 4.2, registered to Bandai Namco's German arm. Licensing, distribution and press, with the playable side of the show in Hall 6.1.",
-    "offers": [
-      "Distribution and licensing meetings",
-      "Trade press appointments"
-    ],
     "games": [],
-    "tags": [
-      "closed stand"
-    ],
+    "tags": ["closed stand"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/bandainamco/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2699,17 +2162,8 @@
     "dirSlug": "cd_projekt",
     "country": "Poland",
     "access": "appointment",
-    "accessNote": "432 m², sole occupant, filed to the parent company rather than to CD Projekt Red or GOG.",
-    "description": "CD Projekt S.A. — the group above CD Projekt Red and GOG — on a large closed stand in Hall 4.2. Partner and press meetings; the consumer booth is in Hall 8.1.",
-    "offers": [
-      "Publishing and partnership meetings",
-      "GOG distribution conversations",
-      "Press appointments"
-    ],
     "games": [],
-    "tags": [
-      "closed stand"
-    ],
+    "tags": ["closed stand"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/cd_projekt/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2727,16 +2181,8 @@
     "dirSlug": "krafton",
     "country": "Korea, Republic of",
     "access": "appointment",
-    "accessNote": "245 m², sole occupant — a closed stand in the Hall 4.2 publisher row.",
-    "description": "KRAFTON's trade stand, separate from the two consumer booths it runs in Hall 9.1. Publishing, investment and partnership conversations.",
-    "offers": [
-      "Publishing and investment meetings",
-      "Partnership and licensing conversations"
-    ],
     "games": [],
-    "tags": [
-      "closed stand"
-    ],
+    "tags": ["closed stand"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/krafton/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2754,17 +2200,8 @@
     "dirSlug": "atari",
     "country": "United States",
     "access": "mixed",
-    "accessNote": "162 m² in the publisher row — mid-sized rather than a compound, so expect a staffed front with meeting space behind it.",
-    "description": "Atari on the business side: licensing its back catalogue, the hardware partnerships behind the recent re-releases, and publishing. The retro-facing consumer booth is in Hall 10.1.",
-    "offers": [
-      "Back-catalogue licensing",
-      "Hardware and re-release partnerships",
-      "Publishing conversations"
-    ],
     "games": [],
-    "tags": [
-      "publisher"
-    ],
+    "tags": ["publisher"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/atari/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2782,17 +2219,8 @@
     "dirSlug": "giants_software",
     "country": "Germany",
     "access": "mixed",
-    "accessNote": "178 m², sole occupant — a working stand rather than a closed compound, but the meetings are booked.",
-    "description": "The Farming Simulator studio and publisher on the trade side, where the licensing deals that put real agricultural brands into the game get done. The playable booth is in Hall 6.1.",
-    "offers": [
-      "Brand and vehicle licensing",
-      "Publishing and distribution meetings",
-      "Modding and platform conversations"
-    ],
     "games": [],
-    "tags": [
-      "publisher"
-    ],
+    "tags": ["publisher"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/giants_software/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2810,17 +2238,8 @@
     "dirSlug": "hoyoverse",
     "country": "Singapore",
     "access": "mixed",
-    "accessNote": "104 m² — small for Hall 4.2, so a staffed stand rather than a sealed building, but meetings are arranged in advance.",
-    "description": "HoYoverse's trade stand, registered to its Singapore entity and filed under merchandising as well as games — which is most of what the business side is for. The consumer booth is in Hall 6.1.",
-    "offers": [
-      "Merchandise and licensing partnerships",
-      "Distribution and platform meetings",
-      "Press appointments"
-    ],
     "games": [],
-    "tags": [
-      "publisher"
-    ],
+    "tags": ["publisher"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/hoyoverse/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2838,17 +2257,8 @@
     "dirSlug": "focus_entertainment",
     "country": "France",
     "access": "appointment",
-    "accessNote": "210 m², sole occupant — a closed stand. Focus's playable line-up is in Hall 6.1.",
-    "description": "The French publisher's trade stand, where it signs and shows work to partners rather than players.",
-    "offers": [
-      "Publishing submissions and partner meetings",
-      "Distribution and licensing",
-      "Press appointments"
-    ],
     "games": [],
-    "tags": [
-      "closed stand"
-    ],
+    "tags": ["closed stand"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/focus_entertainment/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2866,18 +2276,8 @@
     "dirSlug": "aerosoft",
     "country": "Germany",
     "access": "open",
-    "accessNote": "93 m² — one of the smaller stands in Hall 4.2 and an open one.",
-    "description": "The simulation publisher and distributor on the trade side — flight and train sim licensing, and the boxed-retail distribution business that is easy to forget still exists. Consumer booth in Hall 9.1.",
-    "offers": [
-      "Simulation publishing and licensing",
-      "Boxed retail distribution",
-      "Partner meetings"
-    ],
     "games": [],
-    "tags": [
-      "publisher",
-      "walk-up"
-    ],
+    "tags": ["publisher", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/aerosoft/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2895,18 +2295,8 @@
     "dirSlug": "proxima_be",
     "country": "Singapore",
     "access": "open",
-    "accessNote": "A 512 m² stand shared with six other publishers — Bohemia Interactive, Digital Extremes, Funcom and Paradox among them. Shared means staffed and walkable, unlike the sealed compounds around it.",
-    "description": "Tencent's publishing label, registered as Proxima Beta and sharing one of the few large *shared* stands in Hall 4.2 rather than a compound of its own. Its consumer booth is in Hall 6.1; the separate 702 m² Tencent Technology stand nearby is closed.",
-    "offers": [
-      "Publishing submissions and partner meetings",
-      "Co-development and investment conversations",
-      "Six other publishers on the same stand"
-    ],
     "games": [],
-    "tags": [
-      "publisher",
-      "walk-up"
-    ],
+    "tags": ["publisher", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/proxima_be/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2924,17 +2314,8 @@
     "dirSlug": "raw_fury",
     "country": "Sweden",
     "access": "mixed",
-    "accessNote": "116 m² in Hall 2.1 — a working stand with meeting space, and the place indies actually pitch them.",
-    "description": "The Swedish indie publisher, on the business side where submissions and signings happen. Its games are playable in the indie half of Hall 10.1.",
-    "offers": [
-      "Publishing submissions and pitches",
-      "Co-development and funding conversations"
-    ],
     "games": [],
-    "tags": [
-      "publisher",
-      "pitching"
-    ],
+    "tags": ["publisher", "pitching"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/raw_fury/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2952,17 +2333,8 @@
     "dirSlug": "coffee_stain_publishu-food_association",
     "country": "Sweden",
     "access": "mixed",
-    "accessNote": "110 m² in Hall 2.1 — a staffed stand where the meetings are booked but the front is not.",
-    "description": "Coffee Stain Publishing on the trade side: the label behind Satisfactory and Deep Rock Galactic taking submissions. The consumer booth is in Hall 10.1.",
-    "offers": [
-      "Publishing submissions and pitches",
-      "Partner and platform meetings"
-    ],
     "games": [],
-    "tags": [
-      "publisher",
-      "pitching"
-    ],
+    "tags": ["publisher", "pitching"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/coffee_stain_publishu-food_association/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -2980,18 +2352,8 @@
     "dirSlug": "razer_europe",
     "country": "Germany",
     "access": "open",
-    "accessNote": "On a 576 m² stand shared with fourteen other exhibitors, so it is an open counter rather than a private booth.",
-    "description": "Razer's European entity on the trade side — retail, distribution and the developer programs behind Chroma and its haptics. The consumer hardware booth is in Hall 10.2.",
-    "offers": [
-      "Retail and distribution meetings",
-      "Developer programs — Chroma, Sensa, Synapse",
-      "Partnership conversations"
-    ],
     "games": [],
-    "tags": [
-      "hardware",
-      "walk-up"
-    ],
+    "tags": ["hardware", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/razer_europe/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -3009,18 +2371,8 @@
     "dirSlug": "corsair_memory",
     "country": "United States",
     "access": "open",
-    "accessNote": "74 m² and open — the components-and-accessories row of Hall 2.2 is a retail floor, not a meeting corridor.",
-    "description": "Corsair on the trade side, filed under components and accessories: retail, distribution and the Elgato side of the business. The product wall is in Hall 10.1.",
-    "offers": [
-      "Retail and distribution meetings",
-      "Elgato and creator-hardware partnerships",
-      "Component OEM conversations"
-    ],
     "games": [],
-    "tags": [
-      "hardware",
-      "walk-up"
-    ],
+    "tags": ["hardware", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/corsair_memory/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -3038,17 +2390,8 @@
     "dirSlug": "samsungtechwin",
     "country": "Korea, Republic of",
     "access": "open",
-    "accessNote": "36 m² — a small open stand, nothing like the Odyssey booth in Hall 9.1.",
-    "description": "Samsung Electronics on the trade side, filed under platforms and components — displays, panels and the retail relationships behind them, rather than the Odyssey monitors you can sit at in Hall 9.1.",
-    "offers": [
-      "Display and panel partnerships",
-      "Retail and distribution meetings"
-    ],
     "games": [],
-    "tags": [
-      "hardware",
-      "walk-up"
-    ],
+    "tags": ["hardware", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/samsungtechwin/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -3066,17 +2409,8 @@
     "dirSlug": "bloober_team",
     "country": "Poland",
     "access": "open",
-    "accessNote": "72 m² and open — a working stand in the Hall 2.2 services row.",
-    "description": "The Polish horror studio on the business side, taking co-development and publishing meetings. Its games are playable in Hall 10.1.",
-    "offers": [
-      "Co-development and work-for-hire",
-      "Publishing and partner meetings"
-    ],
     "games": [],
-    "tags": [
-      "studio",
-      "walk-up"
-    ],
+    "tags": ["studio", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/bloober_team/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -3094,17 +2428,8 @@
     "dirSlug": "wargaming",
     "country": "Cyprus",
     "access": "open",
-    "accessNote": "20 m² — a desk. Wargaming has no consumer booth on the show floor this year, so this is its whole gamescom presence.",
-    "description": "Wargaming's only registered stand at the show, on the trade side in Hall 2.2. Worth knowing, because the guide otherwise lists them as having no show-floor presence at all.",
-    "offers": [
-      "Partnership and licensing meetings",
-      "Publishing conversations"
-    ],
     "games": [],
-    "tags": [
-      "publisher",
-      "walk-up"
-    ],
+    "tags": ["publisher", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/wargaming/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -3122,18 +2447,8 @@
     "dirSlug": "scs_software",
     "country": "Czech Republic",
     "access": "open",
-    "accessNote": "On the Czech collective stand in Hall 4.1, shared with thirteen other exhibitors — open and staffed.",
-    "description": "The Euro Truck Simulator studio, here on its country's shared stand rather than a booth of its own. Licensing — real truck brands and cargo liveries — is most of what the trade side is for. The playable booth is in Hall 10.1.",
-    "offers": [
-      "Vehicle and brand licensing",
-      "Partner and distribution meetings",
-      "Thirteen other Czech studios on the same stand"
-    ],
     "games": [],
-    "tags": [
-      "studio",
-      "walk-up"
-    ],
+    "tags": ["studio", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/scs_software/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
@@ -3151,17 +2466,8 @@
     "dirSlug": "area_35house_of_communicati",
     "country": "United States",
     "access": "open",
-    "accessNote": "61 m², open — a stand you can walk up to in the Hall 2.2 row.",
-    "description": "The publisher on its trade stand, taking submissions and distribution meetings. Its games are playable in Hall 10.1.",
-    "offers": [
-      "Publishing submissions",
-      "Distribution and partner meetings"
-    ],
     "games": [],
-    "tags": [
-      "publisher",
-      "walk-up"
-    ],
+    "tags": ["publisher", "walk-up"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/area_35house_of_communicati/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"

@@ -39,6 +39,12 @@ const state = {
   directoryError: null,
   showDirectory: false,
   directoryLimit: 0,
+  /* raw tag -> localized display label, from the locale overlay */
+  tagLabels: {},
+  /* raw country -> localized name, likewise */
+  countryLabels: {},
+  /* explicit switcher choice, or null = keep following the browser */
+  lang: null,
   /* "I have a trade badge" — gates what the guide offers, never what it
      resolves. See the trade section below. */
   trade: false,
@@ -50,23 +56,34 @@ const state = {
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
-const TYPE_LABELS = {
-  platform: "Platforms",
-  publisher: "Publishers",
-  hardware: "Hardware",
-  indie: "Indie",
-  /* Booths whose draw is something you do rather than a game you demo — sim
-     rigs, VR, an RC drift track, a rideable robot. Deliberately one broad
-     category: the flavour ("sim racing", "attraction") lives in tags, so a new
-     kind of stunt next year needs no new type. */
-  experience: "Experiences & Activities",
-  media: "Media & Community",
-  merch: "Merch & Lifestyle",
-  /* Business-area booths. One type rather than a second classification axis:
-     the chip row is derived from `type`, so this earns its filter for free,
-     and `type === "trade"` is the single predicate that keeps these out of
-     the queue and wristband lists. */
-  trade: "Trade & Business",
+/* Every user-facing string reads through here — js/i18n.js resolves the
+   language before this file runs. The shim tolerates one load against a
+   stale cached shell that predates the i18n scripts (see renderPlan on
+   mixed shell/script pairings): keys render as themselves, nothing throws,
+   and the service worker version bump retires that pairing. */
+const GCI18N = window.GCI18N || {
+  lang: "en",
+  t: (key) => key,
+  dayName: (date) => String(date),
+  formatDate: (date) => String(date),
+  apply() {},
+  setLang() {},
+};
+const t = GCI18N.t;
+const formatDate = GCI18N.formatDate || ((date) => String(date));
+
+/* Category, crowd and age vocabularies are ids, not text — display labels
+   live in js/i18n/<lang>.js under type.*, crowd.* and age.*. "experience"
+   stays one broad category on purpose: the flavour ("sim racing",
+   "attraction") lives in tags, so a new kind of stunt next year needs no
+   new type. */
+const typeLabel = (type) => {
+  const label = t(`type.${type}`);
+  return label === `type.${type}` ? type : label;
+};
+const crowdLabel = (level) => {
+  const label = t(`crowd.${level}`);
+  return label === `crowd.${level}` ? "?" : label;
 };
 
 /* What a business booth actually is when you walk up to it — the question a
@@ -74,24 +91,28 @@ const TYPE_LABELS = {
    different things under one colour: open stands staffed for walk-up
    conversation, and closed structures that are meeting rooms with a logo on
    the outside. Which one you are looking at decides whether turning up is
-   worth anything at all, so it is stated per card and never guessed. */
-const TRADE_ACCESS = {
-  open: {
-    label: "Walk-up",
-    note: "An open stand — staffed during business hours, no appointment needed.",
-  },
-  appointment: {
-    label: "By appointment",
-    note: "A closed meeting structure. Entry is by scheduled appointment only; there is nothing to see from the aisle.",
-  },
-  mixed: {
-    label: "Walk-up + meetings",
-    note: "An open counter with closed meeting rooms behind it — you can walk up to ask, but the rooms are booked in advance.",
-  },
-};
+   worth anything at all, so it is stated per card and never guessed.
 
-const CROWD_LABELS = ["Unknown", "Calm", "Light", "Moderate", "Busy", "Extreme"];
-const AGE_FILTERS = [["all", "All"], ["hide", "Hide 18+"], ["only", "18+ only"]];
+   The enum lives in the data as `access`; only its wording is localized. */
+const TRADE_ACCESS_KEYS = ["open", "appointment", "mixed"];
+const tradeAccess = (key) =>
+  TRADE_ACCESS_KEYS.includes(key)
+    ? { label: t(`trade.access.${key}.label`), note: t(`trade.access.${key}.note`) }
+    : null;
+/* Country names come from the official directory in English. Translated at
+   display time from the same overlay as the tags, so the generated
+   data/directory.json is never hand-edited and both the trade cards and the
+   directory rows read the same way. */
+const countryLabel = (country) => state.countryLabels?.[country] || country;
+/* The official product-group taxonomy, same treatment as the countries: the
+   labels arrive in English in the generated data/directory.json, and the
+   display name per language lives in the locale overlay. */
+const groupLabel = (id, fallback) => state.groupLabels?.[id] || fallback || "";
+/* Translated at display time only — raw tags stay the searchable,
+   logic-bearing identifiers (see mergeStrings and matchesQuery). */
+const tagLabel = (tag) => state.tagLabels?.[tag] || tag;
+
+const AGE_FILTERS = ["all", "hide", "only"];
 
 /* Long platform names blow out a dense card — show signage-style short codes.
    Keys are matched after lowercasing and stripping any parenthetical. */
@@ -127,7 +148,8 @@ const VIEWS = ["exhibitors", "planner", "event", "updates"];
 
 async function loadData() {
   const bust = `?v=${Date.now()}`;
-  const [exhibitors, event, meta, changelog, hallplan] = await Promise.all([
+  const lang = GCI18N.lang;
+  const [exhibitors, event, meta, changelog, hallplan, strings] = await Promise.all([
     fetch(`data/exhibitors.json${bust}`).then((r) => r.json()),
     fetch(`data/event.json${bust}`).then((r) => r.json()),
     fetch(`data/meta.json${bust}`).then((r) => r.json()),
@@ -135,13 +157,83 @@ async function loadData() {
     /* Only the ~900-byte index, only to know which halls the map covers.
        Optional on purpose: no hall plan, no map links, guide unchanged. */
     fetch(`data/hallplan/index.json${bust}`).then((r) => r.json()).catch(() => null),
+    /* The editorial prose for the active language — the base files above
+       are structure only (ids, halls, numbers). A missing overlay falls
+       back to English, and failing that renders empty prose rather than
+       failing the boot: the booth numbers still work in the halls. */
+    fetch(`data/i18n/${lang}.json${bust}`)
+      .then((r) => r.json())
+      .catch(() =>
+        lang === "en"
+          ? null
+          : fetch(`data/i18n/en.json${bust}`).then((r) => r.json()).catch(() => null)
+      ),
   ]);
+  mergeStrings(exhibitors, event, meta, strings);
   state.exhibitors = exhibitors;
   state.event = event;
   state.meta = meta;
   state.changelog = changelog;
   state.mapHalls = new Set((hallplan?.halls || []).map((h) => String(h.id)));
   buildShareCodeMap();
+}
+
+/* Write the locale overlay's prose back onto the loaded objects, so every
+   render site keeps reading ex.description / ev.tickets / d.note exactly
+   as before the split — the language never leaks past this point. Keys:
+   exhibitors by id, their game notes by title (titles are untranslated
+   proper nouns and the same identity marks and share links use), days by
+   ISO date, areas by official name. Tolerant throughout: missing keys
+   mean empty prose, never a crash. */
+function mergeStrings(exhibitors, event, meta, strings) {
+  const overlay = strings || {};
+  state.tagLabels = overlay.tags || {};
+  state.countryLabels = overlay.countries || {};
+  state.groupLabels = overlay.dirGroups || {};
+  for (const ex of exhibitors) {
+    const local = overlay.exhibitors?.[ex.id] || {};
+    ex.description = local.description || "";
+    ex.crowdNote = local.crowdNote || "";
+    ex.visitAdvice = local.visitAdvice || "";
+    /* Trade cards only. `offers` stays an array — the card renders one list
+       item per line — and an absent key must leave the property absent
+       rather than empty, because tradeBlocks() tests its length to decide
+       whether the Offers block exists at all. */
+    ex.accessNote = local.accessNote || "";
+    if (local.offers) ex.offers = local.offers;
+    for (const game of ex.games || []) {
+      game.note = local.games?.[game.title] || "";
+    }
+  }
+  const ev = overlay.event || {};
+  event.location = ev.location || event.location || "";
+  event.dates = ev.dates || "";
+  event.tickets = ev.tickets || "";
+  event.crowdTips = ev.crowdTips || [];
+  if (event.onl) {
+    event.onl.date = ev.onl?.date || "";
+    event.onl.note = ev.onl?.note || "";
+  }
+  for (const day of event.days || []) {
+    const local = ev.days?.[day.date] || {};
+    day.access = local.access || "";
+    day.hours = local.hours || "";
+    day.note = local.note || "";
+  }
+  for (const area of event.areas || []) {
+    area.description = ev.areas?.[area.name] || "";
+  }
+  /* Entrances keep their two names in the base data — `name` is the key the
+     prose hangs off, `nameDe` the sign on the building — and take only their
+     advice from the overlay. */
+  if (event.entrances) {
+    event.entrances.lede = ev.entrances?.lede || "";
+    event.entrances.trade = ev.entrances?.trade || "";
+    for (const entrance of event.entrances.list || []) {
+      entrance.description = ev.entrances?.list?.[entrance.name] || "";
+    }
+  }
+  meta.note = overlay.meta?.note || "";
 }
 
 /* ---------- saved & played marks ----------
@@ -166,7 +258,7 @@ const persistMarks = (mark) => GCMarks.writeMarks(mark, state.marks[mark]);
 function loadPrefs() {
   try {
     const raw = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
-    const age = AGE_FILTERS.some(([value]) => value === raw.age) ? raw.age : "all";
+    const age = AGE_FILTERS.includes(raw.age) ? raw.age : "all";
     return {
       age,
       hidePlayed: raw.hidePlayed === true,
@@ -174,29 +266,35 @@ function loadPrefs() {
       showDirectory: raw.showDirectory === true,
       trade: raw.trade === true,
       showTrade: raw.showTrade === true,
+      /* null means "no explicit choice" — the browser's preference keeps
+         deciding. js/i18n.js reads this key itself, before this file runs
+         and on map.html where app.js never loads; here it only has to
+         survive the round trip so persistPrefs cannot erase it. */
+      lang: raw.lang === "de" || raw.lang === "en" ? raw.lang : null,
     };
   } catch {
     /* corrupt entry, or storage blocked entirely (Safari private mode) */
     return {
       age: "all", hidePlayed: false, planLens: "day",
-      showDirectory: false, trade: false, showTrade: false,
+      showDirectory: false, trade: false, showTrade: false, lang: null,
     };
   }
 }
 
 function persistPrefs() {
   try {
-    localStorage.setItem(
-      PREFS_KEY,
-      JSON.stringify({
-        age: state.age,
-        hidePlayed: state.hidePlayed,
-        planLens: state.planLens,
-        showDirectory: state.showDirectory,
-        trade: state.trade,
-        showTrade: state.showTrade,
-      })
-    );
+    const prefs = {
+      age: state.age,
+      hidePlayed: state.hidePlayed,
+      planLens: state.planLens,
+      showDirectory: state.showDirectory,
+      trade: state.trade,
+      showTrade: state.showTrade,
+    };
+    /* Only written once the switcher has been used: an auto-detected
+       visitor keeps following their browser, on this device and the next. */
+    if (state.lang) prefs.lang = state.lang;
+    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
   } catch {
     /* out of quota or storage denied — the choice still works for this session */
   }
@@ -247,16 +345,20 @@ function markButton(mark, kind, key, name, { wide = false } = {}) {
       data-mark="${mark}" data-bm-kind="${kind}" data-bm-key="${esc(key)}" data-bm-name="${esc(name)}"
       aria-pressed="${marked}" title="${esc(label)}" aria-label="${esc(label)}">
     <span class="bm-mark" aria-hidden="true">${glyph}</span>${
-      wide
-        ? `<span class="bm-text" aria-hidden="true">${mark === "saved" ? (marked ? "Saved" : "Save") : "Played"}</span>`
-        : ""
+      wide ? `<span class="bm-text" aria-hidden="true">${esc(markText(mark, marked))}</span>` : ""
     }</button>`;
 }
 
+const markText = (mark, marked) =>
+  mark === "played" ? t("mark.played") : marked ? t("mark.saved") : t("mark.save");
+
+/* German declines around the booth name rather than wrapping it in "the …
+   booth", so the whole sentence is one key per case with the name
+   interpolated — never assembled from fragments here. */
 function markLabel(mark, kind, name, marked) {
-  const what = kind === "game" ? name : `the ${name} booth`;
-  if (mark === "played") return `Mark ${what} as ${marked ? "not played" : "played"}`;
-  return marked ? `Remove ${what} from your saved list` : `Save ${what} to your list`;
+  const what = kind === "game" ? "game" : "booth";
+  const action = mark === "played" ? (marked ? "unplay" : "play") : marked ? "unsave" : "save";
+  return t(`mark.aria.${what}.${action}`, { name });
 }
 
 function toggleMark(mark, kind, key) {
@@ -300,7 +402,7 @@ function syncMarkUI() {
     btn.setAttribute("title", label);
     btn.querySelector(".bm-mark").textContent = mark === "played" ? "✓" : marked ? "−" : "+";
     const text = btn.querySelector(".bm-text");
-    if (text) text.textContent = mark === "saved" ? (marked ? "Saved" : "Save") : "Played";
+    if (text) text.textContent = markText(mark, marked);
     const row = btn.closest(".game");
     if (row) row.dataset[mark] = String(marked);
   });
@@ -638,10 +740,8 @@ function offerMove() {
   if (location.host !== LEGACY_HOST || moveNoticeAnswered()) return;
   const move = buildMoveLink();
   showToast(
-    move
-      ? "The guide has moved to gamescom.guide. Your list comes with you."
-      : "The guide has moved to gamescom.guide.",
-    "Open",
+    move ? t("moved.withList") : t("moved.plain"),
+    t("moved.open"),
     () => {
       rememberMoveNotice();
       location.assign(move || `${SHARE_ORIGIN}${location.pathname}${location.hash}`);
@@ -813,21 +913,21 @@ function pendingIncomingList() {
 
 const incomingCount = (incoming) => incoming.exhibitors.size + incoming.games.size;
 const dayCount = (days) => days.exhibitors.size + days.games.size;
-const itemLabel = (n) => `${n} saved item${n === 1 ? "" : "s"}`;
+const itemLabel = (n) => t("share.items", { n });
 
 /* The saved list is what the counts are about, so what else rode along is said
    separately rather than folded into a number nobody can check. Worded for
    any link — the day-plan toggle lets a plain share carry one now. */
 function carriedNote(incoming) {
   const also = [];
-  if (dayCount(incoming.days)) also.push("a day plan");
-  if (incomingCount(incoming.played)) also.push("played marks");
-  return also.length ? ` It carries ${also.join(" and ")} too.` : "";
+  if (dayCount(incoming.days)) also.push(t("share.carried.days"));
+  if (incomingCount(incoming.played)) also.push(t("share.carried.played"));
+  return also.length ? t("share.carried.note", { what: also.join(t("share.carried.join")) }) : "";
 }
 
 function unresolvedNote(n) {
   if (!n) return "";
-  return ` ${n === 1 ? "1 isn't" : `${n} aren't`} in the guide any more.`;
+  return t("share.stale", { n });
 }
 
 function renderBookmarkViews() {
@@ -936,7 +1036,7 @@ function restoreBookmarks(snapshot) {
   /* Undo can take away items the visitor already placed on a day. */
   pruneItinerary();
   renderBookmarkViews();
-  showToast(snapshot.moved ? "Move undone." : "Shared list import undone.", null, null, {
+  showToast(snapshot.moved ? t("toast.moveUndone") : t("toast.importUndone"), null, null, {
     priority: true,
     replace: true,
   });
@@ -962,7 +1062,7 @@ function offerIncoming(incoming) {
   const total = incomingCount(incoming);
   if (total === 0) {
     forgetPending();
-    showToast("That shared list is out of date — nothing left to add.", null, null, {
+    showToast(t("share.outOfDate"), null, null, {
       priority: true,
     });
     return;
@@ -975,10 +1075,12 @@ function offerIncoming(incoming) {
   if (encodeEntries().length === 0) {
     const before = applyIncoming(incoming);
     showToast(
-      incoming.moved
-        ? `Loaded ${itemLabel(total)} you moved over.${carriedNote(incoming)}${stale}`
-        : `Loaded ${itemLabel(total)} from a shared link.${carriedNote(incoming)}${stale}`,
-      "Undo",
+      (incoming.moved
+        ? t("share.loadedMoved", { items: itemLabel(total) })
+        : t("share.loadedShared", { items: itemLabel(total) })) +
+        carriedNote(incoming) +
+        stale,
+      t("action.undo"),
       () => restoreBookmarks(before),
       { priority: true }
     );
@@ -1004,18 +1106,16 @@ function offerIncoming(incoming) {
       [...state.marks.saved.games].filter(
         (key) => shareCodes.gameToCode.has(key) && !incoming.games.has(key)
       ).length;
-    const news = newCount ? ` — ${newCount} new to you` : "";
-    const cost = drops
-      ? ` Replacing removes ${drops} item${drops === 1 ? "" : "s"} you only have here.`
-      : "";
+    const news = newCount ? t("share.newToYou", { n: newCount }) : "";
+    const cost = drops ? t("share.replaceCost", { n: drops }) : "";
     showToast(
-      `Your moved plan has ${itemLabel(total)}${news}.${cost}${stale}`,
-      "Replace my list",
+      t("share.movedPlan", { items: itemLabel(total), news }) + cost + stale,
+      t("share.replaceAction"),
       () => {
         const before = applyIncoming(incoming, "replace");
         showToast(
-          `Your list now matches the moved plan.${carriedNote(incoming)}${stale}`,
-          "Undo",
+          t("share.replaced") + carriedNote(incoming) + stale,
+          t("action.undo"),
           () => restoreBookmarks(before),
           { priority: true, replace: true }
         );
@@ -1029,19 +1129,19 @@ function offerIncoming(incoming) {
      add, so offering the button would only produce an import of nothing. */
   if (newCount === 0) {
     forgetPending();
-    showToast(`You already have everything in this shared link.${stale}`, null, null, {
+    showToast(t("share.alreadyHave") + stale, null, null, {
       priority: true,
     });
     return;
   }
   showToast(
-    `A shared link has ${itemLabel(total)} — ${newCount} new to you.${stale}`,
-    "Add to my list",
+    t("share.linkHas", { items: itemLabel(total), n: newCount }) + stale,
+    t("share.addAction"),
     () => {
       const before = applyIncoming(incoming);
       showToast(
-        `Added ${itemLabel(newCount)} from the shared link.${carriedNote(incoming)}${stale}`,
-        "Undo",
+        t("share.added", { items: itemLabel(newCount) }) + carriedNote(incoming) + stale,
+        t("action.undo"),
         () => restoreBookmarks(before),
         { priority: true, replace: true }
       );
@@ -1106,9 +1206,8 @@ function renderShareDialog() {
   const shareable = entries.length;
   const unavailable = savedCount() - shareable;
   $("#share-count").textContent = unavailable
-    ? `${itemLabel(shareable)} ready to share. ${unavailable} older item${
-        unavailable === 1 ? " is" : "s are"
-      } no longer in the guide.`
+    ? t("share.readyWithStale", { items: itemLabel(shareable) }) +
+      t("share.staleOlder", { n: unavailable })
     : itemLabel(shareable);
 
   const nativeShare = $("#native-share");
@@ -1119,9 +1218,7 @@ function renderShareDialog() {
   $("#share-qr").hidden = !svg;
   $("#share-qr-image").innerHTML = svg || "";
   const fallback = $("#share-qr-fallback");
-  fallback.textContent = hasEncoder
-    ? "This list is too long for a QR code — send the link instead."
-    : "The QR code could not be loaded — send the link instead.";
+  fallback.textContent = hasEncoder ? t("share.qrTooLong") : t("share.qrFailed");
   fallback.hidden = Boolean(svg);
 
   const status = $("#share-status");
@@ -1163,20 +1260,20 @@ function bindShareDialog() {
     try {
       if (typeof navigator.clipboard?.writeText !== "function") throw new Error("clipboard unavailable");
       await navigator.clipboard.writeText(input.value);
-      showShareStatus("Link copied.");
+      showShareStatus(t("share.copied"));
     } catch {
       input.focus();
       input.select();
-      showShareStatus("Press ⌘C / Ctrl+C to copy.");
+      showShareStatus(t("share.copyManually"));
     }
   });
 
   $("#native-share").addEventListener("click", async () => {
     try {
-      await navigator.share({ title: "gamescom 2026 saved list", url: input.value });
+      await navigator.share({ title: t("share.nativeTitle"), url: input.value });
     } catch (err) {
       if (err?.name !== "AbortError") {
-        showShareStatus("Sharing failed — copy the link instead.");
+        showShareStatus(t("share.failed"));
       }
     }
   });
@@ -1213,8 +1310,8 @@ function sourceParts(url) {
 function sourcesSubject(kind, key) {
   if (kind === "event") {
     return {
-      name: state.event?.name || "this guide",
-      what: "The dates, hours, tickets and hall areas on this page",
+      name: state.event?.name || t("sources.thisGuide"),
+      what: "event",
       sources: state.event?.sources,
       updated: state.meta?.lastUpdated,
     };
@@ -1223,7 +1320,7 @@ function sourcesSubject(kind, key) {
   if (!ex) return null;
   return {
     name: ex.name,
-    what: "The location, lineup and queue call on this card",
+    what: "card",
     sources: ex.sources,
     updated: ex.lastUpdated,
   };
@@ -1236,7 +1333,7 @@ function sourcesButton(kind, key) {
   const subject = sourcesSubject(kind, key);
   const list = sourceList(subject?.sources);
   if (!list.length || !$("#sources-dialog")) return "";
-  const label = `Sources for ${subject.name} — ${list.length} link${list.length === 1 ? "" : "s"}`;
+  const label = t("sources.aria", { name: subject.name, n: list.length });
   return `<button class="src-btn" type="button"
       data-src-kind="${esc(kind)}" data-src-key="${esc(key)}"
       title="${esc(label)}" aria-label="${esc(label)}" aria-haspopup="dialog">
@@ -1253,8 +1350,10 @@ function openSources(kind, key) {
 
   $("#sources-subject").textContent = subject.name;
   $("#sources-note").textContent =
-    `${subject.what} come from ${list.length} source${list.length === 1 ? "" : "s"}.` +
-    (subject.updated ? ` Last checked ${subject.updated}.` : "");
+    t(`sources.note.${subject.what}`, { n: list.length }) +
+    (subject.updated
+      ? t("sources.lastChecked", { date: formatDate(subject.updated) })
+      : "");
   $("#sources-list").innerHTML = list
     .map((url, i) => {
       const { host, rest } = sourceParts(url);
@@ -1262,7 +1361,7 @@ function openSources(kind, key) {
         <span class="src-num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
         <a href="${esc(url)}" target="_blank" rel="noopener nofollow">
           <span class="src-host">${esc(host)}</span>${rest ? `<span class="src-path">${esc(rest)}</span>` : ""}
-          <span class="sr-only">, opens in a new tab</span>
+          <span class="sr-only">${esc(t("a11y.newTab"))}</span>
         </a>
       </li>`;
     })
@@ -1365,7 +1464,8 @@ function onItineraryChanged() {
    7, and missing halls sort last. If verified venue routing ever lands,
    hallRank is the single seam to replace with an explicit order: the grid's
    hall sort, the planner's route and the wristband list all read through it. */
-const byCrowdDesc = (a, b) => (b.crowd || 0) - (a.crowd || 0) || a.name.localeCompare(b.name);
+const byName = (a, b) => a.localeCompare(b, GCI18N.lang);
+const byCrowdDesc = (a, b) => (b.crowd || 0) - (a.crowd || 0) || byName(a.name, b.name);
 const hallRank = (hall) => (hall ? parseFloat(hall) : Infinity);
 
 /* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
@@ -1380,9 +1480,17 @@ function matchesQuery(ex, q) {
   const hay = [
     ex.name,
     ex.description,
-    ex.hall ? `hall ${ex.hall}` : "",
+    ex.country || "",
+    countryLabel(ex.country || ""),
+    /* Both spellings of "hall 7.1", so the word works in either language
+       whichever one the page is in. */
+    ex.hall ? `hall ${ex.hall} ${t("hall.word")} ${ex.hall}` : "",
     ex.booth || "",
+    /* Raw tag and its localized label both match: a German visitor types
+       "Simracing", an English one "sim racing", and the chip they can see
+       is always searchable. */
     ...(ex.tags || []),
+    ...(ex.tags || []).map(tagLabel),
     ...visibleGames(ex).map((g) => g.title),
     /* Searching "18+" while hiding 18+ would return exactly the booths whose
        gated titles are currently hidden. */
@@ -1509,10 +1617,9 @@ function filtered() {
   const bySort = {
     "crowd-desc": (a, b) => byCrowdDesc(key(a), key(b)),
     "crowd-asc": (a, b) =>
-      (key(a).crowd || 0) - (key(b).crowd || 0) || a.name.localeCompare(b.name),
-    name: (a, b) => a.name.localeCompare(b.name),
-    hall: (a, b) =>
-      hallRank(key(a).hall) - hallRank(key(b).hall) || a.name.localeCompare(b.name),
+      (key(a).crowd || 0) - (key(b).crowd || 0) || byName(a.name, b.name),
+    name: (a, b) => byName(a.name, b.name),
+    hall: (a, b) => hallRank(key(a).hall) - hallRank(key(b).hall) || byName(a.name, b.name),
   };
   return list.sort(bySort[state.sort] || bySort["crowd-desc"]);
 }
@@ -1554,12 +1661,16 @@ const mapLink = (hall, booth) =>
    same promise: plain text when the snapshot can't draw that hall, and a
    link that says out loud where it goes when it can. The visible label is
    left exactly as the row wrote it; only the destination is added. */
+/* One phrasing of "Hall 7.1, booth A061" for every accessible name that
+   needs it — the card plate, the planner rows, the directory chips. */
+const whereLabel = (hall, booth) =>
+  booth ? t("where.hallBooth", { hall, booth }) : t("where.hall", { hall });
+
 function hallLink(hall, booth, label) {
   if (!hasMap(hall)) return esc(label);
-  const where = `Hall ${hall}${booth ? `, booth ${booth}` : ""}`;
   return `<a class="hall-link" href="${esc(mapLink(hall, booth))}"
-    title="Open on the hall map"
-    aria-label="${esc(`${where} — open the hall map`)}">${esc(label)}</a>`;
+    title="${esc(t("map.openTitle"))}"
+    aria-label="${esc(t("map.openAria", { where: whereLabel(hall, booth) }))}">${esc(label)}</a>`;
 }
 
 /* The way to this card's other booth, notched into the corner of the plate
@@ -1579,8 +1690,8 @@ function faceSwitch(ex) {
   if (!other) return "";
   const toTrade = other.type === "trade";
   const label = toTrade
-    ? `Show the business booth — hall ${other.hall}, trade & media only`
-    : `Back to the public booth — hall ${other.hall}`;
+    ? t("card.faceToTrade", { hall: other.hall })
+    : t("card.faceToPublic", { hall: other.hall });
   /* data-face-other names whose saved state the dot reflects, so syncMarkUI
      can keep it live: a mark toggle patches buttons in place rather than
      rebuilding the grid, and without this the dot only appeared on the next
@@ -1604,41 +1715,41 @@ function hallMarker(ex) {
   const wrap = (plate) => `<div class="hall-plate${trade}">${plate}${faceSwitch(ex)}</div>`;
   if ((ex.tags || []).includes("not exhibiting")) {
     return wrap(`<div class="hall-marker" data-state="absent">
-      <span class="hall-kicker">Status</span>
-      <span class="hall-num">Absent</span>
-      <span class="hall-booth">no booth</span>
+      <span class="hall-kicker">${esc(t("plate.statusKicker"))}</span>
+      <span class="hall-num">${esc(t("plate.absent"))}</span>
+      <span class="hall-booth">${esc(t("plate.noBooth"))}</span>
     </div>`);
   }
   if (!ex.hall) {
     return wrap(`<div class="hall-marker" data-state="tba">
-      <span class="hall-kicker">Hall</span>
-      <span class="hall-num">TBA</span>
-      <span class="hall-booth">not announced</span>
+      <span class="hall-kicker">${esc(t("hall.word"))}</span>
+      <span class="hall-num">${esc(t("plate.tba"))}</span>
+      <span class="hall-booth">${esc(t("plate.notAnnounced"))}</span>
     </div>`);
   }
   const confirmed = !!ex.locationConfirmed;
-  const where = confirmed ? "Officially confirmed location" : "Best guess — not officially confirmed";
-  const inner = `<span class="hall-kicker">Hall</span>
+  const where = confirmed ? t("plate.confirmedTitle") : t("plate.unconfirmedTitle");
+  const inner = `<span class="hall-kicker">${esc(t("hall.word"))}</span>
     <span class="hall-num">${esc(ex.hall)}</span>
-    <span class="hall-booth">${ex.booth ? esc(ex.booth) : "booth TBA"}${confirmed ? "" : " · unconf."}</span>`;
+    <span class="hall-booth">${ex.booth ? esc(ex.booth) : esc(t("plate.boothTba"))}${
+      confirmed ? "" : esc(t("plate.unconfSuffix"))
+    }</span>`;
   const state_ = `data-state="${confirmed ? "confirmed" : "unconfirmed"}"`;
   /* The plate is already the "where" of the card, so it is also the way
      to the map — no second control competing for the same corner. */
   if (!hasMap(ex.hall)) {
-    return wrap(`<div class="hall-marker" ${state_} title="${where}">${inner}</div>`);
+    return wrap(`<div class="hall-marker" ${state_} title="${esc(where)}">${inner}</div>`);
   }
   return wrap(`<a class="hall-marker" ${state_} href="${esc(mapLink(ex.hall, ex.booth))}"
-      title="${where} — open the hall map"
-      aria-label="${esc(`Hall ${ex.hall}${ex.booth ? `, booth ${ex.booth}` : ""} — open the hall map`)}">
-    ${inner}<span class="hall-map-cue" aria-hidden="true">Map →</span>
+      title="${esc(t("map.openTitleWith", { what: where }))}"
+      aria-label="${esc(t("map.openAria", { where: whereLabel(ex.hall, ex.booth) }))}">
+    ${inner}<span class="hall-map-cue" aria-hidden="true">${esc(t("map.cue"))}</span>
   </a>`);
 }
 
 function ageBadge(status = "expected", label = "18+", extraClass = "") {
   const ageStatus = status === "confirmed" ? "confirmed" : "expected";
-  const title = ageStatus === "confirmed"
-    ? "18+ wristband required"
-    : "18+ expected — not confirmed";
+  const title = ageStatus === "confirmed" ? t("age.confirmedTitle") : t("age.expectedTitle");
   return `<span class="badge badge-age${extraClass ? ` ${extraClass}` : ""}" data-age-status="${ageStatus}"
       title="${esc(title)}"><span aria-hidden="true">${esc(label)}</span><span class="sr-only">${esc(title)}</span></span>`;
 }
@@ -1659,14 +1770,16 @@ function gameRow(g) {
      would be noise, so it stays a dot plus screen-reader text. */
   const statusLabel =
     status === "confirmed"
-      ? `<span class="sr-only">Confirmed</span>`
-      : `<span class="badge badge-status" data-status="${esc(status)}">${esc(status)}</span>`;
+      ? `<span class="sr-only">${esc(t("status.confirmed"))}</span>`
+      : `<span class="badge badge-status" data-status="${esc(status)}">${esc(
+          t(`status.${status}`) === `status.${status}` ? status : t(`status.${status}`)
+        )}</span>`;
   const key = gameKey(g.title);
   return `<li class="game" data-status="${esc(status)}" data-saved="${isSaved("game", key)}" data-played="${isPlayed("game", key)}">
     <span class="game-main">
       <span class="game-title">${esc(g.title)}</span>
       ${statusLabel}
-      ${g.playable ? `<span class="badge badge-playable">playable</span>` : ""}
+      ${g.playable ? `<span class="badge badge-playable">${esc(t("badge.playable"))}</span>` : ""}
       ${isAdult(g) ? ageBadge(g.ageStatus) : ""}
     </span>
     ${plat ? `<span class="game-plat">${esc(plat)}</span>` : "<span></span>"}
@@ -1683,7 +1796,11 @@ function footLinks(ex) {
   const official = ex.officialUrl
     ? /* Every card would otherwise announce the same "Official exhibitor page"
          to a screen reader, so the booth name rides along in the accessible name. */
-      `<a class="official-link" href="${esc(ex.officialUrl)}" target="_blank" rel="noopener">Official exhibitor page<span aria-hidden="true"> ↗</span><span class="sr-only"> for ${esc(ex.name)}, opens in a new tab</span></a>`
+      `<a class="official-link" href="${esc(ex.officialUrl)}" target="_blank" rel="noopener">${esc(
+        t("card.officialPage")
+      )}<span aria-hidden="true"> ↗</span><span class="sr-only">${esc(
+        t("card.officialPageAria", { name: ex.name })
+      )}</span></a>`
     : "";
   const sources = sourcesButton("exhibitor", ex.id);
   return official || sources ? `<div class="foot-links">${official}${sources}</div>` : "";
@@ -1694,12 +1811,12 @@ function footLinks(ex) {
    the queue meter's, because "can I just walk up" is the equivalent question. */
 function tradeBlocks(ex) {
   const offers = ex.offers || [];
-  const access = TRADE_ACCESS[ex.access];
+  const access = tradeAccess(ex.access);
   const list = offers.length
     ? `<div class="block">
         <div class="block-head">
-          <span>Offers</span>
-          <span>${offers.length} thing${offers.length === 1 ? "" : "s"}</span>
+          <span>${esc(t("trade.offers"))}</span>
+          <span>${esc(t("trade.offerCount", { n: offers.length }))}</span>
         </div>
         <ul class="offers">${offers.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
       </div>`
@@ -1711,7 +1828,7 @@ function tradeBlocks(ex) {
   const note = ex.accessNote || (ex.access === "open" ? "" : access?.note) || "";
   const line = access
     ? `<div class="trade-access" data-access="${esc(ex.access)}">
-        <span class="row-label">Access</span>
+        <span class="row-label">${esc(t("trade.accessLabel"))}</span>
         <span class="trade-access-val" title="${esc(access.note)}">${esc(access.label)}</span>
         ${note ? `<span class="trade-access-note">${esc(note)}</span>` : ""}
       </div>`
@@ -1729,9 +1846,9 @@ function card(ex) {
   const hidden = games.length - shown.length;
   const moreBtn =
     games.length > 4 && (isOpen || hidden > 0)
-      ? `<button class="more-games" type="button" data-id="${esc(ex.id)}">${
-          isOpen ? "− Show fewer" : `+ ${hidden} more`
-        }</button>`
+      ? `<button class="more-games" type="button" data-id="${esc(ex.id)}">${esc(
+          isOpen ? t("card.showFewer") : t("card.showMore", { n: hidden })
+        )}</button>`
       : "";
   const crowd = ex.crowd || 0;
   const playableCount = games.filter((g) => g.playable).length;
@@ -1742,8 +1859,8 @@ function card(ex) {
     <div class="exh-head">
       ${hallMarker(ex)}
       <div class="exh-id">
-        <span class="overline">${esc(TYPE_LABELS[ex.type] || ex.type)}${
-          isTrade && ex.country ? ` · ${esc(ex.country)}` : ""
+        <span class="overline">${esc(typeLabel(ex.type))}${
+          isTrade && ex.country ? ` · ${esc(countryLabel(ex.country))}` : ""
         }</span>
         <h3>${esc(ex.name)}${hasAdult(ex) && !games.length && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</h3>
       </div>
@@ -1756,9 +1873,11 @@ function card(ex) {
         games.length
           ? `<div class="block">
               <div class="block-head">
-                <span>Lineup</span>
-                <span>${games.length} title${games.length === 1 ? "" : "s"}${
-                  playableCount ? `<span class="stamp">${playableCount} playable</span>` : ""
+                <span>${esc(t("card.lineup"))}</span>
+                <span>${esc(t("card.titles", { n: games.length }))}${
+                  playableCount
+                    ? `<span class="stamp">${esc(t("card.playableCount", { n: playableCount }))}</span>`
+                    : ""
                 }${hasAdult(ex) && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</span>
               </div>
               <ul class="games">${shown.map(gameRow).join("")}</ul>
@@ -1766,21 +1885,33 @@ function card(ex) {
             </div>`
           : trade?.list || ""
       }
-      ${ex.tags?.length ? `<div class="tag-row">${ex.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
+      ${
+        ex.tags?.length
+          ? `<div class="tag-row">${ex.tags
+              .map((tag) => `<span class="tag">${esc(tagLabel(tag))}</span>`)
+              .join("")}</div>`
+          : ""
+      }
     </div>
     <div class="card-foot">
       ${
         isTrade
           ? trade.line
           : `<div class="queue" data-level="${crowd}">
-        <span class="row-label">Queue index</span>
+        <span class="row-label">${esc(t("card.queueIndex"))}</span>
         <span class="meter" data-level="${crowd}" role="img"
-          aria-label="Queue index ${crowd} of 5"
+          aria-label="${esc(t("card.queueAria", { n: crowd }))}"
           title="${esc(ex.crowdNote || "")}"><i></i><i></i><i></i><i></i><i></i></span>
-        <span class="queue-val">${crowd ? `${crowd}/5` : "—"} ${esc(CROWD_LABELS[crowd] || "?")}</span>
+        <span class="queue-val">${crowd ? `${crowd}/5` : "—"} ${esc(crowdLabel(crowd))}</span>
       </div>`
       }
-      ${ex.visitAdvice ? `<p class="advice"><span class="advice-label">Plan</span>${esc(ex.visitAdvice)}</p>` : ""}
+      ${
+        ex.visitAdvice
+          ? `<p class="advice"><span class="advice-label">${esc(t("card.planLabel"))}</span>${esc(
+              ex.visitAdvice
+            )}</p>`
+          : ""
+      }
       ${footLinks(ex)}
     </div>
   </article>`;
@@ -1796,14 +1927,14 @@ function renderExhibitors() {
   $("#exhibitor-grid").classList.toggle("hidden", list.length === 0);
   $("#no-results").classList.toggle("hidden", list.length > 0);
   $("#no-results").textContent =
-    state.savedOnly && savedCount() === 0
-      ? "Nothing saved yet — hit + on a booth or on any game in its lineup to start a list."
-      : "Nothing matches — try clearing filters.";
+    state.savedOnly && savedCount() === 0 ? t("empty.noSavedYet") : t("empty.noMatches");
   $("#reset-filters").classList.toggle("hidden", !filtersActive());
 
   const total = cardPool().length;
   $("#result-count").textContent =
-    list.length === total ? `${total} exhibitors` : `${list.length} / ${total} exhibitors`;
+    list.length === total
+      ? t("count.exhibitors", { n: total })
+      : t("count.exhibitorsFiltered", { n: list.length, total });
   renderFilterSummary();
 
   $$(".more-games").forEach((btn) =>
@@ -1825,25 +1956,25 @@ function renderExhibitors() {
    still filtered, so it spells out every active constraint. */
 function renderFilterSummary() {
   const parts = [];
-  if (state.type !== "all") parts.push(TYPE_LABELS[state.type] || state.type);
-  if (state.hall !== "all") parts.push(`Hall ${state.hall}`);
-  if (state.age === "hide") parts.push("hide 18+");
-  if (state.age === "only") parts.push("18+ only");
-  if (state.playableOnly) parts.push("playable only");
-  if (state.confirmedOnly) parts.push("confirmed only");
-  if (state.savedOnly) parts.push("saved only");
-  if (state.hidePlayed) parts.push("played hidden");
+  if (state.type !== "all") parts.push(typeLabel(state.type));
+  if (state.hall !== "all") parts.push(t("where.hall", { hall: state.hall }));
+  if (state.age === "hide") parts.push(t("summary.hideAdult"));
+  if (state.age === "only") parts.push(t("summary.onlyAdult"));
+  if (state.playableOnly) parts.push(t("summary.playableOnly"));
+  if (state.confirmedOnly) parts.push(t("summary.confirmedOnly"));
+  if (state.savedOnly) parts.push(t("summary.savedOnly"));
+  if (state.hidePlayed) parts.push(t("summary.playedHidden"));
   if (state.query) parts.push(`“${state.query}”`);
   const el = $("#filter-summary");
   /* Trade mode leads the line rather than joining the list of constraints:
      it is not a filter — it widens the pool instead of narrowing it — and
      this way the "nothing is filtered" reassurance survives beside it. */
-  const filters = parts.length ? parts.join(" · ") : "all categories, all halls";
+  const filters = parts.length ? parts.join(" · ") : t("summary.noneLower");
   el.textContent = state.trade
-    ? `Trade badge · ${filters}`
+    ? t("summary.tradePrefix", { filters })
     : parts.length
       ? filters
-      : "All categories, all halls";
+      : t("summary.none");
   el.dataset.active = String(parts.length > 0 || state.trade);
 }
 
@@ -1855,8 +1986,8 @@ function renderBadge() {
   const row = $("#badge-filters");
   if (!row) return; // stale cached shell — see the note in renderPlan
   const chips = [
-    [false, "Consumer", "Consumer ticket — the entertainment halls"],
-    [true, "Trade & media", "Trade or media badge — adds the business halls, 2 to 4"],
+    [false, t("badge.consumer"), t("badge.consumerTitle")],
+    [true, t("badge.trade"), t("badge.tradeTitle")],
   ];
   row.innerHTML = chips
     .map(
@@ -1879,11 +2010,13 @@ function renderFilters() {
      with an empty grid, so the filter follows the pool it filters. */
   if (state.type !== "all" && !types.includes(state.type)) state.type = "all";
   $("#type-filters").innerHTML =
-    `<button class="chip ${state.type === "all" ? "active" : ""}" type="button" data-type="all">All</button>` +
+    `<button class="chip ${state.type === "all" ? "active" : ""}" type="button" data-type="all">${esc(
+      t("filter.all")
+    )}</button>` +
     types
       .map(
-        (t) =>
-          `<button class="chip ${state.type === t ? "active" : ""}" type="button" data-type="${esc(t)}">${esc(TYPE_LABELS[t] || t)}</button>`
+        (type) =>
+          `<button class="chip ${state.type === type ? "active" : ""}" type="button" data-type="${esc(type)}">${esc(typeLabel(type))}</button>`
       )
       .join("");
   $$("#type-filters .chip").forEach((chip) =>
@@ -1909,15 +2042,19 @@ function renderFilters() {
   }
   const halls = [...hallSet].sort((a, b) => parseFloat(a) - parseFloat(b));
   $("#hall-filters").innerHTML =
-    `<button class="chip hall-chip ${state.hall === "all" ? "active" : ""}" type="button" data-hall="all">All</button>` +
+    `<button class="chip hall-chip ${state.hall === "all" ? "active" : ""}" type="button" data-hall="all">${esc(
+      t("filter.all")
+    )}</button>` +
     halls
       .map((h) => {
         const business = isBusinessHall(h);
-        const label = business ? `Hall ${h}, business area, trade & media only` : `Hall ${h}`;
+        const label = business
+          ? t("hall.businessAria", { hall: h })
+          : t("where.hall", { hall: h });
         return `<button class="chip hall-chip${business ? " hall-chip-trade" : ""} ${
           state.hall === h ? "active" : ""
         }" type="button" data-hall="${esc(h)}" aria-label="${esc(label)}"${
-          business ? ` title="${esc("Business area — trade & media badge only")}"` : ""
+          business ? ` title="${esc(t("directory.businessArea"))}"` : ""
         }>${esc(h)}</button>`;
       })
       .join("");
@@ -1934,9 +2071,9 @@ function renderFilters() {
   if (!ageFilters) return; // a cached pre-age-filter index.html may briefly pair with this JS
   ageFilters.innerHTML = AGE_FILTERS
     .map(
-      ([value, label]) =>
+      (value) =>
         `<button class="chip age-chip ${state.age === value ? "active" : ""}" type="button"
-          data-age="${value}" aria-pressed="${state.age === value}">${label}</button>`
+          data-age="${value}" aria-pressed="${state.age === value}">${esc(t(`age.filter.${value}`))}</button>`
     )
     .join("");
   ageFilters.closest(".toolbar-row")?.classList.remove("hidden");
@@ -2043,7 +2180,7 @@ function loadDirectory() {
       buildShareCodeMap();
     })
     .catch((err) => {
-      state.directoryError = err.message || "failed to load";
+      state.directoryError = err.message || t("directory.loadFailed");
     })
     .finally(() => {
       directoryRequest = null;
@@ -2074,7 +2211,8 @@ function directoryMatches() {
     const hay = [
       entry.name,
       entry.country,
-      ...stands.map((s) => `hall ${s.hall} ${s.booth}`),
+      countryLabel(entry.country),
+      ...stands.map((s) => `${t("hall.word")} ${s.hall} hall ${s.hall} ${s.booth}`),
     ]
       .join(" ")
       .toLowerCase();
@@ -2092,7 +2230,7 @@ function profileUrl(entry) {
 function profileLink(entry) {
   const href = profileUrl(entry);
   return href
-    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(entry.name)}<span aria-hidden="true"> ↗</span><span class="sr-only">, official directory entry, opens in a new tab</span></a>`
+    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(entry.name)}<span aria-hidden="true"> ↗</span><span class="sr-only">${esc(t("directory.entryAria"))}</span></a>`
     : esc(entry.name);
 }
 
@@ -2111,22 +2249,26 @@ function standChips(stands, byBooth, self = "") {
          neighbour, not a place. */
       const where = `<span class="dir-stand-where"><b>${esc(s.hall)}</b>${
         s.booth ? ` · ${esc(s.booth)}` : ""
-      }</span>${host && host.name !== self ? `<i> at ${esc(host.name)}</i>` : ""}`;
+      }</span>${
+        host && host.name !== self
+          ? `<i>${esc(t("directory.hostedAt", { name: host.name }))}</i>`
+          : ""
+      }`;
       const cls = `dir-stand${business ? " dir-stand-trade" : ""}`;
       /* The business halls are drawn now, so their chips link like any
          other — the map opens them under a trade-only banner, which is a
          better answer than a dead chip. The warning rides along in the
          label either way: the plate is amber, and it says why. */
-      const trade = business ? "Business area, trade & media only" : "";
+      const trade = business ? t("directory.businessArea") : "";
       if (!hasMap(s.hall)) {
         return `<span class="${cls}"${trade ? ` title="${esc(trade)}"` : ""}>${where}</span>`;
       }
       return `<a class="${cls}" href="${esc(mapLink(s.hall, s.booth))}"
-        title="${esc(trade ? `${trade} — open on the hall map` : "Open on the hall map")}"
+        title="${esc(trade ? t("map.openTitleWith", { what: trade }) : t("map.openTitle"))}"
         aria-label="${esc(
-          `Hall ${s.hall}${s.booth ? `, booth ${s.booth}` : ""}${
-            trade ? ", trade & media only" : ""
-          } — open the hall map`
+          t("map.openAria", {
+            where: whereLabel(s.hall, s.booth) + (trade ? t("map.tradeOnlySuffix") : ""),
+          })
         )}">${where}</a>`;
     })
     .join("");
@@ -2136,8 +2278,11 @@ function directoryRow(entry, byBooth) {
   const stands = standChips(entry.stands, byBooth, entry.name);
   return `<li class="dir-row">
     <span class="dir-name">${profileLink(entry)}</span>
-    <span class="dir-country">${esc(entry.country || "")}</span>
-    <span class="dir-stands">${stands || '<span class="dir-stand dir-stand-tba">no booth listed</span>'}</span>
+    <span class="dir-country">${esc(entry.country ? countryLabel(entry.country) : "")}</span>
+    <span class="dir-stands">${
+      stands ||
+      `<span class="dir-stand dir-stand-tba">${esc(t("directory.noBooth"))}</span>`
+    }</span>
   </li>`;
 }
 
@@ -2149,7 +2294,9 @@ function renderDirectory() {
   const list = $("#directory-list");
 
   if (!state.showDirectory) {
-    count.textContent = state.directory ? `${state.directory.count} booths` : "";
+    count.textContent = state.directory
+      ? t("directory.booths", { n: state.directory.count })
+      : "";
     note.textContent = "";
     list.innerHTML = "";
     return;
@@ -2157,13 +2304,13 @@ function renderDirectory() {
 
   if (state.directoryError) {
     count.textContent = "";
-    note.textContent = `Couldn't load the directory (${state.directoryError}). It needs one online load before it works offline.`;
+    note.textContent = t("directory.error", { error: state.directoryError });
     list.innerHTML = "";
     return;
   }
   if (!state.directory) {
     count.textContent = "";
-    note.textContent = "Loading the official list…";
+    note.textContent = t("directory.loading");
     list.innerHTML = "";
     return;
   }
@@ -2185,24 +2332,24 @@ function renderDirectory() {
 
   count.textContent =
     matches.length === state.directory.count
-      ? `${state.directory.count} booths`
-      : `${matches.length} / ${state.directory.count} booths`;
+      ? t("directory.booths", { n: state.directory.count })
+      : t("directory.boothsFiltered", { n: matches.length, total: state.directory.count });
 
   const bits = [
-    `The raw official list as published on ${esc(state.directory.lastUpdated)} — booths with a card above included, and no lineups, crowd ratings or saving down here.`,
+    esc(t("directory.lede", { date: formatDate(state.directory.lastUpdated) })),
   ];
   if (state.hall === "all" && trade) {
-    bits.push(`${trade} of these stand only in the business area (halls 1–4), which a consumer ticket does not open.`);
+    bits.push(esc(t("directory.tradeOnly", { n: trade })));
   }
   if (!matches.length) {
-    bits.push("Nothing here matches the current search or hall.");
+    bits.push(esc(t("directory.noMatches")));
   }
   note.innerHTML = bits.join(" ");
 
   list.innerHTML = matches.length
     ? `<ol class="dir-list">${shown.map((e) => directoryRow(e, byBooth)).join("")}</ol>` +
       (rest > 0
-        ? `<button class="reset dir-more" type="button">Show ${rest} more</button>`
+        ? `<button class="reset dir-more" type="button">${esc(t("directory.showMore", { n: rest }))}</button>`
         : "")
     : "";
 
@@ -2219,10 +2366,7 @@ function renderDirectory() {
      section is for. */
   const gridEmpty = $("#exhibitor-grid").classList.contains("hidden");
   if (gridEmpty && matches.length) {
-    $("#no-results").textContent =
-      matches.length === 1
-        ? "No card matches — but one booth in the full directory below does."
-        : `No card matches — but ${matches.length} booths in the full directory below do.`;
+    $("#no-results").textContent = t("directory.fallbackHint", { n: matches.length });
   }
 }
 
@@ -2353,8 +2497,7 @@ const hasSavedTrade = () =>
    not an item that went away. Telling someone "nothing you saved is in the
    lineup" there would be a lie about their own list. */
 const tradeDataPending = () => hasSavedTrade() && !state.directory;
-const TRADE_PENDING_COPY =
-  "Your list has trade booths from the business halls. That data needs one online load before they can be planned — it is cached from then on.";
+const tradePendingCopy = () => t("trade.dataPending");
 
 /* A `dir:` key saved before a card claimed that row — from the map, from a
    share link, or from a build that predates the card — is the same booth
@@ -2435,7 +2578,7 @@ function tradeGroups(entries) {
     }
   }
   return [...counts.entries()]
-    .map(([id, n]) => ({ id, label: groups[id], n }))
+    .map(([id, n]) => ({ id, label: groupLabel(id, groups[id]), n }))
     .sort((a, b) => b.n - a.n || a.label.localeCompare(b.label));
 }
 
@@ -2457,8 +2600,13 @@ function tradeMatches({ category = true } = {}) {
     const hay = [
       entry.name,
       entry.country,
-      ...(entry.stands || []).map((s) => `hall ${s.hall} ${s.booth}`),
+      countryLabel(entry.country),
+      ...(entry.stands || []).map(
+        (s) => `${t("hall.word")} ${s.hall} hall ${s.hall} ${s.booth}`
+      ),
+      /* Both spellings stay searchable, the same way tags do. */
       ...(entry.cats || []).map((id) => groups[id] || ""),
+      ...(entry.cats || []).map((id) => groupLabel(id, groups[id])),
     ]
       .join(" ")
       .toLowerCase();
@@ -2470,7 +2618,7 @@ function tradeRow(entry, byBooth) {
   const groups = state.directory?.groups || {};
   const key = dirKey(entry.slug);
   const cats = (entry.cats || [])
-    .map((id) => groups[id])
+    .map((id) => groupLabel(id, groups[id]))
     .filter(Boolean)
     .map((label) => `<span class="tag">${esc(label)}</span>`)
     .join("");
@@ -2482,13 +2630,13 @@ function tradeRow(entry, byBooth) {
      so the threshold sits above the noise, and the label states the count
      without telling you what to conclude from it. */
   const shared = share >= TRADE_SHARED_MIN
-    ? `<span class="trade-shared" title="${esc(
-        `${share} exhibitors are listed on this stand — a collective, usually a national or regional pavilion`
-      )}">shared · ${share}</span>`
+    ? `<span class="trade-shared" title="${esc(t("trade.sharedTitle", { n: share }))}">${esc(
+        t("trade.shared", { n: share })
+      )}</span>`
     : "";
   return `<li class="dir-row trade-row" data-saved="${isSaved("exhibitor", key)}">
     <span class="dir-name">${profileLink(entry)}</span>
-    <span class="dir-country">${esc(entry.country || "")}</span>
+    <span class="dir-country">${esc(entry.country ? countryLabel(entry.country) : "")}</span>
     <span class="dir-stands">${standChips(entry.stands, byBooth, entry.name)}${shared}</span>
     <span class="trade-tags">${cats}</span>
     ${markButton("saved", "exhibitor", key, entry.name)}
@@ -2526,14 +2674,14 @@ function renderTrade() {
 
   if (state.directoryError) {
     count.textContent = "";
-    note.textContent = `Couldn't load the trade list (${state.directoryError}). It needs one online load before it works offline.`;
+    note.textContent = t("trade.loadError", { error: state.directoryError });
     list.innerHTML = "";
     cats.classList.add("hidden");
     return;
   }
   if (!state.directory) {
     count.textContent = "";
-    note.textContent = "Loading the business halls…";
+    note.textContent = t("trade.loading");
     list.innerHTML = "";
     cats.classList.add("hidden");
     return;
@@ -2559,11 +2707,11 @@ function renderTrade() {
   cats.classList.toggle("hidden", offered.length < 2);
   cats.innerHTML = offered.length < 2 ? "" : [
     `<button class="chip ${state.tradeCat === "all" ? "active" : ""}" type="button"
-      data-trade-cat="all" aria-pressed="${state.tradeCat === "all"}">All</button>`,
+      data-trade-cat="all" aria-pressed="${state.tradeCat === "all"}">${esc(t("filter.all"))}</button>`,
     ...offered.map(
       (g) => `<button class="chip ${state.tradeCat === g.id ? "active" : ""}" type="button"
         data-trade-cat="${esc(g.id)}" aria-pressed="${state.tradeCat === g.id}"
-        title="${esc(`${g.n} exhibitor${g.n === 1 ? "" : "s"}`)}">${esc(g.label)}</button>`
+        title="${esc(t("trade.exhibitorCount", { n: g.n }))}">${esc(g.label)}</button>`
     ),
   ].join("");
 
@@ -2574,21 +2722,25 @@ function renderTrade() {
   const total = (state.directory.exhibitors || []).filter(isTradeEntry).length;
 
   count.textContent =
-    matches.length === total ? `${total} booths` : `${matches.length} / ${total} booths`;
+    matches.length === total
+      ? t("directory.booths", { n: total })
+      : t("directory.boothsFiltered", { n: matches.length, total });
 
-  const bits = [
-    "The business area (halls 2–4), where the industry does its trading. A trade or media badge opens these halls; a consumer ticket does not, and they close after Friday.",
-    "Almost all of it is walk-up: a dozen or more companies share each national and regional pavilion, and the small stands in halls 2.1 and 2.2 are counters you can just talk to. Only about twenty booths — the big single-occupant compounds in Hall 4.2 — are closed rooms you need an appointment for. The “shared” count marks the collectives; the cards above say what a booth is actually for.",
-    "Save a booth and it plans like any other stop.",
-  ];
-  if (!matches.length) bits.push("Nothing here matches the current search, hall or category.");
-  note.innerHTML = `${bits.map(esc).join(" ")} <button class="linkish" id="trade-off" type="button">Turn trade exhibitors off</button>`;
+  const bits = [t("trade.listWhat"), t("trade.listWalkUp"), t("trade.listPlannable")];
+  if (!matches.length) bits.push(t("trade.listNoMatches"));
+  note.innerHTML = `${bits.map(esc).join(" ")} <button class="linkish" id="trade-off" type="button">${esc(
+    t("trade.turnOff")
+  )}</button>`;
   $("#trade-off").addEventListener("click", () => setTrade(false));
 
   keepingFocus(list, () => {
     list.innerHTML = matches.length
       ? `<ol class="dir-list trade-list">${shown.map((e) => tradeRow(e, byBooth)).join("")}</ol>` +
-        (rest > 0 ? `<button class="reset dir-more" type="button">Show ${rest} more</button>` : "")
+        (rest > 0
+          ? `<button class="reset dir-more" type="button">${esc(
+              t("directory.showMore", { n: rest })
+            )}</button>`
+          : "")
       : "";
   });
 
@@ -2633,8 +2785,8 @@ function setTrade(on, { announce = false } = {}) {
   if (tradeToast && tradeToast !== activeToast) hideToast(tradeToast);
   tradeToast = on
     ? showToast(
-        "Trade exhibitors on — business booths are in the grid, and in their own list below.",
-        "Show the list →",
+        t("trade.toastOn"),
+        t("trade.showList"),
         () => {
           showView("exhibitors");
           const section = $("#trade");
@@ -2644,12 +2796,16 @@ function setTrade(on, { announce = false } = {}) {
         },
         { replace: true }
       )
-    : showToast("Trade exhibitors off — back to the consumer halls.", null, null, { replace: true });
+    : showToast(t("trade.toastOff"), null, null, { replace: true });
 }
 
 /* ---------- planner ---------- */
 
-const isTradeDay = (d) => /trade|media|business/i.test(d.access);
+/* An explicit flag in data/event.json, not a regex over the access text:
+   that text is editorial prose and now exists in every language, so
+   "does this day admit the public" has to be a fact in the data rather
+   than something read back out of a sentence. */
+const isTradeDay = (d) => d.trade === true;
 
 /* The business halls run Wednesday to Friday and are shut for the weekend —
    the one fact about them a plan can get wrong in a way that costs a visitor
@@ -2663,7 +2819,7 @@ const isBusinessOpenDay = (d) => d?.business !== "closed";
 function dayHeaderInner(d) {
   const [, month, day] = d.date.split("-");
   return `<span class="day-when">
-      <span class="day-dow">${esc(d.label.slice(0, 3))}</span>
+      <span class="day-dow">${esc(shortDay(d.date))}</span>
       <span class="day-date">${esc(day)}.${esc(month)}</span>
     </span>
     <span class="day-access ${isTradeDay(d) ? "trade" : "public"}">${esc(d.access)}</span>
@@ -2672,6 +2828,12 @@ function dayHeaderInner(d) {
       ${d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
     </span>`;
 }
+
+/* Weekday names are derived from the date in the active language rather
+   than hand-written per locale — see GCI18N.dayName. The short form is
+   what the day chips and tags wear. */
+const dayName = (date) => GCI18N.dayName(date);
+const shortDay = (date) => GCI18N.dayName(date, "short");
 
 function itineraryItems() {
   const exhibitors = [...state.marks.saved.exhibitors]
@@ -2696,9 +2858,11 @@ function itineraryItems() {
    sections: absence wins over everything, then a known hall wins over the
    offsite tag — an entry carrying both is a stop you can walk to. */
 function itineraryLocation(ex, { booth = true } = {}) {
-  if (isAbsent(ex)) return "Absent — no booth";
-  if (!ex.hall) return isOffsite(ex) ? "Offsite" : "Hall TBA";
-  return `Hall ${ex.hall}${booth && ex.booth ? ` · ${ex.booth}` : ""}`;
+  if (isAbsent(ex)) return t("plan.absentStop");
+  if (!ex.hall) return isOffsite(ex) ? t("plan.offsite") : t("plan.hallTba");
+  return booth && ex.booth
+    ? t("where.hallDotBooth", { hall: ex.hall, booth: ex.booth })
+    : t("where.hall", { hall: ex.hall });
 }
 
 function itineraryCrowd(item) {
@@ -2708,7 +2872,7 @@ function itineraryCrowd(item) {
 }
 
 function compareItineraryItems(a, b) {
-  return itineraryCrowd(b) - itineraryCrowd(a) || a.name.localeCompare(b.name);
+  return itineraryCrowd(b) - itineraryCrowd(a) || byName(a.name, b.name);
 }
 
 const itineraryPlayed = (item) =>
@@ -2733,15 +2897,17 @@ function itineraryItemLocationHtml(item) {
               `${esc(ex.name)} — ${hallLink(ex.hall, ex.booth, itineraryLocation(ex, { booth: false }))}`
           )
           .join(" · ")
-      : "Booth TBA";
+      : t("plan.boothTba");
   }
   const where = hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex));
   /* A business booth has no queue to forecast, and "Queue unknown" there
      reads as "we didn't check" rather than "this is not that kind of stop".
      Its badge requirement is the useful thing to say in that space. */
-  if (inBusinessArea(item.ex)) return `${where} · Trade badge`;
+  if (inBusinessArea(item.ex)) return `${where} · ${esc(t("plan.tradeBadge"))}`;
   const crowd = item.ex.crowd || 0;
-  return `${where} · Queue ${esc(crowd ? `${crowd}/5 ${CROWD_LABELS[crowd] || "?"}` : "unknown")}`;
+  return `${where} · ${esc(
+    crowd ? t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) }) : t("plan.queueUnknown")
+  )}`;
 }
 
 /* Does this stop stand in the business area? Asked of the location, not of
@@ -2762,30 +2928,36 @@ const stopOnClosedDay = (item) =>
 
 function itineraryDayChips(item) {
   const current = assignedDay(item.kind, item.key);
-  const label = `Assign ${item.name} to a day`;
+  const label = t("plan.assignAria", { name: item.name });
   const business = itemInBusinessArea(item);
   return `<span class="it-days" role="group" aria-label="${esc(label)}">${(state.event.days || [])
     .map((d) => {
       const active = current === d.date;
       const trade = isTradeDay(d);
       const shut = business && !isBusinessOpenDay(d);
-      const action = active ? `Remove from ${d.label}` : `Assign to ${d.label}`;
+      const day = dayName(d.date);
+      const action = active ? t("plan.removeFromDay", { day }) : t("plan.assignToDay", { day });
       const title = shut
-        ? `${action} — the business area is closed on ${d.label}`
+        ? t("plan.dayClosedSuffix", { action, day })
         : trade
-          ? `${action} (trade & media only)`
+          ? t("plan.dayTradeSuffix", { action })
           : action;
       return `<button class="day-chip${active ? " active" : ""}" type="button"
         data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-it-day="${esc(d.date)}"
         data-trade="${esc(String(trade))}" data-closed="${esc(String(shut))}"
         aria-pressed="${esc(String(active))}"
-        title="${esc(title)}" aria-label="${esc(title)}">${esc(d.label.slice(0, 3))}</button>`;
+        title="${esc(title)}" aria-label="${esc(title)}">${esc(shortDay(d.date))}</button>`;
     })
     .join("")}</span>`;
 }
 
 function itineraryItem(item) {
-  const kindLabel = item.kind === "game" ? "Game" : itemInBusinessArea(item) ? "Trade" : "Booth";
+  const kindLabel =
+    item.kind === "game"
+      ? t("kind.game")
+      : itemInBusinessArea(item)
+        ? t("kind.trade")
+        : t("kind.booth");
   const shut = stopOnClosedDay(item);
   return `<div class="it-item" data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-played="${itineraryPlayed(item)}">
     <span class="it-main">
@@ -2795,7 +2967,13 @@ function itineraryItem(item) {
     <span class="it-loc">${itineraryItemLocationHtml(item)}</span>
     ${itineraryDayChips(item)}
     ${markButton("saved", item.kind, item.key, item.name)}
-    ${shut ? `<span class="it-warn">Business area closed on ${esc(dayLabel(assignedDay(item.kind, item.key)))} — this stop is behind a badge gate that day.</span>` : ""}
+    ${
+      shut
+        ? `<span class="it-warn">${esc(
+            t("plan.closedWarn", { day: dayName(assignedDay(item.kind, item.key)) })
+          )}</span>`
+        : ""
+    }
   </div>`;
 }
 
@@ -2809,7 +2987,9 @@ function renderItinerary() {
 
   if (unassigned.length) {
     groups.push(`<div class="it-group">
-      <div class="it-group-head unassigned"><span class="it-group-title">Unassigned</span></div>
+      <div class="it-group-head unassigned"><span class="it-group-title">${esc(
+        t("plan.unassigned")
+      )}</span></div>
       ${unassigned.map(itineraryItem).join("")}
     </div>`);
   }
@@ -2824,7 +3004,13 @@ function renderItinerary() {
     const shut = dayItems.filter(stopOnClosedDay).length;
     groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
       <div class="it-group-head">${dayHeaderInner(d)}</div>
-      ${shut ? `<p class="it-group-warn">${shut === 1 ? "1 stop is" : `${shut} stops are`} in the business area, which is closed on ${esc(d.label)}.</p>` : ""}
+      ${
+        shut
+          ? `<p class="it-group-warn">${esc(
+              t("plan.closedGroupWarn", { n: shut, day: dayName(d.date) })
+            )}</p>`
+          : ""
+      }
       ${dayItems.map(itineraryItem).join("")}
     </div>`);
   }
@@ -2838,16 +3024,17 @@ function renderItinerary() {
   /* Saved-but-empty happens when every saved id fell out of a data refresh —
      "nothing saved yet" would be a lie next to a visible saved counter. */
   $("#plan-empty").textContent = tradeDataPending()
-    ? TRADE_PENDING_COPY
+    ? tradePendingCopy()
     : savedCount()
-      ? "Nothing you saved is in the current lineup anymore — exhibitors come and go between data updates."
-      : "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.";
+      ? t("plan.emptyStale")
+      : t("plan.emptyNoSaved");
   /* Absent stops render inline here ("Absent — no booth"); the footnote is the
      hall lens's way of saying the same thing. */
   $("#plan-absent").classList.add("hidden");
   const placed = items.filter((item) => validDays.has(assignedDay(item.kind, item.key))).length;
   $("#plan-count").textContent = items.length
-    ? `${items.length} item${items.length === 1 ? "" : "s"}${placed ? ` · ${placed} placed` : ""}`
+    ? t("plan.itemCount", { n: items.length }) +
+      (placed ? t("plan.placedSuffix", { n: placed }) : "")
     : "";
 }
 
@@ -2872,7 +3059,9 @@ function savedHereChips(ex, { day = null } = {}) {
     ? savedGames(ex).filter((g) => (assignedDay("game", gameKey(g.title)) || "none") === day)
     : savedGames(ex);
   if (!mine.length) return "";
-  return `<span class="priority-saved"><span class="row-label">Saved here</span>${mine
+  return `<span class="priority-saved"><span class="row-label">${esc(
+    t("plan.savedHere")
+  )}</span>${mine
     .map((g) => `<span class="priority-game">${esc(g.title)}</span>`)
     .join("")}</span>`;
 }
@@ -2890,18 +3079,20 @@ function renderWristband() {
      explicitly as well, so a curated trade card can never wander in here. */
   const list = state.exhibitors
     .filter((e) => e.type !== "trade" && hasAdult(e))
-    .sort((a, b) => hallRank(a.hall) - hallRank(b.hall) || a.name.localeCompare(b.name));
+    .sort((a, b) => hallRank(a.hall) - hallRank(b.hall) || byName(a.name, b.name));
 
   const rows = list
     .map((e) => {
       const titles = adultGames(e);
       const games = titles.length
         ? titles.map((g) => esc(g.title)).join(" · ")
-        : "Booth-wide age-restricted zone";
+        : esc(t("wristband.wholeBooth"));
       const location = hallLink(
         e.hall,
         e.booth,
-        `${e.hall ? `Hall ${e.hall}` : "Hall TBA"} · ${e.booth || "booth TBA"}`
+        `${e.hall ? t("where.hall", { hall: e.hall }) : t("plan.hallTba")} · ${
+          e.booth || t("plate.boothTba")
+        }`
       );
       const expected = boothAgeStatus(e) !== "confirmed";
       /* The "expected" marker sits inside the titles cell rather than in a column
@@ -2912,7 +3103,7 @@ function renderWristband() {
         <span class="wristband-name">${esc(e.name)}</span>
         <span class="wristband-loc">${location}</span>
         <span class="wristband-games">${games}${
-          expected ? ` ${ageBadge("expected", "18+ expected", "wristband-status")}` : ""
+          expected ? ` ${ageBadge("expected", t("age.expectedBadge"), "wristband-status")}` : ""
         }</span>
         <span class="row-actions">
           ${markButton("played", "exhibitor", e.id, e.name)}
@@ -2948,7 +3139,9 @@ function renderPriority() {
         <span class="priority-rank">${String(busiest.indexOf(e) + 1).padStart(2, "0")}</span>
         <span class="priority-name">${esc(e.name)}${hasAdult(e) ? ageBadge(boothAgeStatus(e)) : ""}</span>
         <span class="priority-loc">${
-          e.hall ? hallLink(e.hall, e.booth, `Hall ${e.hall}`) : "TBA"
+          e.hall
+            ? hallLink(e.hall, e.booth, t("where.hall", { hall: e.hall }))
+            : esc(t("plate.tba"))
         }</span>
         <span class="priority-advice">${esc(e.visitAdvice || e.crowdNote || "")}</span>
         <span class="row-actions">
@@ -2970,15 +3163,16 @@ function renderPriority() {
   $("#priority-list").classList.toggle("hidden", list.length === 0);
   $("#priority-empty").classList.toggle("hidden", list.length > 0);
   $("#priority-empty").textContent = state.hidePlayed && scoped.length > 0 && list.length === 0
-    ? "Everything on your list in the high-queue group is played — nice work."
+    ? t("priority.emptyAllPlayed")
     : savedCount()
-      ? "Nothing you saved is in the high-queue group — good news, those booths should be closer to a walk-up."
-      : "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab.";
+      ? t("priority.emptyNoneHigh")
+      : t("priority.emptyNoSaved");
   const count =
     list.length === busiest.length
-      ? `${busiest.length} high-queue booths`
-      : `${list.length} / ${busiest.length} high-queue booths`;
-  $("#priority-count").textContent = `${count}${played ? ` · ${played} played` : ""}`;
+      ? t("priority.count", { n: busiest.length })
+      : t("priority.countFiltered", { n: list.length, total: busiest.length });
+  $("#priority-count").textContent =
+    count + (played ? t("priority.playedSuffix", { n: played }) : "");
 }
 
 /* ---------- calendar export ---------- */
@@ -3026,20 +3220,37 @@ function icsDateTimeUTC(d) {
 
 function icsDescription(item) {
   if (item.kind === "exhibitor") {
-    const where = itineraryLocation(item.ex).replace(" · ", ", booth ");
+    /* Spelled out rather than reusing the on-screen location string: the
+       calendar entry is read away from the guide, where "9.1 · A070" has
+       lost the column header that explained it. */
+    const where = isAbsent(item.ex)
+      ? t("plan.absentStop")
+      : !item.ex.hall
+        ? isOffsite(item.ex)
+          ? t("plan.offsite")
+          : t("plan.hallTba")
+        : item.ex.booth
+          ? t("ics.hallBooth", { hall: item.ex.hall, booth: item.ex.booth })
+          : t("where.hall", { hall: item.ex.hall });
     /* The calendar entry is read away from the guide, so the badge — and a
        day the area is shut — has to be legible without it. */
     if (inBusinessArea(item.ex)) {
-      const shut = stopOnClosedDay(item) ? "; business area CLOSED this day" : "";
-      return `${item.name} — ${where} (trade & media badge${shut})`;
+      const shut = stopOnClosedDay(item) ? t("ics.businessClosed") : "";
+      return t("ics.tradeExhibitor", { name: item.name, where, shut });
     }
     const crowd = item.ex.crowd || 0;
-    return `${item.name} — ${where} (queue ${crowd ? `${crowd}/5` : "unknown"})`;
+    return t("ics.exhibitor", {
+      name: item.name,
+      where,
+      queue: crowd ? `${crowd}/5` : t("ics.queueUnknown"),
+    });
   }
   const booths = item.at
     .map((ex) => `${ex.name} (${itineraryLocation(ex, { booth: false })})`)
     .join(", ");
-  return `${item.name} — ${booths ? `at ${booths}` : "booth not listed"}`;
+  return booths
+    ? t("ics.gameAt", { name: item.name, booths })
+    : t("ics.gameNoBooth", { name: item.name });
 }
 
 function buildICS() {
@@ -3048,7 +3259,7 @@ function buildICS() {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//gc2026-guide//gamescom 2026 itinerary//EN",
+    `PRODID:-//gc2026-guide//gamescom 2026 itinerary//${GCI18N.lang.toUpperCase()}`,
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
   ];
@@ -3073,8 +3284,10 @@ function buildICS() {
     }
 
     lines.push(
-      `SUMMARY:${icsEscape(`gamescom — ${d.label} plan (${dayItems.length} stop${dayItems.length === 1 ? "" : "s"})`)}`,
-      `LOCATION:${icsEscape(state.event.location || "Koelnmesse, Cologne")}`,
+      `SUMMARY:${icsEscape(
+        t("ics.summary", { day: dayName(d.date), n: dayItems.length })
+      )}`,
+      `LOCATION:${icsEscape(state.event.location || t("ics.locationFallback"))}`,
       `DESCRIPTION:${icsEscape(dayItems.map(icsDescription).join("\n"))}`,
       "END:VEVENT"
     );
@@ -3089,7 +3302,7 @@ function downloadICS() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "gamescom-2026-itinerary.ics";
+  link.download = t("ics.filename");
   link.hidden = true;
   document.body.append(link);
   link.click();
@@ -3141,13 +3354,18 @@ function routeGroups() {
 
   const numbered = [...buckets.keys()]
     .filter((key) => key !== "offsite" && key !== "tba")
-    .sort((a, b) => hallRank(a) - hallRank(b) || a.localeCompare(b));
+    .sort((a, b) => hallRank(a) - hallRank(b) || byName(a, b));
   const keys = [...numbered, ...["offsite", "tba"].filter((key) => buckets.has(key))];
 
   return {
     groups: keys.map((key) => ({
       key,
-      label: key === "offsite" ? "Offsite" : key === "tba" ? "Location TBA" : `Hall ${key}`,
+      label:
+        key === "offsite"
+          ? t("plan.offsite")
+          : key === "tba"
+            ? t("route.locationTba")
+            : t("where.hall", { hall: key }),
       /* Crowd-desc, then played stops sink to the end of their hall — same
          stable two-pass sort as the priority table. */
       items: buckets
@@ -3155,7 +3373,7 @@ function routeGroups() {
         .sort(byCrowdDesc)
         .sort((a, b) => hasPlayed(a) - hasPlayed(b)),
     })),
-    absent: absent.sort((a, b) => a.localeCompare(b)),
+    absent: absent.sort(byName),
     played,
   };
 }
@@ -3168,7 +3386,7 @@ function routeDayTags(ex) {
   if (!assigned.size) return "";
   return (state.event.days || [])
     .filter((d) => assigned.has(d.date))
-    .map((d) => `<span class="route-day">${esc(d.label.slice(0, 3))}</span>`)
+    .map((d) => `<span class="route-day">${esc(shortDay(d.date))}</span>`)
     .join("");
 }
 
@@ -3180,23 +3398,35 @@ function renderRoute() {
   const hallCount = groups.filter((group) => group.key !== "offsite" && group.key !== "tba").length;
   const html = groups
     .map((group) => {
-      const kicker = group.key === "offsite" || group.key === "tba" ? "Location" : "Hall";
-      const number = group.key === "offsite" ? "Offsite" : group.key === "tba" ? "TBA" : group.key;
+      const kicker =
+        group.key === "offsite" || group.key === "tba"
+          ? t("route.locationKicker")
+          : t("hall.word");
+      const number =
+        group.key === "offsite"
+          ? t("plan.offsite")
+          : group.key === "tba"
+            ? t("plate.tba")
+            : group.key;
       const rows = group.items
         .map((ex) => {
-          const baseLocation = ex.booth ? ex.booth : ex.hall ? "booth TBA" : "location TBA";
+          const baseLocation = ex.booth
+            ? ex.booth
+            : ex.hall
+              ? t("plate.boothTba")
+              : t("route.locationTbaShort");
           /* The booth number is the link; "· unconf." stays outside it. That
              suffix is a caveat about the data, not part of the address, and
              underlining it would offer to show you a stand we're not sure of. */
-          const unconf = ex.hall && !ex.locationConfirmed ? " · unconf." : "";
+          const unconf = ex.hall && !ex.locationConfirmed ? t("plate.unconfSuffix") : "";
           const crowd = ex.crowd || 0;
           return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}">
             <span class="route-name">${esc(ex.name)}${dayFilter ? "" : routeDayTags(ex)}</span>
             <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation)}${unconf}</span>
             <span class="route-crowd" data-level="${esc(inBusinessArea(ex) ? 0 : crowd)}">${
               inBusinessArea(ex)
-                ? "Trade badge"
-                : `Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}`
+                ? esc(t("plan.tradeBadge"))
+                : `${esc(t("route.queueShort", { n: crowd || "?" }))} · ${esc(crowdLabel(crowd))}`
             }</span>
             <span class="row-actions">
               ${markButton("played", "exhibitor", ex.id, ex.name)}
@@ -3206,12 +3436,14 @@ function renderRoute() {
           </div>`;
         })
         .join("");
-      const countLabel = `${group.items.length} stop${group.items.length === 1 ? "" : "s"}`;
+      const countLabel = t("route.stops", { n: group.items.length });
       /* The header opens the whole hall — the overview you want before
          walking into it. Each stop's booth number below opens that stand. */
       const toMap = hasMap(group.key)
         ? `<a class="route-hall-map" href="${esc(mapLink(group.key))}"
-            aria-label="${esc(`Open hall ${group.key} on the map`)}">Map →</a>`
+            aria-label="${esc(
+              t("map.openAria", { where: t("where.hall", { hall: group.key }) })
+            )}">${esc(t("map.cue"))}</a>`
         : "";
       return `<h4 class="route-hall" aria-label="${esc(`${group.label}, ${countLabel}`)}">
         <span class="route-hall-kicker">${esc(kicker)}</span>
@@ -3234,23 +3466,25 @@ function renderRoute() {
      for the empty message the way it does on the all-days view. */
   $("#plan-empty").classList.toggle("hidden", stopCount > 0 || (!dayFilter && absent.length > 0));
   $("#plan-empty").textContent = tradeDataPending()
-    ? TRADE_PENDING_COPY
+    ? tradePendingCopy()
     : !savedCount()
-    ? "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall."
+    ? t("route.emptyNoSaved")
     : state.hidePlayed && played > 0 && stopCount === 0
-      ? "Every stop here is played — nice work."
+      ? t("route.emptyAllPlayed")
       : dayFilter === "none"
-        ? "Every stop on your list has a day — flip to By day to review the plan."
+        ? t("route.emptyAllAssigned")
         : dayFilter
-          ? `Nothing planned for ${dayLabel(dayFilter)} yet. Assign stops to days in the By day view.`
-          : "No current stops match your saved list — the exhibitor data may have changed.";
+          ? t("route.emptyForDay", { day: dayName(dayFilter) })
+          : t("route.emptyStale");
   $("#plan-count").textContent =
-    `${stopCount} stop${stopCount === 1 ? "" : "s"} · ${hallCount} hall${hallCount === 1 ? "" : "s"}` +
-    (played ? ` · ${played} played` : "");
+    t("route.stops", { n: stopCount }) +
+    " · " +
+    t("route.halls", { n: hallCount }) +
+    (played ? t("priority.playedSuffix", { n: played }) : "");
   /* Absent entries have no day to belong to; the footnote is an all-days fact. */
   $("#plan-absent").classList.toggle("hidden", absent.length === 0 || Boolean(dayFilter));
   $("#plan-absent").textContent = absent.length
-    ? `On your list but not on the show floor: ${absent.join(", ")}.`
+    ? t("route.absentNote", { names: absent.join(", ") })
     : "";
 }
 
@@ -3260,13 +3494,6 @@ function renderRoute() {
    itinerary (place stops on days, export them), the hall lens is the walking
    route. One section instead of two keeps a single list on screen, and lets
    the hall view read the day assignments instead of ignoring them. */
-
-const PLAN_SUBS = {
-  day: "Give each saved booth and game a day. Unassigned items sit at the top until you place them.",
-  hall: "Your stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls.",
-};
-
-const dayLabel = (date) => (state.event.days || []).find((d) => d.date === date)?.label || date;
 
 /* Day chips over the hall lens — the itinerary's assignments projected onto
    the route, so "today's stops, in walking order" is one tap. Hidden until at
@@ -3288,9 +3515,15 @@ function renderPlanDayFilter() {
   row.innerHTML = !show
     ? ""
     : [
-        ["all", "All days", "Every stop on your list"],
-        ...assigned.map((d) => [d.date, d.label.slice(0, 3), `Only stops planned for ${d.label}`]),
-        ...(seen.has("none") ? [["none", "Unassigned", "Only stops without a day yet"]] : []),
+        ["all", t("route.allDays"), t("route.allDaysTitle")],
+        ...assigned.map((d) => [
+          d.date,
+          shortDay(d.date),
+          t("route.onlyDay", { day: dayName(d.date) }),
+        ]),
+        ...(seen.has("none")
+          ? [["none", t("plan.unassigned"), t("route.onlyUnassigned")]]
+          : []),
       ]
         .map(
           ([value, label, title]) => `<button class="day-chip${state.planDay === value ? " active" : ""}"
@@ -3323,7 +3556,7 @@ function renderPlan() {
     chip.classList.toggle("active", on);
     chip.setAttribute("aria-pressed", String(on));
   });
-  $("#plan-sub").textContent = hall ? PLAN_SUBS.hall : PLAN_SUBS.day;
+  $("#plan-sub").textContent = hall ? t("plan.sub.hall") : t("plan.sub.day");
   /* Before the board: this can reset a stranded state.planDay back to "all",
      and routeGroups() has to see the corrected value. */
   renderPlanDayFilter();
@@ -3362,7 +3595,12 @@ function renderEvent() {
      fact: the gate that is quickest depends on the day and on which way
      Koelnmesse is steering the queue that morning. The lede says so, and
      the trade note gets its own paragraph because "West is best" is only
-     true on the public days. */
+     true on the public days.
+
+     Both names stay as they are in every language: `name` is the short
+     English gate letter the guide sorts and links by, and `nameDe` is what
+     Koelnmesse has written on the building — a German reader and an English
+     one are both looking for the sign that says "Eingang West". */
   const ent = ev.entrances;
   const entrances = (ent?.list || [])
     .map(
@@ -3376,14 +3614,21 @@ function renderEvent() {
     )
     .join("");
 
+  /* The official site answers in German too, so a German reader gets sent
+     to the German pages rather than bounced through the English ones. */
+  const officialBase = GCI18N.lang === "de" ? "de" : "en";
   const links = [
-    ["https://www.gamescom.global/en", "gamescom.global", "Official site"],
+    [`https://www.gamescom.global/${officialBase}`, "gamescom.global", t("links.officialSite")],
     [
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
-      "Exhibitor directory",
-      "Official list",
+      `https://exhibitors.gamescom.global/${officialBase}/gamescom-exhibitors/list-of-exhibitors/`,
+      t("links.exhibitorDirectory"),
+      t("links.officialList"),
     ],
-    ["https://www.gamescom.global/en/info/hall-plan", "Hall plan", "Official map"],
+    [
+      `https://www.gamescom.global/${officialBase}/info/hall-plan`,
+      t("links.hallPlan"),
+      t("links.officialMap"),
+    ],
   ]
     .map(
       ([href, name, desc]) =>
@@ -3393,7 +3638,7 @@ function renderEvent() {
 
   $("#event-info").innerHTML = `
     <div class="info-block">
-      <h2><span class="section-num">01</span> The show</h2>
+      <h2><span class="section-num">01</span> ${esc(t("event.theShow"))}</h2>
       <p class="headline-fact">${esc(ev.name)}</p>
       <p class="fact-sub">${esc(ev.location)} · ${esc(ev.dates)}</p>
       ${
@@ -3405,41 +3650,45 @@ function renderEvent() {
       }
     </div>
     <div class="info-block">
-      <h2><span class="section-num">02</span> Tickets</h2>
-      <p>${esc(ev.tickets || "See gamescom.global for tickets.")}</p>
+      <h2><span class="section-num">02</span> ${esc(t("event.tickets"))}</h2>
+      <p>${esc(ev.tickets || t("event.ticketsFallback"))}</p>
     </div>
     <div class="info-block">
-      <h2><span class="section-num">03</span> Your badge</h2>
-      <p>Halls 2–4 are the <strong>business area</strong>: around 800 exhibitors doing the industry's trading, open Wednesday to Friday and closed at the weekend. A <strong>trade or media badge</strong> opens them; a consumer ticket does not.</p>
-      <p class="fact-sub">${
-        state.trade
-          ? "Business booths are showing — in the exhibitor grid, in the hall filter, on the map, and as their own list on the exhibitor page."
-          : "The guide is showing the consumer halls only. This is a display setting; it changes nothing about what your ticket actually gets you."
-      }</p>
-      <button class="${state.trade ? "badge-off" : "trade-enable"}" id="badge-toggle" type="button">${
-        state.trade ? "Hide trade exhibitors" : "I have a trade badge — show trade exhibitors"
-      }</button>
+      <h2><span class="section-num">03</span> ${esc(t("event.yourBadge"))}</h2>
+      <p>${t("event.badgeWhat")}</p>
+      <p class="fact-sub">${esc(
+        state.trade ? t("event.badgeOnNote") : t("event.badgeOffNote")
+      )}</p>
+      <button class="${state.trade ? "badge-off" : "trade-enable"}" id="badge-toggle" type="button">${esc(
+        state.trade ? t("trade.hide") : t("trade.enable")
+      )}</button>
     </div>
     <div class="info-block">
-      <h2><span class="section-num">04</span> Halls &amp; areas</h2>
+      <h2><span class="section-num">04</span> ${esc(t("event.areas"))}</h2>
       <ul class="area-list">${areas}</ul>
     </div>
     ${
       entrances
         ? `<div class="info-block">
-      <h2><span class="section-num">05</span> Entrances</h2>
+      <h2><span class="section-num">05</span> ${esc(t("event.entrances"))}</h2>
       ${ent.lede ? `<p>${esc(ent.lede)}</p>` : ""}
       <ul class="area-list">${entrances}</ul>
-      ${ent.trade ? `<p class="entrance-trade"><strong>On a trade badge.</strong> ${esc(ent.trade)}</p>` : ""}
+      ${
+        ent.trade
+          ? `<p class="entrance-trade"><strong>${esc(t("event.entrancesTradeLabel"))}</strong> ${esc(
+              ent.trade
+            )}</p>`
+          : ""
+      }
     </div>`
         : ""
     }
     <div class="info-block">
-      <h2><span class="section-num">0${entrances ? 6 : 5}</span> Official links</h2>
+      <h2><span class="section-num">0${entrances ? 6 : 5}</span> ${esc(t("event.officialLinks"))}</h2>
       <ul class="link-list">${links}</ul>
     </div>
     <p class="info-foot">
-      <span>Compiled from published sources, not from gamescom itself.</span>
+      <span>${esc(t("event.compiledNote"))}</span>
       ${sourcesButton("event", "")}
     </p>`;
 
@@ -3456,8 +3705,8 @@ function renderChangelog() {
     .map(
       (e) => `<div class="timeline-entry">
         <div class="timeline-head">
-          <span class="timeline-date">${esc(e.date)}</span>
-          <span class="rev-tag">rev ${esc(e.revision)}</span>
+          <span class="timeline-date">${esc(formatDate(e.date))}</span>
+          <span class="rev-tag">${esc(t("updates.rev", { n: e.revision }))}</span>
         </div>
         <ul>${(e.changes || []).map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
       </div>`
@@ -3551,15 +3800,17 @@ function renderCountdown() {
   const now = new Date();
   const days = Math.ceil((start - now) / 86400000);
   const el = $("#countdown");
-  if (days > 1) el.textContent = `T−${days} days`;
-  else if (days === 1) el.textContent = "T−1 day";
-  else if (now < new Date(state.event.endDate + "T20:00:00+02:00")) el.textContent = "● Live now";
-  else el.textContent = "See you next year";
+  if (days >= 1) el.textContent = t("countdown.days", { n: days });
+  else if (now < new Date(state.event.endDate + "T20:00:00+02:00"))
+    el.textContent = t("countdown.live");
+  else el.textContent = t("countdown.over");
 }
 
 function renderFreshness() {
   const m = state.meta;
-  $("#data-freshness").textContent = `Data updated ${m.lastUpdated} · rev ${m.revision}. ${m.note || ""}`;
+  $("#data-freshness").textContent =
+    t("meta.freshness", { date: formatDate(m.lastUpdated), rev: m.revision }) +
+    (m.note ? ` ${m.note}` : "");
 }
 
 /* ---------- views ----------
@@ -3722,7 +3973,7 @@ function bindControls() {
   );
   $("#clear-saved").addEventListener("click", () => {
     const n = savedCount();
-    if (!confirm(`Forget all ${n} saved item${n === 1 ? "" : "s"} and their day assignments? This can't be undone.`)) return;
+    if (!confirm(t("confirm.clearSaved", { n }))) return;
     state.marks.saved = { exhibitors: new Set(), games: new Set() };
     state.itinerary = { exhibitors: new Map(), games: new Map() };
     persistMarks("saved");
@@ -3731,7 +3982,7 @@ function bindControls() {
   });
   $("#clear-played").addEventListener("click", () => {
     const n = playedCount();
-    if (!confirm(`Forget all ${n} played mark${n === 1 ? "" : "s"}? This can't be undone.`)) return;
+    if (!confirm(t("confirm.clearPlayed", { n }))) return;
     state.marks.played = { exhibitors: new Set(), games: new Set() };
     persistMarks("played");
     onMarksChanged({ rebuild: true });
@@ -3863,7 +4114,9 @@ async function main() {
   try {
     await loadData();
   } catch (err) {
-    $("#exhibitor-grid").innerHTML = `<p class="empty">Failed to load data (${esc(err.message)}). If you opened this file directly, serve it instead: <code>python3 -m http.server</code></p>`;
+    $("#exhibitor-grid").innerHTML = `<p class="empty">${esc(
+      t("boot.loadFailed", { error: err.message })
+    )} <code>python3 -m http.server</code></p>`;
     return;
   }
   state.marks.saved = loadMarks("saved");

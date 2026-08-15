@@ -18,7 +18,7 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-SITE="_headers css data fonts icons imprint.html index.html js manifest.webmanifest map.html privacy.html sw.js"
+SITE="_headers css data fonts icons imprint.html index.html js manifest.de.webmanifest manifest.webmanifest map.html privacy.html sw.js"
 
 # Repo furniture, plus CNAME: that one is GitHub Pages' custom-domain marker,
 # and Cloudflare takes its hostnames from the routes in wrangler.toml instead.
@@ -37,6 +37,13 @@ if [ -n "$unclassified" ]; then
   echo "Add each to SITE (ships to the edge) or NOT_SITE (stays in the repo)." >&2
   exit 1
 fi
+
+# Missing or stale German would ship as English fragments in a German page,
+# which is exactly the kind of quiet breakage the check above exists to
+# prevent. No SITE change is needed for the new files: js/i18n/ and
+# data/i18n/ sit inside the already-listed js and data entries, and the
+# cp -R below carries them.
+node tools/check-i18n.mjs
 
 rm -rf dist
 mkdir dist

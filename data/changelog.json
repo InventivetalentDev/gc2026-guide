@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-15",
+    "revision": 25,
+    "changes": [
+      "The guide now speaks German. It picks your browser's language on the first visit, and a switcher in the header — and again in the footer — changes it whenever you like; your choice is remembered on this device. Everything a visitor reads is translated: booth descriptions, queue calls, visit advice, the planner, the hall map and the calendar export. Weekday names now come from the date rather than being written down, so they are right in both languages.",
+      "Game titles, exhibitor names and area names stay in their own language, as they should — and because a saved game is identified by its title, every share link in circulation keeps working across both languages. A list built in German opens correctly in English and back again.",
+      "Descriptions and advice moved out of the exhibitor and event files into per-language files of their own, so your phone only downloads the language you read. Both languages are cached for offline use, so switching still works in a hall with no reception.",
+      "The imprint and privacy pages stay in English, and so does this changelog — the guide says as much under the Updates heading when you are reading in German."
+    ]
+  },
+  {
+    "date": "2026-08-15",
     "revision": 24,
     "changes": [
       "New Entrances section on the Info tab covering all four gates — West, South, East and North — with what each one is closest to and what it costs you in queueing. South is where the rail crowd lands and the business halls sit; North is shortest to halls 6–9; East opens into Hall 10; West is the quiet one.",

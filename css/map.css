@@ -239,6 +239,11 @@
 }
 .map-note a { color: var(--ink-mid); }
 .map-note a:hover { color: var(--ink); }
+/* The map's own switcher, sitting in the credit line next to the legal
+   links — the map is reachable without ever passing through the guide, so
+   it carries its own language control the same way it carries those. */
+.map-note .lang-switch-link { color: var(--ink-mid); font: inherit; }
+.map-note .lang-switch-link:hover { color: var(--ink); }
 
 @media (max-width: 400px) {
   .map-bar, .map-halls { padding-left: 12px; padding-right: 12px; }

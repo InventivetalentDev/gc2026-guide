@@ -11,7 +11,10 @@ one licence over the pile would say something untrue about most of it.
 - the selection — which exhibitors and which games are in the guide at all
 - the `confirmed` / `expected` / `rumored` status calls
 - crowd forecasts, queue advice, tags and categories
-- descriptions, notes and the freshness annotations
+- descriptions, notes and the freshness annotations, in every language they
+  are written in: the prose in `data/i18n/` is the same editorial work as the
+  structure it hangs off, and the German is a translation of it rather than a
+  separate thing — same licence, same attribution requirement
 - the source list and last-checked date on each entry
 - the compilation itself: the structure, the joins, and the database that
   results from gathering, checking and maintaining all of the above

@@ -1,0 +1,1339 @@
+{
+  "meta": {
+    "note": "Standnummern und Spieleangebote ändern sich bis zur Messe laufend; unbestätigte Standorte sind markiert. Was sich geändert hat, steht im Updates-Tab."
+  },
+  "event": {
+    "location": "Koelnmesse, Köln",
+    "dates": "26.–30. Aug. 2026",
+    "tickets": "Nur online über den offiziellen gamescom-Shop — keine Tageskasse vor Ort. Tagestickets: Do/Fr/So 31,50 € (ermäßigt 22,50 €), Samstag 41,00 €; Abendtickets ab 16:00 Uhr 10,50–13,00 €; Familienticket 69,50–86,00 €; Mittwochs-Wildcard 65,50 € (ausverkauft am 5. Aug. 2026). Tickets für Opening Night Live sind ausverkauft; Samstagstickets sind erfahrungsgemäß schon vor der Messe ausverkauft. Tagestickets enthalten die kostenlose Fahrt mit Bus und Bahn im VRS-Gebiet.",
+    "crowdTips": [
+      "Samstag ist der vollste und teuerste Tag und meist ausverkauft — geh lieber am Donnerstag oder Sonntag zum Anspielen.",
+      "Die Mittwochs-Wildcard (Einlass ab 13:00 Uhr) ist der ruhigste Weg zu den heißesten Demos, war aber am 5. Aug. ausverkauft — ohne sie ist Donnerstagmorgen das nächstbeste Zeitfenster mit wenig Andrang.",
+      "Auch mit einem Business-Ticket kommst du am Mittwoch nicht überall hinein: Mehrere AAA-Stände lassen vormittags nur geladene Presse zu oder bleiben den ganzen Tag geschlossen (Xbox 2026: Stand öffnet erst Donnerstag; Capcom 2025: bis ca. 11:00 Uhr nur Presse). Schau auf die Kanäle des Standes, bevor du deinen Mittwoch danach planst.",
+      "Sei deutlich vor Türöffnung da und nimm den Eingang, der deinem ersten Muss-Stand am nächsten liegt — große Stände bauen in der ersten Stunde 2–4 h Wartezeit auf. Nord ist am kürzesten für die Hallen 6–9, Ost für Halle 10, Süd für die Business-Hallen; siehe Eingänge unter Event-Infos.",
+      "Mit einem Business-Ticket öffnen die Entertainment-Hallen jeden Tag um 09:00 Uhr — am Donnerstag und Freitag eine Stunde vor dem Publikum. Nimm dir in dieser Stunde die eine Demo vor, die dir am wichtigsten ist; näher an eine leere Messehalle kommst du nicht.",
+      "Such dir vorab 5–10 Muss-Stände aus (offizielle gamescom-App + Hallenplan) und geh direkt bei Öffnung zu deinem wichtigsten.",
+      "Manche großen Stände geben morgens Zeitfenster oder Fast-Lane-Bändchen über ihre eigenen Apps aus — schau in der Woche davor auf die Social-Kanäle der Aussteller.",
+      "Ein paar Stände nehmen vor der Messe kostenlose Online-Buchungen an: Die sechs Simulatoren von MOZA Racing in Halle 10.1 sind das klarste Beispiel. Buchen kostet nichts und entscheidet darüber, ob du fährst oder zuschaust — schau also auf die Websites aller Stände mit spielbaren Demos, die dir wichtig sind.",
+      "Nimm Bahn oder Tram zur Station Köln Messe/Deutz — Tagestickets enthalten die kostenlose VRS-Fahrt; fahr nicht mit dem Auto.",
+      "Abendtickets (ab 16:00 Uhr, 10,50–13,00 €) sind ein günstiger zweiter Besuch; in den letzten 2–3 Stunden werden die Schlangen kürzer.",
+      "Mach die gamescom-epix-Quests — wer alle Kapitel abschließt, kann ein kostenloses Sonntagsticket bekommen."
+    ],
+    "onl": {
+      "date": "Di., 25. Aug.",
+      "note": "Geoff Keighley moderiert die rund zweistündige Show. Kostenloser Stream auf YouTube, Twitch und Steam. Tickets für die Show vor Ort (34,50 €) sind ausverkauft."
+    },
+    "days": {
+      "2026-08-26": {
+        "access": "nur Fach- und Medienbesucher",
+        "hours": "Business 09:00–19:00, Entertainment 09:00–19:00 mit Business-Ticket (öffentlicher Wildcard-Einlass 13:00)",
+        "note": "Die einzige Möglichkeit für Privatbesucher war die Wildcard für 65,50 € (ab 13:00 Uhr). Sie war am 5. Aug. ausverkauft — wenn du keine hast, ist Mittwoch also nur für Fach- und Medienbesucher. Aber auch mit einem Business-Ticket halten manche großen Stände den Mittwoch oder den Vormittag für geladene Presse frei: Der Xbox-Stand öffnet für Besucher erst am Donnerstag, und 2025 ließ Capcom bis etwa 11:00 Uhr nur Presse hinein."
+      },
+      "2026-08-27": {
+        "access": "öffentlich",
+        "hours": "Entertainment 10:00–20:00 (09:00 mit Business-Ticket)",
+        "note": "Bester voller Publikumstag für Hands-on-Demos — spürbar ruhiger als Fr–Sa. Mit einem Business-Ticket öffnen die Entertainment-Hallen um 09:00 Uhr, eine ganze Stunde vor dem Publikum — die wertvollste Stunde der Woche zum Anspielen."
+      },
+      "2026-08-28": {
+        "access": "öffentlich",
+        "hours": "Entertainment 10:00–20:00 (09:00 mit Business-Ticket)",
+        "note": "Füllt sich im Lauf des Tages; vormittags sind große Stände noch machbar. Mit Business-Ticket kommst du wieder ab 09:00 Uhr rein, und es ist der letzte Tag des Business-Bereichs. Das gamescom-GDQ-Speedrun-Showcase startet (Congress Center Nord)."
+      },
+      "2026-08-29": {
+        "access": "öffentlich",
+        "hours": "Entertainment 09:00–20:00 (Business-Bereich geschlossen)",
+        "note": "Vollster und teuerster Tag, meist ausverkauft — wenn möglich zum Spielen meiden. Abends City Festival."
+      },
+      "2026-08-30": {
+        "access": "öffentlich",
+        "hours": "Entertainment 09:00–20:00 (Business-Bereich geschlossen)",
+        "note": "Entspanntester Publikumstag; am späten Nachmittag fahren die Stände langsam runter. Freier Eintritt über abgeschlossene gamescom-epix-Quests möglich."
+      }
+    },
+    "areas": {
+      "Entertainment area": "Die Publikumsmesse: große Publisher-Stände, spielbare Demos, Bühnen und Gratisaktionen.",
+      "Business area": "Nur Fachbesucher, Presse und akkreditierte Creator (Mi–Fr, Mi 09:00–19:00 / Do–Fr 09:00–20:00); Sa/So geschlossen. Die Hallen liegen am Eingang Süd, aber über West kommst du ruhiger rein — siehe Eingänge.",
+      "Event Arena": "Große Bühnenshows, Konzerte und Esports (u. a. die Prime-League-Offline-Finals).",
+      "Cosplay Village": "Cosplay-Wettbewerb, Fotoecken, Workshops und die Artist Area.",
+      "Merchandise Area": "Der einzige Bereich, in dem Aussteller Waren verkaufen dürfen — hier findest du die meisten Merch-Stände.",
+      "Cards & Boards Area": "Communities und Händler rund um Karten- und Brettspiele.",
+      "Indie Area / Indie Arena Booth": "Rund 200 Indie-Spiele von 182 Entwicklerteams — siehe den Ausstellereintrag zum Indie Arena Booth.",
+      "Retro & Family Area": "50 Jahre Gaming-Geschichte plus familienfreundliche Spiele — RC-Drifting, Headis und 8BitDos Retro-Controller stehen in dieser Hallenhälfte.",
+      "Campus Area": "Hochschulen, Bildung und Recruiting der Branche — etwa die halbe Halle 10.1, dazu ein Block für Community- und Jugendarbeit bei D020/E021. Keine Spiele zum Anspielen.",
+      "Hardware & peripherals row": "Kein offiziell benannter Bereich, aber die Reihen A–D in Halle 10.1 sind faktisch die Hardware-Halle: MOZAs Simulatoren und PXN-Lenkräder, Logitech G, Corsair, PNY, Thermaltake, ASRock, eine Wand voll Tastatur- und Gaming-Stuhl-Marken, eine Hi-Fi-Ecke bei A070 — und der Retro-Block mit Commodore, Atari und MicroProse.",
+      "Signing Area": "Autogramme und Treffen mit Content Creators.",
+      "gamescom epix": "Kostenloses digitales Quest-Programm (7 Story-Kapitel, gestartet am 3. Aug.) — Quests an den Ständen, Sammelkarten und kostenlose Sonntagstickets, wenn du alle Kapitel abschließt.",
+      "gamescom GDQ": "Zum ersten Mal gibt es ein Games-Done-Quick-Event mit Speedruns für einen guten Zweck: 28.–30. Aug. in der Konrad-Adenauer-Halle (Congress Center Nord).",
+      "City Festival": "Kostenlose Open-Air-Konzerte und Gaming-Zonen in der Kölner Innenstadt (Ringe), abends am 29. und 30. Aug."
+    },
+    "entrances": {
+      "lede": "Vier Tore — Süd, West, Ost und Nord — führen alle auf den zentralen Boulevard, der das Gelände von Nord nach Süd durchzieht. Welches du nimmst, entscheidet über deine erste halbe Stunde. Die Koelnmesse lenkt ankommende Besucherströme außerdem zwischen den Toren um, wenn sich eine Schlange staut — Beschilderung und Ordner vor Ort schlagen also jeden vorab gemachten Plan.",
+      "trade": "Der Standardtipp lautet „West ist am besten“, und er stimmt — aber vor allem für die Publikumstage. Am Mittwoch, dem Fach- und Medientag, sind die Massen noch nicht da und du kannst das Tor nehmen, das zu deiner Route passt. Donnerstag und Freitag spielt West seine Stärke aus: Süd und Ost tragen dann das Publikum, und über West umgehst du beide Schlangen, ohne dich durch die Publikumshallen kämpfen zu müssen. Sag dem Taxi „Eingang West“. Welches Tor du auch nimmst — das Ticket ist mehr wert als der Eingang: Der Zugang zu den Entertainment-Hallen mit Business-Ticket beginnt jeden Tag um 09:00 Uhr, am Donnerstag und Freitag eine ganze Stunde vor dem Publikum.",
+      "list": {
+        "West": "Der ruhige, und an Publikumstagen die Wahl mit Business-Ticket: wenige Minuten zu den Hallen 2–4 und zur Confex, ohne eine Publikumshalle zu durchqueren, und die besten Chancen auf ein Taxi. Keine eigene Station — lauf von Köln Messe/Deutz, oder sag dem Fahrer „Eingang West“.",
+        "South": "Der Haupteingang, und dort landet fast jeder, der mit der Bahn kommt: Die Station Köln Messe/Deutz liegt direkt davor, und die Business-Hallen 2–4 samt Confex schließen unmittelbar daran an. Genau deshalb ist es auch die schlimmste Schlange auf dem Gelände — 2025 war sie schon am Fachbesuchertag über der Kapazität. Rechne von hier mit 20–30 Minuten Fußweg bis Halle 8 am anderen Ende.",
+        "East": "Hat eine eigene Tram-Haltestelle (Linien 3 und 4, „Koelnmesse“), öffnet direkt in Halle 10 und ist ein kurzer Weg über den Platz zum Business-Bereich. Längst kein Geheimtipp mehr, und er fängt den Überlauf von Süd auf: 2025 war er zwischenzeitlich geschlossen und Ankommende wurden unter dem Gelände hindurch nach West umgeleitet.",
+        "North": "Der kürzeste Weg zu den Blockbuster-Hallen 6, 7, 8 und 9. Der Platz davor füllt sich schon zwei Stunden vor Türöffnung. Zu Fuß von der Tram oder mit dem Auto erreichbar, aber ohne eigene Station — und von hier ist der Business-Bereich den ganzen Boulevard entfernt."
+      }
+    }
+  },
+  "tags": {
+    "18+": "18+",
+    "25 years of Xbox": "25 Jahre Xbox",
+    "AA": "AA",
+    "AAA": "AAA",
+    "ARPG": "ARPG",
+    "GTA 6": "GTA 6",
+    "German": "deutsch",
+    "Japanese": "japanisch",
+    "MMO": "MMO",
+    "Minecraft": "Minecraft",
+    "PC": "PC",
+    "RPG": "RPG",
+    "Switch 2": "Switch 2",
+    "TCG": "TCG",
+    "VR": "VR",
+    "action": "Action",
+    "action-RPG": "Action-RPG",
+    "adventure": "Adventure",
+    "anime": "Anime",
+    "art": "Kunst",
+    "art games": "Art Games",
+    "attraction": "Attraktion",
+    "audio": "Audio",
+    "bookable": "buchbar",
+    "careers": "Jobs",
+    "co-op": "Koop",
+    "community": "Community",
+    "components": "Komponenten",
+    "console": "Konsole",
+    "cozy": "Cozy",
+    "discovery": "Entdeckungen",
+    "education": "Bildung",
+    "esports": "Esports",
+    "exhibition": "Ausstellung",
+    "experimental": "experimentell",
+    "family-friendly": "familienfreundlich",
+    "flight sim": "Flugsim",
+    "gacha": "Gacha",
+    "handheld": "Handheld",
+    "hands-on": "Hands-on",
+    "hardware": "Hardware",
+    "hi-fi": "Hi-Fi",
+    "horror": "Horror",
+    "indie": "Indie",
+    "live-service": "Live-Service",
+    "meet the devs": "Entwickler treffen",
+    "merch": "Merch",
+    "merch missions": "Merch-Aktionen",
+    "minigames": "Minispiele",
+    "mobile": "Mobile",
+    "modding": "Modding",
+    "monitors": "Monitore",
+    "multiplayer": "Multiplayer",
+    "narrative": "Story",
+    "not exhibiting": "nicht vor Ort",
+    "offsite": "außerhalb",
+    "offsite event": "Event außerhalb",
+    "peripherals": "Peripherie",
+    "photo ops": "Fotoaktionen",
+    "photo spot": "Fotospot",
+    "platform": "Plattform",
+    "platformer": "Jump'n'Run",
+    "playable demos": "spielbare Demos",
+    "publisher": "Publisher",
+    "retro": "Retro",
+    "rhythm": "Rhythmus",
+    "robotics": "Robotik",
+    "sci-fi": "Sci-Fi",
+    "shooter": "Shooter",
+    "sim racing": "Simracing",
+    "simulation": "Simulation",
+    "single-player": "Singleplayer",
+    "sports": "Sport",
+    "strategy": "Strategie",
+    "survival": "Survival",
+    "tabletop": "Tabletop",
+    "tech showcase": "Technik-Demo",
+    "theater": "Theater",
+    "unconfirmed": "unbestätigt",
+    "world premiere": "Weltpremiere",
+    "analytics": "Datenanalyse",
+    "association": "Verband",
+    "closed stand": "geschlossener Stand",
+    "cloud gaming": "Cloud-Gaming",
+    "co-development": "Co-Development",
+    "commerce": "Handel",
+    "distribution": "Vertrieb",
+    "engine": "Engine",
+    "hosting": "Hosting",
+    "infrastructure": "Infrastruktur",
+    "licensing": "Lizenzen",
+    "media": "Medien",
+    "pavilion": "Pavillon",
+    "payments": "Zahlungen",
+    "pitching": "Pitching",
+    "platform holder": "Plattformbetreiber",
+    "promotion": "Werbung",
+    "security": "Sicherheit",
+    "services": "Dienstleistungen",
+    "studio": "Studio",
+    "walk-up": "ohne Termin",
+    "web games": "Webspiele"
+  },
+  "countries": {
+    "Andorra": "Andorra",
+    "Argentina": "Argentinien",
+    "Australia": "Australien",
+    "Austria": "Österreich",
+    "Bangladesh": "Bangladesch",
+    "Belgium": "Belgien",
+    "Bosnia and Herzegovina": "Bosnien und Herzegowina",
+    "Brazil": "Brasilien",
+    "Bulgaria": "Bulgarien",
+    "Canada": "Kanada",
+    "Chile": "Chile",
+    "China": "China",
+    "Croatia": "Kroatien",
+    "Cyprus": "Zypern",
+    "Czech Republic": "Tschechien",
+    "Denmark": "Dänemark",
+    "Estonia": "Estland",
+    "Finland": "Finnland",
+    "France": "Frankreich",
+    "Germany": "Deutschland",
+    "Ghana": "Ghana",
+    "Greece": "Griechenland",
+    "Hong Kong": "Hongkong",
+    "Hungary": "Ungarn",
+    "Iceland": "Island",
+    "India": "Indien",
+    "Indonesia": "Indonesien",
+    "Ireland": "Irland",
+    "Israel": "Israel",
+    "Italy": "Italien",
+    "Japan": "Japan",
+    "Korea, Republic of": "Südkorea",
+    "Kyrgyzstan": "Kirgisistan",
+    "Lithuania": "Litauen",
+    "Luxembourg": "Luxemburg",
+    "Malaysia": "Malaysia",
+    "Malta": "Malta",
+    "Mexico": "Mexiko",
+    "Morocco": "Marokko",
+    "Netherlands": "Niederlande",
+    "New Zealand": "Neuseeland",
+    "Nigeria": "Nigeria",
+    "Norway": "Norwegen",
+    "Philippines": "Philippinen",
+    "Poland": "Polen",
+    "Portugal": "Portugal",
+    "Qatar": "Katar",
+    "Republic of North Macedonia": "Nordmazedonien",
+    "Romania": "Rumänien",
+    "Saudi Arabia": "Saudi-Arabien",
+    "Serbia": "Serbien",
+    "Singapore": "Singapur",
+    "Slovakia": "Slowakei",
+    "Slovenia": "Slowenien",
+    "Spain": "Spanien",
+    "Sweden": "Schweden",
+    "Switzerland": "Schweiz",
+    "Taiwan": "Taiwan",
+    "Thailand": "Thailand",
+    "Türkiye": "Türkei",
+    "Ukraine": "Ukraine",
+    "United Arab Emirates": "Vereinigte Arabische Emirate",
+    "United Kingdom": "Vereinigtes Königreich",
+    "United States": "Vereinigte Staaten",
+    "United States of America": "Vereinigte Staaten",
+    "Uruguay": "Uruguay",
+    "Vietnam": "Vietnam"
+  },
+  "dirGroups": {
+    "101": "Plattformen / Technologien",
+    "102": "Komponenten und Zubehör",
+    "103": "Pflege, Reinigung, Reparatur",
+    "201": "Entertainment (Games)",
+    "202": "Edutainment",
+    "203": "Infotainment",
+    "204": "Entwicklung",
+    "205": "Sonstige Software",
+    "301": "eSports",
+    "351": "Analoge Spiele",
+    "401": "Bildung und Weiterbildung",
+    "501": "Verbände und öffentliche Einrichtungen",
+    "601": "Dienstleister, Auftragnehmer",
+    "701": "Telekommunikation und Internet",
+    "702": "Medien",
+    "801": "Nahrungsergänzung für Gamer",
+    "802": "Branchenfremde Produkte",
+    "901": "Merchandising-Produkte"
+  },
+  "exhibitors": {
+    "xbox": {
+      "description": "Xbox’ größter gamescom-Stand aller Zeiten, zum 25-jährigen Xbox-Jubiläum: 25 Spiele an rund 140 Stationen, ein Fable-Theater mit Live-Demo, tägliche Livestreams und am 26. Aug. ein Xbox FanFest. Bethesda- und Activision-Titel laufen hier mit. Stand geöffnet Do/Fr 10:00–20:00, Sa/So 09:00–20:00 — am Fachbesucher-Mittwoch geschlossen, außer zum FanFest am Abend (26. Aug., 20:00–23:00).",
+      "crowdNote": "Größter Plattform-Stand der Messe; bei MW4, Gears E-Day und dem Fable-Theater musst du mit 2–4 Stunden Wartezeit rechnen.",
+      "visitAdvice": "Sei Do oder Fr pünktlich zur Standöffnung um 10:00 in Halle 7 und geh direkt zu CoD MW4 oder Gears E-Day. Beim Fable-Theater geht es schneller, daher passt es gut für mittags. Samstag komplett meiden. Auch mit einem Business-Ticket solltest du keinen Besuch am Mittwoch einplanen — der Stand öffnet erst Donnerstag (mittwochs gab es dort bisher nur eine Vorschau für geladene Presse).",
+      "games": {
+        "Call of Duty: Modern Warfare 4": "Erstes öffentliches 6v6-Multiplayer-Hands-on — voraussichtlich die längste Schlange der Messe.",
+        "Gears of War: E-Day": "Erstes öffentliches Kampagnen-Hands-on vor dem Release am 6. Okt. 2026.",
+        "Fable": "Live-Gameplay-Theater von Playground Games — nicht spielbar (Release laut Berichten Feb. 2027).",
+        "Minecraft Dungeons II": "Erster öffentlich spielbarer Build.",
+        "METRO 2039": "Weltweit erstes Hands-on; auch an Plaions Stand in Halle 9.",
+        "Stranger Than Heaven": "Sega/RGG Studio — auch an SEGAs Stand in Halle 7.",
+        "Halo: Campaign Evolved": "Hands-on des Kampagnen-Remasters.",
+        "Forza Horizon 6": "Demo des Drift-Attack-Modus.",
+        "Microsoft Flight Simulator 2024": "Inhalte zu den National Championship Air Races.",
+        "Alien: Isolation 2": "Auch am SEGA-Stand — vergleich die Schlangen.",
+        "Alien Deathstorm": "Gameplay-Demo.",
+        "The Blood of Dawnwalker": "Vampir-RPG von Rebel Wolves — auch am Stand von Bandai Namco.",
+        "STAR WARS Zero Company": "Taktik-Strategie von Bit Reactor/Respawn.",
+        "Turok: Origins": "Sabers Koop-Dino-Shooter.",
+        "Castlevania: Belmont's Curse": "Auch an Konamis Stand in Halle 7.",
+        "Resonance: A Plague Tale Legacy": "Erscheint am 27. Aug. — mitten in der Messe.",
+        "Valor Mortis": "Napoleonisches Soulslike von One More Level.",
+        "Crowsworn": "Metroidvania-Demo.",
+        "Genigods: Nezha": "Action-Demo.",
+        "Terrible Lizards": "Demo am Stand.",
+        "Armatus": "Steht im offiziellen Xbox-Wire-Lineup des Stands.",
+        "Bad Magpie": "Indie-Titel am Stand.",
+        "Unannounced titles (~3 slots)": "Xbox spricht von 25 Spielen, hat aber erst rund 22 genannt — Enthüllungen dürften rund um Opening Night Live kommen."
+      }
+    },
+    "nintendo": {
+      "description": "Nintendos traditionell riesiger Stand in Halle 9 ist ganz auf Switch 2 ausgerichtet. Bestätigt sind neun spielbare Titel „und mehr“. Im Mittelpunkt steht das erste seit über einem Jahrzehnt öffentlich spielbare Call of Duty auf Nintendo-Hardware — eine native Switch-2-Portierung.",
+      "crowdNote": "Hier stehen Familien erfahrungsgemäß am längsten an; bei MW4 auf Switch 2, Pokémon und Splatoon kommen schnell über zwei Stunden Wartezeit zusammen, besonders am Samstag und Sonntag.",
+      "visitAdvice": "Do oder Fr zur Öffnung; geh zuerst zu MW4 oder 007 First Light. Nintendo vergibt oft virtuelle Warteschlangen-Tickets über Stand oder App — sichere dir früh einen Slot. Wochenende meiden.",
+      "games": {
+        "Call of Duty: Modern Warfare 4": "Nativer Switch-2-Build (Infinity Ward + Digital Legends) — kein Cloud-Streaming.",
+        "007 First Light": "Das Bond-Spiel von IO Interactive, an allen fünf Tagen spielbar.",
+        "EA Sports FC 27": "Das volle FC-Erlebnis auf Switch 2.",
+        "Metaphor: ReFantazio": "Die Switch-2-Portierung des Atlus-RPGs zum Anspielen.",
+        "Minecraft Dungeons II": "Switch-2-Fassung; auch am Xbox-Stand.",
+        "Nintendo Switch Sports Resort": "First-Party-Familientitel — großer Wochenend-Magnet.",
+        "Orbitals": "Hands-on-Demo.",
+        "Pokémon Pokopia (Expansion Pass)": "Inhalte des Expansion Pass spielbar — rechne mit riesigen Pokémon-Schlangen.",
+        "Splatoon Raiders": "Hands-on des First-Party-Spin-offs.",
+        "Additional unannounced titles": "Nintendos Ankündigung sagt ausdrücklich „und mehr“."
+      }
+    },
+    "playstation": {
+      "description": "KEIN Publikumsstand — Sony verzichtet zum siebten Mal in Folge auf einen PlayStation-Stand (zuletzt 2019) und setzt stattdessen auf eigene State-of-Play-Streams und die Tokyo Game Show. Sonys einzige Einträge im offiziellen Verzeichnis richten sich an Fach- und Partnerbesucher: SIE Deutschland auf einem Gemeinschaftsstand der Branche in der Business-Halle 4.1 (nur Fachbesucher), Sony Pictures als Untermieter an Capcoms Stand in Halle 9.1 und Flächen von „Sony Europe“ auf dem Freigelände nördlich von Halle 8. PS5-Titel sind trotzdem an Drittanbieter-Ständen spielbar (Blood of Dawnwalker, Turok, 007 First Light und mehr).",
+      "crowdNote": "Kein Stand, für den man anstehen könnte.",
+      "visitAdvice": "Such PlayStation nicht auf dem Messegelände — spiel Multiplattform-PS5-Titel bei Xbox, Bandai Namco, SEGA und anderen Publisher-Ständen. Ein Überraschungstrailer bei ONL ist immer möglich."
+    },
+    "google-play": {
+      "description": "Ein Stand nahe Xbox in Halle 7.1. Zu erwarten sind Mobile-Titel und Partnerspiele von Google Play Games on PC, Demo-Stationen und Giveaways — das genaue Lineup ist noch nicht angekündigt.",
+      "crowdNote": "Gleichmäßiger, aber überschaubarer Andrang; Schlangen vor allem für Merch und Giveaways.",
+      "visitAdvice": "Den ganzen Tag über meist ohne Warten machbar — lässt sich gut mit dem Xbox-Stand in derselben Halle verbinden.",
+      "games": {
+        "Partner mobile/PC titles": "Noch keine Titel genannt."
+      }
+    },
+    "capcom": {
+      "description": "Eine der größten Flächen in Halle 9 (ca. 950 m², rund 60 Demo-Stationen) mit zwei Demos, die weltweit erstmals spielbar sind: Dragon's Dogma 2: Dark Arisen und Mega Man: Dual Override. Dazu kommt Onimusha eine Woche vor Release. Rocket Beans macht das Bühnenprogramm.",
+      "crowdNote": "Zwei weltweit erstmals spielbare Demos plus Onimusha kurz vor Release in der vollsten Halle — rechne bei Dark Arisen und Onimusha mit 1–3 Stunden Wartezeit.",
+      "visitAdvice": "Geh unter der Woche direkt zur Hallenöffnung zu Capcom: zuerst Dark Arisen (wenigste Stationen im Verhältnis zur Nachfrage), dann Onimusha. Bei Street Fighter 6 bleiben die Schlangen den ganzen Tag kurz. Mit einem Business-Ticket kannst du schon am Mittwoch kommen. 2025 ließ der Stand bis etwa 11:00 Uhr aber nur Presse hinein — plane den Besuch also für den späten Vormittag.",
+      "games": {
+        "Dragon's Dogma 2: Dark Arisen": "Weltweit erstes öffentliches Hands-on der Erweiterung (Release 9. Okt. 2026).",
+        "Mega Man: Dual Override": "Erste spielbare Demo des zwölften Teils der Mega-Man-Hauptreihe.",
+        "Onimusha: Way of the Sword": "Wochen vor dem Release Ende September spielbar — vermutlich der größte Magnet des Stands.",
+        "Street Fighter 6": "Stationen zum lockeren Spielen und Community-Matches."
+      }
+    },
+    "sega-atlus": {
+      "description": "SEGAs aufwendig gestalteter Stand in Halle 7: das europäische Hands-on-Debüt von Alien: Isolation 2 in einem klaustrophobischen Sci-Fi-Set, Persona 4 Revival in einem nachgebauten Junes-Kaufhaus und Stranger Than Heaven als Underground-Jazzclub inszeniert.",
+      "crowdNote": "Drei erstmals spielbare Titel sorgen einzeln für lange Schlangen, aber die Besucher verteilen sich auf ein großes, abwechslungsreiches Lineup.",
+      "visitAdvice": "Nimm Alien: Isolation 2 oder Persona 4 Revival gleich morgens (Alien gibt es auch bei Xbox — vergleich beide Schlangen). Bei Sonic und Crazy Taxi werden die Plätze schnell frei, daher passen sie gut in den Nachmittag.",
+      "games": {
+        "Alien: Isolation 2": "Europäisches Hands-on-Debüt des Prologs; auch am Xbox-Stand — vergleich die Schlangen.",
+        "Persona 4 Revival": "Erstes öffentliches Hands-on im Westen, in einem Junes-Themenbereich.",
+        "Stranger Than Heaven": "Erstes öffentliches Hands-on des neuen Spiels von RGG Studio; Bereich im Jazzclub-Look.",
+        "Crazy Taxi: World Tour": "Frühes Hands-on mit einer brandneuen Stadtkarte.",
+        "Total War: Warhammer 40,000": "Hands-on-Debüt mit drei Space-Marine-Szenarien.",
+        "Sonic Racing: CrossWorlds": "Aktueller Build inkl. TMNT-Pack.",
+        "Sonic Pico Park": "Neuer Sonic-Koop-Titel.",
+        "Metaphor: ReFantazio (Switch 2)": "Auch an Nintendos Stand in Halle 9.",
+        "Total War: Warhammer III – Lords of the End Times": "Showcase der Erweiterung."
+      }
+    },
+    "bandai-namco": {
+      "description": "Komplett spielbares Lineup neben Ubisoft und EA in Halle 6. Im Mittelpunkt stehen die weltweit erste öffentliche Anspielversion von The Blood of Dawnwalker (Release am 3. Sept.) und das erstmals spielbare Ace Combat 8. Dazu kommen die gewohnt spektakulären Fotokulissen.",
+      "crowdNote": "Drei Erst-Hands-ons, darunter ein heiß erwartetes RPG, das während der Messewoche erscheint — Dawnwalker hat eine der längsten Schlangen in Halle 6.",
+      "visitAdvice": "Geh zur Öffnung zu The Blood of Dawnwalker oder weich auf die Stationen am Xbox-Stand in Halle 7 aus. Ace Combat 8 machst du am Morgen nach dem ONL-Auftritt.",
+      "games": {
+        "Ace Combat 8: Wings of Theve": "Überhaupt erstes öffentliches Hands-on; Release 2. Okt. 2026.",
+        "Dragon Ball Xenoverse 3": "Erstmals in Europa spielbar; Vollversion 2027.",
+        "The Blood of Dawnwalker": "Weltweit erstmals öffentlich anspielbar, wenige Tage vor dem Release am 3. Sept.; auch am Xbox-Stand.",
+        "Elden Ring: Tarnished Edition": "Erscheint am 28. Aug. mitten in der Messe; von der deutschen Fachpresse ins Spiel gebracht, steht nicht im angekündigten Lineup.",
+        "One Piece: Grand Gourmet": "Der Release am 23. Okt. macht es zum Kandidaten; für den Stand nicht angekündigt."
+      }
+    },
+    "konami": {
+      "description": "Hauptstand in Halle 7 mit einer begehbaren, interaktiven Installation zu Silent Hill: Townfall (neuer Trailer bei ONL), dem spielbaren Castlevania: Belmont's Curse und einem Metal-Gear-Fotospot — dazu ein eigener Yu-Gi-Oh!-TCG-Stand in Halle 5.2 (B021/A020).",
+      "crowdNote": "Nach dem ONL-Trailer wird die Schlange für Townfall wohl so lang wie bei einer Freizeitparkattraktion; wer eine Demo spielen will, steht vor allem für Castlevania an.",
+      "visitAdvice": "Mach die Silent-Hill-Installation in der ersten oder der letzten Stunde des Tages. Mit einem Business-Ticket ist der Mittwoch noch besser, bevor der ONL-Trailer zusätzliche Besucher anlockt. Castlevania ist auch bei Xbox spielbar — nimm die kürzere Schlange.",
+      "games": {
+        "Silent Hill: Townfall": "Begehbare interaktive Installation, keine Demo; neuer Trailer bei ONL am 25. Aug.",
+        "Castlevania: Belmont's Curse": "Während der ganzen Messe spielbar; auch am Xbox-Stand.",
+        "Metal Gear Solid: Master Collection Vol. 2": "Fotogelegenheit vor einem Metal Gear.",
+        "Yu-Gi-Oh! Trading Card Game": "Einsteiger-Sessions am Kartenspiel-Stand in Halle 5.2."
+      }
+    },
+    "ubisoft": {
+      "description": "Der gewohnte Platz am Eingang von Halle 6 mit einer spielbaren Demo von Rayman Legends Retold und der zurückkehrenden Community Lounge — Entwicklertalks und live gestreamte Sessions (26.–29. Aug.) zu Rainbow Six Siege, AC Black Flag Resynced, Anno 117 und The Division 2.",
+      "crowdNote": "Ein spielbarer Titel plus Lounge-Format — mittlere Wartezeiten, dieses Jahr kein großes neues AAA-Hands-on.",
+      "visitAdvice": "Die Rayman-Schlange ist unter der Woche vormittags gut machbar. Die Community-Lounge-Sessions laufen nach Zeitplan — Termine stehen auf Ubisofts Kanälen.",
+      "games": {
+        "Rayman Legends Retold": "Demo: Einstiegslevel, eine neue Drachenritt-Sequenz und ein klassisches Musiklevel.",
+        "Assassin's Creed Black Flag Resynced": "Community-Lounge-Showcase des Black-Flag-Remakes.",
+        "Anno 117: Pax Romana": "Community-Lounge-Sessions.",
+        "Rainbow Six Siege": "Community-Lounge-Sessions statt Demo-Schlange.",
+        "The Division 2": "Community-Sessions zum Live-Service-Titel."
+      }
+    },
+    "ea": {
+      "description": "EA ist wieder als Aussteller dabei, mit einem Stand am Eingang von Halle 6 neben Ubisoft. Das Lineup ist allerdings noch nicht angekündigt. EA Sports FC 27, das wenige Wochen nach der Messe erscheint, wird mit ziemlicher Sicherheit im Mittelpunkt stehen.",
+      "crowdNote": "Bei den FC-27-Stationen bilden sich erfahrungsgemäß stetige, aber schnell vorankommende Schlangen; ohne große Enthüllung ist der Stand eher gut besucht als überrannt.",
+      "visitAdvice": "FC hat viele Stationen und kurze Runden — mittags völlig okay.",
+      "games": {
+        "EA Sports FC 27": "Erscheint wenige Wochen nach der gamescom; die Switch-2-Fassung ist separat für Nintendos Stand bestätigt.",
+        "Battlefield 6 (seasonal content)": "Laut deutscher Fachpresse könnte BF6 am Stand „eine Rolle spielen“.",
+        "skate.": "Live-Service-Titel im laufenden Rollout; plausibel, aber nicht angekündigt."
+      }
+    },
+    "square-enix": {
+      "description": "Ein auf Final Fantasy ausgerichteter Fan-Stand in Halle 8 mit Spielstationen, Fotospots und großem Merch-Angebot. Bekannte Spiele stehen im Mittelpunkt; Dragon Quest VII Reimagined ist der einzige wirklich neue Titel.",
+      "crowdNote": "Final Fantasy zieht viele Fans an, aber am Stand gibt es keine Weltpremieren. Bei Fotospots und Merch ist der Andrang gleichmäßig; die Enthüllung von FF7 Revelation bei ONL (25. Aug.) könnte am nächsten Morgen für mehr Besucher sorgen.",
+      "visitAdvice": "Merch ist früh in der Messewoche ausverkauft — kauf beim ersten Durchgang. Guter Mittagsstopp; lässt sich mit CD Projekt Red in derselben Halle verbinden.",
+      "games": {
+        "Dragon Quest VII Reimagined": "Der einzige neue Titel am Stand — und damit die einzige wahrscheinlich lange Schlange.",
+        "Final Fantasy VII Rebirth": "Spielstationen, wahrscheinlich Fassungen für neue Plattformen.",
+        "Final Fantasy XIV": "MMO-Community-Präsenz.",
+        "Final Fantasy X/X-2 HD Remaster": "Spielstation mit dem bekannten Titel.",
+        "Final Fantasy VII Revelation": "„New Look“-Präsentation bei Opening Night Live (25. Aug.), geführt von Director Naoki Hamaguchi mit neuem Material — ein ONL-Segment, keine Demo auf der Fläche."
+      }
+    },
+    "cdpr": {
+      "description": "CDPRs erster gamescom-Stand seit 2019: Von Mittwoch bis Sonntag gibt es ausführliche Präsentationen zu The Witcher 3: Wild Hunt — Songs of the Past, der für 2027 geplanten dritten Erweiterung. Der erste Trailer läuft bei Opening Night Live.",
+      "crowdNote": "Bei CDPR-Präsentationen bilden sich erfahrungsgemäß mehrstündige Schlangen (siehe Cyberpunk 2077 im Jahr 2019); eine neue Witcher-Enthüllung direkt nach ONL wird zum Magneten für die ganze Halle.",
+      "visitAdvice": "Behandle es wie eine Vorstellung mit fester Zeit: Stell dich an deinem ersten Tag zur Hallenöffnung in Halle 8 an — mit einem Business-Ticket am Mittwoch, sonst am Donnerstag. Oder versuch die letzten Vorstellungen am Sonntagabend. Halle 8 liegt am Nordeingang — geh dort hinein, nicht über den Boulevard.",
+      "games": {
+        "The Witcher 3: Songs of the Past": "Präsentation im Kinoformat, nicht spielbar; erster Trailer bei ONL am 25. Aug.; Release 2027."
+      }
+    },
+    "gryphline": {
+      "description": "Hypergryphs globale Publishing-Marke kommt mit einem deutlich größeren Auftritt für Arknights: Endfield zurück, verteilt auf zwei Standblöcke in Halle 8.1: erweiterte interaktive Installationen und Fotospots, dazu Boss-Speedrun-Challenges mit exklusiven Event-Belohnungen.",
+      "crowdNote": "Endfields Community ist riesig und der kleinere Stand im Vorjahr war überfüllt; an den Challenge-Stationen bilden sich die längsten Schlangen.",
+      "visitAdvice": "Mach die Speedrun-Challenge als Erstes — ab Mittag können die Belohnungen ausgehen und die Warteschlange geschlossen werden; die Foto-Installationen bleiben den ganzen Tag zugänglich.",
+      "games": {
+        "Arknights: Endfield": "Boss-Speedrun-Challenge-Stationen mit exklusiven Event-Belohnungen."
+      }
+    },
+    "snail-games": {
+      "description": "Der Stand des ARK-Publishers in Halle 8.1: neue Inhalte zu ARK: Survival Ascended, dazu das Open-Universe-MMO For The Stars, die mittelalterliche Survival-Sim Bellwright und der Sandbox-Baukasten Honeycomb: The World Beyond — plus ein erster öffentlicher Blick auf einen noch unangekündigten, intern entwickelten AAA-Titel.",
+      "crowdNote": "ARKs Community ist groß und eine AAA-Enthüllung zieht Laufkundschaft, aber es ist ein mittelgroßer Stand, kein Mega-Auftritt.",
+      "visitAdvice": "Wenn der unangekündigte Titel groß enthüllt wird, füllt sich der Stand am Morgen danach — sonst können ARK-Fans fast jederzeit vorbeischauen.",
+      "games": {
+        "ARK: Survival Ascended": "Neue Inhalte und Entwicklungen rund um das Survival-Flaggschiff.",
+        "For The Stars": "Open-Universe-MMO.",
+        "Bellwright": "Mittelalterliche Survival- und Siedlungssim, über 1 Mio. Spieler auf Steam.",
+        "Honeycomb: The World Beyond": "Sci-Fi-Sandbox-Baukasten.",
+        "Unannounced Snail AAA title": "Erster Blick für Medien und Besucher angekündigt."
+      }
+    },
+    "plaion": {
+      "description": "Einer der größten Stände in Halle 9, im Zentrum METRO 2039 vom hauseigenen Studio 4A Games — ebenfalls am Xbox-Stand in Halle 7 spielbar.",
+      "crowdNote": "Der bekannte Shooter zieht viele Besucher an, ist aber an zwei Orten spielbar. Dadurch verteilen sich die Schlangen.",
+      "visitAdvice": "Vergleich die Schlangen bei Plaion (Halle 9) und Xbox (Halle 7) — bei Xbox werden an 140 Stationen oft schneller Plätze frei.",
+      "games": {
+        "METRO 2039": "Haupttitel am Stand; auch bei Xbox in Halle 7."
+      }
+    },
+    "krafton": {
+      "description": "Einer der größten Auftritte in Halle 9, verteilt auf zwei Standblöcke (B050/C051 und B040/C041), mit fünf Titeln — im Mittelpunkt ein noch geheimer Weltpremieren-FPS von PUBG STUDIOS (angesiedelt im pazifischen Nordwesten) und Neon Giants Cyber-Noir-Shooter NO LAW. Für interaktive Missionen gibt es passendes Merch.",
+      "crowdNote": "Eine Weltpremiere aus dem PUBG-Universum in der vollsten Halle der Messe garantiert starken Andrang, sobald die Enthüllung durch ist.",
+      "visitAdvice": "Geh am Donnerstag gleich morgens hin; mit einem Business-Ticket schon am Mittwoch, bevor die PUBG-Premiere breit bekannt ist. Mach die Merch-Aktionen früh, solange der Bestand reicht.",
+      "games": {
+        "Untitled PUBG STUDIOS project": "Weltpremiere eines neuen FPS aus dem PUBG-Universum auf der Messe.",
+        "NO LAW": "Open-World-FPS von The-Ascent-Entwickler Neon Giant — Hands-on-Demo.",
+        "Project ZETA": "Teil des Fünf-Titel-Showcase.",
+        "Age Twisters": "Teil des Fünf-Titel-Showcase.",
+        "TARAE: The Unbound": "Dark-Fantasy-Action-RPG."
+      }
+    },
+    "embark": {
+      "description": "Nach dem Durchbruch von ARC Raiders kommt das schwedische Studio mit einem großen Stand in Halle 6 zur gamescom. Berichten zufolge ist er doppelt so groß wie der von EA und dreht sich ganz um den erfolgreichen Extraction-Shooter.",
+      "crowdNote": "Die riesige aktive Spielerschaft und eine mögliche Ankündigung zur nächsten Saison dürften für viel Andrang sorgen.",
+      "visitAdvice": "Community-Events und Creator-Meetups lassen den Andrang unvorhersehbar hochschnellen — schau für den Bühnenplan auf Embarks Social-Kanäle und geh in einer ruhigen Phase hin.",
+      "games": {
+        "ARC Raiders": "Fokus des Stands; erwarte Showcases neuer Inhalte für den Live-Service-Hit.",
+        "THE FINALS": "Embarks anderer Live-Titel; für den Stand noch nicht gelistet."
+      }
+    },
+    "team17-astragon": {
+      "description": "Ein Gemeinschaftsstand bei B060/C061, im selben Standblock wie Focus Entertainment: Team17s Creature-Collector LumenTale und Silver Pines neben astragons Simulator-Lineup (Bus Simulator 27, Construction Simulator Evolution, Firefighting Simulator: Ignite).",
+      "crowdNote": "Titel im Indie-Maßstab an einem geteilten Stand — außerhalb der Samstags-Stoßzeiten kurze Schlangen.",
+      "visitAdvice": "Ein einfacher Stopp ohne lange Wartezeit, während du anderswo in Halle 6 auf einen Zeitslot wartest.",
+      "games": {
+        "LumenTale: Memories of Trey": "Team17s Aushängeschild-Demo.",
+        "Silver Pines": "Zweiter bestätigter Team17-Titel.",
+        "Bus Simulator 27": "Von astragon; erscheint wenige Tage nach der Messe.",
+        "Construction Simulator Evolution": "Aus astragons Simulator-Lineup.",
+        "Firefighting Simulator: Ignite": "Aus astragons Simulator-Lineup."
+      }
+    },
+    "giants-software": {
+      "description": "Entwickler und Publisher des Landwirtschafts-Simulators mit dem gewohnten Community-Stand (dazu ein Stand im Business-Bereich in Halle 4.2). Das Standprogramm ist nicht angekündigt — am wahrscheinlichsten sind Landwirtschafts-Simulator 26 (Switch/Mobile, erschienen Mai 2026) und frische LS25-Erweiterungsinhalte von der FarmCon, dazu Merch.",
+      "crowdNote": "Eine der treuesten deutschen Communities der Messe — gleichmäßiger Andrang über den ganzen Tag statt einzelner Spitzen.",
+      "visitAdvice": "Lässt sich gut mit den umliegenden AAA-Ständen in Halle 6.1 verbinden; Merch ist an den Wochenendtagen meist ausverkauft.",
+      "games": {
+        "Farming Simulator 26": "Die Switch-/Mobile-Fassung erschien am 19. Mai 2026 — wahrscheinlich mit Demo-Stationen.",
+        "Farming Simulator 25: Beans & Alpacas": "Erstes Gameplay lief am 28. Juli auf der FarmCon; ein gamescom-Auftritt passt ins Zeitfenster vor Release."
+      }
+    },
+    "focus": {
+      "description": "Ein Stand in Halle 6.1 bei B060/C061, im selben Standblock wie Team17 und astragon, dazu ein reiner Fachbesucher-Stand im Business-Bereich (Halle 4.2, A028). Der große Release Resonance: A Plague Tale Legacy erscheint am 27. Aug. mitten in der Messe und ist am Xbox-Stand spielbar.",
+      "crowdNote": "Am eigenen Stand kein angekündigtes Blockbuster-Hands-on; die Resonance-Nachfrage fängt größtenteils der Xbox-Stand ab.",
+      "visitAdvice": "Stell dich für Resonance am Xbox-Stand an, wo es bestätigt spielbar ist. Für Focus’ eigenen Stand gibt es noch kein angekündigtes Programm.",
+      "games": {
+        "Resonance: A Plague Tale Legacy": "Erscheint am 27. Aug.; bestätigt am Xbox-Stand in Halle 7, wahrscheinlich auch an Focus’ eigenem Stand in Halle 6.1.",
+        "Edge of Memories": "Titel im JRPG-Stil für 2026, plausibler Standkandidat.",
+        "Warhammer 40,000: Space Marine 3": "Zu früh für ein Hands-on; ein Trailer-Auftritt ist möglich."
+      }
+    },
+    "hoyoverse": {
+      "description": "Einer der größten asiatischen Stände der Messe (ca. 660 m², dazu ein Stand im Business-Bereich in Halle 4.2): fünf Titel in Themenzonen — ein Genshin-Bereich im Snezhnaya-Look, Planarcadia aus Honkai: Star Rail, Zenless Zone Zero sowie Weltpremieren-Hands-ons zu Honkai: Nexus Anima und Petit Planet.",
+      "crowdNote": "Hier gibt es erfahrungsgemäß einige der längsten Schlangen der gamescom — limitiertes Merch sorgt besonders am Samstag und Sonntag für 1–3 Stunden Wartezeit und zeitweise Einlassstopps.",
+      "visitAdvice": "Geh Do/Fr zur Hallenöffnung und direkt zum Merch-Tresen oder zur Nexus-Anima-Demo; die Fotozonen sind am späteren Nachmittag entspannter. Plan einen halben Tag für Demos plus Merch ein.",
+      "games": {
+        "Genshin Impact": "Snezhnaya-Themenzone mit Eisenbahnkulisse und dem Nachbau einer Statue der Sieben; exklusives Merch.",
+        "Honkai: Star Rail": "Themenzone Planarcadia (Ära Version 4.4).",
+        "Zenless Zone Zero": "Eigener Ausstellungsbereich mit den neuesten Inhalten.",
+        "Honkai: Nexus Anima": "Weltpremieren-Hands-on des neuen Strategiespiels, in dem du Kreaturen sammelst.",
+        "Petit Planet": "Hands-on der gemütlichen Lebenssimulation mit Welterkundung."
+      }
+    },
+    "level-infinite": {
+      "description": "Tencents globale Publishing-Marke steht direkt neben HoYoverse und zeigt drei komplett spielbare Titel. Im Mittelpunkt steht das weltweit erste öffentliche Hands-on von Remedys CONTROL Resonant. Dazu kommen thematisch gestaltete Fotospots, ein Glücksrad, Treffen mit Entwicklern und eine Cosplay-Show zu Hunt: Showdown.",
+      "crowdNote": "Bei der Weltpremieren-Demo von CONTROL Resonant musst du zwei Monate vor Release mit 60–120 Minuten Wartezeit rechnen. Da HoYoverse direkt daneben liegt, gehört Halle 6.1 zu den vollsten Bereichen.",
+      "visitAdvice": "Stell dich gleich morgens für CONTROL Resonant an; die Dune- und Hunt-Stationen laufen schneller durch und sind am späten Nachmittag gut machbar.",
+      "games": {
+        "CONTROL Resonant": "Weltweit erstmals spielbar; Release 24. Sept. 2026 — der größte Magnet des Stands.",
+        "Dune: Awakening (console)": "Erstes öffentliches Hands-on der Konsolenfassung.",
+        "Hunt: Showdown 1896": "Spielbar mit anwesenden Entwicklern; Vorschau auf ein neues In-Game-Event."
+      }
+    },
+    "tencent-worlds-of-play": {
+      "description": "Tencent Games hat einen Stand in Halle 8.1 ohne angekündigtes Programm, dazu außerhalb des Geländes die „Worlds of Play: The Game Art Exhibition“ in der Wassermannhalle (27.–29. Aug.): fünf Themenzonen mit Artworks aus 40 Titeln, Entwicklertalks und Cosplay-Showcases. Tencents spielbare Titel stehen bei Level Infinite in Halle 6.1.",
+      "crowdNote": "Die kuratierte Ausstellung liegt abseits der Haupthallen und arbeitet mit Zeitfenstern. Rechne mit mittlerem Andrang; bei Level Infinite ist deutlich mehr los.",
+      "visitAdvice": "Ein ruhigerer Ausgleich zwischen zwei Hallenrunden; prüf kurz vor der Messe, ob du dich für ein kostenloses Zeitfenster anmelden musst.",
+      "games": {
+        "Worlds of Play (40-title art exhibition)": "Kunstausstellung vom 27.–29. Aug., außerhalb des Messegeländes.",
+        "Tencent Hall 8.1 booth (program TBA)": "Registrierter Stand in Halle 8.1, B050/A051 — was dort gezeigt wird, ist noch nicht angekündigt."
+      }
+    },
+    "netease": {
+      "description": "Zwei Stände in Halle 7.1: A051 für Sea of Remnants und B050 für Marvel Rivals (Inhalte aus Season 9.5, Statue von Jeff the Landshark, Fotobox) sowie das Hidden-Mountain-Finale von Where Winds Meet. NetEase betreibt außerdem einen reinen Fachbesucher-Stand im Business-Bereich (Halle 4.2, D050) mit einer Vorschau auf die nächste Once-Human-Erweiterung und einen unangekündigten Titel.",
+      "crowdNote": "Marvel Rivals ist gerade einer der größten Live-Service-Shooter; die 6-gegen-6-Runden dauern lange — zu Stoßzeiten sind 45–90 Minuten Wartezeit möglich.",
+      "visitAdvice": "Bei Marvel Rivals spielen 12 Leute pro Runde, die Schlange bewegt sich also schubweise — stell dich direkt nach dem Start einer Runde an. Sea of Remnants steht an einem anderen Stand (A051) als Marvel Rivals und Where Winds Meet (B050), beide in Halle 7.1 nahe Xbox.",
+      "games": {
+        "Marvel Rivals": "Mehrere Stationen für 6-gegen-6-Partien; Inhalte aus Season 9.5 an Stand B050.",
+        "Where Winds Meet": "Wuxia-Open-World-RPG; Inhalte des Hidden-Mountain-Finales an Stand B050.",
+        "Sea of Remnants": "Stilisiertes Piraten-Abenteuer-RPG, eigener Stand A051; ob es spielbar ist, sagt NetEases Mitteilung nicht.",
+        "Once Human next expansion + unannounced title": "Hands-on-Vorschau an NetEases Stand im Business-Bereich (Halle 4.2, D050) — nur Fach- und Medienbesucher, mit Publikumsticket nicht erreichbar."
+      }
+    },
+    "pearl-abyss": {
+      "description": "Zeigt Crimson Desert (über 6 Mio. verkaufte Einheiten) in Partnerschaft mit Samsung: 30 Demo-PCs an Samsungs neuen 6K-Monitoren Odyssey G8, dazu Bühnenevents, Giveaways und Cosplay. Samsung ist als Technikpartner am Stand mitregistriert.",
+      "crowdNote": "30 Stationen halten die Schlange in Bewegung, aber der 6K-Showcase und das erfolgreiche Spiel sorgen trotzdem für 30–60 Minuten Wartezeit, am Wochenende länger.",
+      "visitAdvice": "Mit 30 Stationen geht die Schlange schneller voran als bei den meisten AAA-Ständen — Donnerstag oder Freitag am späten Vormittag ist ein gutes Zeitfenster.",
+      "games": {
+        "Crimson Desert": "Aktueller Release-Build an 30 Stationen mit Samsung Odyssey G8 6K/165 Hz."
+      }
+    },
+    "infold": {
+      "description": "Publisher von Infinity Nikki und Love and Deepspace. Am Infinity-Nikki-Stand gibt es Treffen mit Nikki und Momo, Aktionsstationen mit exklusiven Merch-Belohnungen und Sonderevents mit Gästen. Love and Deepspace war 2025 ebenfalls am Infold-Stand und wird auch 2026 erwartet.",
+      "crowdNote": "Beide Spiele haben riesige, treue Fangemeinden; bei vergleichbaren Ständen lag die Wartezeit für Merch und Fotoaktionen 2025 bei über 60 Minuten.",
+      "visitAdvice": "Geh zur Hallenöffnung hin — limitiertes Tagesmerch und Event-Slots sind an Publikumstagen oft schon am frühen Nachmittag weg.",
+      "games": {
+        "Infinity Nikki": "Offizielle Standevents, Aktionen und exklusives Merch — rechne eher mit Aktions-Schlangen als mit Demo-Stationen.",
+        "Love and Deepspace": "Für 2026 noch nicht offiziell benannt; teilte sich 2025 den Infold-Stand."
+      }
+    },
+    "aerosoft": {
+      "description": "Der Paderborner Simulationsspezialist bringt Winter Resort 3 und Professional Ship Simulator mit, dazu fünf erstmals auf der Messe gezeigte Simulatoren — Polizeiarbeit, Bergbau, Feuerwehr, Krabbenfischerei und Straßenbau. Ein kompakter Stand zwischen den großen Ständen in Halle 9.1 (plus ein Stand im Business-Bereich in Halle 4.2).",
+      "crowdNote": "Kleine, treue Sim-Fangemeinde — konstantes Interesse, aber selten lange Schlangen.",
+      "visitAdvice": "Lässt sich mit GIANTS und dem Stand von Team17 × astragon in Halle 6.1 zu einer Sim-Runde verbinden; an den Stationen mit neuen Spielen ist direkt nach Türöffnung am meisten los.",
+      "games": {
+        "Winter Resort 3": "Fortsetzung der Skigebietssimulation in den Alpen.",
+        "Professional Ship Simulator": "Teil des bestätigten Lineups.",
+        "Five unannounced simulators": "Erstmals gezeigt: Polizeiarbeit, Bergbau, Feuerwehr, Krabbenfischerei und Straßenbau."
+      }
+    },
+    "ggg-poe2": {
+      "description": "Ein Path-of-Exile-2-Stand in Halle 6.1 mit einer eigens für die Messe gebauten Demo, einem „unheimlichen“ Fotomotiv und exklusivem Merch. GGG zeigt außerdem am 25. Aug. um 20:00 Uhr auf dem offiziellen gamescom-Twitch-Kanal neue Inhalte, am Abend vor Messebeginn.",
+      "crowdNote": "Sehr große, treue europäische PC-ARPG-Fangemeinde und eine messeexklusive Demo — lange, konstante Schlangen plus Merch-Nachfrage.",
+      "visitAdvice": "Geh unter der Woche früh hin; frag das Standpersonal, ob es eine eigene Schlange für Merch gibt. Schau dir vorher den Twitch-Auftritt am 25. Aug. an, um zu sehen, was du am Stand spielen kannst.",
+      "games": {
+        "Path of Exile 2": "Besondere gamescom-Demo mit Inhalten aus der Zeit nach „Return of the Ancients“; neue Inhalte im gamescom-Twitch-Stream am 25. Aug. um 20:00 Uhr."
+      }
+    },
+    "eclipse-glow": {
+      "description": "Das chinesische Studio hinter dem Artus-Actionspiel Tides of Annihilation betreibt einen Hands-on-Demostand in Halle 6.1 — eines der bemerkenswerten neuen chinesischen Singleplayer-Spiele auf der Messe. Die Standnummer stammt aus Berichten der Fachpresse, nicht aus dem offiziellen Verzeichnis — prüf sie vor Ort anhand des Hallenplans.",
+      "crowdNote": "Die Trailer haben viel Aufmerksamkeit erzeugt, aber der Stand zeigt nur einen Titel — rechne mit mittleren Schlangen, die nach einem ONL-Auftritt schnell länger werden.",
+      "visitAdvice": "Wenn es bei Opening Night Live auftaucht, stell dich am nächsten Morgen früh an, bevor es sich herumspricht.",
+      "games": {
+        "Tides of Annihilation": "Erweiterte, exklusive Messedemo, Halle 6.1, Stand B050, 27.–30. Aug."
+      }
+    },
+    "indie-arena-booth": {
+      "description": "Der größte Indie-Stand der Welt — Motto 2026 „Democratree: games for everyone“: rund 200 Spiele von 182 Entwicklerteams aus 41 Ländern, dazu Publisher-Bereiche (11 bit, Fireshine, Headup, Wired Productions) und ein Nintendo-Bereich mit Switch- und Switch-2-Stationen. Die Audiomarke beyerdynamic ist dieses Jahr „First Presenter“-Sponsor, rüstet über 230 Entwicklerstationen mit MMX-300-PRO-Headsets aus und betreibt eine Hörstation für Soundtracks auf Vinyl.",
+      "crowdNote": "Gut besucht, aber deutlich erträglicher als die AAA-Hallen; an den einzelnen Stationen gibt es meist kurze Schlangen, am längsten am Samstagnachmittag.",
+      "visitAdvice": "Do/Fr vormittags ist ideal. Schau dir das Lineup vorher auf indiearena.org oder der IAB-Steam-Kuratorenseite an und such dir Ziele aus — die Entwickler stehen selbst an den Stationen, es ist also der beste Ort, um wirklich mit den Machern zu reden. Kombinier es mit dem Retro-&-Family-Bereich in derselben Halle.",
+      "games": {
+        "Stronghold 4": "Fireflys Wiederbelebung der Burgen-Sim — ein Aushängeschild des Stands.",
+        "Paralives": "Lebenssimulation, die auf besonders vielen Wunschlisten steht — rechne mit einer der längeren Indie-Schlangen.",
+        "Moonlighter 2: The Endless Vault": "Fortsetzung mit Ladenführung und Roguelite-Action.",
+        "Neon Abyss 2": "Fortsetzung des punkigen Action-Roguelites.",
+        "Escape Academy 2: Back 2 School": "Fortsetzung des Koop-Escape-Rooms.",
+        "Unrailed 2: Back on Track": "Chaotisches Koop-Gleisebauen.",
+        "Hidden Folks 2": "Fortsetzung des handgezeichneten Wimmelbildspiels.",
+        "Dungeon Clawler": "Deckbuilder mit Greifautomat.",
+        "We Were Here Tomorrow": "Neuer Teil der Koop-Rätselreihe.",
+        "The 9th Dragon": "Nahkampf-Action in Voxeloptik.",
+        "Crowded": "Städtebauspiel, in dem Krähen die Einheiten sind."
+      }
+    },
+    "korea-pavilion": {
+      "description": "Gemeinschaftspavillon der Korea Creative Content Agency, der kleine und mittlere koreanische Studios im Indie-Bereich bündelt (plus eine B2B-Zone) — die beste Anlaufstelle, um koreanische PC- und Mobile-Titel jenseits von Krafton und Pearl Abyss zu entdecken.",
+      "crowdNote": "Die vielen kleinen Stände verteilen die Besucher gut — du kannst meist ohne Warten vorbeischauen.",
+      "visitAdvice": "Zu jeder Tageszeit machbar; auch am Wochenende eine gute Option ohne lange Wartezeit.",
+      "games": {
+        "Various Korean indie/mobile titles": "Wechselnder Showcase mehrerer Studios; einzelne Titel werden näher an der Messe angekündigt."
+      }
+    },
+    "koei-tecmo": {
+      "description": "Ein kleiner Stand in Halle 10.2, gemeinsam mit dem japanischen Partner Gentle Giants registriert — das Programm ist nicht angekündigt, und Koei Tecmos große Herbstbühne ist die Tokyo Game Show. Da Attack on Titan 3 im Winter 2026 erscheint, ist eine Präsenz plausibel, aber unbestätigt.",
+      "crowdNote": "Kleiner Stand in der Indie- und Merch-Halle — Laufkundschaft, solange nichts Spielbares auftaucht.",
+      "visitAdvice": "Prüf es vor Ort: Eine spielbare Station zu Attack on Titan 3 oder Nioh 3 würde sich schnell füllen; sonst ein kurzer Stopp auf deiner Indie-Arena-Booth-Runde.",
+      "games": {
+        "Attack on Titan 3": "Der Release im Winter 2026 macht einen Auftritt plausibel. Das ist nur unsere Vermutung; angekündigt ist noch nichts."
+      }
+    },
+    "bilibili": {
+      "description": "Die chinesische Video- und Community-Plattform Bilibili ist auch Spiele-Publisher und hat einen Stand in der auf Indies ausgerichteten Halle 10.1. Das Spiele-Lineup für 2026 ist noch nicht angekündigt.",
+      "crowdNote": "Überschaubarer Stand im Indie-Bereich; kurze Wartezeiten außer bei Signier- und Creator-Events.",
+      "visitAdvice": "Schau im Vorbeigehen vorbei, während du durch die Indie-Halle gehst; prüf vor Ort in der App die Zeiten für Bühnenprogramm und Giveaways.",
+      "games": {
+        "Bilibili-published titles (lineup TBA)": "Erwarte einen Showcase im Indie-Maßstab wie in den Vorjahren."
+      }
+    },
+    "aternos": {
+      "description": "Der kostenlose Minecraft-Serverhoster aus Bonn (einer der größten weltweit) veranstaltet zusammen mit dem Cytooxien-Team die „MC Party“: vier eigens gebaute Minispiele — Dragon Escape, Farming, Dungeons und Paintball — allein oder in Gruppen, mit Spielerkarten als Warteschlangensystem. Runden bringen Münzen, die am Stand gegen Aternos-/Cytooxien-Merch und MGAs Miniverse-Sammelfiguren „Make It Mini Minecraft“ eingetauscht werden.",
+      "crowdNote": "Minecraft zieht Kinder und Familien stark an — konstante Schlangen für die Minispielrunden, am stärksten an den Familientagen am Wochenende.",
+      "visitAdvice": "Hol dir früh eine Spielerkarte und komm zwischen zwei Hallenrunden wieder — die Münzen sammeln sich über den Tag, mehrere kurze Besuche funktionieren also gut. In Halle 10.1 ist es morgens am ruhigsten.",
+      "games": {
+        "MC Party (Minecraft minigames)": "Dragon Escape, Farming, Dungeons und Paintball — jede Runde bringt Münzen, die gegen Merch und Preise eingelöst werden."
+      }
+    },
+    "behaviour": {
+      "description": "Das Studio hinter Dead by Daylight hat im zehnten Jubiläumsjahr des Spiels einen Stand in Halle 10.1. Das Standprogramm ist nicht angekündigt — erwarte eher Jubiläumsinhalte und Community-Aktionen als eine Demofläche im AAA-Stil.",
+      "crowdNote": "Über 60 Mio. Spieler und eine treue Community — konstante Schlangen, wenn Meet-and-Greets oder Fotoaktionen laufen.",
+      "visitAdvice": "Schau während der Messe auf die Social-Kanäle von DbD für Community-Events mit festen Zeiten; sonst ein einfacher Zwischenstopp bei deiner Indie-Runde durch Halle 10.",
+      "games": {
+        "Dead by Daylight": "Für den Stand ist noch nichts angekündigt; am wahrscheinlichsten ist eine Community-Präsenz zum Jubiläumsjahr."
+      }
+    },
+    "scs-software": {
+      "description": "Das Studio hinter Euro Truck Simulator 2 und American Truck Simulator bringt seinen traditionellen Community-Stand mit — Fahrsimulatoren mit Lkw-Sitzen, Treffen mit dem Team und Merch, seit Jahren fester Bestandteil der gamescom (plus ein Stand im Business-Bereich in Halle 4.1).",
+      "crowdNote": "Wegen der wenigen Fahrsimulatoren gibt es mäßige Wartezeiten; viele Fans bleiben länger, um mit dem Team zu reden.",
+      "visitAdvice": "An den Simulatoren werden nur langsam Plätze frei — komm zur Hallenöffnung, wenn du selbst fahren willst.",
+      "games": {
+        "Euro Truck Simulator 2": "Die Fahrsimulatoren sind Tradition am Stand; das konkrete Programm für 2026 ist nicht angekündigt.",
+        "American Truck Simulator": "Läuft üblicherweise zusammen mit ETS2 auf den Fahrsimulatoren."
+      }
+    },
+    "bloober-team": {
+      "description": "Das Studio hinter dem Silent-Hill-2-Remake und Cronos: The New Dawn hat einen Stand in Halle 10.1 (plus einen Stand im Business-Bereich); das Standprogramm für 2026 ist nicht angekündigt — plausibel sind Cronos-Inhalte oder ein Blick auf das nächste Horrorprojekt. Cronos-Artworks sind außerdem in Tencents Worlds-of-Play-Ausstellung außerhalb des Geländes zu sehen.",
+      "crowdNote": "Kleiner Stand für treue Horrorfans — kurze Schlangen, solange bei ONL nichts Neues enthüllt wird.",
+      "visitAdvice": "Wenn Bloober bei Opening Night Live etwas zeigt, füllt sich der Stand am nächsten Morgen — sonst ein kurzer Stopp.",
+      "games": {
+        "Cronos: The New Dawn": "Für den Stand ist noch nichts angekündigt; seit dem Release im Sept. 2025 Bloobers Flaggschiff."
+      }
+    },
+    "coffee-stain": {
+      "description": "Das Studio hinter Satisfactory — zugleich Publisher von Valheim und Deep Rock Galactic — hat einen Stand in Halle 10.1; das Programm ist nicht angekündigt. Satisfactorys Update 1.2 erschien im Juni und ein offizielles Satisfactory-Brettspiel kommt Ende 2026 — Demostationen und Merch sind am ehesten zu erwarten.",
+      "crowdNote": "Beliebte Spiele, aber ein eher ruhiger Stand — die meisten schauen im Vorbeigehen vorbei, statt lange anzustehen.",
+      "visitAdvice": "Einfacher Zwischenstopp neben den anderen Publisher-Ständen in Halle 10.1 (SCS, Bloober, Kepler).",
+      "games": {
+        "Satisfactory": "Für den Stand ist noch nichts angekündigt; das Update 1.2 (Juni 2026) macht es zum naheliegenden Mittelpunkt."
+      }
+    },
+    "kepler-interactive": {
+      "description": "Das Publisher-Kollektiv hinter Clair Obscur: Expedition 33 zeigt vor allem ONTOS, ein Sci-Fi-Mysteryspiel von Frictional Games (SOMA, Amnesia). Es spielt im umgebauten Mondhotel Samsara und soll 2026 erscheinen. Erwarte einen Präsentationsstand statt einer großen Demofläche.",
+      "crowdNote": "Kepler hat einen guten Ruf, aber der Stand in Halle 10.1 ist klein — die Schlangen bleiben kurz, außer direkt nach einem Bühnen- oder ONL-Auftritt.",
+      "visitAdvice": "Kombinier den Besuch mit dem Indie Arena Booth eine Ebene höher; nachmittags ist es ruhiger, wenn die Schulgruppen weg sind.",
+      "games": {
+        "ONTOS": "Geistiger Nachfolger von SOMA, entwickelt von Frictional Games; erscheint 2026 und steht in Keplers offiziellem gamescom-Profil."
+      }
+    },
+    "atari": {
+      "description": "Ankerpunkt der Retro-Ecke in Halle 10.1: Ataris Stand liegt im Block mit dem wiederbelebten Commodore (C059/B050) und MicroProse (A060/B061) — erwarte bei allen dreien klassische und moderne Retro-Hardware, Neuauflagen und Sammler-Merch.",
+      "crowdNote": "Laufkundschaft und nostalgisches Verweilen statt Schlangen.",
+      "visitAdvice": "Ein guter ruhiger Stopp, während du anderswo die Stoßzeiten aussitzt; die Merch-Schlangen wachsen am Samstag."
+    },
+    "moza-racing": {
+      "description": "MOZAs Sim-Racing- und Flugsimulatoren sind unter der Muttergesellschaft Gudsen Technology registriert. An sechs Stationen wird die Hardware für 2026 gezeigt: die Wheelbases R16 Ultra und R5 Pro, MOZAs erste Bewegungsplattform, ein KI-gestütztes System für Bewegungsfeedback und ein KI-Fahrtrainer. Die Termine sind kostenlos und lassen sich vorab auf MOZAs gamescom-Seite buchen. Pro Termin ist eine Person vorgesehen; sei fünf Minuten früher da.",
+      "crowdNote": "Bei nur sechs Simulatoren und langen Einzelsessions kommt die Schlange ohne Buchung langsam voran, auch wenn der Stand nie so voll wird wie die großen Konsolenstände.",
+      "visitAdvice": "Buche vor der Messe — es kostet nichts und entscheidet darüber, ob du selbst fährst oder nur zuschaust. Achtung: Auf MOZAs Seite gibt es Termine am Mittwoch ab 09:00 Uhr. Der Mittwoch ist jedoch nur für Fach- und Medienbesucher, und der Entertainment-Bereich öffnet dann erst um 13:00 Uhr, am Donnerstag und Freitag um 10:00 Uhr. Prüfe deshalb die tatsächlichen Öffnungszeiten für deinen Tag.",
+      "games": {
+        "MOZA sim racing & flight rigs": "Sechs Stationen für Renn- und Flugsimulationen. Buche einen Termin auf MOZAs Seite — ohne Buchung bekommst du nur einen Platz, wenn jemand nicht erscheint."
+      }
+    },
+    "kawasaki-corleo": {
+      "description": "Kawasaki Heavy Industries hat mitten in Halle 10.1 einen Stand unter einer einzigen registrierten Marke: CORLEO, dem vierbeinigen reitbaren Roboterkonzept, dessen kommerzielle Entwicklung das Unternehmen dieses Jahr bestätigt hat. Kawasaki hat erklärt, der CORLEO-Reitsimulator — gebaut aus Bewegungsdaten und 3D-Modellen aus der Entwicklung — richte sich an die Games- und Esports-Branche und sei für 2027 geplant. Erwarte also die Maschine und einen Simulator, keinen Ritt auf dem echten Gerät.",
+      "crowdNote": "Ein reitbares Roboterpferd in einer Spielehalle ist ein Fotomagnet — rechne mit einer Traube drumherum statt einer geordneten Schlange.",
+      "visitAdvice": "Der Umweg lohnt sich, wenn du wegen der Hardware-Reihe ohnehin in Halle 10.1 bist. Früh morgens oder in der letzten Stunde bekommst du am ehesten ein Foto ohne Menschenmenge. Da das Standprogramm noch nicht angekündigt ist, solltest du aber nicht fest mit einer Fahrt rechnen."
+    },
+    "rc-drift-games": {
+      "description": "Eine ferngesteuerte Driftstrecke im Retro-&-Family-Bereich von Halle 10.2, als Verein statt als Firma registriert. Sie kommt ganz ohne Bildschirm aus und gehört zu den wenigen Angeboten auf der Messe, bei denen auch kleine Kinder richtig mitmachen können.",
+      "crowdNote": "Es gibt nur wenige Fernsteuerungen und eine feste Strecke. Die Wartezeiten sind meist kurz, am Wochenende mit vielen Familien aber am längsten.",
+      "visitAdvice": "Guter Lückenfüller, während jemand anderes zwei Gänge weiter für den Indie Arena Booth ansteht."
+    },
+    "headis": {
+      "description": "Tischtennis nur mit dem Kopf, gespielt auf einer normalen Platte mit einem Gummiball — ein gamescom-Klassiker und der schnellste Weg, auf einer Spielemesse richtig ins Schwitzen zu kommen. Registriert über zwei Stände in Halle 10.2 (C050/B051 und B041/C040).",
+      "crowdNote": "Es schauen mehr Leute zu, als spielen; die Wartezeit, um an eine Platte zu kommen, ist kurz.",
+      "visitAdvice": "Nichts, was du dir eine Stunde vor einer großen Schlange antun willst — geh hin, wenn du für den Tag mit dem Spielen durch bist."
+    },
+    "xelerate-vr": {
+      "description": "Ein deutscher VR-Stand hinten in Halle 10.1, registriert für tragbare VR-Hardware, Action/Adventure, Rollenspiel, Simulation und Sport — ein Erlebnis mit Headset, kein Stand mit einzelnen Spielen. Das Programm für 2026 ist nicht angekündigt.",
+      "crowdNote": "Bei VR kann immer nur eine Person gleichzeitig spielen. Deshalb kann selbst eine kurze Schlange lange dauern.",
+      "visitAdvice": "Frag vor dem Anstellen, wie lange eine Session dauert — diese Zahl zählt mehr als die Länge der Schlange."
+    },
+    "gamescom-lan": {
+      "description": "Das Team hinter der gamescom LAN — der eigenen BYOC-LAN- und Esports-Veranstaltung, die im März in der Koelnmesse stattfindet — betreibt einen Bereich in Halle 10.1. Registriert ist er für Sammelkartenspiele, Organisationen und Agenturdienstleistungen, nicht für eine LAN-Party, und beherbergt die bei E071a gemeldeten Partneraktionen: TikTok, EDEKA, L'Oréal und Backforce-Sitzmöbel. Komm nicht mit dem Plan, einen Rechner anzuschließen; die LAN selbst ist eine andere Veranstaltung an anderen Terminen.",
+      "crowdNote": "Partneraktionen und Kartentische ziehen laufend Besucher an, aber keine lange Schlange.",
+      "visitAdvice": "Interessant, wenn du Sammelkartenspiele magst oder kostenlose Aktionen suchst; wenn du wegen Demos da bist, kannst du den Bereich auslassen."
+    },
+    "commodore": {
+      "description": "Die wiederbelebte Marke Commodore nimmt einen ganzen Stand in der Retro-Ecke von Halle 10.1 ein. Dort geht es um den Commodore 64 Ultimate, eine FPGA-basierte und taktgenaue Neuauflage des C64. Die C64C Edition soll Ende 2026 erscheinen. Direkt daneben stehen Atari (B041) und MicroProse (A060/B061).",
+      "crowdNote": "Kleiner Stand mit starkem Nostalgiefaktor und einer Maschine, die alle ausprobieren wollen — die Leute schauen sich meist in Ruhe um, statt eine feste Schlange zu bilden.",
+      "visitAdvice": "Mach die ganze Retro-Ecke in einem Durchgang: Commodore, Atari und MicroProse liegen wenige Meter auseinander."
+    },
+    "microprose": {
+      "description": "Das wiederbelebte MicroProse — das in Australien neu gestartete Simulations- und Strategielabel aus der Sid-Meier-Ära — hat einen Stand in der Retro-Ecke von Halle 10.1. Es ist für Action/Adventure, Rollenspiele, Simulation und Strategie registriert. Das Programm für 2026 ist noch nicht angekündigt.",
+      "crowdNote": "Ein Nischenpublikum, das genau weiß, warum es hier ist; erwarte Gespräche, keine Schlangen.",
+      "visitAdvice": "Nimm es zusammen mit Commodore und Atari mit, die ein paar Stände weiter stehen."
+    },
+    "embracer-freemode": {
+      "description": "Freemodes Stand ist unter drei Marken registriert — Embracer Freemode, RedOctane und Stage Tour — sowie für Eingabegeräte. Stage Tour ist das neue Rhythmusspiel mit Plastik-Instrumenten vom neu formierten Team hinter Guitar Hero: Gitarre, Schlagzeug und Gesang lassen sich mit bis zu vier Personen beliebig kombinieren. Das Spiel soll im Herbst 2026 erscheinen und bringt eine eigene Gitarre im Kramer-Stil, ein Schlagzeug und ein Mikrofon mit.",
+      "crowdNote": "Sind die Instrumente spielbar, ist mit einer Schlange zu rechnen; werden sie nur ausgestellt, wartet kaum jemand. Das wird erst auf der Messe klar.",
+      "visitAdvice": "Schau früh am Tag vorbei, ob das Spiel spielbar ist, und komm später wieder — bei Demos mit Plastik-Instrumenten entstehen nachmittags oft die längsten Schlangen.",
+      "games": {
+        "Stage Tour": "Im offiziellen Ausstellerprofil als Marke registriert, was nicht dasselbe ist wie eine bestätigte Hands-on-Demo. Im Sommer 2026 lief eine geschlossene Alpha."
+      }
+    },
+    "rocketwerkz": {
+      "description": "Das neuseeländische Studio von DayZ-Schöpfer Dean Hall, das später auch Stationeers und Icarus entwickelt hat, hat einen kleinen Stand in Halle 10.1. Es ist für Action/Adventure, Simulation und Strategie registriert; das Programm ist noch nicht angekündigt.",
+      "crowdNote": "Kleiner Stand mit treuer, aber nicht riesiger Anhängerschaft.",
+      "visitAdvice": "Stopp ohne Wartezeit; geh hin, wenn die großen Hallen am schlimmsten sind."
+    },
+    "frozen-district": {
+      "description": "Das Studio hinter House Flipper ist in Halle 10.1 sowohl unter seinem eigenen Namen als auch unter House Flipper 2 registriert. Passend zu einem Putzsimulator ist es im Ausstellerverzeichnis außerdem unter Pflege- und Reinigungsprodukten gelistet, nicht nur unter Spielen.",
+      "crowdNote": "Cozy-Sim-Fans stöbern eher, als dass sie anstehen.",
+      "visitAdvice": "Der Stand liegt nur zwei Stände von Raw Fury und drei von MOZA entfernt und lässt sich gut in einen Rundgang durch die A-Reihe einbauen.",
+      "games": {
+        "House Flipper 2": "Im offiziellen Ausstellerprofil als Marke registriert; das Demo-Programm ist nicht angekündigt."
+      }
+    },
+    "raw-fury": {
+      "description": "Der schwedische Indie-Publisher hinter Kingdom, Sable, Norco und Blue Prince betreibt einen Publikumsstand in Halle 10.1, dazu seinen Business-Stand in Halle 2.1. Das Lineup 2026 ist nicht angekündigt.",
+      "crowdNote": "Indie-Publisher-Stände ziehen neugierige Laufkundschaft statt Schlangen.",
+      "visitAdvice": "Guter Entdeckungsstopp zwischen den größeren Ständen in 10.1; frag lieber, was auf den Rechnern läuft, als die Beschilderung zu lesen."
+    },
+    "area-35": {
+      "description": "Das japanische Studio hinter den Taktikspielen TINY METAL hat einen Stand in Halle 10.1, registriert unter TINY METAL, TINY METAL 2 und PROJECT BLITZ.",
+      "crowdNote": "Rundentaktik zieht geduldige Fans an — die Leute setzen sich hin und bleiben länger.",
+      "visitAdvice": "Wenn ein Platz frei ist, nimm ihn; die Demos dauern lange und die Plätze werden nur langsam frei.",
+      "games": {
+        "PROJECT BLITZ": "Im offiziellen Ausstellerprofil als Marke registriert; sonst nichts angekündigt.",
+        "TINY METAL 2": "Im offiziellen Ausstellerprofil als Marke registriert."
+      }
+    },
+    "corsair": {
+      "description": "Publikumsstand vorne in der Hardware-Reihe von Halle 10.1, dazu ein zweiter Business-Stand in Halle 2.2. Registriert über die ganze Produktpalette: Tastaturen, Mäuse, Headsets, Displays, Stühle sowie Lenkräder und Pedale fürs Simracing.",
+      "crowdNote": "An den Teststationen werden die Plätze schnell frei; nur Merch-Aktionen sorgen für eine Schlange.",
+      "visitAdvice": "Nachmittags passt es immer. Kombiniere den Besuch mit MOZA und PXN, wenn du ein Lenkrad suchst."
+    },
+    "pny": {
+      "description": "Grafikkarten, Speicher und Datenträger. PNY hat für seinen Stand in Halle 10.1 schmale GeForce-RTX-50-Modelle, DDR4- und DDR5-Speicher, microSD-Express-Karten für Switch 2 und eine bislang unangekündigte Konsolen-SSD angedeutet.",
+      "crowdNote": "Komponentenstände ziehen Interessierte an, aber keine Schlangen.",
+      "visitAdvice": "Kurzer Stopp; bei den microSD-Express-Karten für Switch 2 lohnt es sich, vor Ort nachzufragen."
+    },
+    "thermaltake": {
+      "description": "Thermaltake hat einen der größeren Stände in der Hardware-Reihe von Halle 10.1 und zeigt dort Gehäuse, Kühlung und individuell umgebaute PCs.",
+      "crowdNote": "Die ausgestellten PCs sind beliebte Fotomotive; anstehen musst du nicht.",
+      "visitAdvice": "Jederzeit. Guter Stopp, wenn du Ideen für deinen PC statt Demos suchst."
+    },
+    "asrock": {
+      "description": "Mainboards, Grafikkarten und Monitore an einem kompakten Stand in Halle 10.1.",
+      "crowdNote": "Einer der ruhigeren Hardware-Stände.",
+      "visitAdvice": "Jederzeit; ein Zwei-Minuten-Stopp, außer du willst wirklich etwas kaufen."
+    },
+    "pxn": {
+      "description": "Günstige Simracing-Ausstattung — Lenkräder und Pedalsets — wenige Reihen von MOZAs Aufbauten in derselben Halle. PXNs eigene Ankündigung nannte Stand C029; im offiziellen Verzeichnis steht C041 — richte dich nach dem Hallenplan.",
+      "crowdNote": "Die Lenkräder lassen sich ausprobieren, und die Plätze werden schnell frei.",
+      "visitAdvice": "Das günstige Ende des Lenkradmarkts — praktisch, um es direkt im Vergleich mit MOZA bei A022 zu testen, bevor du Geld ausgibst."
+    },
+    "8bitdo": {
+      "description": "Controller, Tastaturen und Adapter im Retro-Look am selben Stand wie Clear River Games in Halle 10.2 — nur wenige Schritte vom Indie Arena Booth entfernt und in derselben Hallenhälfte wie der Retro-&-Family-Bereich.",
+      "crowdNote": "Kleiner Gemeinschaftsstand; Laufkundschaft, die am Wochenende dichter wird.",
+      "visitAdvice": "Besuch 8BitDo zusammen mit dem Indie Arena Booth, statt dafür einen eigenen Weg einzuplanen."
+    },
+    "konsolenfan-audio": {
+      "description": "Ein gemeinsamer Hi-Fi-Stand, der für eine Spielemesse wirklich ungewöhnlich ist: konsolenfan.de beherbergt Yamaha, Genelec, ELAC, Canton, clearaudio, Oehlbach und Sharp unter einer Standnummer, daneben Sitzmöbel von LiberNovo. Acht einzelne Firmen sind bei A070 registriert.",
+      "crowdNote": "Kaum jemand kommt wegen Lautsprechern zur gamescom — eine der ruhigsten Ecken einer vollen Halle.",
+      "visitAdvice": "Ein guter Ort, um die Schlange von jemand anderem auszusitzen, und ungefähr der einzige Stand auf der Fläche, an dem man wirklich etwas hören kann."
+    },
+    "a-maze": {
+      "description": "Der dritte Digital PlayGround des Berliner Independent-Games-Festivals auf der gamescom: experimentelle Spiele und Art Games, die noch ungewöhnlicher sind als das Angebot am Indie Arena Booth. Der Stand liegt nur wenige Plätze entfernt in derselben Halle.",
+      "crowdNote": "Klein, kuratiert und ruhig direkt neben dem Indie Arena Booth — die Rechner werden schnell wieder frei.",
+      "visitAdvice": "Das beste Gegenmittel gegen einen Tag voller AAA-Schlangen. Geh hin, wenn am Indie Arena Booth am meisten los ist."
+    },
+    "gamescom-campus": {
+      "description": "Etwa die halbe Halle 10.1 ist gar keine Spielefläche. Der Campus-Bereich steht für Bildung und Recruiting — Hochschulen, SAE, PIXL VISN und IU neben Arbeitgebern von Bundeswehr und Rheinmetall bis Siemens, Airbus, DATEV und mehreren Landespolizeien — dazu ein großer Block für Community- und Jugendarbeit bei D020/E021: jfc Medienzentrum, Gaming Ohne Grenzen, AbleGamers, Jugendschutzverbände und die Stadt Köln. Gut zu wissen, bevor du 10.1 betrittst und Demos erwartest.",
+      "crowdNote": "An den Fachbesuchertagen voll mit Schulgruppen, am Wochenende ruhig — nie eine Schlange.",
+      "visitAdvice": "Überspring es, außer du suchst einen Job oder ein Studium. Es ist allerdings ein wirklich ruhiger Ort, um sich mittags hinzusetzen, und die Stände zu Barrierefreiheit und Jugendarbeit sind einen Blick wert."
+    },
+    "lego": {
+      "description": "LEGO kehrt 2026 mit mehreren zusammenhängenden Ständen neben Nintendo in Halle 9.1 zurück. Das Programm ist noch nicht angekündigt. 2025 gab es Bereiche zu Batman, One Piece und Super Mario; erwarte daher aktuelle LEGO-Videospiele und Fotomotive mit Sets.",
+      "crowdNote": "Familienmagnet in derselben Halle wie Nintendo — Foto- und Demo-Schlangen werden am Wochenende lang.",
+      "visitAdvice": "Vormittags unter der Woche; am Wochenende dominieren Familien.",
+      "games": {
+        "LEGO video game lineup (TBC)": "LEGO enthüllt neue Spiele traditionell auf der gamescom bzw. bei ONL; die Titel für 2026 sind nicht angekündigt."
+      }
+    },
+    "wizards-of-the-coast": {
+      "description": "Wizards of the Coast ist der Ankerpunkt der Sammelkarten-Ecke in Halle 5.2 und teilt sich den Standblock mit dem europäischen Distributor ADC Blackfire. Erwarte Einsteigertische und Demos zu den 2026er-Sets (dieses Jahr u. a. Reality Fracture und Vorschauen auf das Hobbit-Crossover). Konamis eigener Yu-Gi-Oh!-Stand, Ravensburger, Pegasus und Panini füllen dieselbe Halle.",
+      "crowdNote": "Die Kartenspielhalle wird an Publikumstagen dicht, und Promo-Giveaways sorgen morgens für Ansturm.",
+      "visitAdvice": "Vormittags für Promos, am späten Nachmittag für einen entspannten Einsteigerplatz.",
+      "games": {
+        "Magic: The Gathering": "Tische für Einsteiger und freies Spielen; Promokarten gibt es meist nur, solange der Tagesvorrat reicht."
+      }
+    },
+    "asus-rog": {
+      "description": "Großer Auftritt in Halle 8.1 plus eine Außenfläche bei Halle 8 Nord: ROG-Laptops, Monitore und die Handheld-Familie ROG Xbox Ally vor Ort spielbar.",
+      "crowdNote": "An den Teststationen für ROG-Handhelds entstehen Wartezeiten von 15–45 Minuten; beim Rest geht es ohne Warten.",
+      "visitAdvice": "Vormittags hingehen, wenn du Zeit mit den ROG-Ally-Handhelds willst."
+    },
+    "samsung": {
+      "description": "Odyssey-Gaming-Monitore und SSDs mit Demo-Stationen von Partnerspielen in Halle 9.1. Samsung ist außerdem am nahen Stand B010/C011 von Pearl Abyss mitregistriert, den es mit 6K-Displays der Odyssey-G8-Reihe ausstattet.",
+      "crowdNote": "Die große Fläche und der Besucherandrang in Halle 9 halten den Stand gut besucht, aber die Plätze an den Stationen werden schnell frei.",
+      "visitAdvice": "Kombinier es mit deinem Nintendo-Besuch in Halle 9; du musst nicht zur Öffnung hetzen."
+    },
+    "razer": {
+      "description": "Zwei Standorte: der Publikumsstand in Halle 10.2 und ein Stand im Fachbesucherbereich in Halle 2.2. Am Publikumsstand kannst du die auf der CES gezeigten Peripherie-Neuheiten für 2026 ausprobieren; dazu gibt es Esports-Events und Merch-Aktionen.",
+      "crowdNote": "Limitierter Merch und Gratisaktionen ziehen viele Fans an, aber die Schlangen bleiben viel kürzer als an den großen Konsolenständen.",
+      "visitAdvice": "Für limitierten Merch solltest du am ersten Publikumstag früh hingehen; ansonsten passt jeder Nachmittag unter der Woche."
+    },
+    "logitech": {
+      "description": "Logitech ist sowohl unter Logitech als auch unter Logitech G gelistet und hat einen zweiten, größeren Stand bei E074/F077 in Halle 10.1. Dort gibt es Gaming-Mäuse, Tastaturen, Headsets und Simracing-Stationen zum Ausprobieren.",
+      "crowdNote": "An den meisten Stationen kannst du direkt loslegen; nur an den Simracing-Stationen gibt es kurze Wartezeiten.",
+      "visitAdvice": "Jederzeit; an den Simulatoren ist es werktags vormittags am ruhigsten."
+    },
+    "aoc-agon": {
+      "description": "AOCs Gaming-Monitor-Marke mit den neuesten OLED- und Mini-LED-Monitoren mit hoher Bildwiederholrate an Demo-Stationen.",
+      "crowdNote": "Stöber-Stopp ohne Wartezeit.",
+      "visitAdvice": "Jederzeit reinspazieren; passt gut zu Logitech und ASUS in derselben Halle."
+    },
+    "amd": {
+      "description": "AMD teilt sich einen Standblock in Halle 7.1 mit dem Community-Bereich von Webedia, Vodafone, ZOTAC und der Driveball Arena — erwarte Ryzen-/Radeon-Rechner, die Partner-Aufbauten antreiben, statt eines eigenständigen AMD-Megastands. AMD veranstaltet außerdem am 23. Aug. ein eigenes Event in Köln und deutet damit kurz vor der Messe eine Radeon-Ankündigung an.",
+      "crowdNote": "Wie voll es am Gemeinschaftsstand wird, hängt eher vom Bühnenprogramm und den Creator-Treffen ab als von AMD selbst.",
+      "visitAdvice": "Einen Durchgang wert, wenn du PC-Hardware suchst; schau für Creator-Sessions in den Bühnenplan des Community-Bereichs."
+    },
+    "wargaming": {
+      "description": "NICHT auf der Messefläche: Wargaming hat den Auftritt in der Event Arena in Halle 1, den es 2025 hatte, abgesagt, und das offizielle Verzeichnis listet nur B2B-Stände in den Fachhallen 3.2 und 2.2, nichts im Entertainment-Bereich. Der einzige öffentliche Auftritt ist die Wargaming Community Party außerhalb des Geländes am 28. Aug. im HERBRAND's in Ehrenfeld (ca. 10 €, Eventbrite), rund um WoT, WoWs, Blitz und World of Tanks: HEAT.",
+      "crowdNote": "2026 gibt es keinen Stand auf der Messefläche und damit dort auch keine Schlange. Für die Party außerhalb brauchst du ein separates Ticket; die Plätze sind begrenzt.",
+      "visitAdvice": "Such Wargaming nicht auf der Messefläche — hol dir als Spieler früh Tickets für die Community Party auf Eventbrite, die Plätze sind begrenzt.",
+      "games": {
+        "World of Tanks / Warships / HEAT": "2026 kein Demo-Stand auf der Fläche — nur bei der Community Party außerhalb des Geländes (28. Aug.), nicht im Entertainment-Bereich."
+      }
+    },
+    "kuro-games": {
+      "description": "Der Entwickler von Wuthering Waves war 2024 und 2025 dabei, hat für die gamescom 2026 aber nichts angekündigt — eine Teilnahme wirkt fraglich; der aktuelle Fokus liegt auf dem WuWa-3.6-Broadcast und dem neuen Elysium-Anime.",
+      "crowdNote": "Noch gibt es nichts Bestätigtes, wofür du anstehen könntest. Falls doch ein Stand kommt, ist wie bei HoYoverse mit großem Andrang beim Merch zu rechnen.",
+      "visitAdvice": "Richte deine Planung nicht nach Kuro Games aus; prüfe in den letzten zwei Wochen noch einmal das offizielle Verzeichnis und die Kanäle von @Wuthering_Waves.",
+      "games": {
+        "Wuthering Waves": "Nur aus den Mustern der Vorjahre erwartet; für 2026 ist kein Stand bestätigt."
+      }
+    },
+    "take-two": {
+      "description": "Kein Publikumsstand: Take-Twos einziger Eintrag im offiziellen Verzeichnis ist ein Gemeinschaftsstand der Branche in der Business-Halle 4.1 (nur Fachbesucher). Der GTA-6-Moment findet außerhalb statt: Ein „Extended Look“ läuft am Donnerstag, 27. Aug., als Premiere auf Netflix (sechs Stunden später auf YouTube), bewusst auf die gamescom-Woche gelegt. GTA 6 erscheint am 19. Nov. 2026.",
+      "crowdNote": "Keine bestätigte Präsenz vor Ort.",
+      "visitAdvice": "Schau den GTA 6 Extended Look am 27. Aug. während der Messe auf Netflix/YouTube; behalte späte Aussteller-Updates im Blick, falls 2K doch noch Fläche bucht.",
+      "games": {
+        "Grand Theft Auto VI — Extended Look": "Streaming-Showcase auf Netflix am 27. Aug. um 21:00 Uhr — nicht auf der Messe.",
+        "NBA 2K27 / 2K catalog": "2K war 2025 dabei, hat für 2026 aber nichts angekündigt."
+      }
+    },
+    "thq-nordic": {
+      "description": "NICHT dabei — THQ Nordic hat seine Teilnahme an der gamescom 2026 am 8. Juli offiziell abgesagt, weil keine Titel rechtzeitig vorzeigbar waren. Das Unternehmen hofft auf eine Rückkehr 2027. Stattdessen gab es am 7. Aug. das Digital Showcase mit Titan Quest II, Wreckfest 2 und Gothic Remake.",
+      "crowdNote": "Kein Stand.",
+      "visitAdvice": "Schau stattdessen den Stream des THQ Nordic Digital Showcase; Partnertitel können trotzdem an anderen Ständen auftauchen.",
+      "games": {
+        "Titan Quest II / Wreckfest 2 / Gothic Remake": "Nur Digital Showcase (gestreamt am 7. Aug.) — kein gamescom-Stand."
+      }
+    },
+    "paradox-urban": {
+      "description": "Kein eigener Stand: Paradox präsentiert Transport Fever 3 gemeinsam mit Urban Games, deren Stand in Halle 8.1 bei B053a liegt — samt Londoner Doppeldeckerbus als Blickfang. Paradox ist separat an Level Infinites Gemeinschaftsstand in Halle 6.1 registriert, eine Präsenz im Tencent-Bereich ist also wahrscheinlich.",
+      "crowdNote": "Der Stand hat eine kleine, aber treue Fangemeinde. Simulationsfans schauen stetig vorbei, große Schlangen gibt es aber nicht.",
+      "visitAdvice": "Die Wartezeiten bleiben auch zu Stoßzeiten im Rahmen; kombinier es mit CDPR und Square Enix in derselben Halle.",
+      "games": {
+        "Transport Fever 3": "Zusammen mit Urban Games in Halle 8 gezeigt; Fotomotiv mit Doppeldecker.",
+        "Paradox grand-strategy catalog": "Paradox selbst ist am Stand von Level Infinite in Halle 6.1 registriert; was dort gezeigt wird, ist noch nicht angekündigt."
+      }
+    },
+    "xbox-business": {
+      "description": "Microsofts Stand im Fachbesucherbereich ist vollständig vom Xbox-Publikumsstand in Halle 7.1 getrennt. Er gehört zu den größten Einzelständen dort und zu den rund 180 Ständen ohne Mitaussteller. In Halle 4.2 bedeutet das: ein geschlossener Bereich für Besprechungen, den man nicht einfach betreten kann.",
+      "accessNote": "Ein geschlossener Bereich mit 560 m², ohne Mitaussteller; vom Gang aus ist nichts zu sehen. Termine für Partner und Presse werden vorab über Xbox vereinbart, spontane Besuche sind nicht möglich.",
+      "offers": [
+        "Partner- und Publisher-Termine, nur nach vorheriger Vereinbarung",
+        "Pressetermine — die spielbaren Demos stehen am Publikumsstand in Halle 7.1",
+        "Gespräche zu ID@Xbox und Game Pass"
+      ]
+    },
+    "nintendo-business": {
+      "description": "Nintendo of Europes Stand für Fachbesucher in Halle 4.2 ist vom großen Publikumsstand in Halle 9.1 getrennt. Der Stand ist unter der Europazentrale statt unter einer Marke registriert und für Publisher-Termine geschlossen.",
+      "accessNote": "541 m², alleiniger Nutzer, keine Mitaussteller. Im Fachbesucherbereich empfängt Nintendo nur Gäste mit Termin; öffentlich zugänglich ist der Stand in Halle 9.1.",
+      "offers": [
+        "Termine mit Publishern und Handelspartnern nach Vereinbarung",
+        "Termine mit der Fachpresse"
+      ]
+    },
+    "tencent-business": {
+      "description": "Tencents Stand für Fachbesucher ist der größte private Stand in den Fachbesucherhallen. Die Publikumsangebote findest du woanders: Level Infinite in Halle 6.1 und Worlds of Play in Halle 8.1; beide haben einen eigenen Eintrag.",
+      "accessNote": "Mit 702 m² ist dies der größte Stand im Fachbesucherbereich ohne Mitaussteller — ein geschlossener Bereich für Besprechungen, keine Ausstellungsfläche.",
+      "offers": [
+        "Publishing-, Investment- und Partnerschaftsgespräche nach Vereinbarung",
+        "Gespräche zu Level Infinite"
+      ]
+    },
+    "nvidia": {
+      "description": "NVIDIA hat seinen einzigen registrierten Stand auf der gamescom 2026 im Business-Bereich. Dort geht es um Entwicklerbetreuung, RTX und Cloud-Partnerschaften; einen Publikumsstand mit Demos gibt es nicht.",
+      "accessNote": "420 m², alleiniger Nutzer. NVIDIA hat dieses Jahr keinen Publikumsstand; alles, was die Firma auf der Messe macht, findet also hinter dieser Tür statt.",
+      "offers": [
+        "Termine zu Entwicklerbetreuung und Engine-Partnerschaften",
+        "Präsentationen zu GeForce NOW und RTX-Technologie",
+        "Pressetermine"
+      ]
+    },
+    "pavilion-spain": {
+      "description": "Spaniens Länderstand wird von ICEX, der spanischen Exportagentur, organisiert. Kein anderer Stand im Fachbesucherbereich wird von so vielen Firmen geteilt: 33 spanische Studios und Dienstleister, die unten in der Fachbesucherliste einzeln aufgeführt sind.",
+      "accessNote": "33 Firmen teilen sich 240 m², jede mit einem eigenen Tisch. Der Stand ist den ganzen Tag besetzt und ausdrücklich für spontane Gespräche gedacht.",
+      "offers": [
+        "33 spanische Studios und Dienstleister an einem Stand",
+        "Publishing- und Co-Development-Gespräche ohne Termin",
+        "Export- und Förderberatung von ICEX"
+      ]
+    },
+    "pavilion-malta": {
+      "description": "Maltas Länderstand wird von der Gaming Malta Foundation und der Malta Game Developers Association betrieben. 19 der 21 Aussteller kommen aus Malta — Studios, die American University of Malta und Agenturen, die Malta als Studiostandort vermarkten.",
+      "accessNote": "21 Aussteller teilen sich einen Stand. Eine öffentliche Stiftung betreibt ihn ausdrücklich als offene Anlaufstelle — du kannst einfach hingehen.",
+      "offers": [
+        "Maltesische Studios und die Malta Game Developers Association",
+        "Beratung zu Standortwechsel, Lizenzen und Steuern von GamingMalta",
+        "Studium für die Spielebranche — American University of Malta"
+      ]
+    },
+    "pavilion-denmark": {
+      "description": "Dänemarks Länderstand wird von NIMBI, dem nationalen Institut für Spieleentwicklung, betreut. 17 dänische Studios teilen ihn sich, darunter Ghost Ship Games und Bedtime Digital Games.",
+      "accessNote": "17 dänische Aussteller teilen sich einen offenen Stand, der für spontane Gespräche gedacht ist.",
+      "offers": [
+        "17 dänische Studios an einem Stand",
+        "NIMBI — Dänemarks Institut für Spieleentwicklung",
+        "Gespräche zu Co-Development und Publishing"
+      ]
+    },
+    "pavilion-uk": {
+      "description": "Am britischen Gemeinschaftsstand in Halle 3.2 sind 17 der 23 Aussteller im Vereinigten Königreich registriert. Hier stehen Publisher wie 505 Games neben Spezialdienstleistern und PR-Agenturen; es ist kein geschlossener Firmenstand.",
+      "accessNote": "Ein Gemeinschaftsstand mit 1.004 m² und 23 Ausstellern — einer der beiden größten im Business-Bereich und durchgehend besetzt.",
+      "offers": [
+        "23 britische Publisher, Studios und Dienstleister",
+        "Publishing- und PR-Gespräche ohne Termin"
+      ]
+    },
+    "pavilion-nordic": {
+      "description": "Ein gemeinsamer Stand für Nordeuropa und das Baltikum: 40 Aussteller, vor allem aus Finnland, Norwegen, Estland und Schweden. Regionale Wirtschaftsförderungen wie Business Tampere und Arctic Game Skellefteå bringen sie zusammen, nicht die Exportagentur eines einzelnen Landes.",
+      "accessNote": "40 Aussteller teilen sich diesen Stand — mehr als an jedem anderen Gemeinschaftsstand im Fachbesucherbereich. Er ist offen zugänglich.",
+      "offers": [
+        "40 nordische und baltische Studios und Regionalagenturen",
+        "Beratung zu Förderung, Standortwahl und regionalen Netzwerken",
+        "Co-Development-Gespräche ohne Termin"
+      ]
+    },
+    "games-hubs-hessen": {
+      "description": "Das Games-Cluster des Landes Hessen teilt sich einen Stand in Halle 4.1 mit 17 weiteren Ausstellern: Studios, Dienstleistern und, für eine Spielemesse ungewöhnlich, der Frankfurter Buchmesse.",
+      "accessNote": "Ein regionaler Cluster-Stand, den sich 18 Aussteller teilen, darunter die Frankfurter Buchmesse — offen, besetzt und für Erstkontakte gedacht.",
+      "offers": [
+        "Hessische Studios und Dienstleister",
+        "Beratung zu regionaler Förderung und Standort",
+        "Kontakte zur Buchbranche — die Frankfurter Buchmesse teilt sich den Stand"
+      ]
+    },
+    "cloudflare-biz": {
+      "description": "Cloudflare betreibt CDN- und Edge-Dienste, über die ein großer Teil des Datenverkehrs am Starttag eines Spiels läuft. Am Stand geht es um DDoS-Schutz für Live-Service-Spiele, Edge-Computing für Matchmaking und Telemetrie sowie Workers als Backend für kleinere Studios. Der offene 63-m²-Stand liegt bei den Dienstleistern in Halle 2.2; du brauchst keinen Termin.",
+      "offers": [
+        "DDoS-Schutz und schnelle Auslieferung von Spielinhalten",
+        "Workers / Edge-Compute als Spiele-Backend",
+        "Zero Trust und interne Tools für Studios"
+      ]
+    },
+    "curseforge-overwolf": {
+      "description": "CurseForge ist die wichtigste Vertriebsplattform für Mods in der Branche: Die meisten PC-Modding-Communities veröffentlichen dort ihre Inhalte. Eigentümer Overwolf stellt dazu In-Game-Overlays und Möglichkeiten bereit, mit denen Creator Geld verdienen können. Beide sind am selben Stand in Halle 2.2 registriert; dort sprechen Studios darüber, ihre Spiele für Mods zu öffnen.",
+      "offers": [
+        "CurseForge for Studios — offizieller Mod-Support und Vertrieb",
+        "Overwolfs Plattform für In-Game-Overlay-Apps",
+        "Programme, mit denen Creator und Modder Geld verdienen können"
+      ]
+    },
+    "serverscom-biz": {
+      "description": "Bare-Metal- und Hybrid-Hosting speziell für Spielestudios: dedizierte Server für Multiplayer-Backends, weltweite Standorte für kurze Reaktionszeiten und Kapazitätsplanung für den Ansturm zum Launch. Einer der größeren Infrastrukturstände im Fachbesucherbereich.",
+      "accessNote": "Mit 196 m² einer der größeren Dienstleisterstände in Halle 2.2. Vorne gibt es eine offene Theke, dahinter Besprechungsplätze. Für kurze Fragen kannst du einfach hingehen; für ein ausführliches Gespräch solltest du einen Termin buchen.",
+      "offers": [
+        "Bare-Metal- und dedizierte Server für Spiele-Backends",
+        "Weltweites Hosting mit niedriger Latenz und Kapazitätsplanung",
+        "Gespräche zur Skalierung im Launch-Zeitfenster"
+      ]
+    },
+    "unity-biz": {
+      "description": "Der Unity-Stand ist leicht zu übersehen. Obwohl die Engine in der Branche eine große Rolle spielt, besteht der gamescom-Auftritt nur aus einem einzelnen Tisch bei den Dienstleistern in Halle 2.2 — nicht aus einem großen, geschlossenen Stand.",
+      "accessNote": "Ein Tisch mit 12 m² — einer der kleinsten Stände im Fachbesucherbereich. Du kannst einfach hingehen.",
+      "offers": [
+        "Fragen zu Engine, Lizenzen und Unity 6",
+        "Gespräche zu Ads, Monetarisierung und LevelPlay",
+        "Kontakte zur Entwicklerbetreuung"
+      ]
+    },
+    "aws-biz": {
+      "description": "AWS for Games hat einen 45-m²-Stand in Halle 3.2. Dort geht es um Gameserver, GameLift, Datenanalysen und Cloud-Builds für die Spieleentwicklung. Der Stand ist kleiner, als man bei der Größe des Geschäfts erwarten würde, und liegt in der Entwickler- statt in der Publisher-Halle.",
+      "offers": [
+        "Gameserver-Hosting und GameLift",
+        "Datenanalyse, Datenverarbeitung und Live-Ops-Tools",
+        "Cloud-Builds und CI für große Projekte"
+      ]
+    },
+    "xsolla-biz": {
+      "description": "Xsolla bietet Zahlungen, Webshops und Direktvertrieb für Spiele. Viele Studios sprechen mit dem Unternehmen, wenn sie außerhalb der Shops von Plattformbetreibern verkaufen wollen. Xsolla hat einen der größeren Stände für Zahlungs- und Vertriebsdienste in Halle 2.2.",
+      "accessNote": "162 m² mit Besprechungsfläche. Xsolla führt dort vereinbarte Partnergespräche; an der offenen Theke kannst du aber auch spontan fragen.",
+      "offers": [
+        "Zahlungsabwicklung und weltweite Auszahlung für Spieleverkäufe",
+        "Webshops für den Direktvertrieb",
+        "Publishing- und Förderprogramme"
+      ]
+    },
+    "keywords-biz": {
+      "description": "Die größte Dienstleistergruppe der Spielebranche: Art, Co-Development, Lokalisierung, QA, Audio und Support für Spieler, verteilt auf Dutzende Studios. Wenn ein Spiel in acht Sprachen erschienen ist, ist es gut möglich, dass ein Teil davon hier bearbeitet wurde.",
+      "accessNote": "Der 122-m²-Stand ist vorne offen und hat dahinter eine Besprechungsfläche. Gespräche über Co-Development werden meist vorab vereinbart; für die offene Theke brauchst du keinen Termin.",
+      "offers": [
+        "Co-Development und externe Art-Produktion",
+        "Lokalisierung, QA und Zertifizierung",
+        "Audio, Sprachaufnahmen und Support für Spieler"
+      ]
+    },
+    "sumo-digital-biz": {
+      "description": "Eines der größten unabhängigen Co-Development-Studios Europas, mit viel Erfahrung darin, Spiele anderer Studios zu entwickeln oder daran mitzuarbeiten. Sumo arbeitet im Auftrag statt als Publisher; deshalb steht es bei den Dienstleistern und nicht in der Publisher-Reihe.",
+      "accessNote": "133 m² in Halle 2.1 — ein offener Stand mit Besprechungsfläche; Projektgespräche werden meist vorab vereinbart.",
+      "offers": [
+        "Co-Development und Outsourcing kompletter Projekte",
+        "Portierungen und Plattformarbeit",
+        "Gespräche über Studio-Partnerschaften"
+      ]
+    },
+    "virtuos-biz": {
+      "description": "Virtuos ist eine weltweit tätige Gruppe für Co-Development und Grafikproduktion. Sie übernimmt Remaster, Portierungen und Arbeiten an Spielinhalten für große AAA-Projekte. Der 66-m²-Stand liegt bei den Dienstleistern in Halle 2.2.",
+      "offers": [
+        "Co-Development, Remaster und Portierungen",
+        "Grafikproduktion für große Mengen an Spielinhalten",
+        "Gespräche über technisches Outsourcing"
+      ]
+    },
+    "denuvo-biz": {
+      "description": "Die Firma für Kopier- und Cheat-Schutz, deren Name wohl öfter in Diskussionen über PC-Shops fällt, als ihr lieb ist. Der 24-m²-Stand in Halle 2.1 richtet sich an Studios: Hier geht es um Schutz vor Manipulation und Cheats sowie um Sicherheit auf Mobilgeräten, nicht um Diskussionen mit Spielern.",
+      "offers": [
+        "Manipulations- und Kopierschutz",
+        "Anti-Cheat für PC und Konsole",
+        "Sicherheit für Mobile-Apps und -Spiele"
+      ]
+    },
+    "ign-humble-biz": {
+      "description": "Zwei Schwesterunternehmen an einem 30-m²-Stand: IGN für Berichterstattung und Medienpartnerschaften, Humble Bundle für Bundle-Platzierungen und Spendenaktionen. Dieser Teil von Halle 2.1 dreht sich um Presse und Werbung. Hier kommst du eher spontan ins Gespräch, als dass du einen Termin buchst.",
+      "offers": [
+        "Gespräche zu Medien und Berichterstattung mit IGN",
+        "Humble-Bundle-Platzierungen und Charity-Bundles",
+        "Creator- und Kampagnen-Partnerschaften"
+      ]
+    },
+    "fandom-biz": {
+      "description": "Das Wiki-Netzwerk, in dem die meisten Spiele früher oder später dokumentiert werden — ob das jemand geplant hat oder nicht — ist hier als Medien- und Werbeplattform vertreten. Der 78-m²-Stand in Halle 2.1 liegt nahe bei der übrigen Spielepresse.",
+      "offers": [
+        "Wiki- und Community-Partnerprogramme",
+        "Werbe- und Reichweitenkampagnen",
+        "Gespräche zu Redaktion und Berichterstattung"
+      ]
+    },
+    "reddit-biz": {
+      "description": "Reddit ist als Medium registriert und hat einen der kleinsten Stände im Fachbesucherbereich. Obwohl das Subreddit eines Spiels oft dessen aktivste Community ist, besteht der gamescom-Auftritt nur aus einem Tisch in Halle 2.2.",
+      "accessNote": "16 m² — nur ein Tisch. Du kannst einfach hingehen.",
+      "offers": [
+        "Gespräche zu Werbung und Kampagnen",
+        "Community- und Subreddit-Partnerprogramme"
+      ]
+    },
+    "opera-biz": {
+      "description": "Die Browserfirma ist vor allem wegen Opera GX hier: Der Gaming-Browser erreicht ein großes junges Publikum und bietet Raum für Werbung und Partnerschaften. Der Stand in Halle 2.2 ist 85 m² groß.",
+      "offers": [
+        "Werbung und Integrationen in Opera GX",
+        "Reichweiten- und Kampagnenpartnerschaften",
+        "Gespräche zum Vertrieb von Browserspielen"
+      ]
+    },
+    "sensor-tower-biz": {
+      "description": "Marktdaten für Mobile-Apps und Spiele: Schätzungen zu Downloads, Umsätzen und Werbeausgaben, die in vielen Präsentationen der Branche auftauchen. Der Stand ist klein, die Daten werden aber oft genutzt.",
+      "accessNote": "Ein Tisch mit 12 m² in der Dienstleisterreihe von Halle 2.2.",
+      "offers": [
+        "Markt- und Wettbewerbsdaten",
+        "Daten zu Werbeausgaben und User Acquisition",
+        "Gespräche zu Lizenzen und Demos"
+      ]
+    },
+    "igda-biz": {
+      "description": "Die International Game Developers Association hat einen 45-m²-Stand in Halle 3.2. Die IGDA Foundation steht nebenan bei C014/D015 und Women in Games International direkt daneben bei C012/D013. Diese drei Interessenverbände machen die Ecke zur Anlaufstelle für Karriere, Community und Unterstützung — nicht für Verkaufsgespräche.",
+      "offers": [
+        "Mitgliedschaft, Chapter und Interessenvertretung für Entwickler",
+        "Stipendien- und Unterstützungsprogramme der IGDA Foundation",
+        "Gespräche zu Karriere und Community"
+      ]
+    },
+    "wigi-biz": {
+      "description": "Women in Games International bietet Interessenvertretung, Mentoring und Unterstützung bei der Jobsuche für Frauen in der Spielebranche. Der 45-m²-Stand liegt in Halle 3.2 direkt neben IGDA und IGDA Foundation.",
+      "offers": [
+        "Mentoring- und Karriereprogramme",
+        "Gespräche zu Einstellung und Recruiting",
+        "Infos zu Mitgliedschaft und Chaptern"
+      ]
+    },
+    "owlchemy-biz": {
+      "description": "Das VR-Studio hinter Job Simulator und Vacation Simulator ist einer der wenigen Namen in Halle 3.2, den auch viele Privatbesucher kennen. Es gehört zu Google und ist im Fachbesucherbereich statt mit einem Demostand vertreten.",
+      "offers": [
+        "Gespräche zu VR-Entwicklung und Plattformen",
+        "Kontakte zu Studio und Partnerschaften"
+      ]
+    },
+    "poki-biz": {
+      "description": "Poki ist eine der größten Browserspiel-Plattformen der Welt und ein wichtiger Vertriebsweg für kleine Titel. Zwischen den Länderständen in Halle 4.1 übersieht man den Stand leicht.",
+      "accessNote": "Ein 20-m²-Stand in Halle 4.1, zwischen den Gemeinschaftsständen für Indie-Studios und Entwickler statt bei den geschlossenen Publisher-Ständen.",
+      "offers": [
+        "Publishing und Umsatzbeteiligung für Webspiele",
+        "Playtesting und Zielgruppendaten",
+        "Gespräche zum Einstieg für Entwickler"
+      ]
+    },
+    "blacknut-biz": {
+      "description": "Eine Cloud-Gaming-Abo-Plattform, die ihre Angebote über Telekommunikations- und TV-Anbieter statt direkt an Spieler vertreibt. Dadurch ist sie ein Vertriebsweg, an den viele Studios nicht denken. Der Stand in Halle 3.2 ist 90 m² groß.",
+      "offers": [
+        "Vertrieb und Lizenzierung von Cloud-Gaming-Angeboten",
+        "Platzierung in Bundles von Telko- und TV-Anbietern",
+        "Katalog-Gespräche für bestehende Titel"
+      ]
+    },
+    "gcore-biz": {
+      "description": "Gcore bietet Edge-Infrastruktur und CDN-Dienste für Spielehosting: Serverkapazität, Streaming und DDoS-Schutz. Der Stand liegt in derselben Reihe in Halle 2.2, nur wenige Plätze von Cloudflare entfernt. Wenn du auf der Messe Hosting vergleichen willst, stehen beide bewusst nah beieinander.",
+      "offers": [
+        "Gameserver-Hosting und Edge-Auslieferung",
+        "CDN- und Streaming-Infrastruktur",
+        "DDoS-Schutz für Live-Service-Titel"
+      ]
+    },
+    "kakao-games-biz": {
+      "description": "Der koreanische Publisher hinter Odin betreibt außerdem mehrere große koreanische Titel im Westen. Der kleine Stand in Halle 2.2 ist für Publishing- und Lizenzgespräche gedacht, nicht für Demos.",
+      "accessNote": "Ein offener 20-m²-Stand, an dem du auch ohne Termin spontan ins Gespräch kommst.",
+      "offers": [
+        "Publishing und Lizenzierung für koreanische und westliche Märkte",
+        "Gespräche zu Co-Publishing"
+      ]
+    },
+    "capcom-business": {
+      "description": "Capcoms Stand für Fachbesucher ist unter der deutschen Gesellschaft registriert und vom Publikumsstand in Halle 9.1 getrennt. Hier gibt es Termine für Publisher, Handel und Presse statt spielbarer Demos.",
+      "accessNote": "276 m² ohne Mitaussteller — ein geschlossener Stand für Termine. Die Demos stehen am Stand in Halle 9.1.",
+      "offers": [
+        "Termine zu Handel und Vertrieb",
+        "Termine mit der Fachpresse"
+      ]
+    },
+    "ubisoft-business": {
+      "description": "Ubisofts deutsche Gesellschaft hat einen großen geschlossenen Stand in der Publisher-Reihe von Halle 4.2, getrennt von den Publikumsständen auf der anderen Seite des Geländes in Halle 6.1.",
+      "accessNote": "403 m², alleiniger Nutzer. Vom Gang aus ist nichts zu sehen — die öffentlichen Stände sind die beiden in Halle 6.1.",
+      "offers": [
+        "Publisher-, Handels- und Partnertermine",
+        "Termine mit der Fachpresse",
+        "Gespräche zu Esports und Markenpartnerschaften"
+      ]
+    },
+    "bandai-namco-business": {
+      "description": "Einer der größten privaten Stände in Halle 4.2 ist unter der deutschen Niederlassung von Bandai Namco registriert. Hier geht es um Lizenzen, Vertrieb und Presse; die spielbaren Inhalte stehen in Halle 6.1.",
+      "accessNote": "543 m² ohne Mitaussteller — der drittgrößte Einzelstand im Business-Bereich, und komplett geschlossen.",
+      "offers": [
+        "Termine zu Vertrieb und Lizenzen",
+        "Termine mit der Fachpresse"
+      ]
+    },
+    "cdpr-business": {
+      "description": "CD Projekt S.A. — die Muttergesellschaft von CD Projekt Red und GOG — hat einen großen geschlossenen Stand in Halle 4.2. Dort finden Partner- und Pressetermine statt; der Publikumsstand steht in Halle 8.1.",
+      "accessNote": "432 m², alleiniger Nutzer; registriert unter der Muttergesellschaft statt unter CD Projekt Red oder GOG.",
+      "offers": [
+        "Publishing- und Partnerschaftstermine",
+        "Gespräche zum Vertrieb über GOG",
+        "Pressetermine"
+      ]
+    },
+    "krafton-business": {
+      "description": "KRAFTONs Stand für Fachbesucher ist von den beiden Publikumsständen in Halle 9.1 getrennt. Hier geht es um Publishing, Investitionen und Partnerschaften.",
+      "accessNote": "245 m², alleiniger Nutzer — ein geschlossener Stand in der Publisher-Reihe von Halle 4.2.",
+      "offers": [
+        "Publishing- und Investment-Termine",
+        "Gespräche zu Partnerschaften und Lizenzen"
+      ]
+    },
+    "atari-business": {
+      "description": "Atari im Fachbesucherbereich: Lizenzen für den eigenen Spielekatalog, Hardware-Partnerschaften für die jüngsten Neuauflagen und Publishing. Der Retro-Publikumsstand steht in Halle 10.1.",
+      "accessNote": "162 m² in der Publisher-Reihe — ein mittelgroßer, offener Stand mit Besprechungsfläche dahinter.",
+      "offers": [
+        "Lizenzierung des Backkatalogs",
+        "Hardware- und Neuauflagen-Partnerschaften",
+        "Publishing-Gespräche"
+      ]
+    },
+    "giants-software-business": {
+      "description": "GIANTS, das Studio hinter dem Landwirtschafts-Simulator, ist auch im Fachbesucherbereich vertreten. Dort werden die Lizenzverträge geschlossen, die echte Landmaschinenmarken ins Spiel bringen. Der spielbare Stand steht in Halle 6.1.",
+      "accessNote": "178 m², alleiniger Nutzer — ein offener Stand für Gespräche statt eines geschlossenen Bereichs. Termine werden jedoch vorab vereinbart.",
+      "offers": [
+        "Marken- und Fahrzeuglizenzen",
+        "Termine zu Publishing und Vertrieb",
+        "Gespräche zu Modding und Plattformen"
+      ]
+    },
+    "hoyoverse-business": {
+      "description": "HoYoverses Stand für Fachbesucher ist unter der Gesellschaft in Singapur registriert und neben Spielen auch für Merchandising gemeldet. Daher geht es hier vor allem um Merch- und Lizenzgeschäfte. Der Publikumsstand steht in Halle 6.1.",
+      "accessNote": "104 m² — klein für Halle 4.2, also ein besetzter, offener Stand statt eines geschlossenen Bereichs. Termine werden jedoch vorab vereinbart.",
+      "offers": [
+        "Merchandise- und Lizenzpartnerschaften",
+        "Termine zu Vertrieb und Plattformen",
+        "Pressetermine"
+      ]
+    },
+    "focus-business": {
+      "description": "Am Fachbesucherstand des französischen Publishers werden Verträge geschlossen und kommende Projekte Partnern statt Spielern gezeigt.",
+      "accessNote": "210 m², alleiniger Nutzer — ein geschlossener Stand. Das spielbare Lineup von Focus steht in Halle 6.1.",
+      "offers": [
+        "Publishing-Einreichungen und Partnertermine",
+        "Vertrieb und Lizenzierung",
+        "Pressetermine"
+      ]
+    },
+    "aerosoft-business": {
+      "description": "Der Simulations-Publisher und -Distributor im Fachbesucherbereich: Hier geht es um Lizenzen für Flug- und Bahnsimulationen sowie um den Verkauf von Boxversionen im Handel — ein Geschäft, das es immer noch gibt. Der Publikumsstand steht in Halle 9.1.",
+      "accessNote": "93 m² — einer der kleineren, offen zugänglichen Stände in Halle 4.2.",
+      "offers": [
+        "Publishing und Lizenzierung für Simulationen",
+        "Vertrieb von Boxversionen im Handel",
+        "Partnertermine"
+      ]
+    },
+    "level-infinite-business": {
+      "description": "Tencents Publishing-Label ist als Proxima Beta registriert und teilt sich einen der wenigen großen Gemeinschaftsstände in Halle 4.2, statt einen eigenen geschlossenen Bereich zu haben. Der Publikumsstand steht in Halle 6.1; der separate 702-m²-Stand von Tencent Technology in der Nähe ist geschlossen.",
+      "accessNote": "Ein 512-m²-Stand, den sich sieben Publisher teilen — darunter Bohemia Interactive, Digital Extremes, Funcom und Paradox. Weil mehrere Firmen dort vertreten sind, ist der Stand offen und zugänglich — anders als die geschlossenen Bereiche ringsum.",
+      "offers": [
+        "Publishing-Einreichungen und Partnertermine",
+        "Gespräche zu Co-Development und Investment",
+        "Sechs weitere Publisher am selben Stand"
+      ]
+    },
+    "raw-fury-business": {
+      "description": "Der schwedische Indie-Publisher ist im Fachbesucherbereich vertreten, wo Spiele vorgestellt und Verträge geschlossen werden. Seine Spiele sind in der Indie-Hälfte von Halle 10.1 spielbar.",
+      "accessNote": "116 m² in Halle 2.1 — ein offener Stand mit Besprechungsfläche, an dem Indie-Studios ihre Spiele vorstellen.",
+      "offers": [
+        "Publishing-Einreichungen und Pitches",
+        "Gespräche zu Co-Development und Förderung"
+      ]
+    },
+    "coffee-stain-business": {
+      "description": "Coffee Stain Publishing ist im Fachbesucherbereich vertreten: Das Label hinter Satisfactory und Deep Rock Galactic nimmt Spieleinreichungen entgegen. Der Publikumsstand steht in Halle 10.1.",
+      "accessNote": "110 m² in Halle 2.1 — ein besetzter, offener Stand. Für längere Gespräche brauchst du meist einen Termin.",
+      "offers": [
+        "Publishing-Einreichungen und Pitches",
+        "Partner- und Plattformtermine"
+      ]
+    },
+    "razer-business": {
+      "description": "Razers europäische Gesellschaft im Fachbesucherbereich — hier geht es um Handel, Vertrieb und die Entwicklerprogramme für Chroma und Haptik. Der Hardware-Publikumsstand steht in Halle 10.2.",
+      "accessNote": "Razer teilt sich einen 576-m²-Stand mit vierzehn weiteren Ausstellern. Die Theke ist offen zugänglich.",
+      "offers": [
+        "Termine zu Handel und Vertrieb",
+        "Entwicklerprogramme — Chroma, Sensa, Synapse",
+        "Gespräche zu Partnerschaften"
+      ]
+    },
+    "corsair-business": {
+      "description": "Corsair ist im Fachbesucherbereich unter Komponenten und Zubehör gelistet. Hier geht es um Handel, Vertrieb und Elgato-Produkte. Die Produktwand steht in Halle 10.1.",
+      "accessNote": "74 m² und offen — die Reihe für Komponenten und Zubehör in Halle 2.2 ist eine Verkaufsfläche, kein Besprechungsflur.",
+      "offers": [
+        "Termine zu Handel und Vertrieb",
+        "Elgato- und Creator-Hardware-Partnerschaften",
+        "OEM-Gespräche zu Komponenten"
+      ]
+    },
+    "samsung-business": {
+      "description": "Samsung Electronics ist im Fachbesucherbereich unter Plattformen und Komponenten gelistet. Hier geht es um Displays, Panels und die Handelsbeziehungen dahinter — nicht um die Odyssey-Monitore, die du in Halle 9.1 ausprobieren kannst.",
+      "accessNote": "36 m² — ein kleiner offener Stand, ganz anders als der Odyssey-Stand in Halle 9.1.",
+      "offers": [
+        "Display- und Panel-Partnerschaften",
+        "Termine zu Handel und Vertrieb"
+      ]
+    },
+    "bloober-team-business": {
+      "description": "Das polnische Horror-Studio ist im Fachbesucherbereich für Termine zu Co-Development und Publishing vertreten. Seine Spiele sind in Halle 10.1 spielbar.",
+      "accessNote": "72 m² und offen — ein Stand für Gespräche in der Dienstleisterreihe von Halle 2.2.",
+      "offers": [
+        "Co-Development und Auftragsentwicklung",
+        "Publishing- und Partnertermine"
+      ]
+    },
+    "wargaming-business": {
+      "description": "Wargamings einziger registrierter Stand auf der Messe liegt im Fachbesucherbereich in Halle 2.2. Das ist wichtig, weil der Guide ansonsten nur festhält, dass es keinen Publikumsstand auf der Messefläche gibt.",
+      "accessNote": "20 m² — ein Tisch. Wargaming hat dieses Jahr keinen Publikumsstand, das hier ist also der komplette gamescom-Auftritt.",
+      "offers": [
+        "Partnerschafts- und Lizenztermine",
+        "Publishing-Gespräche"
+      ]
+    },
+    "scs-software-business": {
+      "description": "Das Studio hinter Euro Truck Simulator ist hier am tschechischen Gemeinschaftsstand statt an einem eigenen Stand vertreten. Im Fachbesucherbereich geht es vor allem um Lizenzen für echte Lkw-Marken und Lackierungen für Auflieger. Der spielbare Stand steht in Halle 10.1.",
+      "accessNote": "Auf dem tschechischen Gemeinschaftsstand in Halle 4.1, geteilt mit dreizehn weiteren Ausstellern — offen und besetzt.",
+      "offers": [
+        "Fahrzeug- und Markenlizenzen",
+        "Termine mit Partnern und zum Vertrieb",
+        "Dreizehn weitere tschechische Studios am selben Stand"
+      ]
+    },
+    "area-35-business": {
+      "description": "Der Publisher nimmt an seinem Fachbesucherstand Spieleinreichungen an und führt Gespräche über den Vertrieb. Seine Spiele sind in Halle 10.1 spielbar.",
+      "accessNote": "61 m², offen — ein Stand in der Reihe in Halle 2.2, zu dem man einfach hingehen kann.",
+      "offers": [
+        "Publishing-Einreichungen",
+        "Termine zu Vertrieb und Partnerschaften"
+      ]
+    }
+  }
+}
