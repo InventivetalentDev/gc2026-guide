@@ -311,6 +311,11 @@ function syncMarkUI() {
       el.dataset.played = String(hasPlayed(ex));
     }
   });
+  /* The corner plate reports the *other* face's saved state, which a patch of
+     this card's own buttons would otherwise leave stale. */
+  $$("[data-face-other]").forEach((btn) => {
+    btn.dataset.faceSaved = String(isSaved("exhibitor", btn.dataset.faceOther));
+  });
 }
 
 /* Re-rendering a list with innerHTML destroys the button that was just pressed,
@@ -1576,11 +1581,16 @@ function faceSwitch(ex) {
   const label = toTrade
     ? `Show the business booth — hall ${other.hall}, trade & media only`
     : `Back to the public booth — hall ${other.hall}`;
+  /* data-face-other names whose saved state the dot reflects, so syncMarkUI
+     can keep it live: a mark toggle patches buttons in place rather than
+     rebuilding the grid, and without this the dot only appeared on the next
+     full render. */
   return `<button class="face-switch${toTrade ? " face-switch-trade" : ""}" type="button"
       data-face="${esc(ex.businessOf || ex.id)}" data-face-to="${toTrade ? "trade" : "public"}"
+      data-face-other="${esc(other.id)}" data-face-saved="${hasSaved(other)}"
       title="${esc(label)}" aria-label="${esc(label)}">
     <span class="face-hall" aria-hidden="true">${esc(other.hall || "?")}</span>
-    ${hasSaved(other) ? '<span class="face-saved" aria-hidden="true"></span>' : ""}
+    <span class="face-saved" aria-hidden="true"></span>
   </button>`;
 }
 

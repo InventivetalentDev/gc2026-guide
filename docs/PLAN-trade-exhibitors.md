@@ -489,11 +489,45 @@ pushed Cloudflare and Unity off the screen — a worse overview, not a better
 one. The remaining pavilions stay in the list, marked by their `shared · N`
 count.
 
-Brands that already hold a consumer card and *also* keep a business booth
-(Atari, HoYoverse, GIANTS, Corsair, Samsung, Wargaming, Bloober, Coffee Stain,
-Raw Fury) are a reasonable next batch, named "— business booth" like the four
-compounds already are. They are lower priority because the guide at least
-already contains them.
+## Two faces of one exhibitor
+
+Around twenty exhibitors keep a booth on both sides of the show — Capcom demos
+in 9.1 and takes meetings in 4.2. Duplicating them as two grid entries is
+noise; folding them into one stop is wrong for a different reason, and it is
+worth being precise about why, because it decided the design:
+
+**The two booths keep different opening hours.** Hall 9.1 is open on Saturday;
+Hall 4.2 is shut. A single stop can only carry one answer, so it either warns
+falsely about the consumer booth or stays silent while a trade visitor
+schedules a Wednesday-only meeting for the weekend. There is no correct
+behaviour available once the two are merged.
+
+So they stay **two cards** — the trade one carrying `businessOf` — rendered as
+**one card you can turn over**. The plate is already the card's "where" and its
+map link, so the other booth is a small square notched into the plate's corner;
+tapping it swaps the plates' places and sizes.
+
+- **The purple is load-bearing.** `#7800FF` is the fill Koelnmesse gives the
+  business halls on its own plan, already carried through the snapshot into the
+  map's hall washes. Turning a card over teaches the colour in one gesture.
+  The ink inverts, measured not guessed: orange needs near-black (5.93:1, white
+  is 3.32:1), purple needs the warm off-white (5.64:1, near-black is 3.04:1).
+- **Filters choose the face**; a tap overrides until the filters change.
+  Sorting reads the filter-driven face, so turning a card over never makes it
+  jump position. Category and hall match on *either* face, so filtering to
+  Hall 4.2 keeps Capcom and turns it over.
+- **The corner square carries the other side's saved state**, or a saved trade
+  stop would be invisible until you turned the card. It is patched by
+  `syncMarkUI` like any other mark control.
+- **Everything downstream still sees two stops**: separate days, separate map
+  stands, separate share tokens, and the Saturday warning on the business one
+  alone.
+
+Deliberately **not** done: a nested `business: {}` block on the consumer card.
+Each face needs everything a card needs — location, description, offers,
+sources, saved state — so nesting would have meant a second schema to document
+and a special case for business-only booths like Cloudflare, which are exactly
+the same shape minus the pairing.
 
 ## Still open
 

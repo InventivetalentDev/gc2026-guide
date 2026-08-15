@@ -211,6 +211,7 @@ neither means anything for a business booth: the **Lineup** becomes an
 ```jsonc
 {
   "id": "xbox-business",           // its own id — a brand can hold a consumer card too
+  "businessOf": "xbox",            // optional: makes this the other face of that card
   "name": "Xbox — business booth",
   "type": "trade",
   "hall": "4.2",
@@ -223,6 +224,33 @@ neither means anything for a business booth: the **Lineup** becomes an
   "games": []                      // always empty; a trade booth has no lineup
 }
 ```
+
+#### `businessOf` — two faces of one exhibitor
+
+About twenty exhibitors hold a consumer booth *and* a business-hall booth:
+Capcom demos in 9.1 and takes meetings in 4.2. Write them as **two cards**, the
+trade one carrying `businessOf: "<consumer card id>"`. The grid then renders
+the pair as **one card you can turn over** — a small square in the corner of
+the hall plate, in the business area's own purple, swaps the two plates.
+
+They stay two cards on purpose, because they are two stops: each gets its own
+day in the planner, its own stand on the map, its own share token, and only the
+business one is warned about when it lands on a Saturday. Folding them into one
+entry would make that warning impossible to get right, since the two booths
+keep different opening hours.
+
+- **Name the trade face distinctly** — `"Capcom — business booth"`, not
+  `"Capcom"`. The suffix is redundant on the card, where the purple plate
+  already says it, but the planner lists both stops and two rows called
+  "Capcom" would be unreadable.
+- **Only pair booths belonging to the same company.** Tencent files two
+  business rows; `level-infinite` pairs with the Proxima Beta / Level Infinite
+  stand, while the separate Tencent Technology stand is nobody's face and stays
+  a standalone card.
+- **A business-only exhibitor takes no `businessOf`** — Cloudflare and NVIDIA
+  have no consumer booth, so they are ordinary standalone trade cards.
+- The owner card needs no edit at all; the pairing is declared entirely on the
+  trade side.
 
 - **`access` is the one editorial judgement on a trade card, so source it.**
   `open` = an open stand, staffed, walk up. `appointment` = a closed structure

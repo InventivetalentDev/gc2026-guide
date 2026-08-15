@@ -494,6 +494,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   border-radius: 50%;
   background: currentColor;
 }
+.face-switch:not([data-face-saved="true"]) .face-saved { display: none; }
 
 /* The plate doubles as the link to that booth on the hall map when the
    map covers its hall (see hallMarker) — an anchor wearing the same
