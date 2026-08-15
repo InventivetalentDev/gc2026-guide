@@ -1,6 +1,5 @@
 # Response headers for the deployed site. Staged into dist/ with everything
-# else, then parsed by Cloudflare Workers and never served as a file. (GitHub
-# Pages ignores it, so it is inert while both hosts are running.)
+# else, then parsed by Cloudflare Workers and never served as a file.
 #
 # Everything not listed here keeps Cloudflare's default of
 # `public, max-age=0, must-revalidate` plus an ETag, which is exactly what the

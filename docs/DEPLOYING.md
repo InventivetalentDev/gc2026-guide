@@ -19,6 +19,11 @@ hostnames draining behind it, `gamescom.guide` and the original
 installed to home screens. Workers serves as many hostnames as you give it, so
 all three answer at once and nobody's saved link breaks.
 
+Pages is gone rather than dormant: both hostnames resolve to Cloudflare, and
+`pages.yml` and `CNAME` have been deleted, so `cloudflare.yml` is the only thing
+that deploys anything. Turning Pages off in repository Settings → Pages is the
+last of it, and has to be done there rather than here.
+
 ## Why `gc26.guide`
 
 `gamescom.guide` was the home address for about a day. "gamescom" is a
@@ -141,11 +146,6 @@ Retire them in this order:
 2. **`gc2026.inventivetalent.org` after the show.** It has been bookmarked and
    installed since the site went up, its population is the real one, and it
    costs nothing to keep — it is a subdomain of a domain that is staying.
-3. **Delete `.github/workflows/pages.yml` and `CNAME`**, and turn off Pages in
-   repository Settings → Pages. Both hostnames are already served by Cloudflare,
-   so this is leftover from that cutover rather than a step in this one.
-   (`CNAME` never reaches Cloudflare — `tools/build-site.sh` lists it as
-   not-site — so it is inert either way.)
 
 Anyone who reinstalls from `gc26.guide` without accepting the notice starts with
 an empty list, because it is a different origin. That is what the notice is for.
