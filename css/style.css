@@ -456,16 +456,21 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 
 /* The way to the other booth, notched into the plate's corner: the corner a
    thumb is already near, and close enough to the big plate that the swap
-   reads as an exchange rather than a jump across the card. */
+   reads as an exchange rather than a jump across the card.
+
+   Top-right rather than bottom-right, because the two faces carry different
+   booth numbers and a long one wraps to a second line — anchored to the
+   bottom, the square would sit at a different height on each face and move
+   out from under the finger that just tapped it. The top edge does not move. */
 .face-switch {
   position: absolute;
   right: 0;
-  bottom: 0;
+  top: 0;
   width: 34px;
   height: 30px;
   padding: 0;
   border: 0;
-  border-top: 1px solid var(--ground);
+  border-bottom: 1px solid var(--ground);
   border-left: 1px solid var(--ground);
   background: var(--signal);
   color: var(--signal-ink);
@@ -487,7 +492,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
    you turn the card over. Same dot the map's hall chips use. */
 .face-saved {
   position: absolute;
-  top: 3px;
+  bottom: 3px;
   right: 3px;
   width: 5px;
   height: 5px;
