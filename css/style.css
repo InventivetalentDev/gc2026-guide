@@ -783,6 +783,18 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   gap: 4px;
 }
 .trade-row .trade-tags:empty { display: none; }
+/* A count, not a verdict — how many exhibitors list this stand. */
+.trade-shared {
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  letter-spacing: .05em;
+  padding: 1px 6px;
+  border: 1px solid color-mix(in srgb, var(--ok) 34%, var(--rule));
+  border-radius: 999px;
+  color: var(--ok);
+  white-space: nowrap;
+  cursor: help;
+}
 .trade-row .trade-tags .tag { font-size: .64rem; }
 .trade-row[data-saved="true"] { background: color-mix(in srgb, var(--signal) 7%, transparent); }
 

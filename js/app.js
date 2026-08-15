@@ -1732,7 +1732,7 @@ function renderFilters() {
      the business halls the directory puts booths in. A hall chip nobody can
      enter is noise for the consumer majority and the whole point for a trade
      visitor, which is exactly what the pref is for. */
-  const hallSet = new Set(state.exhibitors.filter((e) => e.hall).map((e) => String(e.hall)));
+  const hallSet = new Set(cardPool().filter((e) => e.hall).map((e) => String(e.hall)));
   if (state.trade) {
     for (const entry of state.directory?.exhibitors || []) {
       for (const s of tradeStands(entry)) hallSet.add(String(s.hall));
@@ -1837,7 +1837,10 @@ function curatedByBooth() {
     const key = boothKey(ex.hall, booth);
     if (key && !map.has(key)) map.set(key, ex);
   };
-  for (const ex of state.exhibitors) {
+  /* cardPool, not every card: with trade mode off a consumer must not be
+     told their Full-directory row stands "at Spanish games pavilion (ICEX)",
+     which is a thing only trade mode is supposed to know about. */
+  for (const ex of cardPool()) {
     claim(ex, ex.booth);
     const stands = String(ex.booth || "").split(",");
     if (stands.length > 1) for (const stand of stands) claim(ex, stand);
@@ -1865,6 +1868,7 @@ function loadDirectory() {
          slug index, the share vocabulary that now knows 800 more identities,
          and the hall chips that can now offer the business halls. */
       directoryIndexCache = null;
+      standShareCache = null;
       tradeRecordCache.clear();
       buildShareCodeMap();
     })
@@ -2212,6 +2216,42 @@ function migrateDirAliases() {
   if (moved) persistItinerary();
 }
 
+/* How many exhibitors list each business stand.
+
+   This is the most useful thing the business halls tell you about themselves,
+   and it is a count rather than a judgement. The two shapes are stark: 184
+   stands have a single occupant, while 53 shared stands carry 634 of the 821
+   trade exhibitors — because a shared stand is a national or regional
+   pavilion, twenty desks under one roof, and a large stand with one occupant
+   and no co-exhibitors is a publisher's meeting building.
+
+   The row shows the number. What it means is said once in the section note,
+   and per booth only on a curated card, where it can be sourced. */
+let standShareCache = null;
+
+function standShare() {
+  if (standShareCache) return standShareCache;
+  const counts = new Map();
+  for (const entry of state.directory?.exhibitors || []) {
+    for (const s of entry.stands || []) {
+      if (!isBusinessHall(s.hall)) continue;
+      const key = boothKey(s.hall, s.booth);
+      if (key) counts.set(key, (counts.get(key) || 0) + 1);
+    }
+  }
+  standShareCache = counts;
+  return counts;
+}
+
+/* The largest count across an exhibitor's business stands — a studio sharing
+   a pavilion and holding a desk elsewhere is on a pavilion. */
+function sharedWith(entry) {
+  const counts = standShare();
+  let most = 1;
+  for (const s of tradeStands(entry)) most = Math.max(most, counts.get(boothKey(s.hall, s.booth)) || 1);
+  return most;
+}
+
 /* Which product groups are worth offering as filters: the ones the rows on
    screen actually carry, named from the directory's own table. */
 function tradeGroups(entries) {
@@ -2262,10 +2302,18 @@ function tradeRow(entry, byBooth) {
     .filter(Boolean)
     .map((label) => `<span class="tag">${esc(label)}</span>`)
     .join("");
+  const share = sharedWith(entry);
+  /* Three or more, so a pair of companies splitting a desk isn't announced as
+     a pavilion. The label states the count and nothing else. */
+  const shared = share >= 3
+    ? `<span class="trade-shared" title="${esc(
+        `${share} exhibitors list this stand — usually a national or regional pavilion, staffed and open to walk up to`
+      )}">shared · ${share}</span>`
+    : "";
   return `<li class="dir-row trade-row" data-saved="${isSaved("exhibitor", key)}">
     <span class="dir-name">${profileLink(entry)}</span>
     <span class="dir-country">${esc(entry.country || "")}</span>
-    <span class="dir-stands">${standChips(entry.stands, byBooth, entry.name)}</span>
+    <span class="dir-stands">${standChips(entry.stands, byBooth, entry.name)}${shared}</span>
     <span class="trade-tags">${cats}</span>
     ${markButton("saved", "exhibitor", key, entry.name)}
   </li>`;
@@ -2354,7 +2402,8 @@ function renderTrade() {
 
   const bits = [
     "The business area (halls 2–4), where the industry does its trading. A trade or media badge opens these halls; a consumer ticket does not, and they close after Friday.",
-    "Save a booth here and it plans like any other stop.",
+    "Booths here come in two shapes: shared stands — national and regional pavilions with a dozen or more companies on them, staffed all day and meant to be walked up to — and single-occupant stands, which in Hall 4.2 are mostly publishers' closed meeting buildings. The “shared” count says which is which; the cards above say what a booth is actually for.",
+    "Save a booth and it plans like any other stop.",
   ];
   if (!matches.length) bits.push("Nothing here matches the current search, hall or category.");
   note.innerHTML = `${bits.map(esc).join(" ")} <button class="linkish" id="trade-off" type="button">Turn trade exhibitors off</button>`;

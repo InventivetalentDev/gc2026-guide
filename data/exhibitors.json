@@ -1689,5 +1689,281 @@
       "https://exhibitors.gamescom.global/exhibitor/urban_games/"
     ],
     "lastUpdated": "2026-08-12"
+  },
+  {
+    "id": "xbox-business",
+    "name": "Xbox — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "A061/B060",
+    "locationConfirmed": true,
+    "dirSlug": "microsoft",
+    "country": "United States",
+    "access": "appointment",
+    "accessNote": "A 560 m² closed structure with no co-exhibitors and nothing on show from the aisle — partner and press meetings are booked in advance through Xbox, not taken at the door.",
+    "description": "Microsoft's business-side presence, entirely separate from the consumer Xbox booth in Hall 7.1. One of the largest single stands in the business area and one of the ~180 that no other exhibitor shares, which in Hall 4.2 means a meeting building rather than a stand you can walk into.",
+    "offers": [
+      "Partner and publisher meetings, by prior appointment",
+      "Press appointments — the consumer booth in Hall 7.1 is where hands-on demos live",
+      "ID@Xbox and Game Pass business conversations"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand",
+      "platform holder"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/microsoft/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "nintendo-business",
+    "name": "Nintendo — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B029/D030",
+    "locationConfirmed": true,
+    "dirSlug": "nintendo",
+    "country": "Germany",
+    "access": "appointment",
+    "accessNote": "541 m², sole occupant, no co-exhibitors. Nintendo does not take walk-ups on the business side; the Hall 9.1 booth is the public one.",
+    "description": "Nintendo of Europe's trade presence in Hall 4.2, distinct from the large consumer booth in Hall 9.1. Registered to the European headquarters entity rather than to a brand stand, which is the usual shape of a publisher meeting compound here.",
+    "offers": [
+      "Publisher and retail partner meetings by appointment",
+      "Trade press appointments"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand",
+      "platform holder"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/nintendo/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "tencent-business",
+    "name": "Tencent — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B035/D040",
+    "locationConfirmed": true,
+    "dirSlug": "tencent_games",
+    "country": "China",
+    "access": "appointment",
+    "accessNote": "At 702 m² this is the largest single-occupant stand in the business area — a closed meeting complex, not a show floor.",
+    "description": "Tencent's business compound, the biggest private stand in the business halls. Its consumer-facing work is elsewhere: Level Infinite in Hall 6.1 and the Worlds of Play area in Hall 8.1, both of which have their own cards.",
+    "offers": [
+      "Publishing, investment and partnership meetings by appointment",
+      "Level Infinite business conversations"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/tencent_games/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "nvidia-business",
+    "name": "NVIDIA",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "D069",
+    "locationConfirmed": true,
+    "dirSlug": "nvidia",
+    "country": "Germany",
+    "access": "appointment",
+    "accessNote": "420 m², sole occupant. NVIDIA has no consumer booth this year, so everything it is doing at the show is behind this door.",
+    "description": "NVIDIA's only registered stand at gamescom 2026, and it is in the business area rather than the entertainment halls — developer relations, RTX and cloud partnerships rather than a demo wall.",
+    "offers": [
+      "Developer relations and engine partnership meetings",
+      "GeForce NOW and RTX technology briefings",
+      "Press appointments"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand",
+      "hardware"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/nvidia/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-spain",
+    "name": "Spanish games pavilion (ICEX)",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "B041/C050",
+    "locationConfirmed": true,
+    "country": "Spain",
+    "access": "open",
+    "accessNote": "A national collective: 33 companies sharing one 240 m² stand, each with its own desk. Staffed all day and meant to be walked into — that is what a pavilion is for.",
+    "description": "Spain's national stand, organised around ICEX, the Spanish export agency. The single most densely shared stand in the business area: 33 studios and service companies, every one of them Spanish, listed individually in the trade list below.",
+    "offers": [
+      "33 Spanish studios and service companies at one stand",
+      "Publishing and co-development conversations without an appointment",
+      "ICEX export and funding advice"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/icex_espan/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/icex_espan/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-malta",
+    "name": "GamingMalta pavilion",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "C040/D041",
+    "locationConfirmed": true,
+    "country": "Malta",
+    "access": "open",
+    "accessNote": "21 exhibitors on one stand, hosted by a public foundation whose job is to be approachable. Walk up.",
+    "description": "Malta's national stand, run by the Gaming Malta Foundation with the Malta Game Developers Association. Nineteen of its twenty-one exhibitors are Maltese — studios, the American University of Malta, and the agencies that sell Malta as a place to set up a studio.",
+    "offers": [
+      "Maltese studios and the Malta Game Developers Association",
+      "Relocation, licensing and tax advice from GamingMalta",
+      "Games education — American University of Malta"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/gaming_mal/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/gaming_mal/",
+      "https://exhibitors.gamescom.global/en/exhibitor/malta_game_developer/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-denmark",
+    "name": "Danish games pavilion (NIMBI)",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "B021/C030",
+    "locationConfirmed": true,
+    "country": "Denmark",
+    "access": "open",
+    "accessNote": "17 exhibitors, all Danish, on one shared stand — a collective built for walk-up conversation.",
+    "description": "Denmark's national stand, anchored by NIMBI, the country's institute for game development. Seventeen Danish studios share it, including Ghost Ship Games and Bedtime Digital Games.",
+    "offers": [
+      "17 Danish studios at one stand",
+      "NIMBI — Denmark's Institute for Game Development",
+      "Co-development and publishing conversations"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/nimbi_denmarks_inst/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/nimbi_denmarks_inst/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-uk",
+    "name": "UK games pavilion",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "C020/F039",
+    "locationConfirmed": true,
+    "country": "United Kingdom",
+    "access": "open",
+    "accessNote": "A 1,004 m² shared stand carrying 23 exhibitors — one of the two biggest collectives in the business area, and staffed throughout.",
+    "description": "The British collective in Hall 3.2, seventeen of its twenty-three exhibitors registered in the UK. A mix of publishers (505 Games), specialist services and PR agencies rather than a single company's compound.",
+    "offers": [
+      "23 UK publishers, studios and service companies",
+      "Publishing and PR conversations without an appointment"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-nordic",
+    "name": "Nordic & Baltic games stand",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "D033",
+    "locationConfirmed": true,
+    "access": "open",
+    "accessNote": "40 exhibitors share this one stand — the most crowded collective in the business area. Nothing about it is closed.",
+    "description": "A joint Nordic and Baltic stand: 40 exhibitors, mostly Finnish, Norwegian, Estonian and Swedish, brought together by regional development agencies such as Business Tampere and Arctic Game Skellefteå rather than by one country's export body.",
+    "offers": [
+      "40 Nordic and Baltic studios and regional agencies",
+      "Regional funding, relocation and cluster advice",
+      "Co-development conversations without an appointment"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/business_tampere_ltd/",
+      "https://exhibitors.gamescom.global/en/exhibitor/arctic_game/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "games-hubs-hessen",
+    "name": "Games Hubs Hessen",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "D060",
+    "locationConfirmed": true,
+    "dirSlug": "games_hubs_hessenhouse_of_communicati",
+    "country": "Germany",
+    "access": "open",
+    "accessNote": "A regional cluster stand shared by 18 exhibitors, including the Frankfurter Buchmesse — open, staffed and used for introductions.",
+    "description": "The German state of Hessen's games cluster, sharing one Hall 4.1 stand with 17 other exhibitors — studios, service firms and, unusually for a games hall, the Frankfurt Book Fair.",
+    "offers": [
+      "Hessen studios and service companies",
+      "Regional funding and location advice",
+      "Cross-media contacts — Frankfurter Buchmesse shares the stand"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/games_hubs_hessenhouse_of_communicati/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/games_hubs_hessenhouse_of_communicati/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
   }
 ]

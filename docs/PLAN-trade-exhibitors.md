@@ -7,12 +7,20 @@ treats the ~815 exhibitors *in* those halls as inert directory rows. For a
 visitor holding a trade or media badge, that is most of their show reduced
 to name, country and booth number.
 
-**Status: planned, not built.** Unlike the other PLAN docs, this one is
-written before the feature; each stage below flips to "built" as it lands.
-The design decisions are settled — the discovery work (endpoint behaviour,
-payload sizes, share-token collision measurement) was done against the live
-source and the current tree, and file:line references are to the tree as of
-this writing.
+**Status: built.** This doc was written before the feature, which is why it
+reads as a plan; the design it describes is what shipped. Three things came
+out differently once the data was in front of us, and they are marked
+**[changed]** where they appear below:
+
+1. `isBusinessHall` is halls **2–4**, not "below 5". Hall 1 is the public
+   Event Arena and the directory files a stand there.
+2. The share-token check is scoped to rows the guide actually mints tokens
+   for. Checking all 1658 rows reported a collision against a token that is
+   never minted (`dir:sharkbomb_studios` — hall 10.2, not a trade row).
+   Correctly scoped: **1038 identities, no collisions**.
+3. A booth's **access** — walk-up stand or closed meeting building — turned
+   out to be the most useful thing to say about the business halls, and is a
+   new curated field. See "What the business halls actually are" below.
 
 ## What is being built
 
@@ -80,6 +88,42 @@ pacing, no per-profile scraping. Two quirks to handle:
 The profile pages carry more (brands, target markets, addresses), but
 that is one fetch per exhibitor for detail the profile link on the row
 already provides. Deliberately skipped.
+
+## What the business halls actually are
+
+A question that only became askable once the data was joined: which of these
+booths can you walk up to, and which are closed rooms you need an appointment
+for? It matters more than anything else here — a trade visitor planning a walk
+through Hall 4.2 would find a corridor of shut doors.
+
+Two facts already in the repo answer it between them. From
+`data/directory.json`, how many exhibitors list the same stand; from
+`data/hallplan/`, how big that stand is:
+
+| | stands | shape |
+|---|---|---|
+| Shared, 3+ exhibitors | 53 stands, **634 of the 821 trade rows** | national and regional pavilions — Spain's 33 companies on one 240 m² stand, a 70-exhibitor European collective in 3.2, Denmark's 17. Twenty desks under one roof; staffed all day; walk up. |
+| Single occupant, large | the Hall 4.2 row — Tencent 702 m², Xbox 560, Bandai Namco 543, Nintendo 541, CD Projekt 432, NVIDIA 420, Ubisoft 403 | one company, hundreds of square metres, no co-exhibitors and no demos. A meeting building with a logo on it. |
+| Single occupant, small | most of Hall 2.1 (median stand 14 m²) | an ordinary trade booth with a counter. Walk up. |
+
+Note that size alone inverts: the **biggest** business stands are the **most**
+closed. Occupancy is the signal, and only together with size.
+
+So the guide says two different kinds of thing about it, and keeps them
+separate:
+
+- **A count, on every trade row.** `shared · 33` is a fact from the data —
+  how many exhibitors list that stand — and the reader draws their own
+  conclusion. No inference is stated per row, because none is sourceable for
+  821 of them.
+- **A judgement, only on a curated card**, as `access: open | appointment |
+  mixed` with a note saying why (`docs/UPDATING.md` has the sourcing rule).
+  It takes the queue index's place in the card foot, because it answers the
+  same question a queue index does: is it worth walking over there.
+
+**[changed]** — this was not in the original plan. Its open question ("whether
+any trade booth deserves a crowd note") is settled in the other direction:
+none does, and `access` is what that space was actually for.
 
 ## Design decisions
 
@@ -393,16 +437,34 @@ scripted steps.
 10. **Escaping** — official names, countries and category labels reach
     the DOM only through `esc()`/`textContent`.
 
-## Open questions
+## Answered
 
-1. **`cats` scope** — harvested for all 1630 rows (recommended: same
-   requests, keeps a future directory category filter possible) or
-   business-only (~10 KB raw smaller).
-2. **Toggle wording** — "I have a trade badge" (personal, honest about
-   who it's for) vs a neutral "Show the business halls". Should the Event
-   view's tickets block mention the switch exists?
-3. **Closed-day UX** — confirm warn-don't-block is the intended
-   behaviour once it's visible on a real plan.
-4. **Curation list** — which booths get cards first, and whether any
-   trade booth deserves a crowd note (it stays out of the priority list
-   either way under the `type` exclusion).
+The four questions this doc opened with, as settled during implementation:
+
+1. **`cats` scope** — all rows. 1621 of 1658 carry at least one group, for
+   ~+7 KB gzipped, and the Full directory can grow a category filter later
+   without another sweep.
+2. **Toggle wording** — "I have a trade badge — show trade exhibitors". The
+   Event view is deliberately left alone: the switch lives where its effect
+   is, and a second mention would be a second thing to keep in sync.
+3. **Closed-day UX** — warn, don't block, confirmed. Sat/Sun chips are struck
+   through for a business-area stop, an assigned one carries an amber note on
+   the row, the day group heads with a count, and the `.ics` description says
+   "business area CLOSED this day" so it survives leaving the guide.
+4. **Curation list** — ten cards: five Hall 4.2 compounds (Xbox, Nintendo,
+   Tencent, NVIDIA — each claiming its directory row via `dirSlug`) and five
+   pavilions (Spain/ICEX, GamingMalta, Denmark/NIMBI, the UK collective, the
+   Nordic & Baltic stand, Games Hubs Hessen). Pavilion cards deliberately
+   claim **no** `dirSlug`: a pavilion is a stand, not a row, and its members
+   stay listed individually below. No trade booth gets a crowd note.
+
+## Still open
+
+- Hall 3.2's `D050/F051` is the largest collective in the business area — 70
+  exhibitors from a dozen countries — and nothing in the official data names
+  it. It has no card because naming it would mean guessing. Worth identifying
+  on site or from a gamescom dev/Home of Indies announcement.
+- The `access` values on the Hall 4.2 cards are reasoned from stand size and
+  sole occupancy, not from a published statement per booth. They are the
+  right call and the note says what they rest on, but a first-hand look at
+  the hall would upgrade them from sourced-inference to observation.

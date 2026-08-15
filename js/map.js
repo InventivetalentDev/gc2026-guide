@@ -851,6 +851,11 @@ document.addEventListener("keydown", (e) => {
 window.addEventListener("storage", (e) => {
   const keys = [...Object.values(GCMarks.MARK_KEYS), GCMarks.PREFS_KEY];
   if (e.key !== null && !keys.includes(e.key)) return;
+  /* The guide writes prefs on nearly every interaction, so this fires far
+     more often than a mark change and can easily land before the hall index
+     has arrived. Everything below needs it; nothing below is urgent, and
+     main() renders the current state anyway once it lands. */
+  if (!state.index) return;
   loadMarks();
   /* Trade mode turned on in the guide, or a trade booth saved there — either
      way this page now needs rows it has not fetched. loadTrade() redraws the
