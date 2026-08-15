@@ -1835,11 +1835,45 @@ function renderFilterSummary() {
   if (state.hidePlayed) parts.push("played hidden");
   if (state.query) parts.push(`“${state.query}”`);
   const el = $("#filter-summary");
-  el.textContent = parts.length ? parts.join(" · ") : "All categories, all halls";
-  el.dataset.active = String(parts.length > 0);
+  /* Trade mode leads the line rather than joining the list of constraints:
+     it is not a filter — it widens the pool instead of narrowing it — and
+     this way the "nothing is filtered" reassurance survives beside it. */
+  const filters = parts.length ? parts.join(" · ") : "all categories, all halls";
+  el.textContent = state.trade
+    ? `Trade badge · ${filters}`
+    : parts.length
+      ? filters
+      : "All categories, all halls";
+  el.dataset.active = String(parts.length > 0 || state.trade);
+}
+
+/* Two chips rather than a checkbox in the "Only show" row, because that row
+   is filters — things that hide cards — and this hides nothing. Stated as a
+   pair, it also reads as a setting with two answers rather than a box you
+   might have left ticked by accident. */
+function renderBadge() {
+  const row = $("#badge-filters");
+  if (!row) return; // stale cached shell — see the note in renderPlan
+  const chips = [
+    [false, "Consumer", "Consumer ticket — the entertainment halls"],
+    [true, "Trade & media", "Trade or media badge — adds the business halls, 2 to 4"],
+  ];
+  row.innerHTML = chips
+    .map(
+      ([on, label, title]) =>
+        `<button class="chip badge-chip${on ? " badge-chip-trade" : ""} ${
+          state.trade === on ? "active" : ""
+        }" type="button" data-badge="${on ? "trade" : "consumer"}"
+        aria-pressed="${state.trade === on}" title="${esc(title)}">${esc(label)}</button>`
+    )
+    .join("");
+  $$("#badge-filters .chip").forEach((chip) =>
+    chip.addEventListener("click", () => setTrade(chip.dataset.badge === "trade", { announce: true }))
+  );
 }
 
 function renderFilters() {
+  renderBadge();
   const types = [...new Set(cardPool().map((e) => e.type))];
   /* A type chip pointing at cards that just became invisible would answer
      with an empty grid, so the filter follows the pool it filters. */
@@ -2568,8 +2602,15 @@ function renderTrade() {
 }
 
 /* Turning it on is also the first fetch, which is what warms the offline
-   cache — the same one-online-load contract the directory already states. */
-function setTrade(on) {
+   cache — the same one-online-load contract the directory already states.
+
+   `announce` is set by the two remote controls (the toolbar chips and the
+   Event info block), where the thing that just changed — a section far below
+   the fold, or one on another view entirely — is off screen. The button
+   inside the section itself leaves it off: you are standing in the result. */
+let tradeToast = null;
+
+function setTrade(on, { announce = false } = {}) {
   if (state.trade === on) return;
   state.trade = on;
   if (on) {
@@ -2584,6 +2625,26 @@ function setTrade(on) {
   renderExhibitors();
   renderPriority();
   renderPlan();
+  if (state.event) renderEvent(); // keeps the Event info block's own button in step
+  if (!announce) return;
+  /* Flip the switch twice and the first message must not outlive it: left in
+     the queue, "Trade exhibitors on · Show the list →" would surface after
+     you turned it off and offer to scroll you to an empty section. */
+  if (tradeToast && tradeToast !== activeToast) hideToast(tradeToast);
+  tradeToast = on
+    ? showToast(
+        "Trade exhibitors on — business booths are in the grid, and in their own list below.",
+        "Show the list →",
+        () => {
+          showView("exhibitors");
+          const section = $("#trade");
+          if (!section) return;
+          section.open = true; // the <details> toggle listener persists it
+          section.scrollIntoView();
+        },
+        { replace: true }
+      )
+    : showToast("Trade exhibitors off — back to the consumer halls.", null, null, { replace: true });
 }
 
 /* ---------- planner ---------- */
@@ -3330,17 +3391,33 @@ function renderEvent() {
       <p>${esc(ev.tickets || "See gamescom.global for tickets.")}</p>
     </div>
     <div class="info-block">
-      <h2><span class="section-num">03</span> Halls &amp; areas</h2>
+      <h2><span class="section-num">03</span> Your badge</h2>
+      <p>Halls 2–4 are the <strong>business area</strong>: around 800 exhibitors doing the industry's trading, open Wednesday to Friday and closed at the weekend. A <strong>trade or media badge</strong> opens them; a consumer ticket does not.</p>
+      <p class="fact-sub">${
+        state.trade
+          ? "Business booths are showing — in the exhibitor grid, in the hall filter, on the map, and as their own list on the exhibitor page."
+          : "The guide is showing the consumer halls only. This is a display setting; it changes nothing about what your ticket actually gets you."
+      }</p>
+      <button class="${state.trade ? "badge-off" : "trade-enable"}" id="badge-toggle" type="button">${
+        state.trade ? "Hide trade exhibitors" : "I have a trade badge — show trade exhibitors"
+      }</button>
+    </div>
+    <div class="info-block">
+      <h2><span class="section-num">04</span> Halls &amp; areas</h2>
       <ul class="area-list">${areas}</ul>
     </div>
     <div class="info-block">
-      <h2><span class="section-num">04</span> Official links</h2>
+      <h2><span class="section-num">05</span> Official links</h2>
       <ul class="link-list">${links}</ul>
     </div>
     <p class="info-foot">
       <span>Compiled from published sources, not from gamescom itself.</span>
       ${sourcesButton("event", "")}
     </p>`;
+
+  /* setTrade() re-renders this block, so the listener is re-attached with it
+     rather than delegated — same pattern as the filter chips. */
+  $("#badge-toggle").addEventListener("click", () => setTrade(!state.trade, { announce: true }));
 }
 
 /* ---------- changelog ---------- */
@@ -3690,6 +3767,7 @@ function bindControls() {
     renderPriority();
     renderWristband();
     renderPlan();
+    if (state.event) renderEvent(); // its badge block is a switch, not just copy
   });
 
   $("#reset-filters").addEventListener("click", () => {
