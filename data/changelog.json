@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-15",
+    "revision": 24,
+    "changes": [
+      "New Entrances section on the Info tab covering all four gates — West, South, East and North — with what each one is closest to and what it costs you in queueing. South is where the rail crowd lands and the business halls sit; North is shortest to halls 6–9; East opens into Hall 10; West is the quiet one.",
+      "Trade-badge access is now stated where it matters: the entertainment halls open at 09:00 every day on a trade badge, an hour before the public on Thursday and Friday. Both day cards and the crowd tips say so, and the Wednesday hours now separate the 09:00 trade opening from the 13:00 Wildcard entry.",
+      "\"West is best\" is the usual advice for trade visitors, and the guide now says when it is true: on Thursday and Friday, when South and East are carrying the public. On trade Wednesday any gate will do. The business area entry no longer names the West Entrance as though it were the only way in — halls 2–4 sit at the South entrance.",
+      "Accredited creators are named alongside trade visitors and press as having business-area access."
+    ]
+  },
+  {
+    "date": "2026-08-15",
     "revision": 23,
     "changes": [
       "New: trade exhibitors. Turn on \"I have a trade badge\" and the ~820 business-hall booths become saveable, plannable stops — with their own list, product-group filters, curated cards and map coverage. Off by default; a consumer ticket does not open halls 2–4.",
@@ -17,7 +27,7 @@
       "Fix: hall 1 is the public Event Arena, not the business area — its one directory booth is no longer labelled trade-only."
     ]
   },
-      {
+  {
     "date": "2026-08-14",
     "revision": 22,
     "changes": [
