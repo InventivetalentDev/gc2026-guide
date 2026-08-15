@@ -89,6 +89,28 @@
 }
 .map-access[hidden] { display: none; }
 .map-access b { color: var(--ink); font-weight: 600; }
+/* Inline in the banner's own text so it wraps with it rather than claiming a
+   row of its own — this bar is already the tallest thing between the hall
+   chips and the map. Amber to match the guide's badge chip; plain rule when
+   it is on, because turning it off is not the offer being made. */
+.map-access-btn {
+  display: inline-block;
+  margin-left: 2px;
+  padding: 2px 9px;
+  border: 1px solid var(--warn);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: .68rem; letter-spacing: .04em; text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.map-access-btn:hover { background: color-mix(in srgb, var(--warn) 24%, transparent); }
+.map-access-btn.is-on {
+  border-color: var(--rule); background: none; color: var(--ink-dim);
+}
+.map-access-btn.is-on:hover { border-color: var(--ink-dim); color: var(--ink); }
 
 /* --- stage --- */
 #stage {
@@ -187,6 +209,20 @@
 }
 .map-sheet-who b { color: var(--ink); font-weight: 600; }
 .map-sheet-dim { color: var(--ink-dim); }
+/* The way out of the sheet's one dead end, sized like the save button it is
+   standing in for — that button is hidden on exactly these stands. */
+.map-sheet-enable {
+  margin-top: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--warn);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  cursor: pointer;
+}
+.map-sheet-enable:hover { background: color-mix(in srgb, var(--warn) 24%, transparent); }
 .map-sheet-actions { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
 .map-sheet-actions .chip { font-family: var(--font-mono); font-size: .75rem; padding: 7px 12px; }
 .map-sheet-actions .chip[data-on="true"] {

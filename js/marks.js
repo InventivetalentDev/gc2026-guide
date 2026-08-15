@@ -53,6 +53,28 @@ const GCMarks = (() => {
     }
   }
 
+  /* Read-modify-write, never a bare `{trade: on}`: the guide keeps its filter
+     and section state in the same blob and writes it whole from memory, so a
+     switch thrown on the map must hand the rest back untouched. The guide's
+     own storage listener picks the change up; this tab gets no storage event
+     for its own write and has to redraw itself. */
+  function setTradeMode(on) {
+    let prefs = {};
+    try {
+      const raw = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
+      if (raw && typeof raw === "object") prefs = raw;
+    } catch {
+      /* corrupt entry — replaced below, same as the guide's loadPrefs() */
+    }
+    prefs.trade = on === true;
+    try {
+      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    } catch {
+      /* storage blocked (Safari private mode): the switch does not stick,
+         which is the same deal every other preference on this site gets */
+    }
+  }
+
   /* Games are keyed by normalised title, not by booth: eight titles this
      year are shown at two booths at once (Alien: Isolation 2 sits at
      both Xbox and SEGA), and a mark applies to the game everywhere. */
@@ -111,6 +133,6 @@ const GCMarks = (() => {
 
   return {
     MARK_KEYS, PREFS_KEY, gameKey, readMarks, writeMarks, savedGames, hasSaved, boothCodes,
-    DIR_PREFIX, dirKey, isDirKey, dirSlug, isBusinessHall, tradeMode,
+    DIR_PREFIX, dirKey, isDirKey, dirSlug, isBusinessHall, tradeMode, setTradeMode,
   };
 })();

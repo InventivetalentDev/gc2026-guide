@@ -83,19 +83,28 @@ function buildJoin() {
       if (!at.includes(ex)) at.push(ex);
     }
   };
-  for (const ex of [...state.exhibitors.filter(offered), ...state.trade]) {
+  for (const ex of [...state.exhibitors, ...state.trade].filter(offered)) {
     add(ex, ex.hall, ex.booth);
     for (const s of ex.stands || []) add(ex, s.hall, s.booth);
   }
 }
 
-/* Curated business-area cards are trade content, so they follow the guide's
-   rule rather than the map's convenience: offered only in trade mode — else a
-   consumer taps a Hall 2.1 stand, gets a card name, and follows a link into a
-   grid that is hiding it. Saved ones always join, because that rule gates
-   discovery and never resolution. */
+/* Business-area content follows the guide's rule rather than the map's
+   convenience: offered only in trade mode — else a consumer taps a Hall 2.1
+   stand, gets a name, and follows a link into a grid that is hiding it.
+   Saved ones always join, because that rule gates discovery and never
+   resolution.
+
+   Both sources are checked, not just the curated cards. Directory rows used
+   to be spread into the join unconditionally, which held only while nothing
+   ever fetched them with the pref off — turn trade on and off again and the
+   rows stayed, leaving 54 of hall 2.1's 78 stands joined with the setting
+   off. The switch on the access banner makes that a one-tap path, so the
+   gate belongs on the join itself. */
+const isTradeContent = (ex) => ex.type === "trade" || ex.trade === true;
+
 const offered = (ex) =>
-  ex.type !== "trade" ||
+  !isTradeContent(ex) ||
   GCMarks.tradeMode() ||
   state.marks.saved.exhibitors.has(ex.id) ||
   state.marks.played.exhibitors.has(ex.id);
@@ -525,13 +534,43 @@ const areaOf = (id) => state.areas[state.index.halls.find((h) => h.id === id)?.a
    page as the place ("Business area"). */
 const areaName = (area) => (area.label ? `${area.label} area` : "");
 
+/* The banner is this page's switch as well as its warning. It already appears
+   on exactly the five halls where trade mode changes anything and never on
+   the seven where it does not, it sits directly above what changes, and it
+   already says "trade & media badge only" — so the switch finishes that
+   sentence rather than introducing a second idea, and the map keeps every
+   pixel it has for the map. */
 function renderAccess(id) {
   const area = areaOf(id);
   const note = $("#access");
   note.hidden = !area.access;
-  if (!area.access) return;
+  if (!area.access) {
+    note.innerHTML = ""; // don't leave the last business hall's switch behind
+    return;
+  }
   note.style.setProperty("--area", area.colour || "");
-  note.innerHTML = `<b>${esc(areaName(area))}</b> — ${esc(area.access)}`;
+  const on = GCMarks.tradeMode();
+  note.innerHTML =
+    `<b>${esc(areaName(area))}</b> — ${esc(area.access)}` +
+    (area.trade
+      ? ` <button class="map-access-btn${on ? " is-on" : ""}" id="access-trade" type="button">${
+          on ? "hide exhibitors" : "I have a badge — show exhibitors"
+        }</button>`
+      : "");
+  $("#access-trade")?.addEventListener("click", () => setTrade(!GCMarks.tradeMode()));
+}
+
+/* The guide owns the preference; this page just writes it and redraws itself,
+   because a tab gets no storage event for its own write. */
+function setTrade(on) {
+  if (GCMarks.tradeMode() === on) return;
+  GCMarks.setTradeMode(on);
+  /* Turning it on may need rows this page has never fetched — loadTrade()
+     redraws the hall itself once they land. Everything else redraws now. */
+  if (on && !state.trade.length) loadTrade();
+  else redrawJoin();
+  renderAccess(state.hall);
+  if ($("#map")) refreshMarks(); // the counts line and the chip row both move
 }
 
 /* ================= hall chips ================= */
@@ -809,14 +848,28 @@ function selectStand(rec, { zoom = false } = {}) {
       who += `<br>also here: ${rec.exs.slice(1).map((x) => esc(x.name)).join(", ")}`;
   } else if (s.names.length) {
     /* Named in the official plan but not in the guide — say so rather
-       than leave a blank booth looking like a data bug. */
+       than leave a blank booth looking like a data bug.
+
+       In a business hall with trade mode off that message is wrong, and it
+       is the page's one dead end: the guide has most of these rows and is
+       simply not offering them, the save button is hidden, and there is
+       nothing here to press. "Most", not "all" — 18 of hall 2.1's 78 stands
+       stay uncovered either way — so the line is hedged, and turning the
+       switch on re-renders this sheet with whichever answer is true. */
+    const gated = GCMarks.isBusinessHall(state.hall) && !GCMarks.tradeMode();
     who = s.names.slice(0, 6).map(esc).join(", ") +
       (s.names.length > 6 ? `, +${s.names.length - 6} more` : "") +
-      '<br><span class="map-sheet-dim">not covered by the guide</span>';
+      (gated
+        ? '<br><span class="map-sheet-dim">business area — most of these are in the guide with trade exhibitors on</span>' +
+          '<br><button class="map-sheet-enable" id="sheet-trade" type="button">show trade exhibitors</button>'
+        : '<br><span class="map-sheet-dim">not covered by the guide</span>');
   } else {
     who = '<span class="map-sheet-dim">no exhibitor filed for this stand</span>';
   }
   $("#sheet-who").innerHTML = who;
+  /* setTrade() redraws the join and re-selects this stand, so the sheet
+     answers with the exhibitor — or with the honest "not covered". */
+  $("#sheet-trade")?.addEventListener("click", () => setTrade(true));
 
   const save = $("#sheet-save");
   save.hidden = !ex;

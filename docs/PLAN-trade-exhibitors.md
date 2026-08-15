@@ -368,6 +368,42 @@ The pref itself is read through a small helper in `js/marks.js` — the
 same justification that put `boothCodes` there: two pages answering the
 same question must answer it identically.
 
+**The map gets a switch too, and needed one most.** This section left the
+map read-only on the pref, on the assumption that the guide is where you
+set things. Measuring it said otherwise: all five business halls are
+fully browsable with the pref off and join to *nothing* — 335 stands,
+zero — while an entertainment hall like 9.1 reads 15 of 20 either way.
+Worse, tapping a business stand was a dead end with no exit: the sheet
+said "not covered by the guide" and hid the save button, on a page with
+no way to change the setting. Two switches, matching the guide's
+placement logic — put it where the effect is:
+
+- **In the access banner** (`renderAccess()`). It already renders on
+  exactly the five halls where the pref changes anything and never on the
+  seven where it does not, it sits directly above what changes, and it
+  already says "trade & media badge only" — the switch finishes that
+  sentence. Nothing permanent is added to a page whose whole point is map
+  area.
+- **In the sheet's dead end**, replacing "not covered by the guide" when
+  the stand is in a business hall and the pref is off. The line is
+  hedged — "most of these are in the guide with trade exhibitors on",
+  because 18 of hall 2.1's 78 stands stay uncovered either way — and
+  pressing it re-selects the stand so the sheet answers with whichever is
+  true.
+
+`js/marks.js` gains `setTradeMode(on)` beside `tradeMode()`, read-modify-
+write rather than a bare `{trade: on}`: the guide keeps its filter and
+section state in the same blob and writes it whole from memory, so a
+switch thrown on the map has to hand the rest back untouched.
+
+**Bug this surfaced.** `buildJoin()` filtered the curated cards through
+`offered()` but spread the directory rows in unconditionally. That held
+only while nothing ever fetched them with the pref off. Turning trade on
+and then off left 54 of hall 2.1's 78 stands joined with the setting
+off — reachable today from a second tab, and one tap away once the map
+had its own switch. `offered()` now recognises both shapes
+(`ex.type === "trade" || ex.trade`) and the whole join runs through it.
+
 ### 8. Caching: runtime, not precache
 
 `data/directory.json` stays out of the service worker's precache list.
