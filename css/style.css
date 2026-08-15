@@ -1277,6 +1277,15 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .area-name { font-weight: 600; font-size: .92rem; }
 .area-desc { color: var(--ink-mid); font-size: .85rem; }
 
+/* Entrance names are words, not hall numbers — drop the tabular figures and
+   let "South" sit in the same plate column without being clipped. */
+.entrance-name { font-variant-numeric: normal; text-transform: uppercase; letter-spacing: .03em; }
+.info-block .entrance-trade {
+  margin-top: 14px;
+  border-left: 2px solid var(--signal);
+  padding-left: 12px;
+}
+
 .link-list { list-style: none; border-top: 1px solid var(--rule-soft); }
 .link-list li { border-bottom: 1px solid var(--rule-soft); }
 .link-list a { display: flex; gap: 12px; align-items: baseline; padding: 11px 0; text-decoration: none; color: var(--ink); }

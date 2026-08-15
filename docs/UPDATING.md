@@ -190,7 +190,7 @@ This document is the playbook for refreshing the data — written so a scheduled
       "label": "Wednesday",
       "access": "trade & media only",
       "hours": "Business 09:00–19:00, entertainment 13:00–19:00",
-      "open": "13:00",             // entertainment-area opening, HH:MM
+      "open": "13:00",             // entertainment-area opening for the public, HH:MM
       "close": "19:00",            // entertainment-area closing, HH:MM
       "note": "..."
     }
@@ -198,10 +198,19 @@ This document is the playbook for refreshing the data — written so a scheduled
   "onl": { "date": "Tue, Aug 25", "time": "20:00 CEST", "note": "..." },
   "tickets": "summary incl. sold-out status",
   "areas": [ { "name": "Indie Arena Booth", "hall": "10.2", "description": "..." } ],
+  "entrances": {                   // optional; the Info tab drops the section without it
+    "lede": "paragraph above the list",
+    "trade": "paragraph below it, rendered under an 'On a trade badge' lead-in",
+    "list": [ { "name": "West", "nameDe": "Eingang West", "description": "..." } ]
+  },
   "crowdTips": ["...", "..."],
   "sources": ["https://..."]
 }
 ```
+
+`open`/`close` drive the planner and are the **public** hours; a trade badge gets
+into the entertainment halls at 09:00 every day, which belongs in `hours` and the
+day `note` rather than in these two fields.
 
 ### `data/meta.json`
 

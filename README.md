@@ -14,7 +14,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours and crowd advice inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter)
 - **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up; tap a booth for its lineup and queue call. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory — opens it on that stand, and it works offline like everything else
-- Event info: dates, hours, tickets, special areas, Opening Night Live
+- Event info: dates, hours, tickets, special areas, Opening Night Live, and which of the four **entrances** to use — including what changes on a trade badge
 - **Installable and offline-capable** — add it to your home screen and the whole guide
   stays readable in a hall with no reception
 

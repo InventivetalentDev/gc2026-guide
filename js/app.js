@@ -2530,6 +2530,24 @@ function renderEvent() {
     )
     .join("");
 
+  /* Entrances are the one piece of event info that is advice rather than
+     fact: the gate that is quickest depends on the day and on which way
+     Koelnmesse is steering the queue that morning. The lede says so, and
+     the trade note gets its own paragraph because "West is best" is only
+     true on the public days. */
+  const ent = ev.entrances;
+  const entrances = (ent?.list || [])
+    .map(
+      (e) => `<li>
+        <span class="area-hall entrance-name">${esc(e.name)}</span>
+        <span>
+          <span class="area-name">${esc(e.nameDe || e.name)}</span><br>
+          <span class="area-desc">${esc(e.description)}</span>
+        </span>
+      </li>`
+    )
+    .join("");
+
   const links = [
     ["https://www.gamescom.global/en", "gamescom.global", "Official site"],
     [
@@ -2566,8 +2584,18 @@ function renderEvent() {
       <h2><span class="section-num">03</span> Halls &amp; areas</h2>
       <ul class="area-list">${areas}</ul>
     </div>
+    ${
+      entrances
+        ? `<div class="info-block">
+      <h2><span class="section-num">04</span> Entrances</h2>
+      ${ent.lede ? `<p>${esc(ent.lede)}</p>` : ""}
+      <ul class="area-list">${entrances}</ul>
+      ${ent.trade ? `<p class="entrance-trade"><strong>On a trade badge.</strong> ${esc(ent.trade)}</p>` : ""}
+    </div>`
+        : ""
+    }
     <div class="info-block">
-      <h2><span class="section-num">04</span> Official links</h2>
+      <h2><span class="section-num">0${entrances ? 5 : 4}</span> Official links</h2>
       <ul class="link-list">${links}</ul>
     </div>
     <p class="info-foot">
