@@ -15,8 +15,8 @@ compatibility_date = "2026-08-14"
 
 # gc2026-guide.<subdomain>.workers.dev — the URL a deploy can be checked on
 # before any domain points at it, and the one that still answers if a custom
-# domain is mid-move. Set false once both hostnames are live if you would rather
-# the guide had exactly two addresses.
+# domain is mid-move. Set false once the retired hostnames are off if you would
+# rather the guide answered on gc26.guide and nothing else.
 workers_dev = true
 
 [assets]
@@ -50,16 +50,33 @@ html_handling = "none"
 # unknown path renders the app rather than a bare 404.
 not_found_handling = "single-page-application"
 
+# The home address. Everything the guide says about itself — the canonical
+# links, the share links, content@gc26.guide — points here.
+[[routes]]
+pattern = "gc26.guide"
+custom_domain = true
+
+# Two hostnames are draining behind it, and both serve the guide rather than a
+# redirect for exactly one reason: a saved list is per-origin, so a redirect
+# would strand every list built on them. They stay until the move notice has
+# had a fair run at the people standing on them (offerMove in js/app.js), and
+# come off one at a time, in the order docs/DEPLOYING.md sets out.
+#
+# gamescom.guide is the urgent one. "gamescom" is a registered mark of game —
+# Verband der deutschen Games-Branche e.V., unofficial sites have been warned
+# off carrying it in a domain, and the show itself is the worst possible moment
+# to be arguing about it. It answered for about a day, so the population on it
+# is small; retire it first and do not hand it out again.
 [[routes]]
 pattern = "gamescom.guide"
 custom_domain = true
 
-# Cutover, once GitHub Pages is done serving this hostname: delete the DNS
-# record that points it at github.io, then uncomment. A custom domain cannot be
-# created while another record still holds the name — wrangler will refuse the
-# deploy rather than clobber it, so the old site stays up until you clear the
-# way for the new one.
-#
 [[routes]]
 pattern = "gc2026.inventivetalent.org"
 custom_domain = true
+
+# The three .de names are NOT routed here, deliberately. They are redirects to
+# gc26.guide, set up as Cloudflare Redirect Rules on each zone — no Worker and
+# no entry in this file. Serving the app on them instead would give the guide
+# five origins, and five per-origin copies of everybody's saved list to keep
+# apart. A 301 carries the fragment, so gc26.de/#s?t=... still arrives intact.

@@ -57,10 +57,21 @@ the edge, no Worker script. `.github/workflows/cloudflare.yml` deploys every pus
 asset directory has to hold the site and nothing else.
 
 It runs there rather than on GitHub Pages because Pages gives a repository one custom
-domain and the guide answers on two: `gamescom.guide` and the original
-`gc2026.inventivetalent.org`, which is already bookmarked and installed on people's
-phones. `.github/workflows/pages.yml` still deploys the old hostname until that one is
-moved across, so both stay on the same commit in the meantime.
+domain and the guide answers on three: `gc26.guide`, plus `gamescom.guide` and the
+original `gc2026.inventivetalent.org` for as long as those two take to drain. Both
+older names are bookmarked and installed on people's phones, and a saved list is
+per-origin — so they keep serving the guide rather than a redirect until the people
+standing on them have been offered the move.
+
+`gc26.guide` is the home address because `gamescom.guide` could not stay one: the name
+is a registered mark of game — Verband der deutschen Games-Branche e.V., who license it
+to exhibitors and have had unofficial sites warned off carrying it in a domain. The
+guide still calls the show by its name throughout, which is ordinary referential use and
+is not the part anyone objects to.
+
+The three `.de` names — `gc26.de`, `gc2026.de`, `gcguide.de` — redirect to `gc26.guide`
+rather than serving the guide, so they cost nothing in extra origins. `gc26.de` is the
+one to say out loud to a German crowd.
 
 Any static host works, but two routing options are not optional if you move it
 elsewhere: `/map.html` must be served without a redirect, and `/` must serve
@@ -191,15 +202,10 @@ is a plan you hand to someone else, and your progress through it is not theirs.
 Moving between your own devices is what the **Played marks** box in the share dialog
 exists for — there your progress follows you, alongside the day plan.
 
-Moving yourself between the guide's two hostnames is the one case that is not a
-share, so it carries everything: accepting the notice on `gc2026.inventivetalent.org`
-brings the saved list, the played marks and the day assignments over to
-`gamescom.guide` in one step. See [`docs/DEPLOYING.md`](docs/DEPLOYING.md).
-
-Moving yourself between the guide's two hostnames is the one case that is not a
-share, so it carries everything: accepting the notice on `gc2026.inventivetalent.org`
-brings the saved list, the played marks and the day assignments over to
-`gamescom.guide` in one step. See [`docs/DEPLOYING.md`](docs/DEPLOYING.md).
+Moving yourself between the guide's hostnames is the one case that is not a share, so
+it carries everything: accepting the notice on `gc2026.inventivetalent.org` or on
+`gamescom.guide` brings the saved list, the played marks and the day assignments over
+to `gc26.guide` in one step. See [`docs/DEPLOYING.md`](docs/DEPLOYING.md).
 
 ## Architecture
 
@@ -266,7 +272,7 @@ Two licences, because the repository holds two different kinds of thing.
 | | Licence | |
 |---|---|---|
 | **Code** — `index.html`, `map.html`, `js/`, `css/`, `sw.js`, `tools/` | [MIT](LICENSE) | Take it, fork it for another show, no conditions beyond the notice |
-| **Data** — `data/` | [CC BY 4.0](data/LICENSE) | Credit *gamescom.guide* and say when you took it |
+| **Data** — `data/` | [CC BY 4.0](data/LICENSE) | Credit *gc26.guide* and say when you took it |
 
 The data licence covers the editorial layer — the selection, the
 confirmed/expected/rumored calls, the crowd forecasts, the sources and check
