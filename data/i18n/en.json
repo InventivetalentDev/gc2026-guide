@@ -10,7 +10,8 @@
       "Saturday is the busiest, priciest day and usually sells out — do hands-on play Thursday or Sunday instead.",
       "Wednesday's Wildcard ticket (entry from 13:00) is the quietest way into the hottest demos, but it sold out on Aug 5 — without one, Thursday morning is the next-best low-crowd window.",
       "On trade Wednesday, a trade badge doesn't open every door: several AAA booths run invited-press-only previews in the morning or skip the day entirely (Xbox 2026: booth opens Thursday; Capcom 2025: press-only until ~11:00). Check a booth's own channels before planning your Wednesday around it.",
-      "Arrive well before doors open and pick the entrance nearest your first must-play booth — big booths build 2–4 h queues within the first hour.",
+      "Arrive well before doors open and pick the entrance nearest your first must-play booth — big booths build 2–4 h queues within the first hour. North is shortest for halls 6–9, East for Hall 10, South for the business halls; see Entrances on the Info tab.",
+      "On a trade badge the entertainment halls open at 09:00 every day — an hour before the public on Thursday and Friday. Spend that hour on the one demo you most want to play; it is the closest thing to an empty show floor you will get.",
       "Pick 5–10 must-play booths in advance (official gamescom app + hall plan) and hit your single most-wanted booth right at opening.",
       "Some large booths hand out time slots or fast-lane wristbands in the morning via their own apps — check exhibitors' socials the week before.",
       "A few booths take free bookings online before the show: MOZA Racing's six sim rigs in Hall 10.1 are the clearest example. Booking costs nothing and is the difference between sitting down and watching, so check the websites of any hands-on booth you care about.",
@@ -25,18 +26,18 @@
     "days": {
       "2026-08-26": {
         "access": "trade & media only",
-        "hours": "Business 09:00–19:00, Entertainment 13:00–19:00",
+        "hours": "Business 09:00–19:00, Entertainment 09:00–19:00 on a trade badge (public Wildcard entry 13:00)",
         "note": "The only public entry was the €65.50 Wildcard ticket (from 13:00), and it sold out on Aug 5 — so unless you already hold one, Wednesday is trade and media only. Trade badge caveat: some big booths reserve Wednesday (or its morning) for invited press — Xbox's booth doesn't open to visitors until Thursday, and in 2025 Capcom admitted only press until about 11:00."
       },
       "2026-08-27": {
         "access": "public",
-        "hours": "Entertainment 10:00–20:00",
-        "note": "Best full public day for hands-on demos — noticeably calmer than Fri–Sat."
+        "hours": "Entertainment 10:00–20:00 (09:00 on a trade badge)",
+        "note": "Best full public day for hands-on demos — noticeably calmer than Fri–Sat. A trade badge opens the entertainment halls at 09:00, a full hour before the public — the most valuable hour of the week for hands-on demos."
       },
       "2026-08-28": {
         "access": "public",
-        "hours": "Entertainment 10:00–20:00",
-        "note": "Fills up over the day; mornings still workable for big booths. gamescom GDQ speedrun showcase starts (Congress Center North)."
+        "hours": "Entertainment 10:00–20:00 (09:00 on a trade badge)",
+        "note": "Fills up over the day; mornings still workable for big booths. Trade badges again get in at 09:00, and it is the last day of the business area. gamescom GDQ speedrun showcase starts (Congress Center North)."
       },
       "2026-08-29": {
         "access": "public",
@@ -51,7 +52,7 @@
     },
     "areas": {
       "Entertainment area": "The consumer show: big publisher booths, playable demos, stages, giveaways.",
-      "Business area": "Trade & media only (Wed–Fri), West Entrance; closed Sat/Sun.",
+      "Business area": "Trade visitors, press and accredited creators only (Wed–Fri, 09:00–19:00 Wed / 09:00–20:00 Thu–Fri); closed Sat/Sun. The halls sit at the South entrance, but West is the quieter way in — see Entrances.",
       "Event Arena": "Big stage shows, concerts and esports (incl. Prime League offline finals).",
       "Cosplay Village": "Cosplay contest, photo booths, workshops and the Artist Area.",
       "Merchandise Area": "The only area where exhibitors may sell goods — main merch shopping halls.",
@@ -64,6 +65,16 @@
       "gamescom epix": "Free digital quest program (7 story chapters, started Aug 3) — on-site booth quests, collector cards, and free Sunday tickets for completing all chapters.",
       "gamescom GDQ": "A first-time Games Done Quick speedrunning charity showcase, Aug 28–30, Konrad-Adenauer-Halle (Congress Center North).",
       "City Festival": "Free open-air concerts and gaming zones in Cologne's city center (Ringe), Aug 29–30 evenings."
+    },
+    "entrances": {
+      "lede": "Four gates — South, West, East and North — all feed the central Boulevard that runs the length of the grounds from north to south. Which one you pick decides your first half hour. Koelnmesse also steers arriving crowds between gates when a queue backs up, so signs and stewards on the day overrule any plan made in advance.",
+      "trade": "The standard advice is \"West is best\", and it holds — but mainly for the public days. On Wednesday, the trade and media day, the crowds are not there yet and you can take whichever gate suits your route. Thursday and Friday are when West earns it: South and East are carrying the public by then, and West skips both queues without making you fight through the consumer halls. Ask a taxi for West. Whichever gate you use, the badge itself is worth more than the entrance: trade access to the entertainment halls starts at 09:00 every day, a full hour before the public on Thursday and Friday.",
+      "list": {
+        "West": "The quiet one, and the trade pick on public days: a few minutes from halls 2–4 and the Confex without crossing a consumer hall, and the best odds of finding a taxi. No station of its own — walk from Köln Messe/Deutz, or ask the driver for West.",
+        "South": "The main entrance and where nearly everyone arriving by rail lands: Köln Messe/Deutz station is right outside, and the business halls 2–4 plus the Confex sit directly behind it. That is also why it is the worst queue on the grounds — it was over capacity by the trade day in 2025. Allow 20–30 minutes on foot from here to Hall 8 at the far end.",
+        "East": "Has its own tram stop (lines 3 and 4, \"Koelnmesse\"), opens straight into Hall 10 and is a short walk across the plaza to the business area. No longer a secret, and it absorbs South's overflow: in 2025 it was shut at one point and arrivals were routed under the grounds to West instead.",
+        "North": "The shortest walk to the blockbuster halls 6, 7, 8 and 9. The square in front starts filling two hours before doors. Reachable on foot from the tram or by car, not by a station of its own — and from here the business area is the whole length of the Boulevard away."
+      }
     }
   },
   "tags": {

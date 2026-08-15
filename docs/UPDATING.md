@@ -361,7 +361,7 @@ keep different opening hours.
     {
       "date": "2026-08-26",        // the key the day's prose hangs off
       "business": "09:00–19:00",   // business-area hours, or the literal "closed"
-      "open": "13:00",             // entertainment-area opening, HH:MM
+      "open": "13:00",             // entertainment-area opening for the public, HH:MM
       "close": "19:00",            // entertainment-area closing, HH:MM
       "trade": true                // trade & media only — a fact, not a
                                    // reading of the access sentence, which
@@ -371,12 +371,23 @@ keep different opening hours.
   "onl": { "time": "20:00 CEST" },
   "areas": [ { "name": "Indie Arena Booth", "hall": "10.2" } ],  // name is the
                                    // official one and the key for its description
+  "entrances": {                   // optional; the Info tab drops the section without it
+    "list": [ { "name": "West", "nameDe": "Eingang West" } ]
+                                   // `name` is the key its advice hangs off;
+                                   // `nameDe` is Koelnmesse's own signage and
+                                   // is shown to every reader, not translated
+  },
   "sources": ["https://..."]
 }
 ```
 
 Weekday names are not stored at all — the app formats them from `date` in the
 reader's language, so "Wednesday" and "Mittwoch" are the same fact.
+
+`open`/`close` drive the planner and are the **public** hours; a trade badge gets
+into the entertainment halls at 09:00 every day, which belongs in `hours` and the
+day `note` rather than in these two fields — and both of those are prose, so they
+live in `data/i18n/en.json`.
 
 ### `data/meta.json`
 

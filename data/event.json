@@ -27,9 +27,24 @@
     { "name": "gamescom GDQ", "hall": null },
     { "name": "City Festival", "hall": null }
   ],
+  "entrances": {
+    "list": [
+      { "name": "West", "nameDe": "Eingang West" },
+      { "name": "South", "nameDe": "Eingang Süd" },
+      { "name": "East", "nameDe": "Eingang Ost" },
+      { "name": "North", "nameDe": "Eingang Nord" }
+    ]
+  },
   "sources": [
     "https://www.gamescom.global/en/tickets",
     "https://www.gamescom.global/en/info/hall-plan",
+    "https://www.gamescom.global/en/info/trade-visitors",
+    "https://media.koelnmesse.io/gamescom/redaktionell/gamescom/downloads/pdf/anmeldeunterlagen/das_wichtigste_in_kuerze.pdf",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-bester-eingang-040826/",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2024-fachbesucher-guide/",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2025-business-area-guide-220825/",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-anreise-bahn-bus-tipps-120826/",
+    "https://www.notebookcheck.com/Gamescom-2025-Rekorde-Infrastruktur-samt-OEPNV-am-Limit-und-Schwarzarbeit.1095470.0.html",
     "https://mein-mmo.de/en/gamescom-2026-all-info-on-times-tickets-program-and-more,1578480/",
     "https://www.gamesmarket.global/what-is-gamescom-everything-you-need-to-know-about-areas-side-events-and-show-specials/",
     "https://www.invenglobal.com/articles/23310/gamescom-2026-opening-night-live-tickets-go-on-sale-and-sell-out-instantly",

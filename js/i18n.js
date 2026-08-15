@@ -153,10 +153,21 @@
     } catch {
       persisted = false;
     }
+    /* The address bar carries the choice only when storage refused it;
+       otherwise the pref is the record and ?lang is cleaned away. */
     const url = new URL(location.href);
     if (persisted) url.searchParams.delete("lang");
     else url.searchParams.set("lang", next);
-    location.replace(url.href);
+    if (url.href !== location.href) history.replaceState(null, "", url.href);
+
+    /* reload(), not replace(): every view here writes a hash — syncHash(),
+       the brand link, the map's #hall/stand — and navigating to a URL that
+       differs only in its fragment, or not at all, is a same-document
+       navigation the browser answers without re-running anything. That
+       persisted the pref and changed nothing on screen until the next real
+       load, so the button looked dead. reload() ignores the fragment and
+       keeps it, which is what lands you back on the view you were reading. */
+    location.reload();
   }
 
   /* Every element carrying data-lang-switch becomes the toggle, labelled

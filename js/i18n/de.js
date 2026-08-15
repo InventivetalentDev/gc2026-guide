@@ -247,6 +247,8 @@ window.GC_STRINGS.de = {
   "event.tickets": "Tickets",
   "event.ticketsFallback": "Tickets siehe gamescom.global.",
   "event.areas": "Hallen & Bereiche",
+  "event.entrances": "Eingänge",
+  "event.entrancesTradeLabel": "Mit Business-Ticket.",
   "event.officialLinks": "Offizielle Links",
   "event.compiledNote":
     "Zusammengestellt aus veröffentlichten Quellen, nicht von der gamescom selbst.",

@@ -10,7 +10,8 @@
       "Samstag ist der vollste und teuerste Tag und meist ausverkauft — geh lieber am Donnerstag oder Sonntag zum Anspielen.",
       "Die Mittwochs-Wildcard (Einlass ab 13:00 Uhr) ist der ruhigste Weg zu den heißesten Demos, war aber am 5. Aug. ausverkauft — ohne sie ist Donnerstagmorgen das nächstbeste Zeitfenster mit wenig Andrang.",
       "Auch mit einem Business-Ticket kommst du am Mittwoch nicht überall hinein: Mehrere AAA-Stände lassen vormittags nur geladene Presse zu oder bleiben den ganzen Tag geschlossen (Xbox 2026: Stand öffnet erst Donnerstag; Capcom 2025: bis ca. 11:00 Uhr nur Presse). Schau auf die Kanäle des Standes, bevor du deinen Mittwoch danach planst.",
-      "Sei deutlich vor Türöffnung da und nimm den Eingang, der deinem wichtigsten Stand am nächsten liegt — bei großen Ständen entstehen in der ersten Stunde 2–4 Stunden Wartezeit.",
+      "Sei deutlich vor Türöffnung da und nimm den Eingang, der deinem ersten Muss-Stand am nächsten liegt — große Stände bauen in der ersten Stunde 2–4 h Wartezeit auf. Nord ist am kürzesten für die Hallen 6–9, Ost für Halle 10, Süd für die Business-Hallen; siehe Eingänge unter Event-Infos.",
+      "Mit einem Business-Ticket öffnen die Entertainment-Hallen jeden Tag um 09:00 Uhr — am Donnerstag und Freitag eine Stunde vor dem Publikum. Nimm dir in dieser Stunde die eine Demo vor, die dir am wichtigsten ist; näher an eine leere Messehalle kommst du nicht.",
       "Such dir vorab 5–10 Muss-Stände aus (offizielle gamescom-App + Hallenplan) und geh direkt bei Öffnung zu deinem wichtigsten.",
       "Manche großen Stände geben morgens Zeitfenster oder Fast-Lane-Bändchen über ihre eigenen Apps aus — schau in der Woche davor auf die Social-Kanäle der Aussteller.",
       "Ein paar Stände nehmen vor der Messe kostenlose Online-Buchungen an: Die sechs Simulatoren von MOZA Racing in Halle 10.1 sind das klarste Beispiel. Buchen kostet nichts und entscheidet darüber, ob du fährst oder zuschaust — schau also auf die Websites aller Stände mit spielbaren Demos, die dir wichtig sind.",
@@ -25,18 +26,18 @@
     "days": {
       "2026-08-26": {
         "access": "nur Fach- und Medienbesucher",
-        "hours": "Business 09:00–19:00, Entertainment 13:00–19:00",
+        "hours": "Business 09:00–19:00, Entertainment 09:00–19:00 mit Business-Ticket (öffentlicher Wildcard-Einlass 13:00)",
         "note": "Die einzige Möglichkeit für Privatbesucher war die Wildcard für 65,50 € (ab 13:00 Uhr). Sie war am 5. Aug. ausverkauft — wenn du keine hast, ist Mittwoch also nur für Fach- und Medienbesucher. Aber auch mit einem Business-Ticket halten manche großen Stände den Mittwoch oder den Vormittag für geladene Presse frei: Der Xbox-Stand öffnet für Besucher erst am Donnerstag, und 2025 ließ Capcom bis etwa 11:00 Uhr nur Presse hinein."
       },
       "2026-08-27": {
         "access": "öffentlich",
-        "hours": "Entertainment 10:00–20:00",
-        "note": "Der beste Tag für spielbare Demos — spürbar ruhiger als Freitag und Samstag."
+        "hours": "Entertainment 10:00–20:00 (09:00 mit Business-Ticket)",
+        "note": "Bester voller Publikumstag für Hands-on-Demos — spürbar ruhiger als Fr–Sa. Mit einem Business-Ticket öffnen die Entertainment-Hallen um 09:00 Uhr, eine ganze Stunde vor dem Publikum — die wertvollste Stunde der Woche zum Anspielen."
       },
       "2026-08-28": {
         "access": "öffentlich",
-        "hours": "Entertainment 10:00–20:00",
-        "note": "Füllt sich im Lauf des Tages; vormittags sind große Stände noch machbar. Das gamescom GDQ mit Speedruns für einen guten Zweck beginnt im Congress Center Nord."
+        "hours": "Entertainment 10:00–20:00 (09:00 mit Business-Ticket)",
+        "note": "Füllt sich im Lauf des Tages; vormittags sind große Stände noch machbar. Mit Business-Ticket kommst du wieder ab 09:00 Uhr rein, und es ist der letzte Tag des Business-Bereichs. Das gamescom-GDQ-Speedrun-Showcase startet (Congress Center Nord)."
       },
       "2026-08-29": {
         "access": "öffentlich",
@@ -51,7 +52,7 @@
     },
     "areas": {
       "Entertainment area": "Die Publikumsmesse: große Publisher-Stände, spielbare Demos, Bühnen und Gratisaktionen.",
-      "Business area": "Nur Fach- und Medienbesucher (Mi–Fr), Eingang West; Sa/So geschlossen.",
+      "Business area": "Nur Fachbesucher, Presse und akkreditierte Creator (Mi–Fr, Mi 09:00–19:00 / Do–Fr 09:00–20:00); Sa/So geschlossen. Die Hallen liegen am Eingang Süd, aber über West kommst du ruhiger rein — siehe Eingänge.",
       "Event Arena": "Große Bühnenshows, Konzerte und Esports (u. a. die Prime-League-Offline-Finals).",
       "Cosplay Village": "Cosplay-Wettbewerb, Fotoecken, Workshops und die Artist Area.",
       "Merchandise Area": "Der einzige Bereich, in dem Aussteller Waren verkaufen dürfen — hier findest du die meisten Merch-Stände.",
@@ -64,6 +65,16 @@
       "gamescom epix": "Kostenloses digitales Quest-Programm (7 Story-Kapitel, gestartet am 3. Aug.) — Quests an den Ständen, Sammelkarten und kostenlose Sonntagstickets, wenn du alle Kapitel abschließt.",
       "gamescom GDQ": "Zum ersten Mal gibt es ein Games-Done-Quick-Event mit Speedruns für einen guten Zweck: 28.–30. Aug. in der Konrad-Adenauer-Halle (Congress Center Nord).",
       "City Festival": "Kostenlose Open-Air-Konzerte und Gaming-Zonen in der Kölner Innenstadt (Ringe), abends am 29. und 30. Aug."
+    },
+    "entrances": {
+      "lede": "Vier Tore — Süd, West, Ost und Nord — führen alle auf den zentralen Boulevard, der das Gelände von Nord nach Süd durchzieht. Welches du nimmst, entscheidet über deine erste halbe Stunde. Die Koelnmesse lenkt ankommende Besucherströme außerdem zwischen den Toren um, wenn sich eine Schlange staut — Beschilderung und Ordner vor Ort schlagen also jeden vorab gemachten Plan.",
+      "trade": "Der Standardtipp lautet „West ist am besten“, und er stimmt — aber vor allem für die Publikumstage. Am Mittwoch, dem Fach- und Medientag, sind die Massen noch nicht da und du kannst das Tor nehmen, das zu deiner Route passt. Donnerstag und Freitag spielt West seine Stärke aus: Süd und Ost tragen dann das Publikum, und über West umgehst du beide Schlangen, ohne dich durch die Publikumshallen kämpfen zu müssen. Sag dem Taxi „Eingang West“. Welches Tor du auch nimmst — das Ticket ist mehr wert als der Eingang: Der Zugang zu den Entertainment-Hallen mit Business-Ticket beginnt jeden Tag um 09:00 Uhr, am Donnerstag und Freitag eine ganze Stunde vor dem Publikum.",
+      "list": {
+        "West": "Der ruhige, und an Publikumstagen die Wahl mit Business-Ticket: wenige Minuten zu den Hallen 2–4 und zur Confex, ohne eine Publikumshalle zu durchqueren, und die besten Chancen auf ein Taxi. Keine eigene Station — lauf von Köln Messe/Deutz, oder sag dem Fahrer „Eingang West“.",
+        "South": "Der Haupteingang, und dort landet fast jeder, der mit der Bahn kommt: Die Station Köln Messe/Deutz liegt direkt davor, und die Business-Hallen 2–4 samt Confex schließen unmittelbar daran an. Genau deshalb ist es auch die schlimmste Schlange auf dem Gelände — 2025 war sie schon am Fachbesuchertag über der Kapazität. Rechne von hier mit 20–30 Minuten Fußweg bis Halle 8 am anderen Ende.",
+        "East": "Hat eine eigene Tram-Haltestelle (Linien 3 und 4, „Koelnmesse“), öffnet direkt in Halle 10 und ist ein kurzer Weg über den Platz zum Business-Bereich. Längst kein Geheimtipp mehr, und er fängt den Überlauf von Süd auf: 2025 war er zwischenzeitlich geschlossen und Ankommende wurden unter dem Gelände hindurch nach West umgeleitet.",
+        "North": "Der kürzeste Weg zu den Blockbuster-Hallen 6, 7, 8 und 9. Der Platz davor füllt sich schon zwei Stunden vor Türöffnung. Zu Fuß von der Tram oder mit dem Auto erreichbar, aber ohne eigene Station — und von hier ist der Business-Bereich den ganzen Boulevard entfernt."
+      }
     }
   },
   "tags": {

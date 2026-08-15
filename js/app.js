@@ -223,6 +223,16 @@ function mergeStrings(exhibitors, event, meta, strings) {
   for (const area of event.areas || []) {
     area.description = ev.areas?.[area.name] || "";
   }
+  /* Entrances keep their two names in the base data — `name` is the key the
+     prose hangs off, `nameDe` the sign on the building — and take only their
+     advice from the overlay. */
+  if (event.entrances) {
+    event.entrances.lede = ev.entrances?.lede || "";
+    event.entrances.trade = ev.entrances?.trade || "";
+    for (const entrance of event.entrances.list || []) {
+      entrance.description = ev.entrances?.list?.[entrance.name] || "";
+    }
+  }
   meta.note = overlay.meta?.note || "";
 }
 
@@ -3581,6 +3591,29 @@ function renderEvent() {
     )
     .join("");
 
+  /* Entrances are the one piece of event info that is advice rather than
+     fact: the gate that is quickest depends on the day and on which way
+     Koelnmesse is steering the queue that morning. The lede says so, and
+     the trade note gets its own paragraph because "West is best" is only
+     true on the public days.
+
+     Both names stay as they are in every language: `name` is the short
+     English gate letter the guide sorts and links by, and `nameDe` is what
+     Koelnmesse has written on the building — a German reader and an English
+     one are both looking for the sign that says "Eingang West". */
+  const ent = ev.entrances;
+  const entrances = (ent?.list || [])
+    .map(
+      (e) => `<li>
+        <span class="area-hall entrance-name">${esc(e.name)}</span>
+        <span>
+          <span class="area-name">${esc(e.nameDe || e.name)}</span><br>
+          <span class="area-desc">${esc(e.description)}</span>
+        </span>
+      </li>`
+    )
+    .join("");
+
   /* The official site answers in German too, so a German reader gets sent
      to the German pages rather than bounced through the English ones. */
   const officialBase = GCI18N.lang === "de" ? "de" : "en";
@@ -3634,8 +3667,24 @@ function renderEvent() {
       <h2><span class="section-num">04</span> ${esc(t("event.areas"))}</h2>
       <ul class="area-list">${areas}</ul>
     </div>
+    ${
+      entrances
+        ? `<div class="info-block">
+      <h2><span class="section-num">05</span> ${esc(t("event.entrances"))}</h2>
+      ${ent.lede ? `<p>${esc(ent.lede)}</p>` : ""}
+      <ul class="area-list">${entrances}</ul>
+      ${
+        ent.trade
+          ? `<p class="entrance-trade"><strong>${esc(t("event.entrancesTradeLabel"))}</strong> ${esc(
+              ent.trade
+            )}</p>`
+          : ""
+      }
+    </div>`
+        : ""
+    }
     <div class="info-block">
-      <h2><span class="section-num">05</span> ${esc(t("event.officialLinks"))}</h2>
+      <h2><span class="section-num">0${entrances ? 6 : 5}</span> ${esc(t("event.officialLinks"))}</h2>
       <ul class="link-list">${links}</ul>
     </div>
     <p class="info-foot">

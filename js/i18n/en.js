@@ -251,6 +251,9 @@ window.GC_STRINGS.en = {
   "event.ticketsFallback": "See gamescom.global for tickets.",
   /* Escaped at the render site, so plain "&" here — not an entity. */
   "event.areas": "Halls & areas",
+  "event.entrances": "Entrances",
+  /* Lead-in to the trade paragraph; the sentence after it comes from the data. */
+  "event.entrancesTradeLabel": "On a trade badge.",
   "event.officialLinks": "Official links",
   "event.compiledNote": "Compiled from published sources, not from gamescom itself.",
   "links.officialSite": "Official site",
