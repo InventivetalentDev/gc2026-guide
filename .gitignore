@@ -4,3 +4,6 @@ dist/
 
 # Wrangler's local state and scratch files.
 .wrangler/
+
+# Python bytecode from running the tools in tools/.
+__pycache__/

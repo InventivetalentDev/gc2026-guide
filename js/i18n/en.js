@@ -78,6 +78,11 @@ window.GC_STRINGS.en = {
   "type.experience": "Experiences & Activities",
   "type.media": "Media & Community",
   "type.merch": "Merch & Lifestyle",
+  /* Business-area booths. One type rather than a second classification
+     axis: the chip row is derived from `type`, so this earns its filter for
+     free, and `type === "trade"` is the single predicate that keeps these
+     out of the queue and wristband lists. */
+  "type.trade": "Trade & Business",
 
   "crowd.0": "Unknown",
   "crowd.1": "Calm",
@@ -104,6 +109,7 @@ window.GC_STRINGS.en = {
   "where.hallDotBooth": "Hall {hall} · {booth}",
   "kind.booth": "Booth",
   "kind.game": "Game",
+  "kind.trade": "Trade",
 
   /* ---------- exhibitor cards ---------- */
   "plate.statusKicker": "Status",
@@ -407,6 +413,108 @@ window.GC_STRINGS.en = {
   "map.outlines": "booth outlines",
   "map.officialHallPlan": "official hall plan",
   "map.checkedOn": "checked {date} · schematic, unofficial",
+
+  /* ---------- the trade badge & the business halls ----------
+
+     Off by default and gating what the guide *offers*, never what it
+     resolves: a saved business booth still opens, still plans, still shows
+     on the map. The copy has to keep saying that this is a display setting
+     and not a claim about what anyone's ticket opens. */
+  "toolbar.badge": "Badge",
+  "toolbar.badgeAria": "Which badge you hold",
+  "badge.consumer": "Consumer",
+  "badge.consumerTitle": "Consumer ticket — the entertainment halls",
+  "badge.trade": "Trade & media",
+  "badge.tradeTitle": "Trade or media badge — adds the business halls, 2 to 4",
+  "summary.tradePrefix": "Trade badge · {filters}",
+  "summary.noneLower": "all categories, all halls",
+
+  "trade.sectionTitle": "Trade exhibitors",
+  /* Set as textContent, so a plain "&" — not the entity the markup carries. */
+  "trade.sectionLede":
+    "The business halls — publishing, dev services, platforms. Trade & media badge only",
+  "trade.gateWhat":
+    "Halls 2–4 are gamescom's <strong>business area</strong>: around 800 exhibitors doing the industry's trading — publishers taking pitches, outsourcing and localisation studios, engines and platforms, national pavilions and associations. It runs Wednesday to Friday and is closed at the weekend.",
+  "trade.gateBadge":
+    "A <strong>trade or media badge</strong> opens it. A consumer ticket does not, so it stays off by default — turn it on and these booths become saveable, plannable stops like any other, with their own list below and their own cards in the grid above.",
+  "trade.enable": "I have a trade badge — show trade exhibitors",
+  "trade.hide": "Hide trade exhibitors",
+  "trade.turnOff": "Turn trade exhibitors off",
+  "trade.showList": "Show the list →",
+  "trade.toastOn":
+    "Trade exhibitors on — business booths are in the grid, and in their own list below.",
+  "trade.toastOff": "Trade exhibitors off — back to the consumer halls.",
+  "trade.catFilterAria": "Filter trade exhibitors by product group",
+  "trade.loading": "Loading the business halls…",
+  "trade.loadError":
+    "Couldn't load the trade list ({error}). It needs one online load before it works offline.",
+  "trade.dataPending":
+    "Your list has trade booths from the business halls. That data needs one online load before they can be planned — it is cached from then on.",
+  "trade.listWhat":
+    "The business area (halls 2–4), where the industry does its trading. A trade or media badge opens these halls; a consumer ticket does not, and they close after Friday.",
+  "trade.listWalkUp":
+    "Almost all of it is walk-up: a dozen or more companies share each national and regional pavilion, and the small stands in halls 2.1 and 2.2 are counters you can just talk to. Only about twenty booths — the big single-occupant compounds in Hall 4.2 — are closed rooms you need an appointment for. The “shared” count marks the collectives; the cards above say what a booth is actually for.",
+  "trade.listPlannable": "Save a booth and it plans like any other stop.",
+  "trade.listNoMatches": "Nothing here matches the current search, hall or category.",
+  "trade.exhibitorCount": "{n} exhibitor|{n} exhibitors",
+  "trade.offers": "Offers",
+  "trade.offerCount": "{n} thing|{n} things",
+  "trade.accessLabel": "Access",
+  /* The enum lives in the data as `access`; only the wording is here. */
+  "trade.access.open.label": "Walk-up",
+  "trade.access.open.note": "An open stand — staffed during business hours, no appointment needed.",
+  "trade.access.appointment.label": "By appointment",
+  "trade.access.appointment.note":
+    "A closed meeting structure. Entry is by scheduled appointment only; there is nothing to see from the aisle.",
+  "trade.access.mixed.label": "Walk-up + meetings",
+  "trade.access.mixed.note":
+    "An open counter with closed meeting rooms behind it — you can walk up to ask, but the rooms are booked in advance.",
+
+  "hall.businessAria": "Hall {hall}, business area, trade & media only",
+  "card.faceToTrade": "Show the business booth — hall {hall}, trade & media only",
+  "card.faceToPublic": "Back to the public booth — hall {hall}",
+  "plan.tradeBadge": "Trade badge",
+  /* The business halls shut after Friday — the one fact a plan can get wrong
+     in a way that costs a wasted walk across the grounds. */
+  "plan.dayClosedSuffix": "{action} — the business area is closed on {day}",
+  "plan.closedWarn":
+    "Business area closed on {day} — this stop is behind a badge gate that day.",
+  "plan.closedGroupWarn":
+    "{n} stop is in the business area, which is closed on {day}.|{n} stops are in the business area, which is closed on {day}.",
+  "ics.tradeExhibitor": "{name} — {where} (trade & media badge{shut})",
+  "ics.businessClosed": "; business area CLOSED this day",
+
+  "event.yourBadge": "Your badge",
+  "event.badgeWhat":
+    "Halls 2–4 are the <strong>business area</strong>: around 800 exhibitors doing the industry's trading, open Wednesday to Friday and closed at the weekend. A <strong>trade or media badge</strong> opens them; a consumer ticket does not.",
+  "event.badgeOnNote":
+    "Business booths are showing — in the exhibitor grid, in the hall filter, on the map, and as their own list on the exhibitor page.",
+  "event.badgeOffNote":
+    "The guide is showing the consumer halls only. This is a display setting; it changes nothing about what your ticket actually gets you.",
+
+  /* ---------- map areas ----------
+
+     Keyed by the area id from data/hallplan/index.json rather than
+     translated in that file: it is regenerated by tools/fetch-hallplan.mjs
+     and would lose hand edits on the next refresh. The generated English
+     stays there as the fallback. */
+  "map.area.entertainment.label": "Entertainment",
+  "map.area.business.label": "Business",
+  "map.area.business.access":
+    "trade & media badge only. A consumer ticket does not open these halls, and they close after Friday.",
+  "map.areaSuffix": "{label} area",
+  "map.coveredNone": "none",
+  "map.tradeVisitorsOnly": ", trade visitors only",
+  "map.tradeOnlySuffix": ", trade & media only",
+  "map.showExhibitors": "I have a badge — show exhibitors",
+  "map.hideExhibitors": "hide exhibitors",
+  "map.showTrade": "show trade exhibitors",
+  "map.gatedHint":
+    "business area — most of these are in the guide with trade exhibitors on",
+  "map.officialProfile": "official profile ↗",
+
+  "footer.feedback":
+    'Something wrong, missing or out of date? Send corrections to <a class="subtle-link" href="mailto:content@gamescom.guide?subject=gamescom%20guide%20feedback">content@gamescom.guide</a>.',
 
   /* ---------- accessibility ---------- */
   "a11y.newTab": ", opens in a new tab",

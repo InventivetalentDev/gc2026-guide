@@ -76,6 +76,7 @@ window.GC_STRINGS.de = {
   "type.experience": "Erlebnisse & Aktionen",
   "type.media": "Medien & Community",
   "type.merch": "Merch & Lifestyle",
+  "type.trade": "Trade & Business",
 
   "crowd.0": "Unbekannt",
   "crowd.1": "Ruhig",
@@ -102,6 +103,7 @@ window.GC_STRINGS.de = {
   "where.hallDotBooth": "Halle {hall} · {booth}",
   "kind.booth": "Stand",
   "kind.game": "Spiel",
+  "kind.trade": "Business",
 
   /* ---------- exhibitor cards ---------- */
   "plate.statusKicker": "Status",
@@ -411,6 +413,99 @@ window.GC_STRINGS.de = {
   "map.outlines": "Standumrisse",
   "map.officialHallPlan": "offizieller Hallenplan",
   "map.checkedOn": "geprüft {date} · schematisch, inoffiziell",
+
+  /* ---------- the trade badge & the business halls ----------
+
+     "Fachbesucher" is the word the German trade press and gamescom itself
+     use for a trade visitor, so the badge chips and the gate copy use it
+     rather than a translation of "trade". */
+  "toolbar.badge": "Badge",
+  "toolbar.badgeAria": "Welches Badge du hast",
+  "badge.consumer": "Privatbesucher",
+  "badge.consumerTitle": "Privatbesucher-Ticket — die Entertainment-Hallen",
+  "badge.trade": "Fach- & Medienbesucher",
+  "badge.tradeTitle": "Fach- oder Medienbesucher-Badge — bringt die Business-Hallen 2 bis 4 dazu",
+  "summary.tradePrefix": "Fachbesucher-Badge · {filters}",
+  "summary.noneLower": "alle Kategorien, alle Hallen",
+
+  "trade.sectionTitle": "Business-Aussteller",
+  "trade.sectionLede":
+    "Die Business-Hallen — Publishing, Entwicklungsdienstleistungen, Plattformen. Nur mit Fach- oder Medienbesucher-Badge",
+  "trade.gateWhat":
+    "Die Hallen 2–4 sind der <strong>Business-Bereich</strong> der gamescom: rund 800 Aussteller, die das Geschäft der Branche machen — Publisher, die sich Pitches anhören, Outsourcing- und Lokalisierungsstudios, Engines und Plattformen, Länderpavillons und Verbände. Er läuft Mittwoch bis Freitag und ist am Wochenende geschlossen.",
+  "trade.gateBadge":
+    "Ein <strong>Fach- oder Medienbesucher-Badge</strong> öffnet ihn. Ein Privatbesucher-Ticket nicht, deshalb ist er standardmäßig aus — schalte ihn ein und diese Stände werden merkbare, planbare Stopps wie alle anderen, mit eigener Liste unten und eigenen Karten im Raster oben.",
+  "trade.enable": "Ich habe ein Fachbesucher-Badge — Business-Aussteller zeigen",
+  "trade.hide": "Business-Aussteller ausblenden",
+  "trade.turnOff": "Business-Aussteller ausschalten",
+  "trade.showList": "Zur Liste →",
+  "trade.toastOn":
+    "Business-Aussteller an — die Stände stehen im Raster und in ihrer eigenen Liste darunter.",
+  "trade.toastOff": "Business-Aussteller aus — zurück zu den Publikumshallen.",
+  "trade.catFilterAria": "Business-Aussteller nach Produktgruppe filtern",
+  "trade.loading": "Business-Hallen werden geladen…",
+  "trade.loadError":
+    "Die Business-Liste konnte nicht geladen werden ({error}). Sie muss einmal online geladen werden, bevor sie offline funktioniert.",
+  "trade.dataPending":
+    "Auf deiner Liste stehen Stände aus den Business-Hallen. Diese Daten müssen einmal online geladen werden, bevor sie planbar sind — danach sind sie zwischengespeichert.",
+  "trade.listWhat":
+    "Der Business-Bereich (Hallen 2–4), wo die Branche ihre Geschäfte macht. Ein Fach- oder Medienbesucher-Badge öffnet diese Hallen; ein Privatbesucher-Ticket nicht, und nach Freitag sind sie zu.",
+  "trade.listWalkUp":
+    "Fast alles davon ist ohne Termin zugänglich: An jedem Länder- und Regionalpavillon teilen sich ein Dutzend oder mehr Firmen den Stand, und die kleinen Stände in den Hallen 2.1 und 2.2 sind Theken, an denen du einfach ansprechen kannst. Nur etwa zwanzig Stände — die großen Einzelbauten in Halle 4.2 — sind geschlossene Räume, für die du einen Termin brauchst. Die Angabe „geteilt“ markiert die Gemeinschaftsstände; was ein Stand tatsächlich anbietet, steht auf den Karten oben.",
+  "trade.listPlannable": "Merk dir einen Stand und er lässt sich planen wie jeder andere Stopp.",
+  "trade.listNoMatches": "Hier passt nichts zur aktuellen Suche, Halle oder Kategorie.",
+  "trade.exhibitorCount": "{n} Aussteller|{n} Aussteller",
+  "trade.offers": "Angebot",
+  "trade.offerCount": "{n} Punkt|{n} Punkte",
+  "trade.accessLabel": "Zugang",
+  "trade.access.open.label": "Ohne Termin",
+  "trade.access.open.note":
+    "Ein offener Stand — während der Geschäftszeiten besetzt, kein Termin nötig.",
+  "trade.access.appointment.label": "Nur mit Termin",
+  "trade.access.appointment.note":
+    "Ein geschlossener Besprechungsbau. Der Zutritt erfolgt nur mit vereinbartem Termin; vom Gang aus gibt es nichts zu sehen.",
+  "trade.access.mixed.label": "Ohne Termin + Meetings",
+  "trade.access.mixed.note":
+    "Eine offene Theke mit geschlossenen Besprechungsräumen dahinter — du kannst hingehen und fragen, die Räume sind aber vorab gebucht.",
+
+  "hall.businessAria": "Halle {hall}, Business-Bereich, nur Fach- und Medienbesucher",
+  "card.faceToTrade": "Business-Stand zeigen — Halle {hall}, nur Fach- und Medienbesucher",
+  "card.faceToPublic": "Zurück zum Publikumsstand — Halle {hall}",
+  "plan.tradeBadge": "Fachbesucher-Badge",
+  "plan.dayClosedSuffix": "{action} — der Business-Bereich ist am {day} geschlossen",
+  "plan.closedWarn":
+    "Business-Bereich am {day} geschlossen — dieser Stopp liegt an dem Tag hinter einer Badge-Schranke.",
+  "plan.closedGroupWarn":
+    "{n} Stopp liegt im Business-Bereich, der am {day} geschlossen ist.|{n} Stopps liegen im Business-Bereich, der am {day} geschlossen ist.",
+  "ics.tradeExhibitor": "{name} — {where} (Fach- und Medienbesucher-Badge{shut})",
+  "ics.businessClosed": "; Business-Bereich an diesem Tag GESCHLOSSEN",
+
+  "event.yourBadge": "Dein Badge",
+  "event.badgeWhat":
+    "Die Hallen 2–4 sind der <strong>Business-Bereich</strong>: rund 800 Aussteller, die das Geschäft der Branche machen, geöffnet Mittwoch bis Freitag und am Wochenende geschlossen. Ein <strong>Fach- oder Medienbesucher-Badge</strong> öffnet sie; ein Privatbesucher-Ticket nicht.",
+  "event.badgeOnNote":
+    "Business-Stände werden angezeigt — im Ausstellerraster, im Hallenfilter, auf der Karte und als eigene Liste auf der Ausstellerseite.",
+  "event.badgeOffNote":
+    "Der Guide zeigt nur die Publikumshallen. Das ist eine Anzeigeeinstellung; sie ändert nichts daran, was dein Ticket tatsächlich öffnet.",
+
+  /* ---------- map areas ---------- */
+  "map.area.entertainment.label": "Entertainment",
+  "map.area.business.label": "Business",
+  "map.area.business.access":
+    "nur mit Fach- oder Medienbesucher-Badge. Ein Privatbesucher-Ticket öffnet diese Hallen nicht, und nach Freitag sind sie zu.",
+  "map.areaSuffix": "{label}-Bereich",
+  "map.coveredNone": "keiner",
+  "map.tradeVisitorsOnly": ", nur Fachbesucher",
+  "map.tradeOnlySuffix": ", nur Fach- und Medienbesucher",
+  "map.showExhibitors": "Ich habe ein Badge — Aussteller zeigen",
+  "map.hideExhibitors": "Aussteller ausblenden",
+  "map.showTrade": "Business-Aussteller zeigen",
+  "map.gatedHint":
+    "Business-Bereich — die meisten davon stehen im Guide, wenn Business-Aussteller an sind",
+  "map.officialProfile": "offizielles Profil ↗",
+
+  "footer.feedback":
+    'Etwas falsch, fehlend oder veraltet? Schick Korrekturen an <a class="subtle-link" href="mailto:content@gamescom.guide?subject=gamescom%20guide%20feedback">content@gamescom.guide</a>.',
 
   /* ---------- accessibility ---------- */
   "a11y.newTab": ", öffnet in einem neuen Tab",

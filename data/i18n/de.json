@@ -145,7 +145,118 @@
     "tech showcase": "Tech-Showcase",
     "theater": "Theater",
     "unconfirmed": "unbestätigt",
-    "world premiere": "Weltpremiere"
+    "world premiere": "Weltpremiere",
+    "analytics": "Analytics",
+    "association": "Verband",
+    "closed stand": "geschlossener Stand",
+    "cloud gaming": "Cloud-Gaming",
+    "co-development": "Co-Development",
+    "commerce": "Commerce",
+    "distribution": "Distribution",
+    "engine": "Engine",
+    "hosting": "Hosting",
+    "infrastructure": "Infrastruktur",
+    "licensing": "Lizenzierung",
+    "media": "Medien",
+    "pavilion": "Pavillon",
+    "payments": "Zahlungen",
+    "pitching": "Pitching",
+    "platform holder": "Plattformbetreiber",
+    "promotion": "Promotion",
+    "security": "Sicherheit",
+    "services": "Dienstleistungen",
+    "studio": "Studio",
+    "walk-up": "ohne Termin",
+    "web games": "Webspiele"
+  },
+  "countries": {
+    "Andorra": "Andorra",
+    "Argentina": "Argentinien",
+    "Australia": "Australien",
+    "Austria": "Österreich",
+    "Bangladesh": "Bangladesch",
+    "Belgium": "Belgien",
+    "Bosnia and Herzegovina": "Bosnien und Herzegowina",
+    "Brazil": "Brasilien",
+    "Bulgaria": "Bulgarien",
+    "Canada": "Kanada",
+    "Chile": "Chile",
+    "China": "China",
+    "Croatia": "Kroatien",
+    "Cyprus": "Zypern",
+    "Czech Republic": "Tschechien",
+    "Denmark": "Dänemark",
+    "Estonia": "Estland",
+    "Finland": "Finnland",
+    "France": "Frankreich",
+    "Germany": "Deutschland",
+    "Ghana": "Ghana",
+    "Greece": "Griechenland",
+    "Hong Kong": "Hongkong",
+    "Hungary": "Ungarn",
+    "Iceland": "Island",
+    "India": "Indien",
+    "Indonesia": "Indonesien",
+    "Ireland": "Irland",
+    "Israel": "Israel",
+    "Italy": "Italien",
+    "Japan": "Japan",
+    "Korea, Republic of": "Südkorea",
+    "Kyrgyzstan": "Kirgisistan",
+    "Lithuania": "Litauen",
+    "Luxembourg": "Luxemburg",
+    "Malaysia": "Malaysia",
+    "Malta": "Malta",
+    "Mexico": "Mexiko",
+    "Morocco": "Marokko",
+    "Netherlands": "Niederlande",
+    "New Zealand": "Neuseeland",
+    "Nigeria": "Nigeria",
+    "Norway": "Norwegen",
+    "Philippines": "Philippinen",
+    "Poland": "Polen",
+    "Portugal": "Portugal",
+    "Qatar": "Katar",
+    "Republic of North Macedonia": "Nordmazedonien",
+    "Romania": "Rumänien",
+    "Saudi Arabia": "Saudi-Arabien",
+    "Serbia": "Serbien",
+    "Singapore": "Singapur",
+    "Slovakia": "Slowakei",
+    "Slovenia": "Slowenien",
+    "Spain": "Spanien",
+    "Sweden": "Schweden",
+    "Switzerland": "Schweiz",
+    "Taiwan": "Taiwan",
+    "Thailand": "Thailand",
+    "Türkiye": "Türkei",
+    "Ukraine": "Ukraine",
+    "United Arab Emirates": "Vereinigte Arabische Emirate",
+    "United Kingdom": "Vereinigtes Königreich",
+    "United States": "Vereinigte Staaten",
+    "United States of America": "Vereinigte Staaten",
+    "Uruguay": "Uruguay",
+    "Vietnam": "Vietnam"
+  },
+  "dirGroups": {
+    "101": "Plattformen / Technologien",
+    "102": "Komponenten/Zubehör",
+    "103": "Pflege, Reinigung, Reparatur",
+    "201": "Entertainment (Games)",
+    "202": "Edutainment",
+    "203": "Infotainment",
+    "204": "Entwicklung",
+    "205": "Sonstige Software",
+    "301": "eSports",
+    "351": "Analoge Spiele",
+    "401": "Bildung/Weiterbildung",
+    "501": "Verbände/öffentliche Einrichtungen",
+    "601": "Dienstleister, Auftragnehmer",
+    "701": "Telekommunikation und Internet",
+    "702": "Medien",
+    "801": "Nahrungsergänzung für Gamer",
+    "802": "Non-Endemics",
+    "901": "Merchandising-Produkte"
   },
   "exhibitors": {
     "xbox": {
@@ -771,6 +882,446 @@
         "Transport Fever 3": "Zusammen mit Urban Games in Halle 8 gezeigt; Fotomotiv mit Doppeldecker.",
         "Paradox grand-strategy catalog": "Paradox' eigene Registrierung sitzt an Level Infinites Stand in Halle 6.1; was dort gezeigt wird, ist nicht angekündigt."
       }
+    },
+    "xbox-business": {
+      "description": "Microsofts Auftritt auf der Business-Seite, komplett getrennt vom Publikumsstand von Xbox in Halle 7.1. Einer der größten Einzelstände im Business-Bereich und einer der rund 180, die sich kein weiterer Aussteller teilt — was in Halle 4.2 ein Besprechungsgebäude bedeutet und keinen Stand, in den man hineingeht.",
+      "accessNote": "Ein geschlossener Bau mit 560 m², ohne Mitaussteller und ohne irgendetwas, das vom Gang aus zu sehen wäre — Partner- und Pressetermine werden vorab über Xbox vereinbart, nicht an der Tür.",
+      "offers": [
+        "Partner- und Publisher-Meetings, nur mit vorheriger Terminvereinbarung",
+        "Pressetermine — die Hands-on-Demos stehen am Publikumsstand in Halle 7.1",
+        "Gespräche zu ID@Xbox und Game Pass"
+      ]
+    },
+    "nintendo-business": {
+      "description": "Der Fachbesucher-Auftritt von Nintendo of Europe in Halle 4.2, getrennt vom großen Publikumsstand in Halle 9.1. Registriert auf die europäische Zentrale statt auf einen Markenstand — die übliche Form eines Publisher-Besprechungsbaus hier.",
+      "accessNote": "541 m², alleiniger Nutzer, keine Mitaussteller. Auf der Business-Seite nimmt Nintendo niemanden ohne Termin an; der öffentliche Stand ist der in Halle 9.1.",
+      "offers": [
+        "Publisher- und Handelspartner-Meetings nach Vereinbarung",
+        "Termine mit der Fachpresse"
+      ]
+    },
+    "tencent-business": {
+      "description": "Tencents Business-Bau, der größte private Stand in den Business-Hallen. Was sich ans Publikum richtet, steht woanders: Level Infinite in Halle 6.1 und der Worlds-of-Play-Bereich in Halle 8.1, beide mit eigener Karte.",
+      "accessNote": "Mit 702 m² der größte Stand im Business-Bereich mit nur einem Nutzer — ein geschlossener Besprechungskomplex, keine Ausstellungsfläche.",
+      "offers": [
+        "Publishing-, Investment- und Partnerschaftsgespräche nach Vereinbarung",
+        "Business-Gespräche zu Level Infinite"
+      ]
+    },
+    "nvidia": {
+      "description": "NVIDIAs einziger registrierter Stand auf der gamescom 2026, und der steht im Business-Bereich statt in den Entertainment-Hallen — Developer Relations, RTX und Cloud-Partnerschaften statt einer Demo-Wand.",
+      "accessNote": "420 m², alleiniger Nutzer. NVIDIA hat dieses Jahr keinen Publikumsstand, alles was die Firma auf der Messe macht, liegt also hinter dieser Tür.",
+      "offers": [
+        "Meetings zu Developer Relations und Engine-Partnerschaften",
+        "Briefings zu GeForce NOW und RTX-Technologie",
+        "Pressetermine"
+      ]
+    },
+    "pavilion-spain": {
+      "description": "Der spanische Länderstand, organisiert rund um ICEX, die spanische Exportagentur. Der am dichtesten geteilte Stand im Business-Bereich: 33 Studios und Dienstleister, alle spanisch, unten in der Business-Liste einzeln aufgeführt.",
+      "accessNote": "Ein Länder-Gemeinschaftsstand: 33 Firmen teilen sich 240 m², jede mit eigenem Tisch. Ganztägig besetzt und dafür gedacht, dass man hineingeht — genau dafür ist ein Pavillon da.",
+      "offers": [
+        "33 spanische Studios und Dienstleister an einem Stand",
+        "Publishing- und Co-Development-Gespräche ohne Termin",
+        "Export- und Förderberatung von ICEX"
+      ]
+    },
+    "pavilion-malta": {
+      "description": "Maltas Länderstand, betrieben von der Gaming Malta Foundation zusammen mit der Malta Game Developers Association. 19 der 21 Aussteller kommen aus Malta — Studios, die American University of Malta und die Agenturen, die Malta als Studiostandort vermarkten.",
+      "accessNote": "21 Aussteller an einem Stand, ausgerichtet von einer öffentlichen Stiftung, deren Aufgabe die Ansprechbarkeit ist. Einfach hingehen.",
+      "offers": [
+        "Maltesische Studios und die Malta Game Developers Association",
+        "Beratung zu Standortwechsel, Lizenzen und Steuern von GamingMalta",
+        "Games-Ausbildung — American University of Malta"
+      ]
+    },
+    "pavilion-denmark": {
+      "description": "Dänemarks Länderstand, getragen von NIMBI, dem nationalen Institut für Spieleentwicklung. 17 dänische Studios teilen ihn sich, darunter Ghost Ship Games und Bedtime Digital Games.",
+      "accessNote": "17 Aussteller, alle dänisch, auf einem Gemeinschaftsstand — gebaut für Gespräche ohne Termin.",
+      "offers": [
+        "17 dänische Studios an einem Stand",
+        "NIMBI — Dänemarks Institut für Spieleentwicklung",
+        "Gespräche zu Co-Development und Publishing"
+      ]
+    },
+    "pavilion-uk": {
+      "description": "Der britische Gemeinschaftsstand in Halle 3.2, 17 der 23 Aussteller sind im Vereinigten Königreich registriert. Eine Mischung aus Publishern (505 Games), Spezialdienstleistern und PR-Agenturen statt des Baus einer einzelnen Firma.",
+      "accessNote": "Ein Gemeinschaftsstand mit 1.004 m² und 23 Ausstellern — einer der beiden größten Gemeinschaftsstände im Business-Bereich, und durchgehend besetzt.",
+      "offers": [
+        "23 britische Publisher, Studios und Dienstleister",
+        "Publishing- und PR-Gespräche ohne Termin"
+      ]
+    },
+    "pavilion-nordic": {
+      "description": "Ein gemeinsamer Stand aus Nordeuropa und dem Baltikum: 40 Aussteller, überwiegend aus Finnland, Norwegen, Estland und Schweden, zusammengebracht von regionalen Wirtschaftsförderungen wie Business Tampere und Arctic Game Skellefteå statt von einer nationalen Exportagentur.",
+      "accessNote": "40 Aussteller teilen sich diesen einen Stand — der vollste Gemeinschaftsstand im Business-Bereich. Nichts daran ist geschlossen.",
+      "offers": [
+        "40 nordische und baltische Studios und Regionalagenturen",
+        "Beratung zu Förderung, Standortwechsel und Clustern",
+        "Co-Development-Gespräche ohne Termin"
+      ]
+    },
+    "games-hubs-hessen": {
+      "description": "Das Games-Cluster des Landes Hessen, das sich einen Stand in Halle 4.1 mit 17 weiteren Ausstellern teilt — Studios, Dienstleistern und, für eine Spielehalle ungewöhnlich, der Frankfurter Buchmesse.",
+      "accessNote": "Ein regionaler Cluster-Stand, den sich 18 Aussteller teilen, darunter die Frankfurter Buchmesse — offen, besetzt und für Erstkontakte gedacht.",
+      "offers": [
+        "Hessische Studios und Dienstleister",
+        "Beratung zu regionaler Förderung und Standort",
+        "Crossmediale Kontakte — die Frankfurter Buchmesse teilt sich den Stand"
+      ]
+    },
+    "cloudflare-biz": {
+      "description": "Das CDN und die Edge-Plattform, über die ein großer Teil des Launch-Day-Traffics der Branche läuft, hier auf der Games-Seite des Geschäfts: DDoS-Schutz für Live-Service-Titel, Edge-Compute für Matchmaking und Telemetrie, und Workers als Backend für kleinere Studios. Ein 63-m²-Stand in der Dienstleisterhälfte von Halle 2.2 — kein Termin, einfach eine Theke.",
+      "offers": [
+        "DDoS-Schutz und Traffic-Auslieferung für Live-Service-Spiele",
+        "Workers / Edge-Compute als Spiele-Backend",
+        "Zero Trust und interne Tools für Studios"
+      ]
+    },
+    "curseforge-overwolf": {
+      "description": "Die Mod-Distributionsseite der Branche. CurseForge ist die Plattform, über die die meisten PC-Modding-Communities tatsächlich veröffentlichen, und Overwolf — dem CurseForge gehört — baut das In-Game-Overlay und die Monetarisierung für Creator drumherum. Beide sind auf denselben Stand in Halle 2.2 registriert, und dorthin gehen Studios, um über die Öffnung eines Spiels für Mods zu sprechen.",
+      "offers": [
+        "CurseForge for Studios — offizieller Mod-Support und Distribution",
+        "Overwolfs In-Game-Overlay-App-Plattform",
+        "Monetarisierungsprogramme für Creator und Modder"
+      ]
+    },
+    "serverscom-biz": {
+      "description": "Bare-Metal- und Hybrid-Hosting, gezielt für Spielestudios — dedizierte Server für Multiplayer-Backends, weltweite Standorte für niedrige Latenz und die Kapazitätsplanung, die eine Launch-Woche braucht. Einer der größeren Infrastruktur-Stände im Business-Bereich.",
+      "accessNote": "Mit 196 m² einer der größeren Dienstleisterstände in Halle 2.2 — eine offene Theke mit Besprechungsfläche dahinter: hingehen und fragen, und für ein richtiges Gespräch einen Termin buchen.",
+      "offers": [
+        "Bare-Metal- und dedizierte Server für Spiele-Backends",
+        "Weltweites Hosting mit niedriger Latenz und Kapazitätsplanung",
+        "Gespräche zur Skalierung im Launch-Zeitfenster"
+      ]
+    },
+    "unity-biz": {
+      "description": "Die Engine, an einem Stand, den man beim Blinzeln übersieht. Gut zu wissen, dass es ihn gibt: So groß Unitys Fußabdruck in der Branche ist, der gamescom-Auftritt ist ein einzelner Tisch in der Dienstleisterreihe von Halle 2.2 und kein eigener Bau.",
+      "accessNote": "Ein Tisch mit 12 m² — einer der kleinsten Stände im Business-Bereich, und ungefähr so zugänglich, wie ein Stand nur sein kann.",
+      "offers": [
+        "Fragen zu Engine, Lizenzen und Unity 6",
+        "Gespräche zu Ads, Monetarisierung und LevelPlay",
+        "Kontakte in die Developer Relations"
+      ]
+    },
+    "aws-biz": {
+      "description": "AWS for Games auf einem 45-m²-Stand in Halle 3.2 — Gameserver, GameLift, Analytics-Pipelines und die Cloud-Build-Seite der Produktion. Kleiner, als man es für die Größe des Geschäfts erwarten würde, und in der Entwicklerhalle statt in der Publisher-Halle.",
+      "offers": [
+        "Gameserver-Hosting und GameLift",
+        "Analytics, Datenpipelines und Live-Ops-Tools",
+        "Cloud-Builds und CI für große Projekte"
+      ]
+    },
+    "xsolla-biz": {
+      "description": "Zahlungen, Webshops und Direktvertrieb für Spiele — die Firma, mit der die meisten Studios sprechen, wenn sie außerhalb des Stores eines Plattformbetreibers verkaufen wollen. Einer der größeren Commerce-Stände in Halle 2.2.",
+      "accessNote": "162 m² mit Besprechungsfläche — Xsolla führt auf der Messe terminierte Partnergespräche, die Front des Stands ist aber für Laufkundschaft besetzt.",
+      "offers": [
+        "Zahlungsabwicklung und weltweite Auszahlung für Spieleverkäufe",
+        "Webshops und Direktvertriebs-Storefronts",
+        "Publishing- und Förderprogramme"
+      ]
+    },
+    "keywords-biz": {
+      "description": "Die größte Dienstleistergruppe der Spielebranche: Art, Co-Development, Lokalisierung, QA, Audio und Player Support, zusammengesetzt aus Dutzenden Studios. Wenn ein Spiel in acht Sprachen erschienen ist, ist die Chance nicht klein, dass ein Teil davon hier durchgelaufen ist.",
+      "accessNote": "122 m² mit Besprechungsfläche hinter einer offenen Front — die Co-Development-Gespräche sind meist terminiert, der Stand selbst nicht.",
+      "offers": [
+        "Co-Development und externe Art-Produktion",
+        "Lokalisierung, QA und Zertifizierung",
+        "Audio, Sprachaufnahmen und Player-Support-Dienstleistungen"
+      ]
+    },
+    "sumo-digital-biz": {
+      "description": "Eines der größten unabhängigen Co-Development-Studios Europas, mit langer Geschichte darin, die Spiele anderer Leute zu bauen und mitzubauen. Ein Auftragsentwickler statt eines Publishers — deshalb steht es in der Dienstleisterhalle und nicht in der Publisher-Reihe.",
+      "accessNote": "133 m² in Halle 2.1 — ein offener Stand mit Besprechungsfläche; Projektgespräche sind meist vorab terminiert.",
+      "offers": [
+        "Co-Development und Outsourcing kompletter Projekte",
+        "Portierungen und Plattformarbeit",
+        "Gespräche über Studio-Partnerschaften"
+      ]
+    },
+    "virtuos-biz": {
+      "description": "Eine weltweit tätige Gruppe für Co-Development und Art-Produktion — Remaster, Portierungen und Asset-Arbeit im großen Maßstab für AAA-Projekte. Ein 66-m²-Stand in der Dienstleisterreihe von Halle 2.2.",
+      "offers": [
+        "Co-Development, Remaster und Portierungen",
+        "Art-Produktion und Asset-Pipelines im großen Maßstab",
+        "Gespräche über technisches Outsourcing"
+      ]
+    },
+    "denuvo-biz": {
+      "description": "Die Firma für Kopier- und Cheat-Schutz, deren Name in mehr Diskussionen über PC-Stores auftaucht, als ihr vermutlich lieb ist. Ein 24-m²-Stand in Halle 2.1 — Schutz, Anti-Cheat und Mobile Security, verkauft an Studios statt mit Spielern diskutiert.",
+      "offers": [
+        "Manipulations- und Kopierschutz",
+        "Anti-Cheat für PC und Konsole",
+        "Sicherheit für Mobile-Apps und -Spiele"
+      ]
+    },
+    "ign-humble-biz": {
+      "description": "Zwei Schwesterfirmen an einem 30-m²-Stand: IGN für Berichterstattung und Medienpartnerschaften und Humble Bundle für Bundle-Platzierungen und Charity-Aktionen. Das ist das Presse- und Promo-Ende von Halle 2.1, und dieser Stand ist einer, auf den man sich hineinredet statt ihn zu buchen.",
+      "offers": [
+        "Gespräche zu Medien und Berichterstattung mit IGN",
+        "Humble-Bundle-Platzierungen und Charity-Bundles",
+        "Creator- und Kampagnen-Partnerschaften"
+      ]
+    },
+    "fandom-biz": {
+      "description": "Das Wiki-Netzwerk, in dem die meisten Spiele am Ende dokumentiert sind, ob das jemand geplant hat oder nicht — hier als Medien- und Werbegeschäft. Ein 78-m²-Stand in Halle 2.1, nahe am Rest der Spielepresse.",
+      "offers": [
+        "Wiki- und Community-Partnerprogramme",
+        "Werbe- und Reichweitenkampagnen",
+        "Gespräche zu Redaktion und Berichterstattung"
+      ]
+    },
+    "reddit-biz": {
+      "description": "Als Medium registriert, auf einem der kleinsten Stände im Business-Bereich. Für eine Plattform, auf der das Subreddit eines Spiels oft dessen aktivste Community ist, fällt der gamescom-Auftritt mit einem einzelnen Tisch in Halle 2.2 knapp aus.",
+      "accessNote": "16 m² — ein Tisch, kein Bau. Einfach hingehen.",
+      "offers": [
+        "Gespräche zu Werbung und Kampagnen",
+        "Community- und Subreddit-Partnerprogramme"
+      ]
+    },
+    "opera-biz": {
+      "description": "Die Browser-Firma, hier auf der Stärke von Opera GX — dem Gaming-Browser mit einer wirklich großen jungen Zielgruppe und einem Werbe- und Partnergeschäft daran. Ein 85-m²-Stand in Halle 2.2.",
+      "offers": [
+        "Werbung und Integrationen in Opera GX",
+        "Reichweiten- und Kampagnenpartnerschaften",
+        "Distributionsgespräche für im Browser spielbare Titel"
+      ]
+    },
+    "sensor-tower-biz": {
+      "description": "Marktdaten für Mobile und Games — die Schätzungen zu Downloads, Umsätzen und Werbeausgaben, die in der halben Branche in den Folien stecken. Kleiner Stand, unverhältnismäßig oft herangezogenes Produkt.",
+      "accessNote": "Ein Tisch mit 12 m² in der Dienstleisterreihe von Halle 2.2.",
+      "offers": [
+        "Markt- und Wettbewerbsdaten",
+        "Daten zu Werbeausgaben und User Acquisition",
+        "Gespräche zu Lizenzen und Demos"
+      ]
+    },
+    "igda-biz": {
+      "description": "Die International Game Developers Association, auf einem 45-m²-Stand in Halle 3.2 — mit der IGDA Foundation nebenan bei C014/D015 und Women in Games International direkt daneben bei C012/D013. Drei Interessenverbände für Entwickler in einer Reihe, was diese Ecke von 3.2 zur Anlaufstelle für Karriere, Community und Unterstützung macht statt für Geschäfte.",
+      "offers": [
+        "Mitgliedschaft, Chapter und Interessenvertretung für Entwickler",
+        "Stipendien- und Unterstützungsprogramme der IGDA Foundation",
+        "Gespräche zu Karriere und Community"
+      ]
+    },
+    "wigi-biz": {
+      "description": "Interessenvertretung, Mentoring und Unterstützung bei der Jobsuche für Frauen in der Spielebranche, auf einem 45-m²-Stand in Halle 3.2 direkt neben der IGDA und der IGDA Foundation.",
+      "offers": [
+        "Mentoring- und Karriereprogramme",
+        "Gespräche zu Einstellung und Recruiting",
+        "Infos zu Mitgliedschaft und Chaptern"
+      ]
+    },
+    "owlchemy-biz": {
+      "description": "Das VR-Studio hinter Job Simulator und Vacation Simulator und einer der wenigen Namen in Halle 3.2, den auch Privatbesucher kennen würden. Gehört zu Google und ist hier auf der Entwicklerseite unterwegs statt mit einem Demo-Stand.",
+      "offers": [
+        "Gespräche zu VR-Entwicklung und Plattformen",
+        "Kontakte zu Studio und Partnerschaften"
+      ]
+    },
+    "poki-biz": {
+      "description": "Eine der größten Browserspiel-Plattformen der Welt und ein echter Distributionsweg für kleine, im Browser spielbare Titel. Gut zu wissen, dass sie überhaupt ausstellt — zwischen den Länderpavillons in Halle 4.1 übersieht man sie leicht.",
+      "accessNote": "Ein 20-m²-Stand in Halle 4.1, zwischen den Indie- und Entwickler-Gemeinschaftsständen statt bei den Publisher-Bauten.",
+      "offers": [
+        "Publishing und Umsatzbeteiligung für Webspiele",
+        "Playtesting und Zielgruppendaten",
+        "Gespräche zum Einstieg für Entwickler"
+      ]
+    },
+    "blacknut-biz": {
+      "description": "Eine Cloud-Gaming-Abo-Plattform, die über Telekommunikations- und TV-Anbieter vertreibt statt direkt an Spieler — was sie zu einem Distributionskanal macht, nach dem die meisten Studios nie fragen. 90 m² in Halle 3.2.",
+      "offers": [
+        "Cloud-Gaming-Distribution und Lizenzierung",
+        "Platzierung in Bundles von Telko- und TV-Anbietern",
+        "Katalog-Gespräche für bestehende Titel"
+      ]
+    },
+    "gcore-biz": {
+      "description": "Edge-Infrastruktur und CDN, gebaut rund um Game-Hosting — Serverkapazität, Streaming-Auslieferung und DDoS-Schutz, wenige Stände von Cloudflare entfernt in derselben Reihe in Halle 2.2. Wenn du auf der Messe Hosting vergleichst: Die beiden stehen mit Absicht nebeneinander.",
+      "offers": [
+        "Gameserver-Hosting und Edge-Auslieferung",
+        "CDN- und Streaming-Infrastruktur",
+        "DDoS-Schutz für Live-Service-Titel"
+      ]
+    },
+    "kakao-games-biz": {
+      "description": "Der koreanische Publisher hinter Odin und dem westlichen Betrieb mehrerer großer koreanischer Titel, hier auf einem kleinen Stand in Halle 2.2 für Publishing- und Lizenzgespräche statt mit einer Demo-Präsenz.",
+      "accessNote": "Ein 20-m²-Stand — klein genug, dass es ein Gespräch ist und keine Buchung.",
+      "offers": [
+        "Publishing und Lizenzierung für koreanische und westliche Märkte",
+        "Gespräche zu Co-Publishing"
+      ]
+    },
+    "capcom-business": {
+      "description": "Capcoms Fachbesucher-Auftritt, registriert auf die deutsche Gesellschaft und eine ganze Halle vom Publikumsstand in 9.1 entfernt. Publisher-, Handels- und Pressetermine statt irgendetwas Spielbarem.",
+      "accessNote": "276 m² ohne Mitaussteller — ein Besprechungsgebäude. Die Demos stehen am Stand in Halle 9.1.",
+      "offers": [
+        "Handels- und Distributionstermine",
+        "Termine mit der Fachpresse"
+      ]
+    },
+    "ubisoft-business": {
+      "description": "Ubisofts deutsche Gesellschaft auf einem großen geschlossenen Stand in der Publisher-Reihe von Halle 4.2, getrennt von den Publikumsständen quer über das Gelände in 6.1.",
+      "accessNote": "403 m², alleiniger Nutzer. Vom Gang aus ist nichts zu sehen — die öffentlichen Stände sind die beiden in Halle 6.1.",
+      "offers": [
+        "Publisher-, Handels- und Partnertermine",
+        "Termine mit der Fachpresse",
+        "Gespräche zu Esports und Markenpartnerschaften"
+      ]
+    },
+    "bandai-namco-business": {
+      "description": "Einer der größten privaten Stände in Halle 4.2, registriert auf die deutsche Niederlassung von Bandai Namco. Lizenzen, Distribution und Presse — die spielbare Seite der Messe steht in Halle 6.1.",
+      "accessNote": "543 m² ohne Mitaussteller — der drittgrößte Einzelstand im Business-Bereich, und komplett geschlossen.",
+      "offers": [
+        "Distributions- und Lizenztermine",
+        "Termine mit der Fachpresse"
+      ]
+    },
+    "cdpr-business": {
+      "description": "CD Projekt S.A. — die Konzerngesellschaft über CD Projekt Red und GOG — auf einem großen geschlossenen Stand in Halle 4.2. Partner- und Pressetermine; der Publikumsstand steht in Halle 8.1.",
+      "accessNote": "432 m², alleiniger Nutzer, angemeldet auf die Muttergesellschaft statt auf CD Projekt Red oder GOG.",
+      "offers": [
+        "Publishing- und Partnerschaftstermine",
+        "Gespräche zur Distribution über GOG",
+        "Pressetermine"
+      ]
+    },
+    "krafton-business": {
+      "description": "KRAFTONs Fachbesucher-Stand, getrennt von den beiden Publikumsständen in Halle 9.1. Gespräche zu Publishing, Investment und Partnerschaften.",
+      "accessNote": "245 m², alleiniger Nutzer — ein geschlossener Stand in der Publisher-Reihe von Halle 4.2.",
+      "offers": [
+        "Publishing- und Investment-Termine",
+        "Gespräche zu Partnerschaften und Lizenzen"
+      ]
+    },
+    "atari-business": {
+      "description": "Atari auf der Business-Seite: Lizenzierung des eigenen Backkatalogs, die Hardware-Partnerschaften hinter den jüngsten Neuauflagen und Publishing. Der Retro-Publikumsstand steht in Halle 10.1.",
+      "accessNote": "162 m² in der Publisher-Reihe — mittelgroß statt ein eigener Bau, also mit besetzter Front und Besprechungsfläche dahinter.",
+      "offers": [
+        "Lizenzierung des Backkatalogs",
+        "Hardware- und Neuauflagen-Partnerschaften",
+        "Publishing-Gespräche"
+      ]
+    },
+    "giants-software-business": {
+      "description": "Das Studio und der Publisher hinter dem Landwirtschafts-Simulator auf der Fachbesucherseite, wo die Lizenzverträge geschlossen werden, die echte Landmaschinenmarken ins Spiel bringen. Der spielbare Stand steht in Halle 6.1.",
+      "accessNote": "178 m², alleiniger Nutzer — ein Arbeitsstand statt eines geschlossenen Baus, die Termine sind aber vereinbart.",
+      "offers": [
+        "Marken- und Fahrzeuglizenzen",
+        "Publishing- und Distributionstermine",
+        "Gespräche zu Modding und Plattformen"
+      ]
+    },
+    "hoyoverse-business": {
+      "description": "HoYoverses Fachbesucher-Stand, registriert auf die Gesellschaft in Singapur und neben Spielen auch unter Merchandising gemeldet — was den größten Teil dessen ausmacht, wofür die Business-Seite da ist. Der Publikumsstand steht in Halle 6.1.",
+      "accessNote": "104 m² — klein für Halle 4.2, also ein besetzter Stand und kein abgeschlossenes Gebäude, Termine werden aber vorab vereinbart.",
+      "offers": [
+        "Merchandise- und Lizenzpartnerschaften",
+        "Distributions- und Plattformtermine",
+        "Pressetermine"
+      ]
+    },
+    "focus-business": {
+      "description": "Der Fachbesucher-Stand des französischen Publishers, wo er Verträge schließt und Partnern zeigt, was er hat — statt Spielern.",
+      "accessNote": "210 m², alleiniger Nutzer — ein geschlossener Stand. Das spielbare Lineup von Focus steht in Halle 6.1.",
+      "offers": [
+        "Publishing-Einreichungen und Partnertermine",
+        "Distribution und Lizenzierung",
+        "Pressetermine"
+      ]
+    },
+    "aerosoft-business": {
+      "description": "Der Simulations-Publisher und -Distributor auf der Fachbesucherseite — Lizenzen für Flug- und Bahnsimulationen und das Retail-Distributionsgeschäft mit Boxen, von dem man leicht vergisst, dass es das noch gibt. Publikumsstand in Halle 9.1.",
+      "accessNote": "93 m² — einer der kleineren Stände in Halle 4.2 und ein offener.",
+      "offers": [
+        "Publishing und Lizenzierung für Simulationen",
+        "Retail-Distribution von Boxversionen",
+        "Partnertermine"
+      ]
+    },
+    "level-infinite-business": {
+      "description": "Tencents Publishing-Label, registriert als Proxima Beta und auf einem der wenigen großen *geteilten* Stände in Halle 4.2 statt in einem eigenen Bau. Der Publikumsstand steht in Halle 6.1; der separate 702-m²-Stand von Tencent Technology in der Nähe ist geschlossen.",
+      "accessNote": "Ein 512-m²-Stand, geteilt mit sechs weiteren Publishern — darunter Bohemia Interactive, Digital Extremes, Funcom und Paradox. Geteilt heißt besetzt und begehbar, anders als die abgeschlossenen Bauten drumherum.",
+      "offers": [
+        "Publishing-Einreichungen und Partnertermine",
+        "Gespräche zu Co-Development und Investment",
+        "Sechs weitere Publisher am selben Stand"
+      ]
+    },
+    "raw-fury-business": {
+      "description": "Der schwedische Indie-Publisher auf der Business-Seite, wo Einreichungen und Vertragsabschlüsse passieren. Seine Spiele sind in der Indie-Hälfte von Halle 10.1 spielbar.",
+      "accessNote": "116 m² in Halle 2.1 — ein Arbeitsstand mit Besprechungsfläche, und der Ort, an dem Indies tatsächlich pitchen.",
+      "offers": [
+        "Publishing-Einreichungen und Pitches",
+        "Gespräche zu Co-Development und Förderung"
+      ]
+    },
+    "coffee-stain-business": {
+      "description": "Coffee Stain Publishing auf der Fachbesucherseite: das Label hinter Satisfactory und Deep Rock Galactic nimmt Einreichungen entgegen. Der Publikumsstand steht in Halle 10.1.",
+      "accessNote": "110 m² in Halle 2.1 — ein besetzter Stand, bei dem die Termine vereinbart sind, die Front aber nicht.",
+      "offers": [
+        "Publishing-Einreichungen und Pitches",
+        "Partner- und Plattformtermine"
+      ]
+    },
+    "razer-business": {
+      "description": "Razers europäische Gesellschaft auf der Fachbesucherseite — Retail, Distribution und die Entwicklerprogramme hinter Chroma und der Haptik. Der Hardware-Publikumsstand steht in Halle 10.2.",
+      "accessNote": "Auf einem 576-m²-Stand, geteilt mit vierzehn weiteren Ausstellern — also eine offene Theke statt eines privaten Stands.",
+      "offers": [
+        "Retail- und Distributionstermine",
+        "Entwicklerprogramme — Chroma, Sensa, Synapse",
+        "Gespräche zu Partnerschaften"
+      ]
+    },
+    "corsair-business": {
+      "description": "Corsair auf der Fachbesucherseite, gemeldet unter Komponenten und Zubehör: Retail, Distribution und die Elgato-Seite des Geschäfts. Die Produktwand steht in Halle 10.1.",
+      "accessNote": "74 m² und offen — die Reihe für Komponenten und Zubehör in Halle 2.2 ist eine Verkaufsfläche, kein Besprechungsflur.",
+      "offers": [
+        "Retail- und Distributionstermine",
+        "Elgato- und Creator-Hardware-Partnerschaften",
+        "OEM-Gespräche zu Komponenten"
+      ]
+    },
+    "samsung-business": {
+      "description": "Samsung Electronics auf der Fachbesucherseite, gemeldet unter Plattformen und Komponenten — Displays, Panels und die Handelsbeziehungen dahinter, statt der Odyssey-Monitore, an die man sich in Halle 9.1 setzen kann.",
+      "accessNote": "36 m² — ein kleiner offener Stand, nichts wie der Odyssey-Stand in Halle 9.1.",
+      "offers": [
+        "Display- und Panel-Partnerschaften",
+        "Retail- und Distributionstermine"
+      ]
+    },
+    "bloober-team-business": {
+      "description": "Das polnische Horror-Studio auf der Business-Seite, mit Terminen zu Co-Development und Publishing. Seine Spiele sind in Halle 10.1 spielbar.",
+      "accessNote": "72 m² und offen — ein Arbeitsstand in der Dienstleisterreihe von Halle 2.2.",
+      "offers": [
+        "Co-Development und Auftragsentwicklung",
+        "Publishing- und Partnertermine"
+      ]
+    },
+    "wargaming-business": {
+      "description": "Wargamings einziger registrierter Stand auf der Messe, auf der Fachbesucherseite in Halle 2.2. Gut zu wissen, denn sonst führt der Guide die Firma als überhaupt nicht auf dem Gelände vertreten.",
+      "accessNote": "20 m² — ein Tisch. Wargaming hat dieses Jahr keinen Publikumsstand, das hier ist also der komplette gamescom-Auftritt.",
+      "offers": [
+        "Partnerschafts- und Lizenztermine",
+        "Publishing-Gespräche"
+      ]
+    },
+    "scs-software-business": {
+      "description": "Das Studio hinter Euro Truck Simulator, hier auf dem Gemeinschaftsstand seines Landes statt an einem eigenen. Lizenzen — echte Lkw-Marken und Aufliegerlackierungen — machen den größten Teil der Fachbesucherseite aus. Der spielbare Stand steht in Halle 10.1.",
+      "accessNote": "Auf dem tschechischen Gemeinschaftsstand in Halle 4.1, geteilt mit dreizehn weiteren Ausstellern — offen und besetzt.",
+      "offers": [
+        "Fahrzeug- und Markenlizenzen",
+        "Partner- und Distributionstermine",
+        "Dreizehn weitere tschechische Studios am selben Stand"
+      ]
+    },
+    "area-35-business": {
+      "description": "Der Publisher an seinem Fachbesucher-Stand, mit Einreichungen und Distributionsterminen. Seine Spiele sind in Halle 10.1 spielbar.",
+      "accessNote": "61 m², offen — ein Stand in der Reihe in Halle 2.2, zu dem man einfach hingehen kann.",
+      "offers": [
+        "Publishing-Einreichungen",
+        "Distributions- und Partnertermine"
+      ]
     }
   }
 }

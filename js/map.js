@@ -27,6 +27,13 @@ const SVGNS = "http://www.w3.org/2000/svg";
    second copy to drift. The shim keeps a stale cached shell booting. */
 const GCI18N = window.GCI18N || { lang: "en", t: (key) => key, apply() {}, dayName: String };
 const t = GCI18N.t;
+/* Country and product-group names arrive in English from the generated
+   data/directory.json; their display names live in the locale overlay the
+   guide loads. The map fetches that overlay only for these two maps — see
+   loadLabels below. */
+const countryLabel = (c) => state.labels.countries?.[c] || c;
+const groupLabel = (id, fallback) => state.labels.dirGroups?.[id] || fallback || "";
+
 const crowdLabel = (level) => {
   const label = t(`crowd.${level}`);
   return label === `crowd.${level}` ? "" : label;
@@ -36,7 +43,10 @@ const DEFAULT_HALL = "7.1";
 
 const state = {
   index: null,          // data/hallplan/index.json
+  areas: {},            // area key -> {label, colour, trade?, access?}
+  labels: {},           // {countries, dirGroups} from data/i18n/<lang>.json
   exhibitors: [],       // data/exhibitors.json
+  trade: [],            // business-hall rows from data/directory.json, once loaded
   halls: new Map(),     // hall id -> hall json
   byStand: new Map(),   // "hall:CODE" -> [exhibitor, …]
   hall: null,           // current hall id
@@ -73,17 +83,143 @@ function toggleSaved(id) {
 
 /* Nothing editorial is baked into data/hallplan/*.json: stands and
    exhibitors meet here, by hall plus booth code, so a booth correction
-   in data/exhibitors.json moves the highlight with no re-snapshot. */
+   in data/exhibitors.json moves the highlight with no re-snapshot.
+
+   Two sources feed it. The curated cards carry one scalar hall/booth pair;
+   a trade record built from the directory can hold several stands, so it
+   also joins through `stands[]`. Both end up in the same index, and
+   everything downstream stops caring where a record came from. */
 function buildJoin() {
   state.byStand.clear();
-  for (const ex of state.exhibitors) {
-    if (!ex.hall || !ex.booth) continue;
-    for (const code of GCMarks.boothCodes(ex.booth)) {
-      const key = `${ex.hall}:${code}`;
+  const add = (ex, hall, booth) => {
+    if (!hall || !booth) return;
+    for (const code of GCMarks.boothCodes(booth)) {
+      const key = `${hall}:${code}`;
       if (!state.byStand.has(key)) state.byStand.set(key, []);
-      state.byStand.get(key).push(ex);
+      const at = state.byStand.get(key);
+      if (!at.includes(ex)) at.push(ex);
     }
+  };
+  for (const ex of [...state.exhibitors, ...state.trade].filter(offered)) {
+    add(ex, ex.hall, ex.booth);
+    for (const s of ex.stands || []) add(ex, s.hall, s.booth);
   }
+}
+
+/* Business-area content follows the guide's rule rather than the map's
+   convenience: offered only in trade mode — else a consumer taps a Hall 2.1
+   stand, gets a name, and follows a link into a grid that is hiding it.
+   Saved ones always join, because that rule gates discovery and never
+   resolution.
+
+   Both sources are checked, not just the curated cards. Directory rows used
+   to be spread into the join unconditionally, which held only while nothing
+   ever fetched them with the pref off — turn trade on and off again and the
+   rows stayed, leaving 54 of hall 2.1's 78 stands joined with the setting
+   off. The switch on the access banner makes that a one-tap path, so the
+   gate belongs on the join itself. */
+const isTradeContent = (ex) => ex.type === "trade" || ex.trade === true;
+
+const offered = (ex) =>
+  !isTradeContent(ex) ||
+  GCMarks.tradeMode() ||
+  state.marks.saved.exhibitors.has(ex.id) ||
+  state.marks.played.exhibitors.has(ex.id);
+
+/* Anything that changes who joins to a stand — new rows arriving, trade mode
+   flipped in the other tab — invalidates the hall on screen, because both the
+   chip counts and the stand records read the join. Re-selecting afterwards
+   keeps an open sheet pointing at the same stand. */
+function redrawJoin() {
+  buildJoin();
+  if (!state.hall || !$("#map")) return;
+  const code = state.sel ? [...state.sel.codes][0] : null;
+  renderHall(state.hall);
+  if (!code) return;
+  const rec = state.stands.find((r) => r.codes.has(code));
+  if (rec) selectStand(rec);
+}
+
+/* ================= trade exhibitors =================
+
+   The business halls are drawn, but only the guide's curated cards used to
+   join to them, so a hall of 300 stands lit up almost none. The directory
+   knows who is standing there, so with trade mode on — or with any trade
+   booth already saved — those rows join too and the business halls become
+   as usable as the entertainment ones.
+
+   Same two rules as the guide (docs/PLAN-trade-exhibitors.md): the pref
+   gates browsing, never resolution, and a booth's identity is its `dir:`
+   key wherever it was saved from. */
+
+const DIRECTORY_URL = "data/directory.json";
+let directoryRequest = null;
+
+const wantsTrade = () =>
+  GCMarks.tradeMode() ||
+  [...state.marks.saved.exhibitors].some(GCMarks.isDirKey) ||
+  [...state.marks.played.exhibitors].some(GCMarks.isDirKey);
+
+/* A directory row in the same shape the rest of this file expects from an
+   exhibitor: an id, a name, and stands to join on. `trade` is what the sheet
+   branches on — nothing else needs to know. */
+function tradeRecords(payload) {
+  const claimed = new Set(state.exhibitors.map((ex) => ex.dirSlug).filter(Boolean));
+  const out = [];
+  for (const entry of payload.exhibitors || []) {
+    const stands = (entry.stands || []).filter((s) => GCMarks.isBusinessHall(s.hall));
+    if (!stands.length || claimed.has(entry.slug)) continue;
+    out.push({
+      id: GCMarks.dirKey(entry.slug),
+      name: entry.name,
+      trade: true,
+      country: entry.country || "",
+      cats: (entry.cats || []).map((id) => groupLabel(id, payload.groups?.[id])).filter(Boolean),
+      profile: payload.profileBase && entry.slug ? `${payload.profileBase}${entry.slug}/` : "",
+      stands,
+      games: [],
+    });
+  }
+  return out;
+}
+
+/* Country and product-group display names, fetched alongside the directory
+   rather than at boot: they are only ever rendered for a business stand, and
+   that is exactly the case that already pays for a directory fetch. English
+   rides along in the directory itself as the fallback, so a failed overlay
+   costs the translation and nothing else. */
+function loadLabels() {
+  if (GCI18N.lang === "en" || Object.keys(state.labels).length) return Promise.resolve();
+  return fetch(`data/i18n/${GCI18N.lang}.json?v=${Date.now()}`)
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+    .then((overlay) => {
+      state.labels = { countries: overlay.countries || {}, dirGroups: overlay.dirGroups || {} };
+    })
+    .catch(() => {
+      state.labels = { countries: {}, dirGroups: {} };
+    });
+}
+
+function loadTrade() {
+  if (state.trade.length || directoryRequest) return directoryRequest;
+  directoryRequest = Promise.all([
+    fetch(`${DIRECTORY_URL}?v=${Date.now()}`).then((r) =>
+      r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))
+    ),
+    loadLabels(),
+  ])
+    .then(([payload]) => {
+      state.trade = tradeRecords(payload);
+      redrawJoin();
+    })
+    .catch(() => {
+      /* offline with a cold cache: the business halls simply stay as they
+         were, which is exactly the parent branch's behaviour */
+    })
+    .finally(() => {
+      directoryRequest = null;
+    });
+  return directoryRequest;
 }
 
 function standRecord(hallId, s) {
@@ -207,6 +343,9 @@ function renderHall(id) {
   svg.setAttribute("height", H);
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", t("map.planAria", { hall: id }));
+  /* The hall's structure is washed in its area colour — the only thing
+     on the map that carries it, so booth state stays the loud channel. */
+  svg.style.setProperty("--area", areaOf(id).colour || "");
 
   const blocks = document.createElementNS(SVGNS, "g");
   for (const b of hall.blocks) {
@@ -414,32 +553,135 @@ function refreshMarks() {
   }
   const covered = state.stands.filter((r) => r.exs.length).length;
   $("#counts").textContent =
-    t("map.counts", { n: state.stands.length, covered }) +
+    t("map.counts", { n: state.stands.length, covered: covered || t("map.coveredNone") }) +
     (saved ? t("map.countsSaved", { n: saved }) : "");
   renderChips();
 }
 
+/* ================= areas ================= */
+
+/* The halls fall into two areas, and which one you are looking at is not
+   cosmetic: a consumer ticket opens the entertainment halls and does not
+   open the business ones. The colours are Koelnmesse's own — the hall
+   fills from the official plan, carried through the snapshot — so the
+   two maps agree at a glance; the access line is ours, because no colour
+   says "you cannot walk in here". */
+const areaOf = (id) => {
+  const key = state.index.halls.find((h) => h.id === id)?.area;
+  const area = state.areas[key];
+  return area ? { ...area, id: key } : {};
+};
+
+/* Named in the source as the hall's whole area ("Business"), read on the
+   page as the place ("Business area"). */
+const areaName = (area) => {
+  if (!area.id) return area.label ? t("map.areaSuffix", { label: area.label }) : "";
+  const label = t(`map.area.${area.id}.label`);
+  return t("map.areaSuffix", { label: label === `map.area.${area.id}.label` ? area.label : label });
+};
+
+/* The access sentence lives in js/i18n/<lang>.js keyed by area id rather than
+   in data/hallplan/index.json: that file is regenerated by
+   tools/fetch-hallplan.mjs and would lose a hand-added translation on the
+   next refresh. The generated English rides along as the fallback. */
+const areaAccess = (area) => {
+  if (!area.id) return area.access || "";
+  const s = t(`map.area.${area.id}.access`);
+  return s === `map.area.${area.id}.access` ? area.access || "" : s;
+};
+
+/* The banner is this page's switch as well as its warning. It already appears
+   on exactly the five halls where trade mode changes anything and never on
+   the seven where it does not, it sits directly above what changes, and it
+   already says "trade & media badge only" — so the switch finishes that
+   sentence rather than introducing a second idea, and the map keeps every
+   pixel it has for the map. */
+function renderAccess(id) {
+  const area = areaOf(id);
+  const note = $("#access");
+  note.hidden = !area.access;
+  if (!area.access) {
+    note.innerHTML = ""; // don't leave the last business hall's switch behind
+    return;
+  }
+  note.style.setProperty("--area", area.colour || "");
+  const on = GCMarks.tradeMode();
+  note.innerHTML =
+    `<b>${esc(areaName(area))}</b> — ${esc(areaAccess(area))}` +
+    (area.trade
+      ? ` <button class="map-access-btn${on ? " is-on" : ""}" id="access-trade" type="button">${
+          esc(on ? t("map.hideExhibitors") : t("map.showExhibitors"))
+        }</button>`
+      : "");
+  $("#access-trade")?.addEventListener("click", () => setTrade(!GCMarks.tradeMode()));
+}
+
+/* The guide owns the preference; this page just writes it and redraws itself,
+   because a tab gets no storage event for its own write. */
+function setTrade(on) {
+  if (GCMarks.tradeMode() === on) return;
+  GCMarks.setTradeMode(on);
+  /* Turning it on may need rows this page has never fetched — loadTrade()
+     redraws the hall itself once they land. Everything else redraws now. */
+  if (on && !state.trade.length) loadTrade();
+  else redrawJoin();
+  renderAccess(state.hall);
+  if ($("#map")) refreshMarks(); // the counts line and the chip row both move
+}
+
 /* ================= hall chips ================= */
+
+const standsOf = (ex) => (ex.stands?.length ? ex.stands : [{ hall: ex.hall, booth: ex.booth }]);
 
 function hallSavedCount(id) {
   const hall = state.halls.get(id);
-  /* not loaded yet — count from guide data alone */
-  if (!hall) return state.exhibitors.filter((ex) => String(ex.hall) === id && exSaved(ex)).length;
+  /* Not loaded yet — count from guide data alone. Reads through standsOf so
+     a multi-stand trade record is counted in every hall it stands in, not
+     only in the scalar `hall` a curated card carries. */
+  if (!hall) {
+    return [...state.exhibitors, ...state.trade].filter(
+      (ex) => exSaved(ex) && standsOf(ex).some((s) => String(s.hall) === id)
+    ).length;
+  }
   let n = 0;
   for (const s of hall.stands) if (standRecord(id, s).exs.some(exSaved)) n += 1;
   return n;
 }
 
+/* One scrolling row, but grouped: the halls of an area sit behind that
+   area's name in that area's colour, so the row doubles as the legend
+   and the business halls can't be mistaken for more of the show. The
+   index is written area-major, so grouping is just a change of key
+   between chips. */
 function renderChips() {
+  let last = null;
   $("#halls").innerHTML = state.index.halls
     .map((h) => {
+      const area = state.areas[h.area] || {};
+      let head = "";
+      /* An index.json from before the areas existed (a cached copy in an
+         installed app) simply has none, and the row falls back to the
+         flat list of chips it always was. */
+      if (h.area !== last) {
+        last = h.area;
+        if (area.label)
+          head = `<span class="hall-group" style="--area:${esc(area.colour || "")}"
+            aria-hidden="true">${esc(area.label)}${
+            area.trade ? ' <i class="hall-group-trade">trade only</i>' : ""
+          }</span>`;
+      }
       const n = hallSavedCount(h.id);
+      /* Screen readers get no group heading — the row is one flat list to
+         them — so each chip names its own area, and the trade-only ones
+         say so before you are taken there. */
       const label =
-        t("where.hall", { hall: h.id }) + (n ? t("map.chipSavedAria", { n }) : "");
-      return `<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}" type="button"
-        data-hall="${esc(h.id)}" aria-label="${esc(label)}">${esc(
-        t("where.hall", { hall: h.id })
-      )}${
+        t("where.hall", { hall: h.id }) +
+        (area.label ? `, ${areaName(area)}` : "") +
+        (area.trade ? t("map.tradeVisitorsOnly") : "") +
+        (n ? t("map.chipSavedAria", { n }) : "");
+      return `${head}<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}" type="button"
+        data-hall="${esc(h.id)}" style="--area:${esc(area.colour || "")}"
+        aria-label="${esc(label)}">${esc(t("where.hall", { hall: h.id }))}${
         n ? ` <span class="chip-saved" aria-hidden="true">●${n}</span>` : ""
       }</button>`;
     })
@@ -635,7 +877,26 @@ function selectStand(rec, { zoom = false } = {}) {
   $("#sheet-badges").innerHTML = badges.join("");
 
   let who;
-  if (ex) {
+  if (ex && ex.trade) {
+    /* A directory-backed booth: no lineup, no queue forecast, nothing
+       editorial at all — what it does have is a country, its product groups
+       and the fact that you need a badge to be standing here. */
+    who = `<b>${esc(ex.name)}</b>`;
+    if (ex.country) who += ` · ${esc(countryLabel(ex.country))}`;
+    if (ex.cats.length) {
+      who += `<br>${esc(ex.cats.slice(0, 4).join(", "))}` +
+        (ex.cats.length > 4 ? esc(t("map.plusMore", { n: ex.cats.length - 4 })) : "");
+    }
+    /* Shared business stands run large — one 837 m² stand in hall 2.1 holds
+       fourteen companies — so the neighbours are capped the way the official
+       plan's own name list is, rather than filling the sheet. */
+    if (rec.exs.length > 1) {
+      const rest = rec.exs.slice(1);
+      who += `<br>${esc(t("map.alsoHere"))}: ${rest.slice(0, 6).map((x) => esc(x.name)).join(", ")}` +
+        (rest.length > 6 ? esc(t("map.plusMore", { n: rest.length - 6 })) : "");
+    }
+    who += '<br><span class="map-sheet-dim">business area — trade &amp; media badge only</span>';
+  } else if (ex) {
     const games = ex.games || [];
     who = `<b>${esc(ex.name)}</b>`;
     if (ex.crowd)
@@ -649,14 +910,30 @@ function selectStand(rec, { zoom = false } = {}) {
       who += `<br>${esc(t("map.alsoHere"))}: ${rec.exs.slice(1).map((x) => esc(x.name)).join(", ")}`;
   } else if (s.names.length) {
     /* Named in the official plan but not in the guide — say so rather
-       than leave a blank booth looking like a data bug. */
+       than leave a blank booth looking like a data bug.
+
+       In a business hall with trade mode off that message is wrong, and it
+       is the page's one dead end: the guide has most of these rows and is
+       simply not offering them, the save button is hidden, and there is
+       nothing here to press. "Most", not "all" — 18 of hall 2.1's 78 stands
+       stay uncovered either way — so the line is hedged, and turning the
+       switch on re-renders this sheet with whichever answer is true. */
+    const gated = GCMarks.isBusinessHall(state.hall) && !GCMarks.tradeMode();
     who = s.names.slice(0, 6).map(esc).join(", ") +
       (s.names.length > 6 ? esc(t("map.plusMore", { n: s.names.length - 6 })) : "") +
-      `<br><span class="map-sheet-dim">${esc(t("map.notCovered"))}</span>`;
+      (gated
+        ? `<br><span class="map-sheet-dim">${esc(t("map.gatedHint"))}</span>` +
+          `<br><button class="map-sheet-enable" id="sheet-trade" type="button">${esc(
+            t("map.showTrade")
+          )}</button>`
+        : `<br><span class="map-sheet-dim">${esc(t("map.notCovered"))}</span>`);
   } else {
     who = `<span class="map-sheet-dim">${esc(t("map.noExhibitor"))}</span>`;
   }
   $("#sheet-who").innerHTML = who;
+  /* setTrade() redraws the join and re-selects this stand, so the sheet
+     answers with the exhibitor — or with the honest "not covered". */
+  $("#sheet-trade")?.addEventListener("click", () => setTrade(true));
 
   const save = $("#sheet-save");
   save.hidden = !ex;
@@ -670,8 +947,21 @@ function selectStand(rec, { zoom = false } = {}) {
     };
   }
   /* Straight to the exhibitor's card in the guide when we know who this
-     is; the saved list otherwise. */
-  $("#sheet-link").href = ex ? `./#exhibitors?ex=${encodeURIComponent(ex.id)}` : "./#exhibitors";
+     is; the saved list otherwise. A trade booth has no card to land on, so
+     it offers the exhibitor's own official profile instead — a link into the
+     guide would drop the visitor on a grid that does not contain them. */
+  const link = $("#sheet-link");
+  if (ex && ex.trade && ex.profile) {
+    link.href = ex.profile;
+    link.textContent = t("map.officialProfile");
+    link.setAttribute("target", "_blank");
+    link.setAttribute("rel", "noopener nofollow");
+  } else {
+    link.href = ex && !ex.trade ? `./#exhibitors?ex=${encodeURIComponent(ex.id)}` : "./#exhibitors";
+    link.textContent = t("map.openInGuide");
+    link.removeAttribute("target");
+    link.removeAttribute("rel");
+  }
 
   sheet.hidden = false;
   /* force a layout between "displayed" and "open" so the slide-in has a
@@ -690,9 +980,20 @@ document.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("storage", (e) => {
-  const keys = Object.values(GCMarks.MARK_KEYS);
+  const keys = [...Object.values(GCMarks.MARK_KEYS), GCMarks.PREFS_KEY];
   if (e.key !== null && !keys.includes(e.key)) return;
+  /* The guide writes prefs on nearly every interaction, so this fires far
+     more often than a mark change and can easily land before the hall index
+     has arrived. Everything below needs it; nothing below is urgent, and
+     main() renders the current state anyway once it lands. */
+  if (!state.index) return;
   loadMarks();
+  /* Trade mode turned on in the guide, or a trade booth saved there — either
+     way this page now needs rows it has not fetched. loadTrade() redraws the
+     hall itself once they land; when it has nothing to fetch, the join still
+     has to be rebuilt, because which curated cards are offered just changed. */
+  if (wantsTrade() && !state.trade.length) loadTrade();
+  else if (e.key === null || e.key === GCMarks.PREFS_KEY) redrawJoin();
   refreshMarks();
   if (state.sel) selectStand(state.sel);
 });
@@ -724,6 +1025,12 @@ async function showHall(id, { standCode = null } = {}) {
     state.sel = null;
     $("#sheet").classList.remove("open");
     renderChips();
+    /* Twelve halls no longer fit the row, so a hall opened from a deep
+       link or a chip at the far end is scrolled to rather than left off
+       screen. Only on a hall change: doing it from refreshMarks would
+       yank the row back while someone is reading along it. */
+    $("#halls .chip.active")?.scrollIntoView({ inline: "center", block: "nearest" });
+    renderAccess(id);
     if (!state.halls.has(id)) $("#load").hidden = false;
     await loadHall(id);
     renderHall(id);
@@ -760,9 +1067,14 @@ async function main() {
     fetch(`data/exhibitors.json${bust}`).then((r) => r.json()),
   ]);
   state.index = index;
+  state.areas = index.areas || {};
   state.exhibitors = exhibitors;
   buildJoin();
   renderSourceNote();
+  /* Not awaited: the entertainment halls are the common case and must not
+     wait on a 43 KB file they don't use. The business halls fill in when it
+     lands, which is what the redraw in loadTrade() is for. */
+  if (wantsTrade()) loadTrade();
 
   /* deep link first, then the hall holding most of your saved stops,
      then the default */

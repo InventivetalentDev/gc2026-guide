@@ -24,11 +24,32 @@ This document is the playbook for refreshing the data — written so a scheduled
    20 entries per page, total reported by `blaetternInfo(N)`) and rewrites
    `data/directory.json`, which the site's **Full directory** section reads:
    ```sh
-   python3 tools/fetch-directory.py             # whole show → data/directory.json
-   python3 tools/fetch-directory.py --hall 10.1 # one hall, to stdout, for eyeballing
+   python3 tools/fetch-directory.py                    # whole show → data/directory.json
+   python3 tools/fetch-directory.py --hall 10.1        # one hall, to stdout, for eyeballing
+   python3 tools/fetch-directory.py --skip-categories  # names and stands only, ~1 min
    ```
    Re-run it on every refresh — it is the file that answers "is this company even
    here?", and a stale copy silently misses new registrations.
+
+   The full run also sweeps the official **product-group** taxonomy once per group
+   to fill each row's `cats` (the tags the Trade exhibitors section renders and
+   filters by). That is most of its runtime — a few minutes against ~150 requests —
+   so `--skip-categories` exists for a quick booth-number refresh. It writes no
+   `groups`/`cats` at all, which means the trade list loses its category chips
+   until the next full run; prefer the full sweep unless you are in a hurry.
+
+   Two of its stderr lines are worth reading rather than scrolling past:
+   ```
+   categories: 18 groups · 1621/1658 exhibitors tagged
+   share tokens: 1038 identities, no collisions
+   ```
+   The second is a real check, not decoration. Trade booths are saved and shared
+   under `dir:<slug>` keys, and the share format hashes every identity to a
+   5-character token; a token claimed twice is abandoned by both claimants, so
+   those items silently stop riding share links. The tool mirrors `tok36()` from
+   `js/app.js` and warns before such a dataset ships. If it ever does warn, the
+   fix is a wider `TOK_LEN` in `js/app.js` (a share-format change), not an edit
+   here.
 
    The search form ignores plain query parameters, but it does accept its whole
    state as one JSON blob in `paginatevalues`, which is how the `--hall` filter
@@ -72,7 +93,12 @@ This document is the playbook for refreshing the data — written so a scheduled
    - Re-evaluate `crowd`, `crowdNote` and `visitAdvice` when new info (booth size, lineup hype, ticket sellouts) changes the picture.
    - Add `officialUrl` for any exhibitor that gained a profile page, and drop it again if a page disappears.
    - Refresh each touched exhibitor's `lastUpdated` and append new `sources`.
-6. **Update `data/event.json`** if hours/tickets/areas/ONL details changed (e.g. days selling out — that raises crowd levels too).
+6. **Update `data/event.json`** if hours/tickets/areas/ONL details changed (e.g. days selling out — that raises crowd levels too). Each day's `business` field is
+   load-bearing: `"closed"` there is what makes the planner warn a trade visitor
+   who has put a business-hall stop on a Saturday. Its source is gamescom's own
+   opening-hours table on
+   <https://www.gamescom.global/en/info/trade-visitors>, which lists the business
+   and entertainment areas in separate columns.
 7. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date), increment `revision`, adjust `note` if warranted.
 8. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
    human-readable bullet per meaningful change — this renders on the site's Updates tab.
@@ -174,7 +200,9 @@ What the checker enforces:
 - every exhibitor id, game title, show day and area name in the prose exists in
   the base data — this is what catches a **corrected game title orphaning its
   note**, since notes are keyed by title
-- every tag in use has a display label (warning, not an error)
+- every `access` value on a trade card has `trade.access.*` wording behind it
+- every tag in use, and every country on a card or a directory row, has a
+  display label (warnings, not errors)
 
 **What stays English on purpose:** game titles, exhibitor names, platform names,
 official area names ("Indie Arena Booth"), "gamescom", "Opening Night Live", and
@@ -207,7 +235,7 @@ editing `en.json`; see [Keeping the German in sync](#keeping-the-german-in-sync)
 {
   "id": "xbox",                    // stable slug, never change once published
   "name": "Xbox (Microsoft)",      // proper noun, never translated
-  "type": "platform",              // platform | publisher | hardware | indie | experience | media | merch
+  "type": "platform",              // platform | publisher | hardware | indie | experience | media | merch | trade
   "hall": "8",                     // string or null (halls can be "4.1" style)
   "booth": "B010",                 // string or null; "/" joins one stand's halves, "," separates stands
   "locationConfirmed": false,      // true only when officially published for 2026
@@ -233,6 +261,94 @@ editing `en.json`; see [Keeping the German in sync](#keeping-the-german-in-sync)
 }
 ```
 
+#### `type: "trade"` — business-area cards
+
+A booth in halls 2–4. These are only shown to a visitor who has turned on
+"I have a trade badge", and they replace two of a normal card's parts, because
+neither means anything for a business booth: the **Lineup** becomes an
+**Offers** list, and the **queue index** becomes an **access** line.
+
+```jsonc
+{
+  "id": "xbox-business",           // its own id — a brand can hold a consumer card too
+  "businessOf": "xbox",            // optional: makes this the other face of that card
+  "name": "Xbox — business booth",
+  "type": "trade",
+  "hall": "4.2",
+  "booth": "A061/B060",
+  "country": "United States",      // optional; shown beside the type in the overline.
+                                   // Kept as the official directory spells it —
+                                   // the display name per language lives in the
+                                   // `countries` map in data/i18n/<lang>.json
+  "dirSlug": "microsoft",          // optional: the data/directory.json row this card IS
+  "access": "appointment",         // open | appointment | mixed — see below. An enum:
+                                   // its wording is trade.access.* in js/i18n/<lang>.js
+  "games": []                      // always empty; a trade booth has no lineup
+}
+```
+
+`accessNote` (the sentence that overrides the default wording for `access`) and
+`offers` (what you can actually do at this booth) are **prose**, so like every
+other sentence they live in `data/i18n/en.json`, not here. `offers` stays an
+array there — the card renders one list item per line, so each line translates
+on its own.
+
+#### `businessOf` — two faces of one exhibitor
+
+About twenty exhibitors hold a consumer booth *and* a business-hall booth:
+Capcom demos in 9.1 and takes meetings in 4.2. Write them as **two cards**, the
+trade one carrying `businessOf: "<consumer card id>"`. The grid then renders
+the pair as **one card you can turn over** — a small square in the corner of
+the hall plate, in the business area's own purple, swaps the two plates.
+
+They stay two cards on purpose, because they are two stops: each gets its own
+day in the planner, its own stand on the map, its own share token, and only the
+business one is warned about when it lands on a Saturday. Folding them into one
+entry would make that warning impossible to get right, since the two booths
+keep different opening hours.
+
+- **Name the trade face distinctly** — `"Capcom — business booth"`, not
+  `"Capcom"`. The suffix is redundant on the card, where the purple plate
+  already says it, but the planner lists both stops and two rows called
+  "Capcom" would be unreadable.
+- **Only pair booths belonging to the same company.** Tencent files two
+  business rows; `level-infinite` pairs with the Proxima Beta / Level Infinite
+  stand, while the separate Tencent Technology stand is nobody's face and stays
+  a standalone card.
+- **A business-only exhibitor takes no `businessOf`** — Cloudflare and NVIDIA
+  have no consumer booth, so they are ordinary standalone trade cards.
+- The owner card needs no edit at all; the pairing is declared entirely on the
+  trade side.
+
+- **`access` is the one editorial judgement on a trade card, so source it.**
+  `open` = an open stand, staffed, walk up. `appointment` = a closed structure
+  where meetings are booked in advance and there is nothing to see from the
+  aisle. `mixed` = an open counter with closed meeting rooms behind it.
+  The two shapes are usually obvious from two facts that are already in the
+  data: how many exhibitors share the stand (`data/directory.json` — a national
+  pavilion has ten to seventy on one stand) and how big it is
+  (`data/hallplan/` — a 500 m² stand with a single occupant and no
+  co-exhibitors is a meeting building). Use those as evidence, not as a rule:
+  a small single-occupant stand in Hall 2.1 is an ordinary table booth you can
+  walk up to.
+- **`dirSlug` claims a directory row.** The row then disappears from the trade
+  list, because the card is the better answer, and a `dir:<slug>` key already
+  saved by a visitor — from the map, or from a share link — is migrated onto
+  the card's id on their next load. Use it when the card *is* that one
+  exhibitor. A pavilion card describes a **stand**, not a row, so it takes no
+  `dirSlug` and its members stay listed individually.
+- Don't give a trade card `crowd`, `crowdNote` or a game list. Queue priority
+  and the 18+ wristband exclude `type: "trade"` outright — business booths run
+  on appointments, not queues, and inventing a number for one would put a
+  fiction in the list that most needs to be trusted.
+- **What earns a trade card is recognition, not size.** Stand area is a good
+  guide to whether a booth is open or closed and a terrible guide to whether
+  anyone is looking for it: Unity exhibits on 12 m², Reddit on 16, Cloudflare
+  on 63, while the largest stands in the halls are closed compounds nobody can
+  walk into. Pick the names a trade visitor would search for and be annoyed to
+  miss. Resist carding pavilions wholesale — there are 50 of them and forty
+  near-identical cards would bury the twenty names worth surfacing.
+
 ### `data/event.json`
 
 ```jsonc
@@ -244,6 +360,7 @@ editing `en.json`; see [Keeping the German in sync](#keeping-the-german-in-sync)
   "days": [
     {
       "date": "2026-08-26",        // the key the day's prose hangs off
+      "business": "09:00–19:00",   // business-area hours, or the literal "closed"
       "open": "13:00",             // entertainment-area opening, HH:MM
       "close": "19:00",            // entertainment-area closing, HH:MM
       "trade": true                // trade & media only — a fact, not a
@@ -283,12 +400,19 @@ Same shape in both; `en.json` is the source you edit, `de.json` the translation.
     "crowdTips": ["...", "..."]
   },
   "tags": { "sim racing": "Simracing" },         // display label per raw tag
+  "countries": { "United States": "Vereinigte Staaten" },  // covers the trade
+                                                 // cards and every directory row
   "exhibitors": {
     "xbox": {
       "description": "1–2 sentences on what they're showing.",
       "crowdNote": "why this rating",
       "visitAdvice": "when to go / queue strategy",
       "games": { "Fable": "one-line context (optional)" }   // keyed by title
+    },
+    "xbox-business": {                           // a trade card's own prose
+      "description": "…",
+      "accessNote": "…",                         // optional; overrides trade.access.*
+      "offers": ["…", "…"]                       // one line per list item
     }
   }
 }
@@ -306,16 +430,33 @@ refresh, and anything worth keeping belongs in `exhibitors.json` as a card inste
 
 ```jsonc
 {
-  "lastUpdated": "2026-08-13",
-  "count": 1630,
+  "lastUpdated": "2026-08-15",
+  "count": 1658,
   "source": "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
   "profileBase": "https://exhibitors.gamescom.global/en/exhibitor/",  // + slug + "/"
+  "groups": { "204": "Development", "601": "Service firms, contractors" },  // id → label
   "exhibitors": [
     { "name": "1000 Orks UG", "country": "Germany", "slug": "1000_orks_ug",
-      "stands": [ { "hall": "10.2", "booth": "F010/E019" } ] }
+      "stands": [ { "hall": "10.2", "booth": "F010/E019" } ],
+      "cats": ["201", "204"] }                       // ids into `groups`; omitted when empty
   ]
 }
 ```
+
+`slug` is **not decorative** — it is a saveable identity. A business-hall row is
+saved, planned and shared as `dir:<slug>`, so a slug that changes upstream
+orphans somebody's saved booth the same way a renamed game `title` does. The
+slugs are Koelnmesse's own and some of them look wrong: `&why GmbH` is filed as
+`-whyassociacao_de_produt` and `Artifika Games` as
+`muhammed_serkan_yildwestdeutscher_rundfu` — two truncated contact fields run
+together. Those are correct and resolve to the right profile; don't "fix" them.
+
+`groups` is the official product-group taxonomy, harvested by sweeping the
+listing endpoint once per group. Ids arrive in near-duplicate pairs per label
+(`600` and `601` are both *Service firms, contractors*) of which typically only
+one is populated, and the parent nodes nobody files under (`100` Hardware,
+`200` Software) come back empty and are dropped — 18 of the 22 advertised
+labels survive.
 
 Booth strings are normalised to the guide's own `A010/B011` form on the way in, so
 the UI can match a directory stand against a card's `hall` + `booth` and label it
@@ -328,9 +469,17 @@ to each of its stands on its own. That also makes this file a second, independen
 check on a card's `booth`: the hall plan and the directory are separate feeds, and
 where they agree on an exhibitor's stands the number is about as sourced as it gets.
 
-It is written minified (~200 KB, ~43 KB over the wire) and is **not** in the service
-worker's precache list: it is fetched the first time a visitor opens the section, and
-cached from then on by the generic `/data/` rule. Nobody pays for it who never opens it.
+It is written minified (~215 KB, ~48 KB over the wire) and is **not** in the service
+worker's precache list: it is fetched the first time a visitor opens the Full directory
+or turns on trade mode, and cached from then on by the generic `/data/` rule. Nobody
+pays for it who never opens it — which is why the trade setting is off by default, and
+why precaching it for the consumer majority would be the wrong trade.
+
+One consequence worth keeping: because trade booths live in this file rather than in
+`exhibitors.json`, a visitor who has saved one needs it loaded before their plan can
+show that stop. The guide therefore fetches it at boot whenever a saved key starts with
+`dir:` — regardless of the trade setting — and says so in the plan's empty state when it
+hasn't arrived yet. Never make that fetch conditional on the pref.
 
 ### `data/changelog.json` — array, newest first:
 
@@ -396,9 +545,27 @@ editorial updates above. Re-run it when:
 - a hall is re-laid-out (stands appear in the wrong place, or a booth you
   know exists has no stand);
 - the guide starts covering a hall the snapshot doesn't have — add it to
-  `HALLS` in the tool first (`"3.1": ["3", "1"]`), and it appears in the map's
-  hall row automatically;
+  `HALLS` in the tool first (`"3.1": ["3", "1", "business"]`, i.e. official
+  hall, level and which area it belongs to), and it appears in the map's
+  hall row automatically. A new hall needs one look at the rendered result:
+  the mirror/rotation signs are a per-hall fact, and hall 2.1 already
+  needed a `SIGN_FIX` entry to come out the right way up;
 - the map's credit date is old enough to be embarrassing.
+
+The run also checks the two area colours — the fills the official plan
+gives the entertainment and business halls, which the map re-uses so the
+two agree at a glance — and prints:
+
+```
+colours: entertainment, business still match the official plan
+```
+
+If it *throws* there instead, Koelnmesse repainted an area: put the new
+value in `AREAS` in the tool and re-run. Nothing is written until that
+passes, so the committed snapshot is never half-updated. The line under
+the hall row telling trade visitors the business halls need a badge is
+`AREAS.business.access` in the same table — it is ours, not theirs, and
+editing it is an editorial decision like any other.
 
 Booth *numbers* are editorial and live in `data/exhibitors.json` as always.
 The map joins the two at load time by hall + booth code, so a booth

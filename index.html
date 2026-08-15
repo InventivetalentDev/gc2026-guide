@@ -117,6 +117,16 @@
             <span class="filter-summary" id="filter-summary"></span>
             <span class="result-count" id="result-count"></span>
           </summary>
+          <!-- The trade switch's remote control. The #trade section below is
+               still the feature's front door — it is the only place that
+               explains what the business area is — but once you know, the
+               switch belongs up here with the other view-wide controls
+               rather than seventy cards further down, and turning it back
+               off should be the same control that turned it on. -->
+          <div class="toolbar-row">
+            <span class="row-label" data-i18n="toolbar.badge">Badge</span>
+            <div class="filter-row" id="badge-filters" role="group" aria-label="Which badge you hold" data-i18n-attr="aria-label:toolbar.badgeAria"></div>
+          </div>
           <div class="toolbar-row">
             <span class="row-label" data-i18n="toolbar.category">Category</span>
             <div class="filter-row" id="type-filters"></div>
@@ -145,6 +155,33 @@
       </div>
       <div class="grid" id="exhibitor-grid"></div>
       <p class="empty hidden" id="no-results" data-i18n="empty.noMatches">Nothing matches — try clearing filters.</p>
+
+      <!-- The business halls, behind one setting. Closed, this section is the
+           feature's front door: it explains what the business area is and
+           offers the switch, rather than hiding a toggle in a filter row the
+           consumer majority would only have to read past. Turning it on is
+           also the first fetch of the directory, which is what warms the
+           offline cache. -->
+      <details class="directory trade-section" id="trade">
+        <summary class="directory-summary">
+          <span class="row-label" data-i18n="trade.sectionTitle">Trade exhibitors</span>
+          <span class="directory-lede" data-i18n="trade.sectionLede">The business halls — publishing, dev services, platforms. Trade &amp; media badge only</span>
+          <span class="result-count" id="trade-count"></span>
+        </summary>
+        <!-- Visible by default, hidden by JS once trade mode is on. That way
+             round — rather than hidden until JS shows it — because the service
+             worker refreshes this file and app.js independently, and a fresh
+             shell paired with the previous app.js should open on the
+             explanation rather than on an empty box. -->
+        <div class="trade-gate" id="trade-gate">
+          <p data-i18n-html="trade.gateWhat">Halls 2–4 are gamescom's <strong>business area</strong>: around 800 exhibitors doing the industry's trading — publishers taking pitches, outsourcing and localisation studios, engines and platforms, national pavilions and associations. It runs Wednesday to Friday and is closed at the weekend.</p>
+          <p data-i18n-html="trade.gateBadge">A <strong>trade or media badge</strong> opens it. A consumer ticket does not, so it stays off by default — turn it on and these booths become saveable, plannable stops like any other, with their own list below and their own cards in the grid above.</p>
+          <button class="trade-enable" id="trade-enable" type="button" data-i18n="trade.enable">I have a trade badge — show trade exhibitors</button>
+        </div>
+        <p class="directory-note" id="trade-note"></p>
+        <div class="filter-row trade-cats hidden" id="trade-cat-filters" role="group" aria-label="Filter trade exhibitors by product group" data-i18n-attr="aria-label:trade.catFilterAria"></div>
+        <div id="trade-list"></div>
+      </details>
 
       <!-- The raw official list, kept behind a toggle: it is a lookup tool for
            the long tail of booths that will never earn a card, and it only
@@ -246,6 +283,7 @@
         <p data-i18n="footer.notAffiliated">Not affiliated with gamescom, Koelnmesse or game (the German games industry association).</p>
         <p data-i18n="footer.storage">Your saved list stays in this browser — no account, no server; nothing leaves the device unless you share a link yourself.</p>
         <p data-i18n-html="footer.createdBy">Created by <a class="subtle-link" href="https://inventivetalent.org">inventivetalent</a> with Claude Code. <a class="subtle-link" href="https://github.com/InventivetalentDev/gc2026-guide">Open Source</a>.</p>
+        <p data-i18n-html="footer.feedback">Something wrong, missing or out of date? Send corrections to <a class="subtle-link" href="mailto:content@gamescom.guide?subject=gamescom%20guide%20feedback">content@gamescom.guide</a>.</p>
         <!-- The legal pages stay English (see docs/UPDATING.md), but the
              links to them are labelled in German: "Impressum" is the word a
              German visitor looks for, and § 5 DDG is about it being easy to

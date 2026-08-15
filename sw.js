@@ -22,7 +22,7 @@
    network-first while the old app.js is served stale-while-revalidate, so a
    markup change that needs its matching script (rev 21's share dialog) rides
    one load with dead controls unless the version change announces it. */
-const VERSION = "v3";
+const VERSION = "v4";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
@@ -59,7 +59,7 @@ const SHELL = [
   "fonts/jetbrains-mono-latin.woff2",
 ];
 
-/* The hall plans are ~23 KB gzipped for all seven levels — less than one
+/* The hall plans are ~42 KB gzipped for all twelve levels — about one
    font — so they are precached rather than fetched on demand. The point
    of the map is standing in a hall with no reception, and a hall you
    never happened to open before losing signal is exactly the one you
@@ -83,6 +83,14 @@ const DATA = [
   "data/hallplan/hall-9.1.json",
   "data/hallplan/hall-10.1.json",
   "data/hallplan/hall-10.2.json",
+  /* business area — trade only, and the guide covers no cards there, but
+     the directory sends people to these halls and a trade visitor loses
+     signal in them like everyone else */
+  "data/hallplan/hall-2.1.json",
+  "data/hallplan/hall-2.2.json",
+  "data/hallplan/hall-3.2.json",
+  "data/hallplan/hall-4.1.json",
+  "data/hallplan/hall-4.2.json",
 ];
 
 /* cache.add() would otherwise be answered by the browser's own HTTP cache,

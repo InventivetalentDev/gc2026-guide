@@ -38,6 +38,10 @@ const HASH_FILE = join(root, "tools", "i18n-hashes.json");
    future rename gets a second look. See isAbsent/isOffsite in js/app.js. */
 const CODE_TAGS = ["not exhibiting", "offsite"];
 
+/* The `access` enum on a trade card. Kept in step with trade.access.* in
+   js/i18n/<lang>.js and with TRADE_ACCESS_KEYS in js/app.js. */
+const TRADE_ACCESS_KEYS = ["open", "appointment", "mixed"];
+
 const errors = [];
 const warnings = [];
 const fail = (msg) => errors.push(msg);
@@ -120,7 +124,7 @@ function checkParity(label, source, target, lang) {
 
 /* ---------- 4: the data overlay must describe data that exists ---------- */
 
-function checkReferences(strings, exhibitors, event) {
+function checkReferences(strings, exhibitors, event, directory) {
   const byId = new Map(exhibitors.map((ex) => [ex.id, ex]));
 
   for (const [id, entry] of Object.entries(strings.exhibitors || {})) {
@@ -136,6 +140,15 @@ function checkReferences(strings, exhibitors, event) {
       if (!titles.has(title)) {
         fail(`data: "${id}" has a note for "${title}", which is not in its lineup`);
       }
+    }
+    /* Trade cards only: `access` is an enum in the data whose wording lives
+       in the UI registry, so a new value there needs a label added before
+       it can render as anything but the raw key. */
+    if (ex.access && !TRADE_ACCESS_KEYS.includes(ex.access)) {
+      fail(`data: "${id}" has access "${ex.access}", which has no trade.access.* wording`);
+    }
+    if (entry.offers && !Array.isArray(entry.offers)) {
+      fail(`data: "${id}".offers must be an array of lines`);
     }
   }
   for (const ex of exhibitors) {
@@ -169,6 +182,23 @@ function checkReferences(strings, exhibitors, event) {
   }
   for (const tag of CODE_TAGS) {
     if (!used.has(tag)) warn(`data: "${tag}" drives rendering logic but no exhibitor carries it`);
+  }
+
+  /* Countries are shown on the trade cards and on every directory row, so
+     the map has to cover both sources — the directory is generated and is
+     never hand-edited to add a translation. */
+  const countries = new Set([
+    ...exhibitors.map((ex) => ex.country).filter(Boolean),
+    ...(directory.exhibitors || []).map((e) => e.country).filter(Boolean),
+  ]);
+  for (const c of countries) {
+    if (!strings.countries?.[c]) warn(`data: country "${c}" has no display name`);
+  }
+
+  /* The official product-group taxonomy, likewise: the chips in the trade
+     list render these, and the ids come from the generated directory. */
+  for (const id of Object.keys(directory.groups || {})) {
+    if (!strings.dirGroups?.[id]) warn(`data: product group "${id}" has no display name`);
   }
 }
 
@@ -225,14 +255,15 @@ const dataEN = readJSON("data/i18n/en.json");
 const dataDE = readJSON("data/i18n/de.json");
 const exhibitors = readJSON("data/exhibitors.json");
 const event = readJSON("data/event.json");
+const directory = readJSON("data/directory.json");
 
 const uiSource = flatten(registries[SOURCE], "", new Map());
 const dataSource = flatten(dataEN, "", new Map());
 
 checkParity("ui", uiSource, flatten(registries.de, "", new Map()), "de");
 checkParity("data", dataSource, flatten(dataDE, "", new Map()), "de");
-checkReferences(dataEN, exhibitors, event);
-checkReferences(dataDE, exhibitors, event);
+checkReferences(dataEN, exhibitors, event, directory);
+checkReferences(dataDE, exhibitors, event, directory);
 
 /* One namespace so a key can never collide across the two surfaces. */
 const everything = new Map();

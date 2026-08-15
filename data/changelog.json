@@ -1,12 +1,39 @@
 [
   {
-    "date": "2026-08-14",
-    "revision": 22,
+    "date": "2026-08-15",
+    "revision": 24,
     "changes": [
       "The guide now speaks German. It picks your browser's language on the first visit, and a switcher in the header — and again in the footer — changes it whenever you like; your choice is remembered on this device. Everything a visitor reads is translated: booth descriptions, queue calls, visit advice, the planner, the hall map and the calendar export. Weekday names now come from the date rather than being written down, so they are right in both languages.",
       "Game titles, exhibitor names and area names stay in their own language, as they should — and because a saved game is identified by its title, every share link in circulation keeps working across both languages. A list built in German opens correctly in English and back again.",
       "Descriptions and advice moved out of the exhibitor and event files into per-language files of their own, so your phone only downloads the language you read. Both languages are cached for offline use, so switching still works in a hall with no reception.",
       "The imprint and privacy pages stay in English, and so does this changelog — the guide says as much under the Updates heading when you are reading in German."
+    ]
+  },
+  {
+    "date": "2026-08-15",
+    "revision": 23,
+    "changes": [
+      "New: trade exhibitors. Turn on \"I have a trade badge\" and the ~820 business-hall booths become saveable, plannable stops — with their own list, product-group filters, curated cards and map coverage. Off by default; a consumer ticket does not open halls 2–4.",
+      "The switch is a Badge row at the top of the filters — Consumer or Trade & media — and it is repeated under \"Your badge\" in Event info. Same control both ways round, so turning it off is as quick as turning it on.",
+      "The hall map carries the switch too, in the purple business-area banner, and in the stand details when you tap a business booth the guide is not yet showing you. Fix: business-hall booths no longer stay on the map after trade exhibitors are switched back off.",
+      "52 curated business-area cards. The B2B names first, because they were missing from the guide entirely: Cloudflare, AWS, servers.com, G-Core, Unity, CurseForge & Overwolf, Xsolla, Keywords, Sumo Digital, Virtuos, Denuvo, Sensor Tower, IGN & Humble Bundle, Fandom, Reddit, Opera, Owlchemy, Poki, Blacknut, Kakao Games, NVIDIA, the IGDA and Women in Games International.",
+      "Plus the national pavilions (Spain/ICEX, GamingMalta, Denmark/NIMBI, the UK collective, the Nordic & Baltic stand, Games Hubs Hessen).",
+      "Exhibitors with a booth on both sides of the show — Capcom, Ubisoft, Xbox, Nintendo, Bandai Namco, CD Projekt, KRAFTON, Atari, HoYoverse, Focus, GIANTS, Razer, Corsair, Samsung, Raw Fury, Coffee Stain, Bloober, SCS, Wargaming and more — now have one card you can turn over. Tap the small purple square in the corner of the hall plate and the card switches to its business booth; tap the orange one to switch back.",
+      "Purple means business area throughout, taken from the official hall plan's own colour for those halls — the same one the map washes them with.",
+      "The two booths stay separate stops in your plan, because they keep different hours: the business area shuts after Friday while the consumer halls run all weekend. Assign a business-hall stop to Saturday or Sunday and the planner warns you — on the row, in the day header, and in the calendar export.",
+      "Every trade booth says whether you can walk up or need an appointment. Almost all of them are walk-up; only about twenty of the 821 are closed meeting compounds.",
+      "Exhibitor rows now carry the official product-group tags (Development, Service firms, eSports…), filterable in the trade list.",
+      "Hall map: the business halls fill in. Hall 2.1 went from almost no coverage to 60 of its 78 stands named, and tapping one shows the exhibitor, its country and its product groups.",
+      "Fix: hall 1 is the public Event Arena, not the business area — its one directory booth is no longer labelled trade-only."
+    ]
+  },
+  {
+    "date": "2026-08-14",
+    "revision": 22,
+    "changes": [
+      "The business halls are on the map. Halls 2.1, 2.2, 3.2, 4.1 and 4.2 are drawn booth by booth like the rest, which is 366 more stands and most of the Full directory — so a row in hall 3.2 now opens on its stand instead of stopping at plain text. They open under a banner saying what they are: trade and media badge only, and closed after Friday. A consumer ticket still does not open that door; the map just stops pretending the hall isn't there.",
+      "Halls are colour-coded by area, in the same colours the official plan uses: cyan for the entertainment halls your ticket opens, purple for the trade-only business ones. The hall row groups them under those colours and the hall's own structure is washed in it, so it takes no reading to tell which kind of hall you are in. Saved booths are still orange over everything.",
+      "Booth outlines were re-checked against Koelnmesse's data while adding them: the retro block at A-020 in hall 10.2 now names the exhibitors on both its levels, five of which were missing."
     ]
   },
   {

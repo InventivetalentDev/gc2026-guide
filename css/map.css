@@ -47,7 +47,7 @@
 /* --- hall selector: the guide's chips, one scrolling row --- */
 .map-halls {
   flex: none;
-  display: flex; gap: 6px; padding: 10px 16px; overflow-x: auto;
+  display: flex; align-items: center; gap: 6px; padding: 10px 16px; overflow-x: auto;
   border-bottom: 1px solid var(--rule);
   scrollbar-width: none;
 }
@@ -55,6 +55,62 @@
 .map-halls .chip { white-space: nowrap; }
 .map-halls .chip-saved { color: var(--signal); font-weight: 700; }
 .map-halls .chip.active .chip-saved { color: inherit; }
+
+/* Area grouping. `--area` is set per element from the snapshot — the
+   colour the official plan fills that area's halls with — so the row
+   reads as the map's legend: entertainment halls behind one swatch, the
+   trade-only business halls behind another. The edge on the chip is the
+   whole colour cue; it survives the active state, which stays the
+   guide's signal orange like every other chip in the app. */
+.hall-group {
+  display: inline-flex; align-items: center; gap: 5px;
+  flex: none; white-space: nowrap;
+  font-family: var(--font-mono); font-size: .6rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+/* the one thing about a business hall you need before you tap it */
+.hall-group-trade { font-style: normal; color: var(--warn); }
+.hall-group + .chip { margin-right: 2px; }
+.hall-group:not(:first-child) { margin-left: 6px; }
+.hall-group::before {
+  content: ""; width: 8px; height: 8px; border-radius: 2px;
+  background: var(--area, var(--rule));
+}
+.map-halls .hall-chip { border-left: 3px solid var(--area, var(--rule)); }
+
+/* --- area access note --- */
+.map-access {
+  flex: none;
+  padding: 7px 16px;
+  border-bottom: 1px solid var(--rule);
+  border-left: 3px solid var(--area, var(--warn));
+  background: var(--ground-2);
+  font-size: .74rem; line-height: 1.35; color: var(--ink-mid);
+}
+.map-access[hidden] { display: none; }
+.map-access b { color: var(--ink); font-weight: 600; }
+/* Inline in the banner's own text so it wraps with it rather than claiming a
+   row of its own — this bar is already the tallest thing between the hall
+   chips and the map. Amber to match the guide's badge chip; plain rule when
+   it is on, because turning it off is not the offer being made. */
+.map-access-btn {
+  display: inline-block;
+  margin-left: 2px;
+  padding: 2px 9px;
+  border: 1px solid var(--warn);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: .68rem; letter-spacing: .04em; text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.map-access-btn:hover { background: color-mix(in srgb, var(--warn) 24%, transparent); }
+.map-access-btn.is-on {
+  border-color: var(--rule); background: none; color: var(--ink-dim);
+}
+.map-access-btn.is-on:hover { border-color: var(--ink-dim); color: var(--ink); }
 
 /* --- stage --- */
 #stage {
@@ -80,7 +136,15 @@
 .map-load[hidden] { display: none; }
 
 /* --- the hall itself --- */
+/* The structural blocks carry the area colour, washed down to a tint:
+   enough to tell a business hall from an entertainment one at a glance,
+   not enough to compete with a saved booth. `--area` comes from the
+   snapshot via js/map.js; a hall without one keeps the neutral fill. */
 #map .hall-block { fill: var(--ground-2); stroke: var(--rule-soft); }
+@supports (color: color-mix(in srgb, red 20%, blue)) {
+  /* unset --area mixes in transparent, i.e. the neutral fill it started as */
+  #map .hall-block { fill: color-mix(in srgb, var(--area, transparent) 22%, var(--ground-2)); }
+}
 #map .stand path { fill: var(--ground-3); stroke: var(--rule); cursor: pointer; }
 #map .stand.official path { fill: #232327; }
 #map .stand.covered path { fill: #2e2e33; }
@@ -145,6 +209,20 @@
 }
 .map-sheet-who b { color: var(--ink); font-weight: 600; }
 .map-sheet-dim { color: var(--ink-dim); }
+/* The way out of the sheet's one dead end, sized like the save button it is
+   standing in for — that button is hidden on exactly these stands. */
+.map-sheet-enable {
+  margin-top: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--warn);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  cursor: pointer;
+}
+.map-sheet-enable:hover { background: color-mix(in srgb, var(--warn) 24%, transparent); }
 .map-sheet-actions { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
 .map-sheet-actions .chip { font-family: var(--font-mono); font-size: .75rem; padding: 7px 12px; }
 .map-sheet-actions .chip[data-on="true"] {

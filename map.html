@@ -56,6 +56,10 @@
 
 <nav class="map-halls" id="halls" aria-label="Halls" data-i18n-attr="aria-label:map.hallsAria"></nav>
 
+<!-- Filled by js/map.js from the area the current hall belongs to, and
+     only shown when that area is one a consumer ticket does not open. -->
+<p class="map-access" id="access" hidden></p>
+
 <div id="stage">
   <p class="map-load" id="load" data-i18n="map.loading">loading hall …</p>
   <section id="sheet" aria-labelledby="sheet-name" hidden>
