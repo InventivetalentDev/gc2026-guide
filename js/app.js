@@ -1225,9 +1225,38 @@ function renderShareDialog() {
   status.textContent = "";
 }
 
-function showShareStatus(message) {
-  const status = $("#share-status");
-  status.textContent = message;
+/* Copy and OS-share are identical in both share sheets — only the ids and
+   the sheet's title differ — so the wiring lives once.
+
+   A refused clipboard is not an error state: it falls back to selecting the
+   link, which is what a person would have done unaided, and says so. */
+function bindLinkActions({ input, copy, native, status, titleKey }) {
+  const say = (message) => {
+    status.textContent = message;
+  };
+  input.addEventListener("focus", () => input.select());
+
+  copy.addEventListener("click", async () => {
+    try {
+      if (typeof navigator.clipboard?.writeText !== "function") throw new Error("clipboard unavailable");
+      await navigator.clipboard.writeText(input.value);
+      say(t("share.copied"));
+    } catch {
+      input.focus();
+      input.select();
+      say(t("share.copyManually"));
+    }
+  });
+
+  native.addEventListener("click", async () => {
+    try {
+      await navigator.share({ title: t(titleKey), url: input.value });
+    } catch (err) {
+      /* Closing the OS sheet without picking anything is a choice, not a
+         failure, and reporting it would call every dismissal a problem. */
+      if (err?.name !== "AbortError") say(t("share.failed"));
+    }
+  });
 }
 
 function bindShareDialog() {
@@ -1253,29 +1282,68 @@ function bindShareDialog() {
   ["#share-part-days", "#share-part-played"].forEach((selector) =>
     $(selector)?.addEventListener("change", renderShareDialog)
   );
-  input.addEventListener("focus", () => input.select());
   bindDialogDismiss(dialog, $("#close-share"));
-
-  $("#copy-share-link").addEventListener("click", async () => {
-    try {
-      if (typeof navigator.clipboard?.writeText !== "function") throw new Error("clipboard unavailable");
-      await navigator.clipboard.writeText(input.value);
-      showShareStatus(t("share.copied"));
-    } catch {
-      input.focus();
-      input.select();
-      showShareStatus(t("share.copyManually"));
-    }
+  bindLinkActions({
+    input,
+    copy: $("#copy-share-link"),
+    native: $("#native-share"),
+    status: $("#share-status"),
+    titleKey: "share.nativeTitle",
   });
+}
 
-  $("#native-share").addEventListener("click", async () => {
-    try {
-      await navigator.share({ title: t("share.nativeTitle"), url: input.value });
-    } catch (err) {
-      if (err?.name !== "AbortError") {
-        showShareStatus(t("share.failed"));
-      }
-    }
+/* ---------- share the guide ----------
+
+   Distinct from sharing a saved list: nothing of yours rides along, so there
+   is nothing to choose and the sheet is just the address, twice — once as a
+   code to hold up to the phone of whoever you are queueing with, once as
+   text to paste wherever you were going to paste it. */
+
+/* The address to hand out is not the one in the address bar. That one can
+   carry a shared-list hash, a ?lang the recipient should be resolving for
+   themselves, campaign params, /index.html spelled out, or the hostname the
+   guide is in the middle of leaving — and a QR code outlives every one of
+   those. Each page states where it lives in its canonical tag, so that is
+   what gets shared; the origin rule behind it is buildShareLink's. */
+function siteShareUrl() {
+  const canonical = document.querySelector('link[rel="canonical"]')?.href;
+  if (isHttpUrl(canonical)) return canonical;
+  return `${location.host === LEGACY_HOST ? SHARE_ORIGIN : location.origin}/`;
+}
+
+function renderSiteShare() {
+  const url = siteShareUrl();
+  $("#site-share-link").value = url;
+
+  /* js/qr.js is deferred, so it is there by the time anything can be
+     tapped — but a share sheet that renders an empty white square would be
+     worse than one that says "use the link", and the link is right below. */
+  const svg = typeof window.qrSvg === "function" ? window.qrSvg(url) : null;
+  $("#site-share-qr").hidden = !svg;
+  $("#site-share-qr-image").innerHTML = svg || "";
+  $("#site-share-qr-fallback").hidden = Boolean(svg);
+
+  $("#native-site-share").hidden = typeof navigator.share !== "function";
+  $("#site-share-status").textContent = "";
+}
+
+function bindSiteShare() {
+  const dialog = $("#site-share-dialog");
+  const button = $("#share-site");
+  /* Tolerate a cached pre-share index.html — the bindSourcesDialog rule. */
+  if (!dialog || !button) return;
+
+  button.addEventListener("click", () => {
+    renderSiteShare();
+    dialog.showModal();
+  });
+  bindDialogDismiss(dialog, $("#close-site-share"));
+  bindLinkActions({
+    input: $("#site-share-link"),
+    copy: $("#copy-site-link"),
+    native: $("#native-site-share"),
+    status: $("#site-share-status"),
+    titleKey: "shareSite.nativeTitle",
   });
 }
 
@@ -4063,6 +4131,7 @@ function bindControls() {
   });
   $("#export-ics").addEventListener("click", downloadICS);
   bindShareDialog();
+  bindSiteShare();
   bindSourcesDialog();
   /* One delegated listener covers every +, ✓, day and sources button in every
      view, including the ones that get re-rendered underneath it. */

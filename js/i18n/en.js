@@ -299,6 +299,17 @@ window.GC_STRINGS.en = {
   "share.copyManually": "Press ⌘C / Ctrl+C to copy.",
   "share.failed": "Sharing failed — copy the link instead.",
 
+  /* Sharing the guide itself, not a saved list. */
+  "shareSite.action": "Share",
+  "shareSite.actionAria": "Share this guide",
+  "shareSite.overline": "Pass it on",
+  "shareSite.title": "Share this guide",
+  "shareSite.closeAria": "Close share dialog",
+  "shareSite.lede": "Free, unofficial, and it keeps working offline once opened — worth passing to anyone heading to the show.",
+  "shareSite.qrHint": "Hold this up to someone's camera to open the guide on their phone.",
+  "shareSite.linkLabel": "Link",
+  "shareSite.nativeTitle": "gamescom 2026 visitor guide",
+
   "share.items": "{n} saved item|{n} saved items",
   "share.readyWithStale": "{items} ready to share.",
   "share.staleOlder": " {n} older item is no longer in the guide.| {n} older items are no longer in the guide.",

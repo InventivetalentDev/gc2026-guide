@@ -149,6 +149,7 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
+  margin-right: auto; /* holds the meta block and share button at the right edge */
   text-decoration: none;
   color: inherit;
 }
@@ -175,7 +176,10 @@ body {
 }
 .brand-year { color: var(--ink-dim); font-weight: 600; }
 
-.header-meta { text-align: right; display: flex; flex-direction: column; gap: 2px; }
+/* order + the auto margin, not source order: the share button is written
+   next to the wordmark so the phone grid can lift it into the gap there,
+   and belongs at the far right of the masthead everywhere else. */
+.header-meta { text-align: right; display: flex; flex-direction: column; gap: 2px; order: 2; }
 .meta-line { color: var(--ink-mid); font-size: .84rem; }
 .countdown {
   font-family: var(--font-mono);
@@ -185,6 +189,18 @@ body {
   text-transform: uppercase;
   color: var(--signal);
   font-variant-numeric: tabular-nums;
+}
+
+/* The masthead's stamped controls as one row rather than a stack of
+   individually aligned buttons — each aligning itself against the meta text
+   above is what left the language toggle floating mid-air on a phone. */
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 /* ---- tabs: signage strip, not browser chrome ---- */
@@ -1705,7 +1721,7 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   border-radius: var(--radius-sm);
 }
 .share-link-field .field-label { display: block; padding: 8px 12px 0; }
-#share-link {
+.share-link-field input {
   display: block;
   width: 100%;
   padding: 4px 12px 10px;
@@ -1716,8 +1732,8 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   font-size: .74rem;
   line-height: 1.5;
 }
-#share-link:focus-visible { outline-offset: -2px; }
-#share-link::selection { background: var(--signal); color: var(--signal-ink); }
+.share-link-field input:focus-visible { outline-offset: -2px; }
+.share-link-field input::selection { background: var(--signal); color: var(--signal-ink); }
 
 .share-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .share-action {
@@ -1774,6 +1790,20 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   border-left: 3px solid var(--warn);
   background: rgba(232, 163, 58, .08);
 }
+
+/* Sharing the guide itself leads with the code instead of trailing it: the
+   whole point is holding the screen out for a stranger's camera, so it gets
+   the top of the sheet and a size you can read across a queue. */
+.share-qr-solo {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding-top: 0;
+  border-top: none;
+}
+.share-qr-solo .share-qr-image { max-width: 260px; }
+.share-qr-solo p { text-align: center; max-width: 34ch; }
 
 /* ============================================================
    sources dialog
@@ -1859,8 +1889,6 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 /* Reads as a stamped label rather than a call-to-action button: it sits in
    the masthead next to the countdown and must not out-shout the hall plates. */
 .install-btn {
-  align-self: flex-end;
-  margin-top: 6px;
   background: none;
   border: 1px solid var(--signal);
   color: var(--signal);
@@ -1881,9 +1909,10 @@ a.dir-stand:focus-visible b { color: var(--signal); }
    a preference, not an invitation, and the signal colour belongs to the
    one control asking to be pressed. Labelled with the language it switches
    *to*, in that language, which is the one word every reader recognises. */
-.lang-switch {
-  align-self: flex-end;
-  margin-top: 6px;
+/* The share button wears the same shape for the same reason: passing the
+   guide on is a thing you may want, not a thing the page is asking for. */
+.lang-switch,
+.header-share {
   background: none;
   border: 1px solid var(--rule);
   color: var(--ink-mid);
@@ -1897,7 +1926,15 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   cursor: pointer;
   transition: border-color .12s, color .12s;
 }
-.lang-switch:hover { border-color: var(--ink-mid); color: var(--ink); }
+.lang-switch:hover,
+.header-share:hover { border-color: var(--ink-mid); color: var(--ink); }
+
+/* Bottom edge comes from .header-inner's flex-end, so it lands level with
+   the language toggle rather than with the top of the meta block. */
+.header-share {
+  order: 3;
+  white-space: nowrap;
+}
 
 /* The footer copy runs as prose, so the backstop switcher there reads as
    one more link in the Imprint · Privacy row rather than a second button. */
@@ -2040,6 +2077,42 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 /* ============================================================
    responsive
    ============================================================ */
+
+/* The masthead's own breakpoint, wider than the phone one below: the single
+   row wants ~640px before the share button starts wrapping onto a line of
+   its own, and a lone button under the wordmark reads as a mistake. Stacking
+   early costs nothing — the row is mostly air at these widths anyway. */
+@media (max-width: 760px) {
+  /* Grid, not a column: the share button rides up beside the wordmark into
+     the masthead's one piece of empty space, while the meta block keeps the
+     full width underneath. Column flex could only stack all three. */
+  .header-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+  }
+  .brand { grid-column: 1; grid-row: 1; margin-right: 0; }
+  .header-share { grid-column: 2; grid-row: 1; justify-self: end; }
+  /* Left edge with everything else in the stack — right alignment was for
+     the wide row, and there is nothing here to align against. */
+  .header-meta { grid-column: 1 / -1; grid-row: 2; text-align: left; }
+  .header-actions { justify-content: flex-start; }
+}
+
+/* Under ~340px the wordmark and the share button no longer fit on one line
+   together, and "gamescom 2026" breaking across two is worse than a slightly
+   smaller masthead. Everything gives a few pixels rather than one thing
+   giving all of them. */
+@media (max-width: 340px) {
+  .header-inner { column-gap: 8px; }
+  .brand { gap: 10px; }
+  .brand-mark { width: 40px; height: 40px; font-size: 1.1rem; }
+  .brand-title { font-size: 1.5rem; }
+  .header-share { padding: 3px 8px; }
+}
+
 @media (max-width: 860px) {
   .footer-inner { grid-template-columns: 1fr 1fr; }
   .priority-item { grid-template-columns: 34px 1fr auto; row-gap: 4px; }
@@ -2056,15 +2129,12 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
   .tabs { padding: 0 16px; }
   .toast { left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); }
-  .install-btn { align-self: flex-start; }
   /* the full masthead is ~290px on a phone — far too much to pin above a
      long scrolling list, so it scrolls away here instead */
   .site-header { position: static; }
   /* …and with nothing pinned on top, the sticky-header scroll offset would
      just strand the route heading 140px down the screen */
   #route-section { scroll-margin-top: 16px; }
-  .header-inner { flex-direction: column; align-items: flex-start; gap: 12px; padding-bottom: 14px; }
-  .header-meta { text-align: left; }
   .grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; gap: 26px; }
   .day-row { grid-template-columns: 76px 1fr; row-gap: 8px; }

@@ -80,15 +80,29 @@
           <span class="brand-title">gamescom <span class="brand-year">2026</span></span>
         </span>
       </a>
+      <!-- Sits in the masthead's one piece of dead space on a phone — the
+           gap beside the wordmark — because handing the guide to the person
+           next to you in a queue is a thing you do standing up, one-handed.
+           A sibling of .brand rather than a child of .header-meta so the
+           mobile grid can lift it up into that gap; on a wide screen CSS
+           order puts it back with the other masthead controls. -->
+      <button class="header-share" id="share-site" type="button" aria-haspopup="dialog"
+              data-i18n="shareSite.action" data-i18n-attr="aria-label:shareSite.actionAria"
+              aria-label="Share this guide">Share</button>
       <div class="header-meta">
         <p class="meta-line" id="event-dates" data-i18n="header.eventFallback">Koelnmesse, Cologne · Aug 26–30, 2026</p>
         <p class="countdown" id="countdown" aria-live="polite"></p>
         <p class="offline-flag" data-i18n="header.offline">Offline · showing saved data</p>
-        <!-- Labelled with the other language's own name by js/i18n.js, and
-             hidden until it wires up so a scripting failure cannot leave a
-             dead control in the header. -->
-        <button class="lang-switch" data-lang-switch type="button" hidden></button>
-        <button class="install-btn" id="install-app" type="button" hidden data-i18n="pwa.install">Install app</button>
+        <!-- One row so the stamped controls line up with each other instead of
+             each aligning itself against the meta text above — which is what
+             left the language toggle floating mid-air on a phone. -->
+        <div class="header-actions">
+          <!-- Labelled with the other language's own name by js/i18n.js, and
+               hidden until it wires up so a scripting failure cannot leave a
+               dead control in the header. -->
+          <button class="lang-switch" data-lang-switch type="button" hidden></button>
+          <button class="install-btn" id="install-app" type="button" hidden data-i18n="pwa.install">Install app</button>
+        </div>
       </div>
     </div>
     <nav class="tabs-outer" aria-label="Sections" data-i18n-attr="aria-label:nav.sections">
@@ -353,6 +367,39 @@
         <p data-i18n="share.qrHint">Scan to open this list on another device.</p>
       </div>
       <p class="share-qr-fallback" id="share-qr-fallback" hidden data-i18n="share.qrTooLong">This list is too long for a QR code — send the link instead.</p>
+    </div>
+  </dialog>
+
+  <!-- Sharing the guide itself, as opposed to a saved list. The QR leads
+       because the case it is for is standing in a queue with someone who
+       is holding their phone already; the link follows for everyone posting
+       it somewhere. No per-platform buttons: the OS share sheet is a better
+       version of that list on the devices that have one, and on the ones
+       that don't, a copied link goes anywhere a button could have. -->
+  <dialog class="sheet" id="site-share-dialog" aria-labelledby="site-share-title" aria-describedby="site-share-lede">
+    <div class="sheet-head">
+      <div>
+        <span class="overline" data-i18n="shareSite.overline">Pass it on</span>
+        <h2 id="site-share-title" data-i18n="shareSite.title">Share this guide</h2>
+      </div>
+      <button class="sheet-close" id="close-site-share" type="button" aria-label="Close share dialog" data-i18n-attr="aria-label:shareSite.closeAria">×</button>
+    </div>
+    <div class="sheet-body">
+      <p class="share-count" id="site-share-lede" data-i18n="shareSite.lede">Free, unofficial, and it works offline once opened — worth passing to anyone heading to the show.</p>
+      <div class="share-qr share-qr-solo" id="site-share-qr">
+        <div class="share-qr-image" id="site-share-qr-image"></div>
+        <p data-i18n="shareSite.qrHint">Hold this up to someone's camera to open the guide on their phone.</p>
+      </div>
+      <p class="share-qr-fallback" id="site-share-qr-fallback" hidden data-i18n="share.qrFailed">The QR code could not be loaded — send the link instead.</p>
+      <label class="share-link-field" for="site-share-link">
+        <span class="field-label" data-i18n="shareSite.linkLabel">Link</span>
+        <input id="site-share-link" type="text" readonly spellcheck="false">
+      </label>
+      <div class="share-actions">
+        <button class="share-action share-action-primary" id="copy-site-link" type="button" data-i18n="share.copyAction">Copy link</button>
+        <button class="share-action" id="native-site-share" type="button" hidden data-i18n="share.nativeAction">Share…</button>
+      </div>
+      <p class="share-status" id="site-share-status" role="status" aria-live="polite" aria-atomic="true"></p>
     </div>
   </dialog>
 

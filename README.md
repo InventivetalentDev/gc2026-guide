@@ -11,6 +11,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - Search across exhibitors, games and tags; filters by category, hall, playable demos and age gate (hide 18+ / 18+ only)
 - **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
 - **Shareable saved lists** — move a plan to another device or send it to a friend with a link or scannable QR code
+- **Share the guide itself** — a Share button in the masthead opens a QR code big enough to hold up to the phone of whoever you are queueing with, plus the link to copy for posting it anywhere else
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours and crowd advice inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter)
 - **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up; tap a booth for its lineup and queue call. The entertainment halls and the trade-only business halls, each washed in the colour the official plan gives that area, with the business ones flagged as the door a consumer ticket does not open. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory — opens it on that stand, and it works offline like everything else
@@ -115,6 +116,12 @@ on arrival offers **Replace my list** instead of adding: replacing is what lets 
 removed booth or a rescheduled day carry across your own devices, and the prompt
 counts what it would remove before anything is touched. The include boxes stay
 adjustable in either mode, and nothing about the choice is remembered between opens.
+
+Sharing the *guide* rather than a list is a separate control — **Share** in the
+masthead — and carries nothing of yours: it is the canonical address, once as a QR
+code sized to be scanned across a queue and once as text to copy. Where the OS
+provides a share sheet it is offered too; there are no per-platform buttons, because
+a copied link reaches everywhere one of those would have.
 
 A link for someone else never replaces an existing list: it asks before adding to a
 non-empty list, while an empty list imports immediately with an Undo option — and a
