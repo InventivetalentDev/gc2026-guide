@@ -294,6 +294,17 @@ window.GC_STRINGS.de = {
   "share.copyManually": "Zum Kopieren ⌘C / Strg+C drücken.",
   "share.failed": "Teilen fehlgeschlagen — kopier stattdessen den Link.",
 
+  /* Den Guide selbst teilen, nicht die Merkliste. */
+  "shareSite.action": "Teilen",
+  "shareSite.actionAria": "Diesen Guide teilen",
+  "shareSite.overline": "Weitersagen",
+  "shareSite.title": "Guide teilen",
+  "shareSite.closeAria": "Teilen-Dialog schließen",
+  "shareSite.lede": "Kostenlos, inoffiziell und einmal geöffnet auch offline nutzbar — lohnt sich für alle, die zur Messe gehen.",
+  "shareSite.qrHint": "Halt den Code vor die Kamera, dann öffnet sich der Guide auf dem anderen Handy.",
+  "shareSite.linkLabel": "Link",
+  "shareSite.nativeTitle": "gamescom 2026 – Besucherguide",
+
   "share.items": "{n} Eintrag|{n} Einträge",
   "share.readyWithStale": "Du kannst {items} teilen.",
   "share.staleOlder":
