@@ -1689,5 +1689,1483 @@
       "https://exhibitors.gamescom.global/exhibitor/urban_games/"
     ],
     "lastUpdated": "2026-08-12"
+  },
+  {
+    "id": "xbox-business",
+    "businessOf": "xbox",
+    "name": "Xbox — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "A061/B060",
+    "locationConfirmed": true,
+    "dirSlug": "microsoft",
+    "country": "United States",
+    "access": "appointment",
+    "accessNote": "A 560 m² closed structure with no co-exhibitors and nothing on show from the aisle — partner and press meetings are booked in advance through Xbox, not taken at the door.",
+    "description": "Microsoft's business-side presence, entirely separate from the consumer Xbox booth in Hall 7.1. One of the largest single stands in the business area and one of the ~180 that no other exhibitor shares, which in Hall 4.2 means a meeting building rather than a stand you can walk into.",
+    "offers": [
+      "Partner and publisher meetings, by prior appointment",
+      "Press appointments — the consumer booth in Hall 7.1 is where hands-on demos live",
+      "ID@Xbox and Game Pass business conversations"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand",
+      "platform holder"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/microsoft/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "nintendo-business",
+    "businessOf": "nintendo",
+    "name": "Nintendo — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B029/D030",
+    "locationConfirmed": true,
+    "dirSlug": "nintendo",
+    "country": "Germany",
+    "access": "appointment",
+    "accessNote": "541 m², sole occupant, no co-exhibitors. Nintendo does not take walk-ups on the business side; the Hall 9.1 booth is the public one.",
+    "description": "Nintendo of Europe's trade presence in Hall 4.2, distinct from the large consumer booth in Hall 9.1. Registered to the European headquarters entity rather than to a brand stand, which is the usual shape of a publisher meeting compound here.",
+    "offers": [
+      "Publisher and retail partner meetings by appointment",
+      "Trade press appointments"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand",
+      "platform holder"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/nintendo/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "tencent-business",
+    "name": "Tencent — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B035/D040",
+    "locationConfirmed": true,
+    "dirSlug": "tencent_games",
+    "country": "China",
+    "access": "appointment",
+    "accessNote": "At 702 m² this is the largest single-occupant stand in the business area — a closed meeting complex, not a show floor.",
+    "description": "Tencent's business compound, the biggest private stand in the business halls. Its consumer-facing work is elsewhere: Level Infinite in Hall 6.1 and the Worlds of Play area in Hall 8.1, both of which have their own cards.",
+    "offers": [
+      "Publishing, investment and partnership meetings by appointment",
+      "Level Infinite business conversations"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/tencent_games/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "nvidia",
+    "name": "NVIDIA",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "D069",
+    "locationConfirmed": true,
+    "dirSlug": "nvidia",
+    "country": "Germany",
+    "access": "appointment",
+    "accessNote": "420 m², sole occupant. NVIDIA has no consumer booth this year, so everything it is doing at the show is behind this door.",
+    "description": "NVIDIA's only registered stand at gamescom 2026, and it is in the business area rather than the entertainment halls — developer relations, RTX and cloud partnerships rather than a demo wall.",
+    "offers": [
+      "Developer relations and engine partnership meetings",
+      "GeForce NOW and RTX technology briefings",
+      "Press appointments"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand",
+      "hardware"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/nvidia/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-spain",
+    "name": "Spanish games pavilion (ICEX)",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "B041/C050",
+    "locationConfirmed": true,
+    "country": "Spain",
+    "access": "open",
+    "accessNote": "A national collective: 33 companies sharing one 240 m² stand, each with its own desk. Staffed all day and meant to be walked into — that is what a pavilion is for.",
+    "description": "Spain's national stand, organised around ICEX, the Spanish export agency. The single most densely shared stand in the business area: 33 studios and service companies, every one of them Spanish, listed individually in the trade list below.",
+    "offers": [
+      "33 Spanish studios and service companies at one stand",
+      "Publishing and co-development conversations without an appointment",
+      "ICEX export and funding advice"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/icex_espan/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/icex_espan/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-malta",
+    "name": "GamingMalta pavilion",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "C040/D041",
+    "locationConfirmed": true,
+    "country": "Malta",
+    "access": "open",
+    "accessNote": "21 exhibitors on one stand, hosted by a public foundation whose job is to be approachable. Walk up.",
+    "description": "Malta's national stand, run by the Gaming Malta Foundation with the Malta Game Developers Association. Nineteen of its twenty-one exhibitors are Maltese — studios, the American University of Malta, and the agencies that sell Malta as a place to set up a studio.",
+    "offers": [
+      "Maltese studios and the Malta Game Developers Association",
+      "Relocation, licensing and tax advice from GamingMalta",
+      "Games education — American University of Malta"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/gaming_mal/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/gaming_mal/",
+      "https://exhibitors.gamescom.global/en/exhibitor/malta_game_developer/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-denmark",
+    "name": "Danish games pavilion (NIMBI)",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "B021/C030",
+    "locationConfirmed": true,
+    "country": "Denmark",
+    "access": "open",
+    "accessNote": "17 exhibitors, all Danish, on one shared stand — a collective built for walk-up conversation.",
+    "description": "Denmark's national stand, anchored by NIMBI, the country's institute for game development. Seventeen Danish studios share it, including Ghost Ship Games and Bedtime Digital Games.",
+    "offers": [
+      "17 Danish studios at one stand",
+      "NIMBI — Denmark's Institute for Game Development",
+      "Co-development and publishing conversations"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/nimbi_denmarks_inst/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/nimbi_denmarks_inst/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-uk",
+    "name": "UK games pavilion",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "C020/F039",
+    "locationConfirmed": true,
+    "country": "United Kingdom",
+    "access": "open",
+    "accessNote": "A 1,004 m² shared stand carrying 23 exhibitors — one of the two biggest collectives in the business area, and staffed throughout.",
+    "description": "The British collective in Hall 3.2, seventeen of its twenty-three exhibitors registered in the UK. A mix of publishers (505 Games), specialist services and PR agencies rather than a single company's compound.",
+    "offers": [
+      "23 UK publishers, studios and service companies",
+      "Publishing and PR conversations without an appointment"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "pavilion-nordic",
+    "name": "Nordic & Baltic games stand",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "D033",
+    "locationConfirmed": true,
+    "access": "open",
+    "accessNote": "40 exhibitors share this one stand — the most crowded collective in the business area. Nothing about it is closed.",
+    "description": "A joint Nordic and Baltic stand: 40 exhibitors, mostly Finnish, Norwegian, Estonian and Swedish, brought together by regional development agencies such as Business Tampere and Arctic Game Skellefteå rather than by one country's export body.",
+    "offers": [
+      "40 Nordic and Baltic studios and regional agencies",
+      "Regional funding, relocation and cluster advice",
+      "Co-development conversations without an appointment"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/business_tampere_ltd/",
+      "https://exhibitors.gamescom.global/en/exhibitor/arctic_game/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "games-hubs-hessen",
+    "name": "Games Hubs Hessen",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "D060",
+    "locationConfirmed": true,
+    "dirSlug": "games_hubs_hessenhouse_of_communicati",
+    "country": "Germany",
+    "access": "open",
+    "accessNote": "A regional cluster stand shared by 18 exhibitors, including the Frankfurter Buchmesse — open, staffed and used for introductions.",
+    "description": "The German state of Hessen's games cluster, sharing one Hall 4.1 stand with 17 other exhibitors — studios, service firms and, unusually for a games hall, the Frankfurt Book Fair.",
+    "offers": [
+      "Hessen studios and service companies",
+      "Regional funding and location advice",
+      "Cross-media contacts — Frankfurter Buchmesse shares the stand"
+    ],
+    "games": [],
+    "tags": [
+      "pavilion",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/games_hubs_hessenhouse_of_communicati/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/games_hubs_hessenhouse_of_communicati/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "cloudflare-biz",
+    "name": "Cloudflare",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "C034",
+    "locationConfirmed": true,
+    "dirSlug": "cloudflare_germany_g",
+    "country": "Germany",
+    "access": "open",
+    "description": "The CDN and edge platform a large share of the industry's launch-day traffic runs through, here on the games side of the business: DDoS protection for live services, edge compute for matchmaking and telemetry, and Workers as a backend for smaller studios. A 63 m² stand in the services half of Hall 2.2 — no appointment, just a counter.",
+    "offers": [
+      "DDoS protection and traffic delivery for live-service games",
+      "Workers / edge compute as a game backend",
+      "Zero Trust and internal tooling for studios"
+    ],
+    "games": [],
+    "tags": [
+      "infrastructure",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/cloudflare_germany_g/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/cloudflare_germany_g/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "curseforge-overwolf",
+    "name": "CurseForge & Overwolf",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "C020",
+    "locationConfirmed": true,
+    "dirSlug": "curseforge_for_studigioiella",
+    "country": "Israel",
+    "access": "open",
+    "description": "The mod-distribution side of the industry. CurseForge is the platform most PC modding communities actually publish through, and Overwolf — which owns it — builds the in-game overlay and creator-monetisation layer around it. Both are registered to the same Hall 2.2 stand, which is where studios go to talk about opening a game up to mods.",
+    "offers": [
+      "CurseForge for Studios — official mod support and distribution",
+      "Overwolf's in-game overlay app platform",
+      "Creator and modder monetisation programs"
+    ],
+    "games": [],
+    "tags": [
+      "platform",
+      "modding",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/curseforge_for_studigioiella/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/curseforge_for_studigioiella/",
+      "https://exhibitors.gamescom.global/en/exhibitor/overwolf/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "serverscom-biz",
+    "name": "servers.com",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "A040/B039",
+    "locationConfirmed": true,
+    "dirSlug": "serverscom",
+    "country": "Netherlands",
+    "access": "mixed",
+    "accessNote": "At 196 m² this is one of the larger service stands in Hall 2.2 — an open counter with meeting space behind it, so walk up to ask and book if you need a real conversation.",
+    "description": "Bare-metal and hybrid hosting aimed squarely at game studios — dedicated servers for multiplayer backends, global points of presence for latency, and the kind of capacity planning a launch week needs. One of the bigger infrastructure stands in the business area.",
+    "offers": [
+      "Bare-metal and dedicated servers for game backends",
+      "Global low-latency hosting and capacity planning",
+      "Launch-window scaling conversations"
+    ],
+    "games": [],
+    "tags": [
+      "infrastructure",
+      "hosting"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/serverscom/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/serverscom/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "unity-biz",
+    "name": "Unity Technologies",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "C043a",
+    "locationConfirmed": true,
+    "dirSlug": "unity_technologies",
+    "country": "Denmark",
+    "access": "open",
+    "accessNote": "A 12 m² desk — one of the smallest stands in the business area, and about as walk-up as a booth gets.",
+    "description": "The engine, on a stand you could miss if you blinked. Worth knowing it is there: for all the size of Unity's footprint in the industry, its gamescom presence is a single desk in the Hall 2.2 services row rather than a compound.",
+    "offers": [
+      "Engine, licensing and Unity 6 questions",
+      "Ads, monetisation and LevelPlay conversations",
+      "Developer relations contacts"
+    ],
+    "games": [],
+    "tags": [
+      "engine",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/unity_technologies/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/unity_technologies/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "aws-biz",
+    "name": "Amazon Web Services",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "A051",
+    "locationConfirmed": true,
+    "dirSlug": "amazon_web",
+    "country": "United States",
+    "access": "open",
+    "description": "AWS for Games on a 45 m² stand in Hall 3.2 — game servers, GameLift, analytics pipelines and the cloud-build side of production. Smaller than you would expect for the size of the business, and in the developer hall rather than the publisher one.",
+    "offers": [
+      "Game server hosting and GameLift",
+      "Analytics, data pipelines and live-ops tooling",
+      "Cloud build and CI for large projects"
+    ],
+    "games": [],
+    "tags": [
+      "infrastructure",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/amazon_web/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/amazon_web/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "xsolla-biz",
+    "name": "Xsolla",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "A030/B035",
+    "locationConfirmed": true,
+    "dirSlug": "xsolla",
+    "country": "United States",
+    "access": "mixed",
+    "accessNote": "162 m² with meeting space — Xsolla runs scheduled partner meetings at the show, but the front of the stand is staffed for walk-ups.",
+    "description": "Payments, web shops and direct-to-consumer storefronts for games — the company most studios talk to when they want to sell outside a platform holder's store. One of the larger commerce stands in Hall 2.2.",
+    "offers": [
+      "Payments and global cash-out for game sales",
+      "Web shops and direct-to-consumer storefronts",
+      "Publishing and funding programs"
+    ],
+    "games": [],
+    "tags": [
+      "payments",
+      "commerce"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/xsolla/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/xsolla/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "keywords-biz",
+    "name": "Keywords Studios",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "A050/B049",
+    "locationConfirmed": true,
+    "dirSlug": "keywords",
+    "country": "Ireland",
+    "access": "mixed",
+    "accessNote": "122 m² with meeting space behind an open front — the co-development conversations are usually booked, the stand itself is not.",
+    "description": "The largest games service group in the industry: art, co-development, localisation, QA, audio and player support, assembled from dozens of studios. If a game shipped in eight languages, there is a fair chance some part of it passed through here.",
+    "offers": [
+      "Co-development and external art production",
+      "Localisation, QA and certification",
+      "Audio, voice and player support services"
+    ],
+    "games": [],
+    "tags": [
+      "services",
+      "co-development"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/keywords/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/keywords/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "sumo-digital-biz",
+    "name": "Sumo Digital",
+    "type": "trade",
+    "hall": "2.1",
+    "booth": "D017/C018",
+    "locationConfirmed": true,
+    "dirSlug": "sumo_digital",
+    "country": "United Kingdom",
+    "access": "mixed",
+    "accessNote": "133 m² in Hall 2.1 — an open stand with meeting space; project conversations are usually pre-booked.",
+    "description": "One of the largest independent co-development studios in Europe, with a long history of building and co-building other people's games. A work-for-hire partner rather than a publisher, which is why it stands in the services hall rather than the publisher row.",
+    "offers": [
+      "Co-development and full-project outsourcing",
+      "Porting and platform work",
+      "Studio partnership conversations"
+    ],
+    "games": [],
+    "tags": [
+      "co-development",
+      "services"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/sumo_digital/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/sumo_digital/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "virtuos-biz",
+    "name": "Virtuos",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "A025",
+    "locationConfirmed": true,
+    "dirSlug": "virtuos_holdings",
+    "country": "Singapore",
+    "access": "open",
+    "description": "A global co-development and art-production group — remasters, ports and large-scale asset work for AAA projects. A 66 m² stand in the Hall 2.2 services row.",
+    "offers": [
+      "Co-development, remasters and ports",
+      "Art production and asset pipelines at scale",
+      "Technical outsourcing conversations"
+    ],
+    "games": [],
+    "tags": [
+      "co-development",
+      "services",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/virtuos_holdings/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/virtuos_holdings/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "denuvo-biz",
+    "name": "Denuvo by Irdeto",
+    "type": "trade",
+    "hall": "2.1",
+    "booth": "E001",
+    "locationConfirmed": true,
+    "dirSlug": "denuvo_by_irdeto",
+    "country": "Germany",
+    "access": "open",
+    "description": "The anti-tamper and anti-cheat company whose name turns up in more PC storefront discussions than it would probably like. A 24 m² stand in Hall 2.1 — protection, anti-cheat and mobile security, sold to studios rather than argued about with players.",
+    "offers": [
+      "Anti-tamper and anti-piracy protection",
+      "Anti-cheat for PC and console",
+      "Mobile app and games security"
+    ],
+    "games": [],
+    "tags": [
+      "security",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/denuvo_by_irdeto/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/denuvo_by_irdeto/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "ign-humble-biz",
+    "name": "IGN & Humble Bundle",
+    "type": "trade",
+    "hall": "2.1",
+    "booth": "B030",
+    "locationConfirmed": true,
+    "dirSlug": "ign_entertainment",
+    "country": "United States",
+    "access": "open",
+    "description": "Two sibling businesses on one 30 m² stand: IGN, for coverage and media partnerships, and Humble Bundle, for bundle placement and charity promotions. This is the press-and-promotion end of Hall 2.1, and it is a stand you talk your way onto rather than book.",
+    "offers": [
+      "Media and coverage conversations with IGN",
+      "Humble Bundle placement and charity bundles",
+      "Creator and campaign partnerships"
+    ],
+    "games": [],
+    "tags": [
+      "media",
+      "promotion",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/ign_entertainment/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/ign_entertainment/",
+      "https://exhibitors.gamescom.global/en/exhibitor/humble_bundle/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "fandom-biz",
+    "name": "Fandom",
+    "type": "trade",
+    "hall": "2.1",
+    "booth": "A011",
+    "locationConfirmed": true,
+    "dirSlug": "fandom_inc",
+    "country": "United States",
+    "access": "open",
+    "description": "The wiki network that most games end up documented on whether or not anyone planned it, here as a media and advertising business. A 78 m² stand in Hall 2.1, near the rest of the games press.",
+    "offers": [
+      "Wiki and community partnership programs",
+      "Advertising and audience campaigns",
+      "Editorial and coverage conversations"
+    ],
+    "games": [],
+    "tags": [
+      "media",
+      "community",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/fandom_inc/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/fandom_inc/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "reddit-biz",
+    "name": "Reddit",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "D045",
+    "locationConfirmed": true,
+    "dirSlug": "reddit",
+    "country": "United States",
+    "access": "open",
+    "accessNote": "16 m² — a desk, not a compound. Walk up.",
+    "description": "Registered as media, on one of the smallest stands in the business area. For a platform where a game's subreddit is often its most active community, the gamescom footprint is a single desk in Hall 2.2.",
+    "offers": [
+      "Advertising and campaign conversations",
+      "Community and subreddit partnership programs"
+    ],
+    "games": [],
+    "tags": [
+      "media",
+      "community",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/reddit/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/reddit/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "opera-biz",
+    "name": "Opera",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "D019",
+    "locationConfirmed": true,
+    "dirSlug": "opera_softwaresino-dental_2027",
+    "country": "Norway",
+    "access": "open",
+    "description": "The browser company, here on the strength of Opera GX — the gaming browser with a genuinely large young audience, and an advertising and partnership business attached to it. An 85 m² stand in Hall 2.2.",
+    "offers": [
+      "Opera GX advertising and integrations",
+      "Audience and campaign partnerships",
+      "Distribution conversations for browser-reachable games"
+    ],
+    "games": [],
+    "tags": [
+      "platform",
+      "media",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/opera_softwaresino-dental_2027/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/opera_softwaresino-dental_2027/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "sensor-tower-biz",
+    "name": "Sensor Tower",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "B042",
+    "locationConfirmed": true,
+    "dirSlug": "sensor_tower",
+    "country": "United States",
+    "access": "open",
+    "accessNote": "A 12 m² desk in the Hall 2.2 services row.",
+    "description": "Market intelligence for mobile and games — the download, revenue and ad-spend estimates that turn up in half the industry's slide decks. Small stand, disproportionately consulted product.",
+    "offers": [
+      "Market and competitor intelligence",
+      "Ad-spend and user-acquisition data",
+      "Licensing and demo conversations"
+    ],
+    "games": [],
+    "tags": [
+      "analytics",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/sensor_tower/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/sensor_tower/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "igda-biz",
+    "name": "IGDA",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "C016/D017",
+    "locationConfirmed": true,
+    "dirSlug": "_igda",
+    "country": "United States",
+    "access": "open",
+    "description": "The International Game Developers Association, on a 45 m² stand in Hall 3.2 — with the IGDA Foundation next door at C014/D015 and Women in Games International beside them at C012/D013. Three developer-advocacy organisations in a row, which makes that corner of 3.2 the place to go for careers, community and support rather than deals.",
+    "offers": [
+      "Membership, chapters and developer advocacy",
+      "The IGDA Foundation's scholarship and support programs",
+      "Careers and community conversations"
+    ],
+    "games": [],
+    "tags": [
+      "association",
+      "careers",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/_igda/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/_igda/",
+      "https://exhibitors.gamescom.global/en/exhibitor/igda_foundation/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "wigi-biz",
+    "name": "Women in Games International",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "C012/D013",
+    "locationConfirmed": true,
+    "dirSlug": "women_in_games_inter",
+    "country": "United States",
+    "access": "open",
+    "description": "Advocacy, mentorship and hiring support for women in the games industry, on a 45 m² stand in Hall 3.2 immediately beside the IGDA and the IGDA Foundation.",
+    "offers": [
+      "Mentorship and career programs",
+      "Hiring and recruitment conversations",
+      "Membership and chapter information"
+    ],
+    "games": [],
+    "tags": [
+      "association",
+      "careers",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/women_in_games_inter/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/women_in_games_inter/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "owlchemy-biz",
+    "name": "Owlchemy Labs",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "A048/B049",
+    "locationConfirmed": true,
+    "dirSlug": "owlchemy_labs",
+    "country": "United States",
+    "access": "open",
+    "description": "The VR studio behind Job Simulator and Vacation Simulator, and one of the few names in Hall 3.2 that consumers would recognise. Google-owned, and here on the developer side rather than with a demo booth.",
+    "offers": [
+      "VR development and platform conversations",
+      "Studio and partnership contacts"
+    ],
+    "games": [],
+    "tags": [
+      "VR",
+      "studio",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/owlchemy_labs/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/owlchemy_labs/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "poki-biz",
+    "name": "Poki",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "A022",
+    "locationConfirmed": true,
+    "dirSlug": "puki",
+    "country": "Netherlands",
+    "access": "open",
+    "accessNote": "A 20 m² stand in Hall 4.1, among the indie and developer collectives rather than the publisher compounds.",
+    "description": "One of the largest browser-games platforms in the world, and a real distribution route for small web-playable titles. Worth knowing it exhibits at all — it is easy to miss between the national pavilions in Hall 4.1.",
+    "offers": [
+      "Publishing and revenue share for web games",
+      "Playtesting and audience data",
+      "Developer onboarding conversations"
+    ],
+    "games": [],
+    "tags": [
+      "platform",
+      "web games",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/puki/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/puki/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "blacknut-biz",
+    "name": "Blacknut",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "C021",
+    "locationConfirmed": true,
+    "dirSlug": "blacknut_cloud_gamin",
+    "country": "France",
+    "access": "open",
+    "description": "A cloud-gaming subscription platform that distributes through telcos and TV operators rather than direct to players — which makes it a distribution channel most studios never think to ask about. 90 m² in Hall 3.2.",
+    "offers": [
+      "Cloud-gaming distribution and licensing",
+      "Telco and operator bundle placement",
+      "Catalogue conversations for existing titles"
+    ],
+    "games": [],
+    "tags": [
+      "cloud gaming",
+      "distribution",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/blacknut_cloud_gamin/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/blacknut_cloud_gamin/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "gcore-biz",
+    "name": "G-Core Labs",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "B029",
+    "locationConfirmed": true,
+    "dirSlug": "g-core_labs",
+    "country": "Luxembourg",
+    "access": "open",
+    "description": "Edge infrastructure and CDN built around game hosting — server capacity, streaming delivery and DDoS protection, sitting a few stands from Cloudflare in the same Hall 2.2 row. If you are comparing hosting at the show, they are next to each other on purpose.",
+    "offers": [
+      "Game server hosting and edge delivery",
+      "CDN and streaming infrastructure",
+      "DDoS protection for live services"
+    ],
+    "games": [],
+    "tags": [
+      "infrastructure",
+      "hosting",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/g-core_labs/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/g-core_labs/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "kakao-games-biz",
+    "name": "Kakao Games",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "B011",
+    "locationConfirmed": true,
+    "dirSlug": "kakao_games_corp",
+    "country": "Korea, Republic of",
+    "access": "open",
+    "accessNote": "A 20 m² stand — small enough that it is a conversation, not a booking.",
+    "description": "The Korean publisher behind Odin and the Western operation of several large Korean titles, here on a small Hall 2.2 stand for publishing and licensing conversations rather than a demo presence.",
+    "offers": [
+      "Publishing and licensing for Korean and Western markets",
+      "Co-publishing conversations"
+    ],
+    "games": [],
+    "tags": [
+      "publisher",
+      "licensing",
+      "walk-up"
+    ],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/kakao_games_corp/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/kakao_games_corp/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "capcom-business",
+    "businessOf": "capcom",
+    "name": "Capcom — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "A050",
+    "locationConfirmed": true,
+    "dirSlug": "capcom",
+    "country": "Germany",
+    "access": "appointment",
+    "accessNote": "276 m² with no co-exhibitors — a meeting building. The Hall 9.1 booth is where the demos are.",
+    "description": "Capcom's trade presence, registered to its German entity and a full hall away from the consumer booth in 9.1. Publisher, retail and press meetings rather than anything you can play.",
+    "offers": [
+      "Retail and distribution meetings",
+      "Trade press appointments"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/capcom/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "ubisoft-business",
+    "businessOf": "ubisoft",
+    "name": "Ubisoft — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B032/A039",
+    "locationConfirmed": true,
+    "dirSlug": "ubisoft",
+    "country": "Germany",
+    "access": "appointment",
+    "accessNote": "403 m², sole occupant. Nothing on show from the aisle — the two Hall 6.1 stands are the public ones.",
+    "description": "Ubisoft's German entity on a large closed stand in the publisher row of Hall 4.2, separate from its consumer booths across the grounds in 6.1.",
+    "offers": [
+      "Publisher, retail and partner meetings",
+      "Trade press appointments",
+      "Esports and brand partnership conversations"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/ubisoft/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "bandai-namco-business",
+    "businessOf": "bandai-namco",
+    "name": "Bandai Namco — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B028/A021",
+    "locationConfirmed": true,
+    "dirSlug": "bandainamco",
+    "country": "Germany",
+    "access": "appointment",
+    "accessNote": "543 m² and no co-exhibitors — the third-largest single stand in the business area, and entirely closed.",
+    "description": "One of the biggest private stands in Hall 4.2, registered to Bandai Namco's German arm. Licensing, distribution and press, with the playable side of the show in Hall 6.1.",
+    "offers": [
+      "Distribution and licensing meetings",
+      "Trade press appointments"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/bandainamco/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "cdpr-business",
+    "businessOf": "cdpr",
+    "name": "CD Projekt — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B065",
+    "locationConfirmed": true,
+    "dirSlug": "cd_projekt",
+    "country": "Poland",
+    "access": "appointment",
+    "accessNote": "432 m², sole occupant, filed to the parent company rather than to CD Projekt Red or GOG.",
+    "description": "CD Projekt S.A. — the group above CD Projekt Red and GOG — on a large closed stand in Hall 4.2. Partner and press meetings; the consumer booth is in Hall 8.1.",
+    "offers": [
+      "Publishing and partnership meetings",
+      "GOG distribution conversations",
+      "Press appointments"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/cd_projekt/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "krafton-business",
+    "businessOf": "krafton",
+    "name": "KRAFTON — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B011",
+    "locationConfirmed": true,
+    "dirSlug": "krafton",
+    "country": "Korea, Republic of",
+    "access": "appointment",
+    "accessNote": "245 m², sole occupant — a closed stand in the Hall 4.2 publisher row.",
+    "description": "KRAFTON's trade stand, separate from the two consumer booths it runs in Hall 9.1. Publishing, investment and partnership conversations.",
+    "offers": [
+      "Publishing and investment meetings",
+      "Partnership and licensing conversations"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/krafton/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "atari-business",
+    "businessOf": "atari",
+    "name": "Atari — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "A024",
+    "locationConfirmed": true,
+    "dirSlug": "atari",
+    "country": "United States",
+    "access": "mixed",
+    "accessNote": "162 m² in the publisher row — mid-sized rather than a compound, so expect a staffed front with meeting space behind it.",
+    "description": "Atari on the business side: licensing its back catalogue, the hardware partnerships behind the recent re-releases, and publishing. The retro-facing consumer booth is in Hall 10.1.",
+    "offers": [
+      "Back-catalogue licensing",
+      "Hardware and re-release partnerships",
+      "Publishing conversations"
+    ],
+    "games": [],
+    "tags": [
+      "publisher"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/atari/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "giants-software-business",
+    "businessOf": "giants-software",
+    "name": "GIANTS Software — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B042",
+    "locationConfirmed": true,
+    "dirSlug": "giants_software",
+    "country": "Germany",
+    "access": "mixed",
+    "accessNote": "178 m², sole occupant — a working stand rather than a closed compound, but the meetings are booked.",
+    "description": "The Farming Simulator studio and publisher on the trade side, where the licensing deals that put real agricultural brands into the game get done. The playable booth is in Hall 6.1.",
+    "offers": [
+      "Brand and vehicle licensing",
+      "Publishing and distribution meetings",
+      "Modding and platform conversations"
+    ],
+    "games": [],
+    "tags": [
+      "publisher"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/giants_software/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "hoyoverse-business",
+    "businessOf": "hoyoverse",
+    "name": "HoYoverse — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B051",
+    "locationConfirmed": true,
+    "dirSlug": "hoyoverse",
+    "country": "Singapore",
+    "access": "mixed",
+    "accessNote": "104 m² — small for Hall 4.2, so a staffed stand rather than a sealed building, but meetings are arranged in advance.",
+    "description": "HoYoverse's trade stand, registered to its Singapore entity and filed under merchandising as well as games — which is most of what the business side is for. The consumer booth is in Hall 6.1.",
+    "offers": [
+      "Merchandise and licensing partnerships",
+      "Distribution and platform meetings",
+      "Press appointments"
+    ],
+    "games": [],
+    "tags": [
+      "publisher"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/hoyoverse/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "focus-business",
+    "businessOf": "focus",
+    "name": "Focus Entertainment — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "A028",
+    "locationConfirmed": true,
+    "dirSlug": "focus_entertainment",
+    "country": "France",
+    "access": "appointment",
+    "accessNote": "210 m², sole occupant — a closed stand. Focus's playable line-up is in Hall 6.1.",
+    "description": "The French publisher's trade stand, where it signs and shows work to partners rather than players.",
+    "offers": [
+      "Publishing submissions and partner meetings",
+      "Distribution and licensing",
+      "Press appointments"
+    ],
+    "games": [],
+    "tags": [
+      "closed stand"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/focus_entertainment/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "aerosoft-business",
+    "businessOf": "aerosoft",
+    "name": "Aerosoft — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "A043",
+    "locationConfirmed": true,
+    "dirSlug": "aerosoft",
+    "country": "Germany",
+    "access": "open",
+    "accessNote": "93 m² — one of the smaller stands in Hall 4.2 and an open one.",
+    "description": "The simulation publisher and distributor on the trade side — flight and train sim licensing, and the boxed-retail distribution business that is easy to forget still exists. Consumer booth in Hall 9.1.",
+    "offers": [
+      "Simulation publishing and licensing",
+      "Boxed retail distribution",
+      "Partner meetings"
+    ],
+    "games": [],
+    "tags": [
+      "publisher",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/aerosoft/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "level-infinite-business",
+    "businessOf": "level-infinite",
+    "name": "Level Infinite — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "D068/B061",
+    "locationConfirmed": true,
+    "dirSlug": "proxima_be",
+    "country": "Singapore",
+    "access": "open",
+    "accessNote": "A 512 m² stand shared with six other publishers — Bohemia Interactive, Digital Extremes, Funcom and Paradox among them. Shared means staffed and walkable, unlike the sealed compounds around it.",
+    "description": "Tencent's publishing label, registered as Proxima Beta and sharing one of the few large *shared* stands in Hall 4.2 rather than a compound of its own. Its consumer booth is in Hall 6.1; the separate 702 m² Tencent Technology stand nearby is closed.",
+    "offers": [
+      "Publishing submissions and partner meetings",
+      "Co-development and investment conversations",
+      "Six other publishers on the same stand"
+    ],
+    "games": [],
+    "tags": [
+      "publisher",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/proxima_be/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "raw-fury-business",
+    "businessOf": "raw-fury",
+    "name": "Raw Fury — business booth",
+    "type": "trade",
+    "hall": "2.1",
+    "booth": "C010",
+    "locationConfirmed": true,
+    "dirSlug": "raw_fury",
+    "country": "Sweden",
+    "access": "mixed",
+    "accessNote": "116 m² in Hall 2.1 — a working stand with meeting space, and the place indies actually pitch them.",
+    "description": "The Swedish indie publisher, on the business side where submissions and signings happen. Its games are playable in the indie half of Hall 10.1.",
+    "offers": [
+      "Publishing submissions and pitches",
+      "Co-development and funding conversations"
+    ],
+    "games": [],
+    "tags": [
+      "publisher",
+      "pitching"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/raw_fury/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "coffee-stain-business",
+    "businessOf": "coffee-stain",
+    "name": "Coffee Stain — business booth",
+    "type": "trade",
+    "hall": "2.1",
+    "booth": "E007",
+    "locationConfirmed": true,
+    "dirSlug": "coffee_stain_publishu-food_association",
+    "country": "Sweden",
+    "access": "mixed",
+    "accessNote": "110 m² in Hall 2.1 — a staffed stand where the meetings are booked but the front is not.",
+    "description": "Coffee Stain Publishing on the trade side: the label behind Satisfactory and Deep Rock Galactic taking submissions. The consumer booth is in Hall 10.1.",
+    "offers": [
+      "Publishing submissions and pitches",
+      "Partner and platform meetings"
+    ],
+    "games": [],
+    "tags": [
+      "publisher",
+      "pitching"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/coffee_stain_publishu-food_association/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "razer-business",
+    "businessOf": "razer",
+    "name": "Razer — business booth",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "B020/C021",
+    "locationConfirmed": true,
+    "dirSlug": "razer_europe",
+    "country": "Germany",
+    "access": "open",
+    "accessNote": "On a 576 m² stand shared with fourteen other exhibitors, so it is an open counter rather than a private booth.",
+    "description": "Razer's European entity on the trade side — retail, distribution and the developer programs behind Chroma and its haptics. The consumer hardware booth is in Hall 10.2.",
+    "offers": [
+      "Retail and distribution meetings",
+      "Developer programs — Chroma, Sensa, Synapse",
+      "Partnership conversations"
+    ],
+    "games": [],
+    "tags": [
+      "hardware",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/razer_europe/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "corsair-business",
+    "businessOf": "corsair",
+    "name": "Corsair — business booth",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "C048",
+    "locationConfirmed": true,
+    "dirSlug": "corsair_memory",
+    "country": "United States",
+    "access": "open",
+    "accessNote": "74 m² and open — the components-and-accessories row of Hall 2.2 is a retail floor, not a meeting corridor.",
+    "description": "Corsair on the trade side, filed under components and accessories: retail, distribution and the Elgato side of the business. The product wall is in Hall 10.1.",
+    "offers": [
+      "Retail and distribution meetings",
+      "Elgato and creator-hardware partnerships",
+      "Component OEM conversations"
+    ],
+    "games": [],
+    "tags": [
+      "hardware",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/corsair_memory/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "samsung-business",
+    "businessOf": "samsung",
+    "name": "Samsung — business booth",
+    "type": "trade",
+    "hall": "2.1",
+    "booth": "D040/E039",
+    "locationConfirmed": true,
+    "dirSlug": "samsungtechwin",
+    "country": "Korea, Republic of",
+    "access": "open",
+    "accessNote": "36 m² — a small open stand, nothing like the Odyssey booth in Hall 9.1.",
+    "description": "Samsung Electronics on the trade side, filed under platforms and components — displays, panels and the retail relationships behind them, rather than the Odyssey monitors you can sit at in Hall 9.1.",
+    "offers": [
+      "Display and panel partnerships",
+      "Retail and distribution meetings"
+    ],
+    "games": [],
+    "tags": [
+      "hardware",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/samsungtechwin/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "bloober-team-business",
+    "businessOf": "bloober-team",
+    "name": "Bloober Team — business booth",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "C026",
+    "locationConfirmed": true,
+    "dirSlug": "bloober_team",
+    "country": "Poland",
+    "access": "open",
+    "accessNote": "72 m² and open — a working stand in the Hall 2.2 services row.",
+    "description": "The Polish horror studio on the business side, taking co-development and publishing meetings. Its games are playable in Hall 10.1.",
+    "offers": [
+      "Co-development and work-for-hire",
+      "Publishing and partner meetings"
+    ],
+    "games": [],
+    "tags": [
+      "studio",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/bloober_team/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "wargaming-business",
+    "businessOf": "wargaming",
+    "name": "Wargaming — business booth",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "D026",
+    "locationConfirmed": true,
+    "dirSlug": "wargaming",
+    "country": "Cyprus",
+    "access": "open",
+    "accessNote": "20 m² — a desk. Wargaming has no consumer booth on the show floor this year, so this is its whole gamescom presence.",
+    "description": "Wargaming's only registered stand at the show, on the trade side in Hall 2.2. Worth knowing, because the guide otherwise lists them as having no show-floor presence at all.",
+    "offers": [
+      "Partnership and licensing meetings",
+      "Publishing conversations"
+    ],
+    "games": [],
+    "tags": [
+      "publisher",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/wargaming/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "scs-software-business",
+    "businessOf": "scs-software",
+    "name": "SCS Software — business booth",
+    "type": "trade",
+    "hall": "4.1",
+    "booth": "A020",
+    "locationConfirmed": true,
+    "dirSlug": "scs_software",
+    "country": "Czech Republic",
+    "access": "open",
+    "accessNote": "On the Czech collective stand in Hall 4.1, shared with thirteen other exhibitors — open and staffed.",
+    "description": "The Euro Truck Simulator studio, here on its country's shared stand rather than a booth of its own. Licensing — real truck brands and cargo liveries — is most of what the trade side is for. The playable booth is in Hall 10.1.",
+    "offers": [
+      "Vehicle and brand licensing",
+      "Partner and distribution meetings",
+      "Thirteen other Czech studios on the same stand"
+    ],
+    "games": [],
+    "tags": [
+      "studio",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/scs_software/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "area-35-business",
+    "businessOf": "area-35",
+    "name": "AREA 35 — business booth",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "B013",
+    "locationConfirmed": true,
+    "dirSlug": "area_35house_of_communicati",
+    "country": "United States",
+    "access": "open",
+    "accessNote": "61 m², open — a stand you can walk up to in the Hall 2.2 row.",
+    "description": "The publisher on its trade stand, taking submissions and distribution meetings. Its games are playable in Hall 10.1.",
+    "offers": [
+      "Publishing submissions",
+      "Distribution and partner meetings"
+    ],
+    "games": [],
+    "tags": [
+      "publisher",
+      "walk-up"
+    ],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/area_35house_of_communicati/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-15"
   }
 ]

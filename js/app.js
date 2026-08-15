@@ -17,6 +17,10 @@ const state = {
   view: "exhibitors",
   sort: "crowd-desc",
   expanded: new Set(),
+  /* card id → which face is showing, set by tapping a plate. Only holds the
+     cards somebody has actually turned over; everything else follows the
+     filters. Cleared when a filter changes — see faceOf(). */
+  flipped: new Map(),
   /* replaced from localStorage in main() — see loadMarks() */
   marks: {
     saved: { exhibitors: new Set(), games: new Set() },
@@ -35,6 +39,12 @@ const state = {
   directoryError: null,
   showDirectory: false,
   directoryLimit: 0,
+  /* "I have a trade badge" — gates what the guide offers, never what it
+     resolves. See the trade section below. */
+  trade: false,
+  showTrade: false,
+  tradeCat: "all",
+  tradeLimit: 0,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -52,6 +62,32 @@ const TYPE_LABELS = {
   experience: "Experiences & Activities",
   media: "Media & Community",
   merch: "Merch & Lifestyle",
+  /* Business-area booths. One type rather than a second classification axis:
+     the chip row is derived from `type`, so this earns its filter for free,
+     and `type === "trade"` is the single predicate that keeps these out of
+     the queue and wristband lists. */
+  trade: "Trade & Business",
+};
+
+/* What a business booth actually is when you walk up to it — the question a
+   queue index answers for a consumer booth. The business halls hold two very
+   different things under one colour: open stands staffed for walk-up
+   conversation, and closed structures that are meeting rooms with a logo on
+   the outside. Which one you are looking at decides whether turning up is
+   worth anything at all, so it is stated per card and never guessed. */
+const TRADE_ACCESS = {
+  open: {
+    label: "Walk-up",
+    note: "An open stand — staffed during business hours, no appointment needed.",
+  },
+  appointment: {
+    label: "By appointment",
+    note: "A closed meeting structure. Entry is by scheduled appointment only; there is nothing to see from the aisle.",
+  },
+  mixed: {
+    label: "Walk-up + meetings",
+    note: "An open counter with closed meeting rooms behind it — you can walk up to ask, but the rooms are booked in advance.",
+  },
 };
 
 const CROWD_LABELS = ["Unknown", "Calm", "Light", "Moderate", "Busy", "Extreme"];
@@ -118,9 +154,8 @@ async function loadData() {
 /* The storage shape and the saved-game rule live in js/marks.js, because
    the hall map reads and writes the same two lists. Everything below
    still calls loadMarks/persistMarks/gameKey by their old names. */
-const { MARK_KEYS, gameKey } = GCMarks;
+const { MARK_KEYS, PREFS_KEY, gameKey } = GCMarks;
 const IT_KEY = "gc2026.itinerary.v1";
-const PREFS_KEY = "gc2026.prefs.v1";
 
 const loadMarks = (mark) => GCMarks.readMarks(mark);
 const persistMarks = (mark) => GCMarks.writeMarks(mark, state.marks[mark]);
@@ -137,10 +172,15 @@ function loadPrefs() {
       hidePlayed: raw.hidePlayed === true,
       planLens: raw.planLens === "hall" ? "hall" : "day",
       showDirectory: raw.showDirectory === true,
+      trade: raw.trade === true,
+      showTrade: raw.showTrade === true,
     };
   } catch {
     /* corrupt entry, or storage blocked entirely (Safari private mode) */
-    return { age: "all", hidePlayed: false, planLens: "day", showDirectory: false };
+    return {
+      age: "all", hidePlayed: false, planLens: "day",
+      showDirectory: false, trade: false, showTrade: false,
+    };
   }
 }
 
@@ -153,6 +193,8 @@ function persistPrefs() {
         hidePlayed: state.hidePlayed,
         planLens: state.planLens,
         showDirectory: state.showDirectory,
+        trade: state.trade,
+        showTrade: state.showTrade,
       })
     );
   } catch {
@@ -268,6 +310,11 @@ function syncMarkUI() {
       el.dataset.saved = String(hasSaved(ex));
       el.dataset.played = String(hasPlayed(ex));
     }
+  });
+  /* The corner plate reports the *other* face's saved state, which a patch of
+     this card's own buttons would otherwise leave stale. */
+  $$("[data-face-other]").forEach((btn) => {
+    btn.dataset.faceSaved = String(isSaved("exhibitor", btn.dataset.faceOther));
   });
 }
 
@@ -397,6 +444,20 @@ function buildShareCodeMap() {
   };
   state.exhibitors.forEach((ex) => claim("exhibitors", ex.id));
   gameKeys.forEach((key) => claim("games", key));
+  /* Trade booths ride the same namespace rather than a parameter of their
+     own: the day plan is positional over this one token list, so a second
+     list could not carry day assignments without duplicating that machinery.
+     Every "dir:" key claimable in the guide is claimed here, including rows a
+     curated card has since taken over — an older link naming one still has to
+     land, and migrateDirAliases folds it onto the card afterwards.
+
+     Adding ~800 identities to ~220 is what the 5-character headroom note
+     below was about, so tools/fetch-directory.py re-checks it at generation
+     time; only a directory that has actually loaded is in here, so a visitor
+     who never turns trade mode on shares exactly what they always did. */
+  (state.directory?.exhibitors || []).forEach((entry) => {
+    if (isTradeEntry(entry)) claim("exhibitors", dirKey(entry.slug));
+  });
   claims.forEach((items, tok) => {
     if (items.length !== 1) return;
     const item = items[0];
@@ -404,6 +465,12 @@ function buildShareCodeMap() {
     shareCodes.tokItem.set(tok, item);
   });
 }
+
+/* Whether a saved exhibitor key names something the visitor can actually see
+   in this build — a curated card or a directory row the guide knows about.
+   Used where a count is shown to a person, so a stale id left in storage
+   never becomes a number nobody can check. */
+const knownExhibitorKey = (id) => shareCodes.exhibitorIds.has(id) || shareCodes.exhibitorTok.has(id);
 
 /* The saved list as sorted {tok, kind, key} entries. The order is the
    contract: `d` and `p` in the payload are positional over exactly this
@@ -840,6 +907,9 @@ function applyIncoming(incoming, mode = "merge") {
       persistItinerary();
     }
   }
+  /* A link written before a booth earned a card carries the old "dir:" key;
+     fold it onto the card now rather than leaving the same booth saved twice. */
+  migrateDirAliases();
   renderBookmarkViews();
   /* Answered. Undo is a correction to a decision already made, not a reason to
      put the offer back on the table. */
@@ -870,6 +940,22 @@ function restoreBookmarks(snapshot) {
     priority: true,
     replace: true,
   });
+}
+
+/* A link can name trade booths the guide has not fetched yet — the recipient
+   may never have turned trade mode on, which is exactly the case the pref is
+   not allowed to break. Unresolved tokens are therefore a reason to go and
+   look before saying "out of date": load the directory, rebuild the
+   vocabulary, and re-read the payload (it is still in sessionStorage) before
+   the offer is made. Offline with a cold cache falls through to the old
+   behaviour, which counts them as no longer in the guide. */
+async function offerIncomingWhenReady(incoming) {
+  if (incoming.unresolved > 0 && !state.directory) {
+    await loadDirectory();
+    const again = pendingIncomingList();
+    if (again) return offerIncoming(again);
+  }
+  return offerIncoming(incoming);
 }
 
 function offerIncoming(incoming) {
@@ -913,7 +999,7 @@ function offerIncoming(incoming) {
   if (incoming.moved) {
     const drops =
       [...state.marks.saved.exhibitors].filter(
-        (id) => shareCodes.exhibitorIds.has(id) && !incoming.exhibitors.has(id)
+        (id) => knownExhibitorKey(id) && !incoming.exhibitors.has(id)
       ).length +
       [...state.marks.saved.games].filter(
         (key) => shareCodes.gameToCode.has(key) && !incoming.games.has(key)
@@ -1323,27 +1409,110 @@ function filtersActive() {
   );
 }
 
+/* ---------- two-faced cards ----------
+
+   Around twenty exhibitors hold a consumer booth *and* a business-hall booth:
+   Capcom demos in 9.1 and takes meetings in 4.2, a fifteen-minute walk apart.
+   They are one company and genuinely two stops, so the guide files them as two
+   cards — the business one carrying `businessOf: "<consumer id>"` — and the
+   grid renders the pair as a single card you can turn over.
+
+   Two cards rather than one card with a nested block, because each face needs
+   everything a card needs (its own location, description, offers, sources,
+   saved state). Keeping them the same shape means a business-only booth like
+   Cloudflare is not a special case, and the planner, map, share links and
+   closed-day warning all keep treating each booth as the separate stop it is. */
+
+function businessFaces() {
+  const map = new Map();
+  for (const ex of state.exhibitors) {
+    if (ex.businessOf) map.set(ex.businessOf, ex);
+  }
+  return map;
+}
+
+/* The other side of this card, if it has one and the visitor is being offered
+   trade content at all. */
+function otherFace(ex) {
+  if (!state.trade) return null;
+  if (ex.businessOf) return state.exhibitors.find((e) => e.id === ex.businessOf) || null;
+  return businessFaces().get(ex.id) || null;
+}
+
+/* Which face the filters ask for. Selecting the trade category, or a business
+   hall, is asking to see that side of every card that has one. */
+function defaultFace(ex) {
+  const face = businessFaces().get(ex.id);
+  if (!face || !state.trade) return ex;
+  if (state.type === "trade") return face;
+  if (state.type !== "all") return ex;
+  if (state.hall !== "all") return String(face.hall) === state.hall ? face : ex;
+  return ex;
+}
+
+/* Which face is showing: the filters' default, unless this card has been
+   turned over by hand. Sorting deliberately reads defaultFace() instead, so
+   turning one card over never makes it jump to a different place in the grid. */
+function faceOf(ex) {
+  const face = businessFaces().get(ex.id);
+  if (!face || !state.trade) return ex;
+  if (state.flipped.has(ex.id)) return state.flipped.get(ex.id) ? face : ex;
+  return defaultFace(ex);
+}
+
+/* Both sides of a card, for the filters that must not make it vanish: asking
+   for Hall 4.2 has to keep Capcom, whose *other* face stands there. */
+const bothFaces = (ex) => {
+  const face = state.trade ? businessFaces().get(ex.id) : null;
+  return face ? [ex, face] : [ex];
+};
+
+const savedEitherFace = (ex) => bothFaces(ex).some(hasSaved);
+
+/* The cards this visitor is being offered at all. Trade cards are discovery,
+   so they hide with the pref off — but only from the grid: a saved one still
+   resolves everywhere, which is what plannedExhibitors() is for. A paired
+   business face is never its own grid entry; it is rendered as the other side
+   of the card it belongs to. */
+function cardPool() {
+  const owners = new Set(state.exhibitors.map((ex) => ex.id));
+  return state.exhibitors.filter((ex) => {
+    if (ex.businessOf && owners.has(ex.businessOf)) return false;
+    return state.trade || ex.type !== "trade";
+  });
+}
+
 function filtered() {
-  const list = state.exhibitors.filter((ex) => {
-    if (state.type !== "all" && ex.type !== state.type) return false;
-    if (state.hall !== "all" && String(ex.hall) !== state.hall) return false;
+  const list = cardPool().filter((ex) => {
+    const faces = bothFaces(ex);
+    /* Category and hall look at both sides, so filtering to Hall 4.2 keeps
+       the card whose business booth stands there and turns it over. */
+    if (state.type !== "all" && !faces.some((f) => f.type === state.type)) return false;
+    if (state.hall !== "all" && !faces.some((f) => String(f.hall) === state.hall)) return false;
+    /* The lineup filters are about games, which only the consumer side has. */
     if (state.age === "only" && !hasAdult(ex)) return false;
     if (state.age === "hide") {
       if (ex.ageRestricted === true) return false;
       if ((ex.games || []).length && !visibleGames(ex).length) return false;
     }
     if (state.playableOnly && !visibleGames(ex).some((g) => g.playable)) return false;
-    if (state.confirmedOnly && !ex.locationConfirmed) return false;
-    if (state.savedOnly && !hasSaved(ex)) return false;
-    if (state.hidePlayed && hasPlayed(ex)) return false;
-    return matchesQuery(ex, state.query);
+    const face = faceOf(ex);
+    if (state.confirmedOnly && !face.locationConfirmed) return false;
+    if (state.savedOnly && !savedEitherFace(ex)) return false;
+    if (state.hidePlayed && faces.every(hasPlayed)) return false;
+    return faces.some((f) => matchesQuery(f, state.query));
   });
 
+  /* Sorted on the filter-driven face, never the hand-flipped one — see
+     faceOf(). */
+  const key = (ex) => defaultFace(ex);
   const bySort = {
-    "crowd-desc": byCrowdDesc,
-    "crowd-asc": (a, b) => (a.crowd || 0) - (b.crowd || 0) || a.name.localeCompare(b.name),
+    "crowd-desc": (a, b) => byCrowdDesc(key(a), key(b)),
+    "crowd-asc": (a, b) =>
+      (key(a).crowd || 0) - (key(b).crowd || 0) || a.name.localeCompare(b.name),
     name: (a, b) => a.name.localeCompare(b.name),
-    hall: (a, b) => hallRank(a.hall) - hallRank(b.hall) || a.name.localeCompare(b.name),
+    hall: (a, b) =>
+      hallRank(key(a).hall) - hallRank(key(b).hall) || a.name.localeCompare(b.name),
   };
   return list.sort(bySort[state.sort] || bySort["crowd-desc"]);
 }
@@ -1393,22 +1562,59 @@ function hallLink(hall, booth, label) {
     aria-label="${esc(`${where} — open the hall map`)}">${esc(label)}</a>`;
 }
 
+/* The way to this card's other booth, notched into the corner of the plate
+   that shows the current one. It sits *on* the plate rather than at the foot
+   of the card because that is the corner your thumb is already near and the
+   one place the swap reads as an exchange rather than a jump.
+
+   The colour is not decoration: #7800FF is the fill Koelnmesse gives the
+   business halls on its own plan, carried through the snapshot into the map's
+   hall washes. So a purple plate means "business area" in the same way here as
+   it does there, and turning the card over teaches that in one gesture.
+
+   The small square carries the other side's saved state, because otherwise a
+   saved trade stop is invisible until you turn the card. */
+function faceSwitch(ex) {
+  const other = otherFace(ex);
+  if (!other) return "";
+  const toTrade = other.type === "trade";
+  const label = toTrade
+    ? `Show the business booth — hall ${other.hall}, trade & media only`
+    : `Back to the public booth — hall ${other.hall}`;
+  /* data-face-other names whose saved state the dot reflects, so syncMarkUI
+     can keep it live: a mark toggle patches buttons in place rather than
+     rebuilding the grid, and without this the dot only appeared on the next
+     full render. */
+  return `<button class="face-switch${toTrade ? " face-switch-trade" : ""}" type="button"
+      data-face="${esc(ex.businessOf || ex.id)}" data-face-to="${toTrade ? "trade" : "public"}"
+      data-face-other="${esc(other.id)}" data-face-saved="${hasSaved(other)}"
+      title="${esc(label)}" aria-label="${esc(label)}">
+    <span class="face-hall" aria-hidden="true">${esc(other.hall || "?")}</span>
+    <span class="face-saved" aria-hidden="true"></span>
+  </button>`;
+}
+
 /* The hall number is the one thing you read while walking, so it gets
    set like a wayfinding sign rather than tucked into a badge. */
 function hallMarker(ex) {
+  /* Every return goes through wrap(), so a card with a business booth still
+     offers the way to it even when this side has no location at all —
+     Wargaming has no consumer hall and a stand in 2.2. */
+  const trade = ex.type === "trade" ? " hall-marker-trade" : "";
+  const wrap = (plate) => `<div class="hall-plate${trade}">${plate}${faceSwitch(ex)}</div>`;
   if ((ex.tags || []).includes("not exhibiting")) {
-    return `<div class="hall-marker" data-state="absent">
+    return wrap(`<div class="hall-marker" data-state="absent">
       <span class="hall-kicker">Status</span>
       <span class="hall-num">Absent</span>
       <span class="hall-booth">no booth</span>
-    </div>`;
+    </div>`);
   }
   if (!ex.hall) {
-    return `<div class="hall-marker" data-state="tba">
+    return wrap(`<div class="hall-marker" data-state="tba">
       <span class="hall-kicker">Hall</span>
       <span class="hall-num">TBA</span>
       <span class="hall-booth">not announced</span>
-    </div>`;
+    </div>`);
   }
   const confirmed = !!ex.locationConfirmed;
   const where = confirmed ? "Officially confirmed location" : "Best guess — not officially confirmed";
@@ -1418,12 +1624,14 @@ function hallMarker(ex) {
   const state_ = `data-state="${confirmed ? "confirmed" : "unconfirmed"}"`;
   /* The plate is already the "where" of the card, so it is also the way
      to the map — no second control competing for the same corner. */
-  if (!hasMap(ex.hall)) return `<div class="hall-marker" ${state_} title="${where}">${inner}</div>`;
-  return `<a class="hall-marker" ${state_} href="${esc(mapLink(ex.hall, ex.booth))}"
+  if (!hasMap(ex.hall)) {
+    return wrap(`<div class="hall-marker" ${state_} title="${where}">${inner}</div>`);
+  }
+  return wrap(`<a class="hall-marker" ${state_} href="${esc(mapLink(ex.hall, ex.booth))}"
       title="${where} — open the hall map"
       aria-label="${esc(`Hall ${ex.hall}${ex.booth ? `, booth ${ex.booth}` : ""} — open the hall map`)}">
     ${inner}<span class="hall-map-cue" aria-hidden="true">Map →</span>
-  </a>`;
+  </a>`);
 }
 
 function ageBadge(status = "expected", label = "18+", extraClass = "") {
@@ -1481,6 +1689,36 @@ function footLinks(ex) {
   return official || sources ? `<div class="foot-links">${official}${sources}</div>` : "";
 }
 
+/* The trade card's answer to the Lineup block. A business booth has no games
+   to list, so what it is *for* takes that space — and the access line takes
+   the queue meter's, because "can I just walk up" is the equivalent question. */
+function tradeBlocks(ex) {
+  const offers = ex.offers || [];
+  const access = TRADE_ACCESS[ex.access];
+  const list = offers.length
+    ? `<div class="block">
+        <div class="block-head">
+          <span>Offers</span>
+          <span>${offers.length} thing${offers.length === 1 ? "" : "s"}</span>
+        </div>
+        <ul class="offers">${offers.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
+      </div>`
+    : "";
+  /* The card's own note always wins. Failing that, only the two states that
+     need explaining carry the default: "walk-up" says everything a sentence
+     would, and repeating the same line down twenty open stands turns the one
+     line that matters — the closed ones — into wallpaper. */
+  const note = ex.accessNote || (ex.access === "open" ? "" : access?.note) || "";
+  const line = access
+    ? `<div class="trade-access" data-access="${esc(ex.access)}">
+        <span class="row-label">Access</span>
+        <span class="trade-access-val" title="${esc(access.note)}">${esc(access.label)}</span>
+        ${note ? `<span class="trade-access-note">${esc(note)}</span>` : ""}
+      </div>`
+    : "";
+  return { list, line };
+}
+
 function card(ex) {
   const games = visibleGames(ex);
   const isOpen = state.expanded.has(ex.id);
@@ -1497,12 +1735,16 @@ function card(ex) {
       : "";
   const crowd = ex.crowd || 0;
   const playableCount = games.filter((g) => g.playable).length;
+  const isTrade = ex.type === "trade";
+  const trade = isTrade ? tradeBlocks(ex) : null;
 
-  return `<article class="card" data-id="${esc(ex.id)}" data-saved="${hasSaved(ex)}" data-played="${hasPlayed(ex)}">
+  return `<article class="card${isTrade ? " card-trade" : ""}" data-id="${esc(ex.id)}" data-saved="${hasSaved(ex)}" data-played="${hasPlayed(ex)}">
     <div class="exh-head">
       ${hallMarker(ex)}
       <div class="exh-id">
-        <span class="overline">${esc(TYPE_LABELS[ex.type] || ex.type)}</span>
+        <span class="overline">${esc(TYPE_LABELS[ex.type] || ex.type)}${
+          isTrade && ex.country ? ` · ${esc(ex.country)}` : ""
+        }</span>
         <h3>${esc(ex.name)}${hasAdult(ex) && !games.length && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</h3>
       </div>
       ${markButton("played", "exhibitor", ex.id, ex.name)}
@@ -1522,18 +1764,22 @@ function card(ex) {
               <ul class="games">${shown.map(gameRow).join("")}</ul>
               ${moreBtn}
             </div>`
-          : ""
+          : trade?.list || ""
       }
       ${ex.tags?.length ? `<div class="tag-row">${ex.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
     </div>
     <div class="card-foot">
-      <div class="queue" data-level="${crowd}">
+      ${
+        isTrade
+          ? trade.line
+          : `<div class="queue" data-level="${crowd}">
         <span class="row-label">Queue index</span>
         <span class="meter" data-level="${crowd}" role="img"
           aria-label="Queue index ${crowd} of 5"
           title="${esc(ex.crowdNote || "")}"><i></i><i></i><i></i><i></i><i></i></span>
         <span class="queue-val">${crowd ? `${crowd}/5` : "—"} ${esc(CROWD_LABELS[crowd] || "?")}</span>
-      </div>
+      </div>`
+      }
       ${ex.visitAdvice ? `<p class="advice"><span class="advice-label">Plan</span>${esc(ex.visitAdvice)}</p>` : ""}
       ${footLinks(ex)}
     </div>
@@ -1543,7 +1789,9 @@ function card(ex) {
 function renderExhibitors() {
   const list = filtered();
   keepingFocus($("#exhibitor-grid"), () => {
-    $("#exhibitor-grid").innerHTML = list.map(card).join("");
+    /* The grid iterates owner cards; each one renders whichever of its two
+       faces is showing. */
+    $("#exhibitor-grid").innerHTML = list.map((ex) => card(faceOf(ex))).join("");
   });
   $("#exhibitor-grid").classList.toggle("hidden", list.length === 0);
   $("#no-results").classList.toggle("hidden", list.length > 0);
@@ -1553,7 +1801,7 @@ function renderExhibitors() {
       : "Nothing matches — try clearing filters.";
   $("#reset-filters").classList.toggle("hidden", !filtersActive());
 
-  const total = state.exhibitors.length;
+  const total = cardPool().length;
   $("#result-count").textContent =
     list.length === total ? `${total} exhibitors` : `${list.length} / ${total} exhibitors`;
   renderFilterSummary();
@@ -1566,8 +1814,10 @@ function renderExhibitors() {
     })
   );
 
-  /* The search box and hall chips filter the directory as well, so it re-renders
-     with the grid rather than being wired to each control separately. */
+  /* The search box and hall chips filter both lower lists as well, so they
+     re-render with the grid rather than being wired to each control
+     separately. Trade first: it sits above the directory on the page. */
+  renderTrade();
   renderDirectory();
 }
 
@@ -1590,7 +1840,10 @@ function renderFilterSummary() {
 }
 
 function renderFilters() {
-  const types = [...new Set(state.exhibitors.map((e) => e.type))];
+  const types = [...new Set(cardPool().map((e) => e.type))];
+  /* A type chip pointing at cards that just became invisible would answer
+     with an empty grid, so the filter follows the pool it filters. */
+  if (state.type !== "all" && !types.includes(state.type)) state.type = "all";
   $("#type-filters").innerHTML =
     `<button class="chip ${state.type === "all" ? "active" : ""}" type="button" data-type="all">All</button>` +
     types
@@ -1602,25 +1855,42 @@ function renderFilters() {
   $$("#type-filters .chip").forEach((chip) =>
     chip.addEventListener("click", () => {
       state.type = chip.dataset.type;
+      /* A new filter asks for a face of its own, so hand-flipped cards go
+         back to following it — see faceOf(). */
+      state.flipped.clear();
       renderFilters();
       renderExhibitors();
     })
   );
 
-  const halls = [...new Set(state.exhibitors.filter((e) => e.hall).map((e) => String(e.hall)))].sort(
-    (a, b) => parseFloat(a) - parseFloat(b)
-  );
+  /* The curated cards decide which halls exist here — plus, in trade mode,
+     the business halls the directory puts booths in. A hall chip nobody can
+     enter is noise for the consumer majority and the whole point for a trade
+     visitor, which is exactly what the pref is for. */
+  const hallSet = new Set(cardPool().filter((e) => e.hall).map((e) => String(e.hall)));
+  if (state.trade) {
+    for (const entry of state.directory?.exhibitors || []) {
+      for (const s of tradeStands(entry)) hallSet.add(String(s.hall));
+    }
+  }
+  const halls = [...hallSet].sort((a, b) => parseFloat(a) - parseFloat(b));
   $("#hall-filters").innerHTML =
     `<button class="chip hall-chip ${state.hall === "all" ? "active" : ""}" type="button" data-hall="all">All</button>` +
     halls
-      .map(
-        (h) =>
-          `<button class="chip hall-chip ${state.hall === h ? "active" : ""}" type="button" data-hall="${esc(h)}">${esc(h)}</button>`
-      )
+      .map((h) => {
+        const business = isBusinessHall(h);
+        const label = business ? `Hall ${h}, business area, trade & media only` : `Hall ${h}`;
+        return `<button class="chip hall-chip${business ? " hall-chip-trade" : ""} ${
+          state.hall === h ? "active" : ""
+        }" type="button" data-hall="${esc(h)}" aria-label="${esc(label)}"${
+          business ? ` title="${esc("Business area — trade & media badge only")}"` : ""
+        }>${esc(h)}</button>`;
+      })
       .join("");
   $$("#hall-filters .chip").forEach((chip) =>
     chip.addEventListener("click", () => {
       state.hall = chip.dataset.hall;
+      state.flipped.clear();
       renderFilters();
       renderExhibitors();
     })
@@ -1665,10 +1935,12 @@ function renderFilters() {
 const DIRECTORY_URL = "data/directory.json";
 const DIRECTORY_PAGE = 200;
 
-/* Trade-only halls. The curated cards never reach these, so the hall chips
-   don't list them, but the raw directory is full of them and a visitor holding
-   a consumer ticket cannot get in. */
-const isBusinessHall = (hall) => parseFloat(hall) < 5;
+/* The business area is halls 2–4 — gamescom's own boundary, and the halls
+   whose plans the map draws in the official business colour. A consumer
+   ticket does not open them and they close after Friday. Shared with the map
+   through js/marks.js: it decides which rows are saveable as trade booths,
+   so the two pages have to draw the line in the same place. */
+const { isBusinessHall } = GCMarks;
 
 /* The directory writes a shared booth "F010+E019", our cards write
    "F010/E019", and either side may list the halves in either order. Sorting the
@@ -1701,7 +1973,10 @@ function curatedByBooth() {
     const key = boothKey(ex.hall, booth);
     if (key && !map.has(key)) map.set(key, ex);
   };
-  for (const ex of state.exhibitors) {
+  /* cardPool, not every card: with trade mode off a consumer must not be
+     told their Full-directory row stands "at Spanish games pavilion (ICEX)",
+     which is a thing only trade mode is supposed to know about. */
+  for (const ex of cardPool()) {
     claim(ex, ex.booth);
     const stands = String(ex.booth || "").split(",");
     if (stands.length > 1) for (const stand of stands) claim(ex, stand);
@@ -1712,8 +1987,11 @@ function curatedByBooth() {
 let directoryRequest = null;
 let directorySignature = "";
 
+/* Always a promise, so a caller that needs the data before it can answer —
+   the share decoder — can simply await it. */
 function loadDirectory() {
-  if (state.directory || directoryRequest) return directoryRequest;
+  if (state.directory) return Promise.resolve();
+  if (directoryRequest) return directoryRequest;
   directoryRequest = fetch(`${DIRECTORY_URL}?v=${Date.now()}`)
     .then((r) => {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -1722,6 +2000,13 @@ function loadDirectory() {
     .then((payload) => {
       state.directory = payload;
       state.directoryError = null;
+      /* Everything keyed off the directory is stale the moment it lands: the
+         slug index, the share vocabulary that now knows 800 more identities,
+         and the hall chips that can now offer the business halls. */
+      directoryIndexCache = null;
+      standShareCache = null;
+      tradeRecordCache.clear();
+      buildShareCodeMap();
     })
     .catch((err) => {
       state.directoryError = err.message || "failed to load";
@@ -1729,6 +2014,13 @@ function loadDirectory() {
     .finally(() => {
       directoryRequest = null;
       renderDirectory();
+      if (state.directory) {
+        renderTrade();
+        renderFilters();
+        renderMarkControls();
+        renderPriority();
+        renderPlan();
+      }
     });
   return directoryRequest;
 }
@@ -1756,9 +2048,26 @@ function directoryMatches() {
   });
 }
 
-function directoryRow(entry, byBooth) {
+/* The official profile is the one link a raw directory row can offer — it is
+   the exhibitor speaking for itself, where the row is only a booth number. */
+function profileUrl(entry) {
   const base = state.directory?.profileBase || "";
-  const stands = (entry.stands || [])
+  return base && entry.slug ? `${base}${entry.slug}/` : "";
+}
+
+function profileLink(entry) {
+  const href = profileUrl(entry);
+  return href
+    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(entry.name)}<span aria-hidden="true"> ↗</span><span class="sr-only">, official directory entry, opens in a new tab</span></a>`
+    : esc(entry.name);
+}
+
+/* Shared by the Full directory and the trade list, so a stand reads the same
+   in both: the same amber plate for the business halls, the same map link,
+   the same "at <host>" when a bigger booth is standing on it. `self` is the
+   row's own name, so a card never labels itself as its own neighbour. */
+function standChips(stands, byBooth, self = "") {
+  return (stands || [])
     .map((s) => {
       const host = byBooth.get(boothKey(s.hall, s.booth));
       const business = isBusinessHall(s.hall);
@@ -1768,7 +2077,7 @@ function directoryRow(entry, byBooth) {
          neighbour, not a place. */
       const where = `<span class="dir-stand-where"><b>${esc(s.hall)}</b>${
         s.booth ? ` · ${esc(s.booth)}` : ""
-      }</span>${host && host.name !== entry.name ? `<i> at ${esc(host.name)}</i>` : ""}`;
+      }</span>${host && host.name !== self ? `<i> at ${esc(host.name)}</i>` : ""}`;
       const cls = `dir-stand${business ? " dir-stand-trade" : ""}`;
       /* The business halls are drawn now, so their chips link like any
          other — the map opens them under a trade-only banner, which is a
@@ -1787,12 +2096,12 @@ function directoryRow(entry, byBooth) {
         )}">${where}</a>`;
     })
     .join("");
-  const href = base && entry.slug ? `${base}${entry.slug}/` : "";
-  const name = href
-    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(entry.name)}<span aria-hidden="true"> ↗</span><span class="sr-only">, official directory entry, opens in a new tab</span></a>`
-    : esc(entry.name);
+}
+
+function directoryRow(entry, byBooth) {
+  const stands = standChips(entry.stands, byBooth, entry.name);
   return `<li class="dir-row">
-    <span class="dir-name">${name}</span>
+    <span class="dir-name">${profileLink(entry)}</span>
     <span class="dir-country">${esc(entry.country || "")}</span>
     <span class="dir-stands">${stands || '<span class="dir-stand dir-stand-tba">no booth listed</span>'}</span>
   </li>`;
@@ -1883,9 +2192,410 @@ function renderDirectory() {
   }
 }
 
+/* ---------- trade exhibitors ----------
+
+   Halls 2.1–4.2 are the business area: ~800 exhibitors a consumer ticket
+   cannot reach, and the guide walked past all of them. For a visitor holding
+   a trade or media badge that is most of their show, so they become saveable,
+   plannable stops like any booth — see docs/PLAN-trade-exhibitors.md.
+
+   Two rules hold the whole design together:
+
+   1. The `trade` pref gates **discovery**, never **resolution**. It decides
+      whether the guide offers trade content. It never decides whether a trade
+      booth you already saved resolves — one tapped on the map or imported
+      from a link shows up in your plan with the setting off, because a saved
+      thing vanishing because of a setting is the one behaviour nothing here
+      is allowed to have.
+   2. A trade booth has exactly one identity wherever it came from. Directory
+      rows enter the existing saved set as "dir:<slug>"; a curated card that
+      claims that row (`dirSlug`) takes the identity over, and the stored key
+      is migrated on sight. One booth, one save, one stop. */
+
+/* The key shape is shared with the map through js/marks.js — a booth saved
+   there has to be the same item here. */
+const { dirKey, isDirKey, dirSlug } = GCMarks;
+
+const TRADE_PAGE = 200;
+
+/* A directory row belongs to the trade list when it stands in the business
+   area at all. Rows with a foot in both (a publisher with a business booth
+   *and* an entertainment stand) are trade rows too — the business stand is
+   the one a consumer ticket cannot reach, and it is why they are listed. */
+const tradeStands = (entry) => (entry.stands || []).filter((s) => isBusinessHall(s.hall));
+const isTradeEntry = (entry) => tradeStands(entry).length > 0;
+
+let directoryIndexCache = null;
+const tradeRecordCache = new Map();
+
+function directoryIndex() {
+  if (!directoryIndexCache) {
+    directoryIndexCache = new Map(
+      (state.directory?.exhibitors || []).map((entry) => [entry.slug, entry])
+    );
+  }
+  return directoryIndexCache;
+}
+
+/* slug → the curated card that claims it. Written by hand as `dirSlug` on a
+   trade card, which is what stops one booth appearing as both a card and a
+   directory row. */
+function curatedByDirSlug() {
+  const map = new Map();
+  for (const ex of state.exhibitors) if (ex.dirSlug) map.set(ex.dirSlug, ex);
+  return map;
+}
+
+/* A directory row dressed as the exhibitor-shaped record everything
+   downstream expects — the planner, the route, the map and the .ics export
+   all read `hall`/`booth`/`name`/`id` and nothing else. Memoised so a stop
+   keeps one identity across re-renders. */
+function tradeRecord(entry) {
+  const cached = tradeRecordCache.get(entry.slug);
+  if (cached) return cached;
+  const stands = tradeStands(entry);
+  const first = stands[0] || {};
+  const record = {
+    id: dirKey(entry.slug),
+    name: entry.name,
+    type: "trade",
+    trade: true,
+    country: entry.country || "",
+    hall: first.hall || null,
+    booth: first.booth || "",
+    stands,
+    cats: entry.cats || [],
+    officialUrl: profileUrl(entry),
+    /* No lineup, no queue forecast, no crowd note: a business booth runs on
+       appointments, and inventing numbers for it would poison the one list
+       whose honesty matters most. */
+    games: [],
+  };
+  tradeRecordCache.set(entry.slug, record);
+  return record;
+}
+
+/* The single resolver for a saved exhibitor key, whichever kind it is. Every
+   downstream lookup goes through this instead of growing a second code path:
+   a curated card by id, a curated card that claims the slug, or a trade
+   record built from the directory. Null while the directory is still
+   loading — callers treat that as "not yet", not as "gone". */
+function resolveSavedExhibitor(key) {
+  const curated = state.exhibitors.find((ex) => ex.id === key);
+  if (curated) return curated;
+  if (!isDirKey(key)) return null;
+  const slug = dirSlug(key);
+  const claimed = curatedByDirSlug().get(slug);
+  if (claimed) return claimed;
+  const entry = directoryIndex().get(slug);
+  return entry ? tradeRecord(entry) : null;
+}
+
+/* The curated cards plus every saved trade booth — the population the plan
+   board, the hall route and the day filter iterate. Trade booths are in it
+   only when saved, because the guide has no editorial opinion about the 800
+   it did not card. */
+function plannedExhibitors() {
+  const list = [...state.exhibitors];
+  const seen = new Set(list.map((ex) => ex.id));
+  state.marks.saved.exhibitors.forEach((key) => {
+    if (!isDirKey(key)) return;
+    const ex = resolveSavedExhibitor(key);
+    if (ex && !seen.has(ex.id)) {
+      seen.add(ex.id);
+      list.push(ex);
+    }
+  });
+  return list;
+}
+
+/* Is any saved key a directory row? Then the directory has to load whatever
+   the pref says — rule 1 above. */
+const hasSavedTrade = () =>
+  [...state.marks.saved.exhibitors].some(isDirKey) ||
+  [...state.marks.played.exhibitors].some(isDirKey);
+
+/* A saved `dir:` key with no directory loaded is data that has not arrived,
+   not an item that went away. Telling someone "nothing you saved is in the
+   lineup" there would be a lie about their own list. */
+const tradeDataPending = () => hasSavedTrade() && !state.directory;
+const TRADE_PENDING_COPY =
+  "Your list has trade booths from the business halls. That data needs one online load before they can be planned — it is cached from then on.";
+
+/* A `dir:` key saved before a card claimed that row — from the map, from a
+   share link, or from a build that predates the card — is the same booth
+   under an older name. Rewriting it on sight keeps one booth from holding two
+   saves, and carries its day assignment across with it. */
+function migrateDirAliases() {
+  const byDirSlug = curatedByDirSlug();
+  if (!byDirSlug.size) return;
+  let moved = 0;
+  for (const mark of ["saved", "played"]) {
+    for (const kind of ["exhibitors"]) {
+      const set = state.marks[mark][kind];
+      for (const key of [...set]) {
+        if (!isDirKey(key)) continue;
+        const card = byDirSlug.get(dirSlug(key));
+        if (!card) continue;
+        set.delete(key);
+        set.add(card.id);
+        moved += 1;
+        const days = state.itinerary.exhibitors;
+        if (days.has(key)) {
+          if (!days.has(card.id)) days.set(card.id, days.get(key));
+          days.delete(key);
+        }
+      }
+      if (moved) persistMarks(mark);
+    }
+  }
+  if (moved) persistItinerary();
+}
+
+/* How many exhibitors list each business stand.
+
+   This is the most useful thing the business halls tell you about themselves,
+   and it is a count rather than a judgement. The two shapes are stark: 184
+   stands have a single occupant, while 53 shared stands carry 634 of the 821
+   trade exhibitors — because a shared stand is a national or regional
+   pavilion, twenty desks under one roof, and a large stand with one occupant
+   and no co-exhibitors is a publisher's meeting building.
+
+   The row shows the number. What it means is said once in the section note,
+   and per booth only on a curated card, where it can be sourced. */
+const TRADE_SHARED_MIN = 5;
+
+let standShareCache = null;
+
+function standShare() {
+  if (standShareCache) return standShareCache;
+  const counts = new Map();
+  for (const entry of state.directory?.exhibitors || []) {
+    for (const s of entry.stands || []) {
+      if (!isBusinessHall(s.hall)) continue;
+      const key = boothKey(s.hall, s.booth);
+      if (key) counts.set(key, (counts.get(key) || 0) + 1);
+    }
+  }
+  standShareCache = counts;
+  return counts;
+}
+
+/* The largest count across an exhibitor's business stands — a studio sharing
+   a pavilion and holding a desk elsewhere is on a pavilion. */
+function sharedWith(entry) {
+  const counts = standShare();
+  let most = 1;
+  for (const s of tradeStands(entry)) most = Math.max(most, counts.get(boothKey(s.hall, s.booth)) || 1);
+  return most;
+}
+
+/* Which product groups are worth offering as filters: the ones the rows on
+   screen actually carry, named from the directory's own table. */
+function tradeGroups(entries) {
+  const groups = state.directory?.groups || {};
+  const counts = new Map();
+  for (const entry of entries) {
+    for (const id of entry.cats || []) {
+      if (groups[id]) counts.set(id, (counts.get(id) || 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .map(([id, n]) => ({ id, label: groups[id], n }))
+    .sort((a, b) => b.n - a.n || a.label.localeCompare(b.label));
+}
+
+/* Search and the hall chips drive this list exactly as they drive the Full
+   directory; the category chips are this section's own. Rows claimed by a
+   curated card drop out — the card is the better answer and carries the save. */
+function tradeMatches({ category = true } = {}) {
+  const claimed = curatedByDirSlug();
+  const q = state.query.trim().toLowerCase();
+  const terms = q ? q.split(/\s+/) : [];
+  const groups = state.directory?.groups || {};
+  return (state.directory?.exhibitors || []).filter((entry) => {
+    if (!isTradeEntry(entry) || claimed.has(entry.slug)) return false;
+    if (state.hall !== "all" && !(entry.stands || []).some((s) => s.hall === state.hall)) return false;
+    if (category && state.tradeCat !== "all" && !(entry.cats || []).includes(state.tradeCat)) {
+      return false;
+    }
+    if (!terms.length) return true;
+    const hay = [
+      entry.name,
+      entry.country,
+      ...(entry.stands || []).map((s) => `hall ${s.hall} ${s.booth}`),
+      ...(entry.cats || []).map((id) => groups[id] || ""),
+    ]
+      .join(" ")
+      .toLowerCase();
+    return terms.every((term) => hay.includes(term));
+  });
+}
+
+function tradeRow(entry, byBooth) {
+  const groups = state.directory?.groups || {};
+  const key = dirKey(entry.slug);
+  const cats = (entry.cats || [])
+    .map((id) => groups[id])
+    .filter(Boolean)
+    .map((label) => `<span class="tag">${esc(label)}</span>`)
+    .join("");
+  const share = sharedWith(entry);
+  /* Five, not three. At three the number is just as true but means something
+     else entirely — CurseForge shares a stand with Overwolf, its own parent,
+     which is a company and its subsidiary rather than a collective. The
+     pavilions this is worth flagging run from a dozen exhibitors to seventy,
+     so the threshold sits above the noise, and the label states the count
+     without telling you what to conclude from it. */
+  const shared = share >= TRADE_SHARED_MIN
+    ? `<span class="trade-shared" title="${esc(
+        `${share} exhibitors are listed on this stand — a collective, usually a national or regional pavilion`
+      )}">shared · ${share}</span>`
+    : "";
+  return `<li class="dir-row trade-row" data-saved="${isSaved("exhibitor", key)}">
+    <span class="dir-name">${profileLink(entry)}</span>
+    <span class="dir-country">${esc(entry.country || "")}</span>
+    <span class="dir-stands">${standChips(entry.stands, byBooth, entry.name)}${shared}</span>
+    <span class="trade-tags">${cats}</span>
+    ${markButton("saved", "exhibitor", key, entry.name)}
+  </li>`;
+}
+
+let tradeSignature = "";
+
+/* The closed state of the section is the feature's front door: it explains
+   what the business area is and offers the one switch, rather than hiding a
+   toggle in a settings row the consumer majority would have to read past. */
+function renderTradeGate() {
+  const gate = $("#trade-gate");
+  if (!gate) return;
+  gate.hidden = state.trade;
+}
+
+function renderTrade() {
+  const section = $("#trade");
+  if (!section) return; // stale cached shell — see the note in renderPlan
+  const count = $("#trade-count");
+  const note = $("#trade-note");
+  const list = $("#trade-list");
+  const cats = $("#trade-cat-filters");
+  renderTradeGate();
+
+  if (!state.trade) {
+    count.textContent = "";
+    note.textContent = "";
+    list.innerHTML = "";
+    cats.innerHTML = "";
+    cats.classList.add("hidden");
+    return;
+  }
+
+  if (state.directoryError) {
+    count.textContent = "";
+    note.textContent = `Couldn't load the trade list (${state.directoryError}). It needs one online load before it works offline.`;
+    list.innerHTML = "";
+    cats.classList.add("hidden");
+    return;
+  }
+  if (!state.directory) {
+    count.textContent = "";
+    note.textContent = "Loading the business halls…";
+    list.innerHTML = "";
+    cats.classList.add("hidden");
+    return;
+  }
+
+  /* Same rule as the directory: a lifted cap belongs to the search that
+     lifted it, and saving a booth re-renders this list without collapsing it. */
+  const signature = `${state.query}|${state.hall}|${state.tradeCat}`;
+  if (signature !== tradeSignature) {
+    tradeSignature = signature;
+    state.tradeLimit = TRADE_PAGE;
+  }
+
+  /* The chip row is built from what the query and hall leave standing, not
+     from what the category chip itself leaves — otherwise picking one chip
+     would delete all the others. */
+  const inScope = tradeMatches({ category: false });
+  const offered = tradeGroups(inScope);
+  if (state.tradeCat !== "all" && !offered.some((g) => g.id === state.tradeCat)) {
+    state.tradeCat = "all";
+    tradeSignature = `${state.query}|${state.hall}|all`;
+  }
+  cats.classList.toggle("hidden", offered.length < 2);
+  cats.innerHTML = offered.length < 2 ? "" : [
+    `<button class="chip ${state.tradeCat === "all" ? "active" : ""}" type="button"
+      data-trade-cat="all" aria-pressed="${state.tradeCat === "all"}">All</button>`,
+    ...offered.map(
+      (g) => `<button class="chip ${state.tradeCat === g.id ? "active" : ""}" type="button"
+        data-trade-cat="${esc(g.id)}" aria-pressed="${state.tradeCat === g.id}"
+        title="${esc(`${g.n} exhibitor${g.n === 1 ? "" : "s"}`)}">${esc(g.label)}</button>`
+    ),
+  ].join("");
+
+  const matches = tradeMatches();
+  const shown = matches.slice(0, state.tradeLimit || TRADE_PAGE);
+  const rest = matches.length - shown.length;
+  const byBooth = curatedByBooth();
+  const total = (state.directory.exhibitors || []).filter(isTradeEntry).length;
+
+  count.textContent =
+    matches.length === total ? `${total} booths` : `${matches.length} / ${total} booths`;
+
+  const bits = [
+    "The business area (halls 2–4), where the industry does its trading. A trade or media badge opens these halls; a consumer ticket does not, and they close after Friday.",
+    "Almost all of it is walk-up: a dozen or more companies share each national and regional pavilion, and the small stands in halls 2.1 and 2.2 are counters you can just talk to. Only about twenty booths — the big single-occupant compounds in Hall 4.2 — are closed rooms you need an appointment for. The “shared” count marks the collectives; the cards above say what a booth is actually for.",
+    "Save a booth and it plans like any other stop.",
+  ];
+  if (!matches.length) bits.push("Nothing here matches the current search, hall or category.");
+  note.innerHTML = `${bits.map(esc).join(" ")} <button class="linkish" id="trade-off" type="button">Turn trade exhibitors off</button>`;
+  $("#trade-off").addEventListener("click", () => setTrade(false));
+
+  keepingFocus(list, () => {
+    list.innerHTML = matches.length
+      ? `<ol class="dir-list trade-list">${shown.map((e) => tradeRow(e, byBooth)).join("")}</ol>` +
+        (rest > 0 ? `<button class="reset dir-more" type="button">Show ${rest} more</button>` : "")
+      : "";
+  });
+
+  const more = list.querySelector(".dir-more");
+  if (more) {
+    more.addEventListener("click", () => {
+      state.tradeLimit = matches.length;
+      renderTrade();
+    });
+  }
+}
+
+/* Turning it on is also the first fetch, which is what warms the offline
+   cache — the same one-online-load contract the directory already states. */
+function setTrade(on) {
+  if (state.trade === on) return;
+  state.trade = on;
+  if (on) {
+    state.showTrade = true;
+    const section = $("#trade");
+    if (section) section.open = true;
+  }
+  persistPrefs();
+  loadDirectory();
+  renderTrade();
+  renderFilters();
+  renderExhibitors();
+  renderPriority();
+  renderPlan();
+}
+
 /* ---------- planner ---------- */
 
 const isTradeDay = (d) => /trade|media|business/i.test(d.access);
+
+/* The business halls run Wednesday to Friday and are shut for the weekend —
+   the one fact about them a plan can get wrong in a way that costs a visitor
+   a wasted trip across the grounds. Read off the day's own `business` entry
+   in data/event.json rather than inferred here, so a schedule change is a
+   data edit like every other. */
+const isBusinessOpenDay = (d) => d?.business !== "closed";
 
 /* Shared by the day board (section 01) and the itinerary group headers, so
    the two renderings of a day can never drift apart. */
@@ -1905,7 +2615,7 @@ function dayHeaderInner(d) {
 function itineraryItems() {
   const exhibitors = [...state.marks.saved.exhibitors]
     .map((key) => {
-      const ex = state.exhibitors.find((item) => item.id === key);
+      const ex = resolveSavedExhibitor(key);
       return ex ? { kind: "exhibitor", key, name: ex.name, ex } : null;
     })
     .filter(Boolean);
@@ -1964,32 +2674,58 @@ function itineraryItemLocationHtml(item) {
           .join(" · ")
       : "Booth TBA";
   }
+  const where = hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex));
+  /* A business booth has no queue to forecast, and "Queue unknown" there
+     reads as "we didn't check" rather than "this is not that kind of stop".
+     Its badge requirement is the useful thing to say in that space. */
+  if (inBusinessArea(item.ex)) return `${where} · Trade badge`;
   const crowd = item.ex.crowd || 0;
-  return (
-    hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex)) +
-    ` · Queue ${esc(crowd ? `${crowd}/5 ${CROWD_LABELS[crowd] || "?"}` : "unknown")}`
-  );
+  return `${where} · Queue ${esc(crowd ? `${crowd}/5 ${CROWD_LABELS[crowd] || "?"}` : "unknown")}`;
 }
+
+/* Does this stop stand in the business area? Asked of the location, not of
+   the card's `type`: a publisher card sitting in hall 4.2 is behind the same
+   closed doors on Saturday as any directory row. */
+const inBusinessArea = (ex) =>
+  Boolean(ex) &&
+  (isBusinessHall(ex.hall) || (ex.stands || []).some((s) => isBusinessHall(s.hall)));
+
+const itemInBusinessArea = (item) => item.kind === "exhibitor" && inBusinessArea(item.ex);
+
+const dayByDate = (date) => (state.event?.days || []).find((d) => d.date === date) || null;
+
+/* Warned, never blocked: the guide's job is to be honest, not to enforce a
+   plan. Someone may well walk past a stand on Saturday to photograph it. */
+const stopOnClosedDay = (item) =>
+  itemInBusinessArea(item) && !isBusinessOpenDay(dayByDate(assignedDay(item.kind, item.key)));
 
 function itineraryDayChips(item) {
   const current = assignedDay(item.kind, item.key);
   const label = `Assign ${item.name} to a day`;
+  const business = itemInBusinessArea(item);
   return `<span class="it-days" role="group" aria-label="${esc(label)}">${(state.event.days || [])
     .map((d) => {
       const active = current === d.date;
       const trade = isTradeDay(d);
+      const shut = business && !isBusinessOpenDay(d);
       const action = active ? `Remove from ${d.label}` : `Assign to ${d.label}`;
-      const title = trade ? `${action} (trade & media only)` : action;
+      const title = shut
+        ? `${action} — the business area is closed on ${d.label}`
+        : trade
+          ? `${action} (trade & media only)`
+          : action;
       return `<button class="day-chip${active ? " active" : ""}" type="button"
         data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-it-day="${esc(d.date)}"
-        data-trade="${esc(String(trade))}" aria-pressed="${esc(String(active))}"
+        data-trade="${esc(String(trade))}" data-closed="${esc(String(shut))}"
+        aria-pressed="${esc(String(active))}"
         title="${esc(title)}" aria-label="${esc(title)}">${esc(d.label.slice(0, 3))}</button>`;
     })
     .join("")}</span>`;
 }
 
 function itineraryItem(item) {
-  const kindLabel = item.kind === "game" ? "Game" : "Booth";
+  const kindLabel = item.kind === "game" ? "Game" : itemInBusinessArea(item) ? "Trade" : "Booth";
+  const shut = stopOnClosedDay(item);
   return `<div class="it-item" data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-played="${itineraryPlayed(item)}">
     <span class="it-main">
       <span class="it-kind">${esc(kindLabel)}</span>
@@ -1998,6 +2734,7 @@ function itineraryItem(item) {
     <span class="it-loc">${itineraryItemLocationHtml(item)}</span>
     ${itineraryDayChips(item)}
     ${markButton("saved", item.kind, item.key, item.name)}
+    ${shut ? `<span class="it-warn">Business area closed on ${esc(dayLabel(assignedDay(item.kind, item.key)))} — this stop is behind a badge gate that day.</span>` : ""}
   </div>`;
 }
 
@@ -2020,8 +2757,13 @@ function renderItinerary() {
       .filter((item) => assignedDay(item.kind, item.key) === d.date)
       .sort(compareItineraryRows);
     if (!dayItems.length) continue;
+    /* One line at the top of the day rather than only a note per row: the
+       question "is any of today's plan behind a closed door" should be
+       answerable without reading every stop. */
+    const shut = dayItems.filter(stopOnClosedDay).length;
     groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
       <div class="it-group-head">${dayHeaderInner(d)}</div>
+      ${shut ? `<p class="it-group-warn">${shut === 1 ? "1 stop is" : `${shut} stops are`} in the business area, which is closed on ${esc(d.label)}.</p>` : ""}
       ${dayItems.map(itineraryItem).join("")}
     </div>`);
   }
@@ -2034,9 +2776,11 @@ function renderItinerary() {
   $("#plan-empty").classList.toggle("hidden", items.length > 0);
   /* Saved-but-empty happens when every saved id fell out of a data refresh —
      "nothing saved yet" would be a lie next to a visible saved counter. */
-  $("#plan-empty").textContent = savedCount()
-    ? "Nothing you saved is in the current lineup anymore — exhibitors come and go between data updates."
-    : "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.";
+  $("#plan-empty").textContent = tradeDataPending()
+    ? TRADE_PENDING_COPY
+    : savedCount()
+      ? "Nothing you saved is in the current lineup anymore — exhibitors come and go between data updates."
+      : "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.";
   /* Absent stops render inline here ("Absent — no booth"); the footnote is the
      hall lens's way of saying the same thing. */
   $("#plan-absent").classList.add("hidden");
@@ -2081,8 +2825,10 @@ function renderWristband() {
   const section = $("#wristband-section");
   if (!container || !section) return; // tolerate a cached pre-wristband index.html
 
+  /* Trade booths are excluded by construction — they carry no lineup — and
+     explicitly as well, so a curated trade card can never wander in here. */
   const list = state.exhibitors
-    .filter(hasAdult)
+    .filter((e) => e.type !== "trade" && hasAdult(e))
     .sort((a, b) => hallRank(a.hall) - hallRank(b.hall) || a.name.localeCompare(b.name));
 
   const rows = list
@@ -2122,7 +2868,12 @@ function renderWristband() {
 }
 
 function renderPriority() {
-  const busiest = [...state.exhibitors].filter((e) => (e.crowd || 0) >= 4).sort(byCrowdDesc);
+  /* A business booth runs on appointments, not queues, so it has no place in
+     a queue ranking — excluded by having no `crowd`, and by type as well so
+     the rule survives someone filling one in. */
+  const busiest = [...state.exhibitors]
+    .filter((e) => e.type !== "trade" && (e.crowd || 0) >= 4)
+    .sort(byCrowdDesc);
   /* Ranks come from the unfiltered order: "07" has to keep meaning "seventh
      worst queue of the show", not "seventh row you happen to be looking at". */
   const scoped = state.prioritySavedOnly ? busiest.filter(hasSaved) : busiest;
@@ -2214,10 +2965,15 @@ function icsDateTimeUTC(d) {
 
 function icsDescription(item) {
   if (item.kind === "exhibitor") {
+    const where = itineraryLocation(item.ex).replace(" · ", ", booth ");
+    /* The calendar entry is read away from the guide, so the badge — and a
+       day the area is shut — has to be legible without it. */
+    if (inBusinessArea(item.ex)) {
+      const shut = stopOnClosedDay(item) ? "; business area CLOSED this day" : "";
+      return `${item.name} — ${where} (trade & media badge${shut})`;
+    }
     const crowd = item.ex.crowd || 0;
-    return `${item.name} — ${itineraryLocation(item.ex).replace(" · ", ", booth ")} (queue ${
-      crowd ? `${crowd}/5` : "unknown"
-    })`;
+    return `${item.name} — ${where} (queue ${crowd ? `${crowd}/5` : "unknown"})`;
   }
   const booths = item.at
     .map((ex) => `${ex.name} (${itineraryLocation(ex, { booth: false })})`)
@@ -2300,7 +3056,7 @@ function routeGroups() {
   const absent = [];
   let played = 0;
 
-  state.exhibitors.filter(hasSaved).forEach((ex) => {
+  plannedExhibitors().filter(hasSaved).forEach((ex) => {
     /* Absence wins over offsite: entries such as Wargaming mention an offsite
        event but still have no show-floor stop. */
     if (isAbsent(ex)) {
@@ -2376,7 +3132,11 @@ function renderRoute() {
           return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}">
             <span class="route-name">${esc(ex.name)}${dayFilter ? "" : routeDayTags(ex)}</span>
             <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation)}${unconf}</span>
-            <span class="route-crowd" data-level="${esc(crowd)}">Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}</span>
+            <span class="route-crowd" data-level="${esc(inBusinessArea(ex) ? 0 : crowd)}">${
+              inBusinessArea(ex)
+                ? "Trade badge"
+                : `Q${esc(crowd || "?")} · ${esc(CROWD_LABELS[crowd] || "?")}`
+            }</span>
             <span class="row-actions">
               ${markButton("played", "exhibitor", ex.id, ex.name)}
               ${markButton("saved", "exhibitor", ex.id, ex.name)}
@@ -2412,7 +3172,9 @@ function renderRoute() {
   /* Under a day filter the absent footnote is hidden, so it can't stand in
      for the empty message the way it does on the all-days view. */
   $("#plan-empty").classList.toggle("hidden", stopCount > 0 || (!dayFilter && absent.length > 0));
-  $("#plan-empty").textContent = !savedCount()
+  $("#plan-empty").textContent = tradeDataPending()
+    ? TRADE_PENDING_COPY
+    : !savedCount()
     ? "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall."
     : state.hidePlayed && played > 0 && stopCount === 0
       ? "Every stop here is played — nice work."
@@ -2453,7 +3215,7 @@ function renderPlanDayFilter() {
   const row = $("#plan-day-filter");
   if (!row) return;
   const seen = new Set();
-  state.exhibitors.filter(hasSaved).forEach((ex) => {
+  plannedExhibitors().filter(hasSaved).forEach((ex) => {
     if (!isAbsent(ex)) stopDays(ex).forEach((day) => seen.add(day));
   });
   const assigned = (state.event.days || []).filter((d) => seen.has(d.date));
@@ -2717,6 +3479,7 @@ function resetFilters() {
     savedOnly: false,
     hidePlayed: false,
   });
+  state.flipped.clear();
   $("#search").value = "";
   $("#playable-only").checked = false;
   $("#confirmed-only").checked = false;
@@ -2745,9 +3508,18 @@ function syncHash() {
 function focusExhibitor(id) {
   const ex = id && state.exhibitors.find((e) => e.id === id);
   if (!ex) return;
+  /* A business booth tapped on the map deep-links to its own face's id, so
+     land on the paired card already turned to that side rather than on its
+     consumer booth in a different hall. Set after resetFilters(), which
+     clears hand-flipped cards along with the filters they were following. */
   const find = () => $(`#exhibitor-grid .card[data-id="${CSS.escape(ex.id)}"]`);
+  const turn = () => {
+    if (ex.businessOf) state.flipped.set(ex.businessOf, true);
+  };
+  turn();
   if (!find()) {
     resetFilters();
+    turn();
     renderExhibitors();
   }
   const card = find();
@@ -2865,6 +3637,18 @@ function bindControls() {
   /* One delegated listener covers every +, ✓, day and sources button in every
      view, including the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
+    /* Turning a card over. Keyed on the owner's id from either side, so the
+       two plates are the same switch pointing opposite ways. */
+    const face = e.target.closest("[data-face]");
+    if (face) {
+      const owner = face.dataset.face;
+      state.flipped.set(owner, face.dataset.faceTo === "trade");
+      renderExhibitors();
+      /* Land on the plate that just became small — the way back — rather than
+         dropping focus to the top of the page. */
+      $(`#exhibitor-grid [data-face="${CSS.escape(owner)}"]`)?.focus();
+      return;
+    }
     const day = e.target.closest("[data-it-day]");
     if (day) {
       assignToDay(day.dataset.itKind, day.dataset.itKey, day.dataset.itDay);
@@ -2892,7 +3676,13 @@ function bindControls() {
       const directory = $("#directory");
       if (directory && directory.open !== state.showDirectory) directory.open = state.showDirectory;
       if (state.showDirectory) loadDirectory();
+      const trade = $("#trade");
+      if (trade && trade.open !== state.showTrade) trade.open = state.showTrade;
+      if (state.trade) loadDirectory();
     }
+    /* A trade booth saved in the other tab needs its data here before the
+       plan can show it — the same never-vanish rule as at boot. */
+    if (hasSavedTrade()) loadDirectory();
     pruneItinerary();
     renderFilters();
     renderExhibitors();
@@ -2927,6 +3717,30 @@ function bindControls() {
     });
   }
 
+  const trade = $("#trade");
+  if (trade) {
+    trade.open = state.showTrade;
+    /* Opening the section does not turn the feature on — it shows the pitch.
+       Only the button does, which is why the fetch hangs off state.trade. */
+    if (state.trade) loadDirectory();
+    trade.addEventListener("toggle", () => {
+      state.showTrade = trade.open;
+      persistPrefs();
+      if (trade.open && state.trade) loadDirectory();
+      renderTrade();
+    });
+    $("#trade-enable")?.addEventListener("click", () => setTrade(true));
+    /* The chip row is rebuilt by its own render, so this is delegated the way
+       the mark buttons are rather than re-bound per chip. */
+    $("#trade-cat-filters")?.addEventListener("click", (e) => {
+      const chip = e.target.closest("[data-trade-cat]");
+      if (!chip) return;
+      state.tradeCat = chip.dataset.tradeCat;
+      renderTrade();
+      $(`#trade-cat-filters [data-trade-cat="${CSS.escape(state.tradeCat)}"]`)?.focus();
+    });
+  }
+
   $$(".tab").forEach((tab) => tab.addEventListener("click", () => showView(routeFor(tab.dataset.view))));
   /* push:true here so an unknown or now-stale hash gets rewritten to the route
      actually on screen rather than being left lying in the address bar. */
@@ -2934,7 +3748,7 @@ function bindControls() {
     const incoming = takeIncomingList();
     const landing = parseHash();
     showView(incoming ? SAVED_ROUTE : landing.route);
-    if (incoming) offerIncoming(incoming);
+    if (incoming) offerIncomingWhenReady(incoming);
     else focusExhibitor(landing.params.get("ex"));
   });
 }
@@ -2949,7 +3763,13 @@ async function main() {
   state.marks.saved = loadMarks("saved");
   state.marks.played = loadMarks("played");
   state.itinerary = loadItinerary();
+  /* After the itinerary, so a day assignment stored under the old key is
+     still there to be carried across. */
+  migrateDirAliases();
   Object.assign(state, loadPrefs());
+  /* Rule 1: the pref gates discovery, not resolution. A trade booth already
+     on the list resolves whether or not trade mode is on. */
+  if (state.trade || hasSavedTrade()) loadDirectory();
   const incoming = takeIncomingList();
   /* Only a link in the address bar moves the visitor to their list; a leftover
      offer is repeated where they already were. */
@@ -2967,7 +3787,7 @@ async function main() {
   const landing = parseHash();
   showView(incoming ? SAVED_ROUTE : landing.route || VIEWS[0], { push: false });
   if (!incoming) focusExhibitor(landing.params.get("ex"));
-  if (offer) offerIncoming(offer);
+  if (offer) offerIncomingWhenReady(offer);
   /* Last, so an import prompt is the thing on screen when both apply — that one
      is priority anyway, and it carries the only Add/Undo the visitor gets. */
   offerMove();
