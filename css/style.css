@@ -344,6 +344,12 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .chip.hall-chip { font-family: var(--font-mono); font-weight: 500; font-size: .75rem; }
 .chip.hall-chip.active,
 .chip.age-chip.active { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
+/* Business-area halls, offered only in trade mode. Amber is the guide's
+   badge-required colour throughout — the directory's stand plates and the
+   map's hall groups carry the same one. */
+.chip.hall-chip-trade { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 34%, var(--rule)); }
+.chip.hall-chip-trade:hover { border-color: var(--warn); }
+.chip.hall-chip-trade.active { background: var(--warn); border-color: var(--warn); color: var(--signal-ink); }
 
 .toggle {
   display: inline-flex; align-items: center; gap: 8px;
@@ -709,6 +715,130 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 
 /* ============================================================
+   trade exhibitors
+   ------------------------------------------------------------
+   The same register as the directory above — same rows, same booth rail —
+   with two things the directory deliberately doesn't have: a save button, and
+   a category tag row. Amber runs through it because amber is already the
+   guide's "you need a badge for this" colour, set on the directory's business
+   stand plates and on the map's hall groups.
+   ============================================================ */
+
+.trade-section { border-color: color-mix(in srgb, var(--warn) 26%, var(--rule)); }
+.trade-section > .directory-summary .row-label { color: var(--warn); }
+
+/* Closed, this is the whole feature: what the business area is, and the one
+   switch. It reads as prose rather than a settings row on purpose. */
+.trade-gate { padding: 14px 16px 16px; }
+.trade-gate p {
+  margin: 0 0 10px;
+  font-size: .86rem;
+  line-height: 1.6;
+  color: var(--ink-mid);
+  max-width: 68ch;
+}
+.trade-gate strong { color: var(--ink); font-weight: 700; }
+.trade-enable {
+  margin-top: 4px;
+  padding: 10px 16px;
+  border: 1px solid var(--warn);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warn) 12%, transparent);
+  color: var(--warn);
+  font-family: var(--font-mono);
+  font-size: .76rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.trade-enable:hover { background: color-mix(in srgb, var(--warn) 22%, transparent); }
+
+/* Turning it back off lives in the note it belongs to, not in a toolbar. */
+.linkish {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--ink-mid);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.linkish:hover { color: var(--signal); text-decoration-color: currentColor; }
+
+.trade-cats { padding: 12px 16px 0; }
+
+/* One more column than a directory row (tags) and the save button riding the
+   end of the first row, so the booth rail still lines up down the list. */
+.trade-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 110px) minmax(0, 210px) auto;
+  align-items: center;
+}
+.trade-row .trade-tags {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.trade-row .trade-tags:empty { display: none; }
+.trade-row .trade-tags .tag { font-size: .64rem; }
+.trade-row[data-saved="true"] { background: color-mix(in srgb, var(--signal) 7%, transparent); }
+
+@media (max-width: 640px) {
+  .trade-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .trade-row .dir-country,
+  .trade-row .dir-stands { grid-column: 1; }
+}
+
+/* ---- curated trade cards ---- */
+
+/* The Lineup block's opposite number: what the booth is *for*. */
+.offers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.offers li {
+  padding: 7px 12px;
+  border-top: 1px solid var(--rule-soft);
+  font-size: .84rem;
+  line-height: 1.45;
+  color: var(--ink-mid);
+}
+.offers li:first-child { border-top: none; }
+.offers li::before {
+  content: "→";
+  margin-right: 8px;
+  color: var(--warn);
+  font-family: var(--font-mono);
+}
+
+/* Where a consumer card puts the queue index. Same question, different
+   answer: not "how long is the wait" but "is there anything to walk up to". */
+.trade-access {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  align-items: baseline;
+}
+.trade-access-val {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .04em;
+  color: var(--warn);
+  text-transform: uppercase;
+}
+.trade-access[data-access="open"] .trade-access-val { color: var(--ok); }
+.trade-access-note {
+  grid-column: 2;
+  font-size: .78rem;
+  line-height: 1.5;
+  color: var(--ink-dim);
+}
+
+/* ============================================================
    saved & played marks
    ------------------------------------------------------------
    Saved is the visitor's own emphasis, so it takes the signal colour when set —
@@ -1018,7 +1148,35 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .day-chip:hover { color: var(--ink); border-color: var(--ink-dim); }
 .day-chip.active { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
 .day-chip[data-trade="true"]:not(.active) { border-style: dashed; color: var(--ink-dim); }
+/* A day the business area is shut, offered to a business-area stop. Struck
+   through rather than disabled: the guide warns, it does not forbid — you may
+   well want to walk past a stand on Saturday. */
+.day-chip[data-closed="true"]:not(.active) { color: var(--ink-dim); text-decoration: line-through; }
+.day-chip[data-closed="true"].active {
+  background: var(--warn);
+  border-color: var(--warn);
+  color: var(--signal-ink);
+}
 .it-item .bm { grid-column: -2 / -1; grid-row: 1; align-self: center; }
+
+/* The consequence spelled out, on the row and once at the top of the day. */
+.it-warn {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  padding-left: 11px;
+  border-left: 2px solid var(--warn);
+  font-size: .76rem;
+  line-height: 1.45;
+  color: var(--warn);
+}
+.it-group-warn {
+  margin: 0;
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--rule-soft);
+  background: color-mix(in srgb, var(--warn) 10%, var(--ground-2));
+  font-size: .78rem;
+  color: var(--warn);
+}
 
 /* ============================================================
    planner — priority table
