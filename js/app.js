@@ -17,6 +17,10 @@ const state = {
   view: "exhibitors",
   sort: "crowd-desc",
   expanded: new Set(),
+  /* card id → which face is showing, set by tapping a plate. Only holds the
+     cards somebody has actually turned over; everything else follows the
+     filters. Cleared when a filter changes — see faceOf(). */
+  flipped: new Map(),
   /* replaced from localStorage in main() — see loadMarks() */
   marks: {
     saved: { exhibitors: new Set(), games: new Set() },
@@ -1400,33 +1404,110 @@ function filtersActive() {
   );
 }
 
+/* ---------- two-faced cards ----------
+
+   Around twenty exhibitors hold a consumer booth *and* a business-hall booth:
+   Capcom demos in 9.1 and takes meetings in 4.2, a fifteen-minute walk apart.
+   They are one company and genuinely two stops, so the guide files them as two
+   cards — the business one carrying `businessOf: "<consumer id>"` — and the
+   grid renders the pair as a single card you can turn over.
+
+   Two cards rather than one card with a nested block, because each face needs
+   everything a card needs (its own location, description, offers, sources,
+   saved state). Keeping them the same shape means a business-only booth like
+   Cloudflare is not a special case, and the planner, map, share links and
+   closed-day warning all keep treating each booth as the separate stop it is. */
+
+function businessFaces() {
+  const map = new Map();
+  for (const ex of state.exhibitors) {
+    if (ex.businessOf) map.set(ex.businessOf, ex);
+  }
+  return map;
+}
+
+/* The other side of this card, if it has one and the visitor is being offered
+   trade content at all. */
+function otherFace(ex) {
+  if (!state.trade) return null;
+  if (ex.businessOf) return state.exhibitors.find((e) => e.id === ex.businessOf) || null;
+  return businessFaces().get(ex.id) || null;
+}
+
+/* Which face the filters ask for. Selecting the trade category, or a business
+   hall, is asking to see that side of every card that has one. */
+function defaultFace(ex) {
+  const face = businessFaces().get(ex.id);
+  if (!face || !state.trade) return ex;
+  if (state.type === "trade") return face;
+  if (state.type !== "all") return ex;
+  if (state.hall !== "all") return String(face.hall) === state.hall ? face : ex;
+  return ex;
+}
+
+/* Which face is showing: the filters' default, unless this card has been
+   turned over by hand. Sorting deliberately reads defaultFace() instead, so
+   turning one card over never makes it jump to a different place in the grid. */
+function faceOf(ex) {
+  const face = businessFaces().get(ex.id);
+  if (!face || !state.trade) return ex;
+  if (state.flipped.has(ex.id)) return state.flipped.get(ex.id) ? face : ex;
+  return defaultFace(ex);
+}
+
+/* Both sides of a card, for the filters that must not make it vanish: asking
+   for Hall 4.2 has to keep Capcom, whose *other* face stands there. */
+const bothFaces = (ex) => {
+  const face = state.trade ? businessFaces().get(ex.id) : null;
+  return face ? [ex, face] : [ex];
+};
+
+const savedEitherFace = (ex) => bothFaces(ex).some(hasSaved);
+
 /* The cards this visitor is being offered at all. Trade cards are discovery,
    so they hide with the pref off — but only from the grid: a saved one still
-   resolves everywhere, which is what plannedExhibitors() is for. */
-const cardPool = () =>
-  state.trade ? state.exhibitors : state.exhibitors.filter((ex) => ex.type !== "trade");
+   resolves everywhere, which is what plannedExhibitors() is for. A paired
+   business face is never its own grid entry; it is rendered as the other side
+   of the card it belongs to. */
+function cardPool() {
+  const owners = new Set(state.exhibitors.map((ex) => ex.id));
+  return state.exhibitors.filter((ex) => {
+    if (ex.businessOf && owners.has(ex.businessOf)) return false;
+    return state.trade || ex.type !== "trade";
+  });
+}
 
 function filtered() {
   const list = cardPool().filter((ex) => {
-    if (state.type !== "all" && ex.type !== state.type) return false;
-    if (state.hall !== "all" && String(ex.hall) !== state.hall) return false;
+    const faces = bothFaces(ex);
+    /* Category and hall look at both sides, so filtering to Hall 4.2 keeps
+       the card whose business booth stands there and turns it over. */
+    if (state.type !== "all" && !faces.some((f) => f.type === state.type)) return false;
+    if (state.hall !== "all" && !faces.some((f) => String(f.hall) === state.hall)) return false;
+    /* The lineup filters are about games, which only the consumer side has. */
     if (state.age === "only" && !hasAdult(ex)) return false;
     if (state.age === "hide") {
       if (ex.ageRestricted === true) return false;
       if ((ex.games || []).length && !visibleGames(ex).length) return false;
     }
     if (state.playableOnly && !visibleGames(ex).some((g) => g.playable)) return false;
-    if (state.confirmedOnly && !ex.locationConfirmed) return false;
-    if (state.savedOnly && !hasSaved(ex)) return false;
-    if (state.hidePlayed && hasPlayed(ex)) return false;
-    return matchesQuery(ex, state.query);
+    const face = faceOf(ex);
+    if (state.confirmedOnly && !face.locationConfirmed) return false;
+    if (state.savedOnly && !savedEitherFace(ex)) return false;
+    if (state.hidePlayed && faces.every(hasPlayed)) return false;
+    return faces.some((f) => matchesQuery(f, state.query));
   });
 
+  /* Sorted on the filter-driven face, never the hand-flipped one — see
+     faceOf(). */
+  const key = (ex) => defaultFace(ex);
   const bySort = {
-    "crowd-desc": byCrowdDesc,
-    "crowd-asc": (a, b) => (a.crowd || 0) - (b.crowd || 0) || a.name.localeCompare(b.name),
+    "crowd-desc": (a, b) => byCrowdDesc(key(a), key(b)),
+    "crowd-asc": (a, b) =>
+      (key(a).crowd || 0) - (key(b).crowd || 0) || a.name.localeCompare(b.name),
     name: (a, b) => a.name.localeCompare(b.name),
-    hall: (a, b) => hallRank(a.hall) - hallRank(b.hall) || a.name.localeCompare(b.name),
+    hall: (a, b) =>
+      hallRank(key(a).hall) - hallRank(key(b).hall) || a.name.localeCompare(b.name),
   };
   return list.sort(bySort[state.sort] || bySort["crowd-desc"]);
 }
@@ -1476,22 +1557,54 @@ function hallLink(hall, booth, label) {
     aria-label="${esc(`${where} — open the hall map`)}">${esc(label)}</a>`;
 }
 
+/* The way to this card's other booth, notched into the corner of the plate
+   that shows the current one. It sits *on* the plate rather than at the foot
+   of the card because that is the corner your thumb is already near and the
+   one place the swap reads as an exchange rather than a jump.
+
+   The colour is not decoration: #7800FF is the fill Koelnmesse gives the
+   business halls on its own plan, carried through the snapshot into the map's
+   hall washes. So a purple plate means "business area" in the same way here as
+   it does there, and turning the card over teaches that in one gesture.
+
+   The small square carries the other side's saved state, because otherwise a
+   saved trade stop is invisible until you turn the card. */
+function faceSwitch(ex) {
+  const other = otherFace(ex);
+  if (!other) return "";
+  const toTrade = other.type === "trade";
+  const label = toTrade
+    ? `Show the business booth — hall ${other.hall}, trade & media only`
+    : `Back to the public booth — hall ${other.hall}`;
+  return `<button class="face-switch${toTrade ? " face-switch-trade" : ""}" type="button"
+      data-face="${esc(ex.businessOf || ex.id)}" data-face-to="${toTrade ? "trade" : "public"}"
+      title="${esc(label)}" aria-label="${esc(label)}">
+    <span class="face-hall" aria-hidden="true">${esc(other.hall || "?")}</span>
+    ${hasSaved(other) ? '<span class="face-saved" aria-hidden="true"></span>' : ""}
+  </button>`;
+}
+
 /* The hall number is the one thing you read while walking, so it gets
    set like a wayfinding sign rather than tucked into a badge. */
 function hallMarker(ex) {
+  /* Every return goes through wrap(), so a card with a business booth still
+     offers the way to it even when this side has no location at all —
+     Wargaming has no consumer hall and a stand in 2.2. */
+  const trade = ex.type === "trade" ? " hall-marker-trade" : "";
+  const wrap = (plate) => `<div class="hall-plate${trade}">${plate}${faceSwitch(ex)}</div>`;
   if ((ex.tags || []).includes("not exhibiting")) {
-    return `<div class="hall-marker" data-state="absent">
+    return wrap(`<div class="hall-marker" data-state="absent">
       <span class="hall-kicker">Status</span>
       <span class="hall-num">Absent</span>
       <span class="hall-booth">no booth</span>
-    </div>`;
+    </div>`);
   }
   if (!ex.hall) {
-    return `<div class="hall-marker" data-state="tba">
+    return wrap(`<div class="hall-marker" data-state="tba">
       <span class="hall-kicker">Hall</span>
       <span class="hall-num">TBA</span>
       <span class="hall-booth">not announced</span>
-    </div>`;
+    </div>`);
   }
   const confirmed = !!ex.locationConfirmed;
   const where = confirmed ? "Officially confirmed location" : "Best guess — not officially confirmed";
@@ -1501,12 +1614,14 @@ function hallMarker(ex) {
   const state_ = `data-state="${confirmed ? "confirmed" : "unconfirmed"}"`;
   /* The plate is already the "where" of the card, so it is also the way
      to the map — no second control competing for the same corner. */
-  if (!hasMap(ex.hall)) return `<div class="hall-marker" ${state_} title="${where}">${inner}</div>`;
-  return `<a class="hall-marker" ${state_} href="${esc(mapLink(ex.hall, ex.booth))}"
+  if (!hasMap(ex.hall)) {
+    return wrap(`<div class="hall-marker" ${state_} title="${where}">${inner}</div>`);
+  }
+  return wrap(`<a class="hall-marker" ${state_} href="${esc(mapLink(ex.hall, ex.booth))}"
       title="${where} — open the hall map"
       aria-label="${esc(`Hall ${ex.hall}${ex.booth ? `, booth ${ex.booth}` : ""} — open the hall map`)}">
     ${inner}<span class="hall-map-cue" aria-hidden="true">Map →</span>
-  </a>`;
+  </a>`);
 }
 
 function ageBadge(status = "expected", label = "18+", extraClass = "") {
@@ -1664,7 +1779,9 @@ function card(ex) {
 function renderExhibitors() {
   const list = filtered();
   keepingFocus($("#exhibitor-grid"), () => {
-    $("#exhibitor-grid").innerHTML = list.map(card).join("");
+    /* The grid iterates owner cards; each one renders whichever of its two
+       faces is showing. */
+    $("#exhibitor-grid").innerHTML = list.map((ex) => card(faceOf(ex))).join("");
   });
   $("#exhibitor-grid").classList.toggle("hidden", list.length === 0);
   $("#no-results").classList.toggle("hidden", list.length > 0);
@@ -1728,6 +1845,9 @@ function renderFilters() {
   $$("#type-filters .chip").forEach((chip) =>
     chip.addEventListener("click", () => {
       state.type = chip.dataset.type;
+      /* A new filter asks for a face of its own, so hand-flipped cards go
+         back to following it — see faceOf(). */
+      state.flipped.clear();
       renderFilters();
       renderExhibitors();
     })
@@ -1760,6 +1880,7 @@ function renderFilters() {
   $$("#hall-filters .chip").forEach((chip) =>
     chip.addEventListener("click", () => {
       state.hall = chip.dataset.hall;
+      state.flipped.clear();
       renderFilters();
       renderExhibitors();
     })
@@ -3348,6 +3469,7 @@ function resetFilters() {
     savedOnly: false,
     hidePlayed: false,
   });
+  state.flipped.clear();
   $("#search").value = "";
   $("#playable-only").checked = false;
   $("#confirmed-only").checked = false;
@@ -3376,9 +3498,18 @@ function syncHash() {
 function focusExhibitor(id) {
   const ex = id && state.exhibitors.find((e) => e.id === id);
   if (!ex) return;
+  /* A business booth tapped on the map deep-links to its own face's id, so
+     land on the paired card already turned to that side rather than on its
+     consumer booth in a different hall. Set after resetFilters(), which
+     clears hand-flipped cards along with the filters they were following. */
   const find = () => $(`#exhibitor-grid .card[data-id="${CSS.escape(ex.id)}"]`);
+  const turn = () => {
+    if (ex.businessOf) state.flipped.set(ex.businessOf, true);
+  };
+  turn();
   if (!find()) {
     resetFilters();
+    turn();
     renderExhibitors();
   }
   const card = find();
@@ -3496,6 +3627,18 @@ function bindControls() {
   /* One delegated listener covers every +, ✓, day and sources button in every
      view, including the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
+    /* Turning a card over. Keyed on the owner's id from either side, so the
+       two plates are the same switch pointing opposite ways. */
+    const face = e.target.closest("[data-face]");
+    if (face) {
+      const owner = face.dataset.face;
+      state.flipped.set(owner, face.dataset.faceTo === "trade");
+      renderExhibitors();
+      /* Land on the plate that just became small — the way back — rather than
+         dropping focus to the top of the page. */
+      $(`#exhibitor-grid [data-face="${CSS.escape(owner)}"]`)?.focus();
+      return;
+    }
     const day = e.target.closest("[data-it-day]");
     if (day) {
       assignToDay(day.dataset.itKind, day.dataset.itKey, day.dataset.itDay);

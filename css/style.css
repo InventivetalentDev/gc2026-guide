@@ -30,6 +30,12 @@
   --signal-wash: rgba(255, 77, 23, .12);
   --grain:       rgba(255, 255, 255, .025);
 
+  /* The business area's own colour, taken from the official hall plan's
+     `farbenvorgabe` and carried through data/hallplan/index.json — so the
+     map's hall washes, the trade plates and the trade cards all mean the
+     same thing by it. Needs light ink: see .hall-marker-trade. */
+  --business: #7800ff;
+
   /* ---- status ---- */
   --ok:      #2fbf85;
   --warn:    #e8a33a;
@@ -417,8 +423,12 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 /* --- head: the hall number as a signage plate --- */
 .exh-head { display: flex; gap: 0; border-bottom: 1px solid var(--rule-soft); }
 
+/* The plate's box. It only exists so the face switch has a corner to sit in;
+   without a second booth it is invisible and the plate behaves as it always
+   did. */
+.hall-plate { flex: 0 0 108px; position: relative; display: flex; }
 .hall-marker {
-  flex: 0 0 108px;
+  flex: 1 1 auto;
   padding: 14px 12px;
   background: var(--signal);
   color: var(--signal-ink);
@@ -430,6 +440,60 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .hall-marker[data-state="unconfirmed"] { background: var(--warn); }
 .hall-marker[data-state="tba"],
 .hall-marker[data-state="absent"] { background: var(--ground-3); color: var(--ink-dim); }
+
+/* --- the two faces of a card ---
+
+   A booth in the business halls is drawn in Koelnmesse's own colour for that
+   area (#7800FF, the same fill the map washes those halls with), so the plate
+   itself says which show you are looking at. Note the ink inverts: the orange
+   plate needs near-black (5.93:1, white would be 3.32:1) and the purple one
+   needs the warm off-white (5.64:1, near-black would be 3.04:1). */
+.hall-marker-trade .hall-marker,
+.hall-marker-trade .hall-marker[data-state="unconfirmed"] {
+  background: var(--business);
+  color: var(--ink);
+}
+
+/* The way to the other booth, notched into the plate's corner: the corner a
+   thumb is already near, and close enough to the big plate that the swap
+   reads as an exchange rather than a jump across the card. */
+.face-switch {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--ground);
+  border-left: 1px solid var(--ground);
+  background: var(--signal);
+  color: var(--signal-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+  transition: filter .12s;
+}
+.face-switch-trade { background: var(--business); color: var(--ink); }
+.face-switch:hover { filter: brightness(1.18); }
+.face-switch:focus-visible { outline: 2px solid var(--ink); outline-offset: -3px; }
+/* The other side's saved state, so a saved trade stop is not invisible until
+   you turn the card over. Same dot the map's hall chips use. */
+.face-saved {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
 
 /* The plate doubles as the link to that booth on the hall map when the
    map covers its hall (see hallMarker) — an anchor wearing the same

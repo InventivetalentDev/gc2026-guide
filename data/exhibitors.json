@@ -1692,6 +1692,7 @@
   },
   {
     "id": "xbox-business",
+    "businessOf": "xbox",
     "name": "Xbox — business booth",
     "type": "trade",
     "hall": "4.2",
@@ -1720,6 +1721,7 @@
   },
   {
     "id": "nintendo-business",
+    "businessOf": "nintendo",
     "name": "Nintendo — business booth",
     "type": "trade",
     "hall": "4.2",
@@ -1772,7 +1774,7 @@
     "lastUpdated": "2026-08-15"
   },
   {
-    "id": "nvidia-business",
+    "id": "nvidia",
     "name": "NVIDIA",
     "type": "trade",
     "hall": "4.2",
