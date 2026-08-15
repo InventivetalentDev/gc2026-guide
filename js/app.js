@@ -2184,13 +2184,26 @@ function loadDirectory() {
     })
     .finally(() => {
       directoryRequest = null;
-      renderDirectory();
+      /* The fetch starts before the core data awaits, so it can land first.
+         state.event is only set once loadData() resolves and main() renders
+         every view right after — nothing is on screen yet to refresh. */
+      if (!state.event) return;
       if (state.directory) {
-        renderTrade();
         renderFilters();
         renderMarkControls();
-        renderPriority();
-        renderPlan();
+      }
+      /* The expensive refreshes — 200 trade rows, the plan board — go
+         straight to the DOM only for the view actually on screen. A view
+         still holding its queued boot render needs nothing: that render runs
+         with the directory already in state. */
+      const work = [
+        ["exhibitors", () => { renderTrade(); renderDirectory(); }],
+        ["planner", () => { renderPriority(); renderPlan(); }],
+      ];
+      for (const [view, render] of work) {
+        if (pendingViewRender.has(view)) continue;
+        if (state.view === view) render();
+        else queueViewRender(view, render);
       }
     });
   return directoryRequest;
@@ -2704,6 +2717,21 @@ function renderTrade() {
     state.tradeCat = "all";
     tradeSignature = `${state.query}|${state.hall}|all`;
   }
+
+  const matches = tradeMatches();
+  const total = (state.directory.exhibitors || []).filter(isTradeEntry).length;
+
+  count.textContent =
+    matches.length === total
+      ? t("directory.booths", { n: total })
+      : t("directory.boothsFiltered", { n: matches.length, total });
+
+  /* Collapsed, the summary count above is the only visible part of this
+     section — stop before building 200 rows of hidden list. The toggle
+     listener re-renders on open, so whatever the chips and list held goes
+     stale invisibly and is rebuilt the moment it could be seen. */
+  if (!section.open) return;
+
   cats.classList.toggle("hidden", offered.length < 2);
   cats.innerHTML = offered.length < 2 ? "" : [
     `<button class="chip ${state.tradeCat === "all" ? "active" : ""}" type="button"
@@ -2715,16 +2743,9 @@ function renderTrade() {
     ),
   ].join("");
 
-  const matches = tradeMatches();
   const shown = matches.slice(0, state.tradeLimit || TRADE_PAGE);
   const rest = matches.length - shown.length;
   const byBooth = curatedByBooth();
-  const total = (state.directory.exhibitors || []).filter(isTradeEntry).length;
-
-  count.textContent =
-    matches.length === total
-      ? t("directory.booths", { n: total })
-      : t("directory.boothsFiltered", { n: matches.length, total });
 
   const bits = [t("trade.listWhat"), t("trade.listWalkUp"), t("trade.listPlannable")];
   if (!matches.length) bits.push(t("trade.listNoMatches"));
@@ -3846,6 +3867,45 @@ function resetFilters() {
   renderFilters();
 }
 
+/* ---------- deferred view rendering ----------
+
+   Boot used to render all four views in one synchronous block, and the page
+   sat frozen — no scroll, no taps — until the whole thing finished. Only one
+   view is visible, so only that one has to be ready before first paint; the
+   other three are queued here and rendered either in idle time or the moment
+   their tab is opened, whichever comes first.
+
+   The thunks are plain state→DOM renders, so running one late — or running
+   it redundantly after a state change already re-rendered that view — is
+   only wasted work, never wrong output. One view per idle slot, so no single
+   callback grows back into the block this exists to break up. */
+const pendingViewRender = new Map();
+let viewRenderPump = false;
+
+function queueViewRender(view, render) {
+  pendingViewRender.set(view, render);
+  pumpViewRenders();
+}
+
+function flushViewRender(view) {
+  const render = pendingViewRender.get(view);
+  if (!render) return;
+  pendingViewRender.delete(view);
+  render();
+}
+
+function pumpViewRenders() {
+  if (viewRenderPump || !pendingViewRender.size) return;
+  viewRenderPump = true;
+  const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 80));
+  idle(() => {
+    viewRenderPump = false;
+    const next = pendingViewRender.keys().next();
+    if (!next.done) flushViewRender(next.value);
+    pumpViewRenders();
+  });
+}
+
 const SAVED_ROUTE = "saved";
 
 const routeFor = (view) => (view === "exhibitors" && state.savedOnly ? SAVED_ROUTE : view);
@@ -3909,6 +3969,9 @@ function showView(route, { push = true } = {}) {
   let name = wantsSaved ? "exhibitors" : route;
   if (!VIEWS.includes(name)) name = VIEWS[0];
   state.view = name;
+  /* A view whose boot render is still queued gets it now — opening the tab
+     outruns the idle slot it was waiting for. */
+  flushViewRender(name);
   /* On the exhibitor list the URL owns the filter, so landing on #saved turns
      it on and landing on #exhibitors clears it. The tabs route through
      routeFor(), so switching away and back keeps whatever you had set. */
@@ -3924,9 +3987,20 @@ function showView(route, { push = true } = {}) {
 }
 
 function bindControls() {
-  $("#search").addEventListener("input", (e) => {
-    state.query = e.target.value.trim();
-    renderExhibitors();
+  /* One render per pause, not per keystroke: the grid plus both directory
+     lists is too much DOM to rebuild at typing speed on a phone. The value is
+     read when the timer fires, so a reset that clears the box mid-wait is
+     seen, not raced. */
+  let searchTimer = 0;
+  const search = $("#search");
+  search.addEventListener("input", () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      const query = search.value.trim();
+      if (query === state.query) return;
+      state.query = query;
+      renderExhibitors();
+    }, 120);
   });
   $("#sort").addEventListener("change", (e) => {
     state.sort = e.target.value;
@@ -4111,6 +4185,16 @@ function bindControls() {
 }
 
 async function main() {
+  /* Marks and prefs live in localStorage — no reason to wait for the network
+     before reading them. Doing it first is what lets the directory download
+     below share the wire with the core data instead of queueing behind it. */
+  state.marks.saved = loadMarks("saved");
+  state.marks.played = loadMarks("played");
+  state.itinerary = loadItinerary();
+  Object.assign(state, loadPrefs());
+  /* Rule 1: the pref gates discovery, not resolution. A trade booth already
+     on the list resolves whether or not trade mode is on. */
+  if (state.trade || hasSavedTrade()) loadDirectory();
   try {
     await loadData();
   } catch (err) {
@@ -4119,16 +4203,10 @@ async function main() {
     )} <code>python3 -m http.server</code></p>`;
     return;
   }
-  state.marks.saved = loadMarks("saved");
-  state.marks.played = loadMarks("played");
-  state.itinerary = loadItinerary();
   /* After the itinerary, so a day assignment stored under the old key is
-     still there to be carried across. */
+     still there to be carried across — and after loadData, which brings the
+     cards those keys migrate onto. */
   migrateDirAliases();
-  Object.assign(state, loadPrefs());
-  /* Rule 1: the pref gates discovery, not resolution. A trade booth already
-     on the list resolves whether or not trade mode is on. */
-  if (state.trade || hasSavedTrade()) loadDirectory();
   const incoming = takeIncomingList();
   /* Only a link in the address bar moves the visitor to their list; a leftover
      offer is repeated where they already were. */
@@ -4139,12 +4217,26 @@ async function main() {
   renderFreshness();
   renderMarkControls();
   renderFilters();
-  renderExhibitors();
-  renderPlanner();
-  renderEvent();
-  renderChangelog();
+  /* Only the landing view renders before first paint; the rest go through
+     the idle queue (see queueViewRender). A #saved landing sets the filter
+     before that first render so the grid is not built twice. */
   const landing = parseHash();
-  showView(incoming ? SAVED_ROUTE : landing.route || VIEWS[0], { push: false });
+  const route = incoming ? SAVED_ROUTE : landing.route || VIEWS[0];
+  if (route === SAVED_ROUTE && !state.savedOnly) {
+    state.savedOnly = true;
+    $("#saved-only").checked = true;
+  }
+  const bootRender = {
+    exhibitors: renderExhibitors,
+    planner: renderPlanner,
+    event: renderEvent,
+    updates: renderChangelog,
+  };
+  const landingView = route === SAVED_ROUTE ? "exhibitors" : route;
+  const first = VIEWS.includes(landingView) ? landingView : VIEWS[0];
+  bootRender[first]();
+  for (const view of VIEWS) if (view !== first) queueViewRender(view, bootRender[view]);
+  showView(route, { push: false });
   if (!incoming) focusExhibitor(landing.params.get("ex"));
   if (offer) offerIncomingWhenReady(offer);
   /* Last, so an import prompt is the thing on screen when both apply — that one

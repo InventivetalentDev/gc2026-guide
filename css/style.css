@@ -2094,3 +2094,23 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
+
+/* ---- rendering cost ----
+
+   Every long list here is built in one innerHTML write, and laying all of it
+   out at once is most of what froze the first seconds on a phone: 127 cards,
+   up to 200 directory rows behind them. content-visibility lets the browser
+   skip layout and paint for everything below the fold until it is scrolled
+   toward, so the cost of a list tracks the viewport, not the dataset.
+
+   The intrinsic sizes are rough per-item heights — they only steer the
+   scrollbar's first guess and are replaced by real geometry once an item has
+   been on screen. Browsers without the property just render everything, which
+   is exactly the behaviour this replaces. The changelog timeline stays out:
+   its date dot is drawn 31px outside the entry's box, and the paint
+   containment this property brings would clip it off. */
+.card { content-visibility: auto; contain-intrinsic-size: auto 460px; }
+.dir-row { content-visibility: auto; contain-intrinsic-size: auto 60px; }
+.priority-item { content-visibility: auto; contain-intrinsic-size: auto 92px; }
+.it-item { content-visibility: auto; contain-intrinsic-size: auto 96px; }
+.route-item { content-visibility: auto; contain-intrinsic-size: auto 88px; }

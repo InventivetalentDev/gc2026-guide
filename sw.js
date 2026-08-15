@@ -10,8 +10,10 @@
    - navigations      network-first with a short timeout, falling back to the
                       cached shell. A fresh deploy wins when online; a dead
                       connection still opens the app.
-   - data/*.json      network-first, falling back to the last good copy. Stale
-                      exhibitor data beats an error page.
+   - data/*.json      network-first with the same short timeout, falling back
+                      to the last good copy. Stale exhibitor data beats an
+                      error page — and beats a boot stuck behind hall wifi,
+                      since the app fetches its JSON before it renders.
    - css/js           stale-while-revalidate. Serves instantly and self-heals
                       on the next load, so a deploy that only touches the CSS
                       still lands without bumping anything here.
@@ -143,17 +145,42 @@ function cacheKey(request) {
   return url.href;
 }
 
-async function fromNetworkFirst(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  try {
+/* Network-first with the same clock the navigations race against: on a hall's
+   worth of contended 4G a data request can hang for thirty seconds, and the
+   boot used to hang with it — the app fetches all its JSON before it renders
+   anything. After NAV_TIMEOUT the last good copy answers instead; the fetch
+   itself is never abandoned (waitUntil keeps the worker alive for it), so the
+   fresh data still lands in the cache for the next load. A file that was never
+   cached — the first visit — has nothing to fall back on and waits the network
+   out, exactly as before. */
+function fromNetworkFirst(event, cacheName) {
+  const { request } = event;
+  const network = (async () => {
     const response = await fetch(request);
-    if (response.ok) cache.put(cacheKey(request), response.clone());
+    if (response.ok) {
+      const cache = await caches.open(cacheName);
+      await cache.put(cacheKey(request), response.clone());
+    }
     return response;
-  } catch (err) {
-    const cached = await cache.match(cacheKey(request));
-    if (cached) return cached;
-    throw err;
-  }
+  })();
+  /* Synchronously, for the same reason as in staleWhileRevalidate: once the
+     cached copy has been handed over, only this keeps the worker alive long
+     enough for the late response's cache.put to land. */
+  event.waitUntil(network.catch(() => {}));
+
+  return (async () => {
+    try {
+      return await Promise.race([
+        network,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("slow")), NAV_TIMEOUT)),
+      ]);
+    } catch (err) {
+      const cache = await caches.open(cacheName);
+      const cached = await cache.match(cacheKey(request));
+      if (cached) return cached;
+      return network;
+    }
+  })();
 }
 
 async function fromCacheFirst(request, cacheName) {
@@ -250,7 +277,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (url.pathname.includes("/data/")) {
-    event.respondWith(fromNetworkFirst(request, DATA_CACHE));
+    event.respondWith(fromNetworkFirst(event, DATA_CACHE));
     return;
   }
   if (url.pathname.includes("/fonts/") || url.pathname.includes("/icons/")) {
