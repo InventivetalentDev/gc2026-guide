@@ -22,7 +22,7 @@
    network-first while the old app.js is served stale-while-revalidate, so a
    markup change that needs its matching script (rev 21's share dialog) rides
    one load with dead controls unless the version change announces it. */
-const VERSION = "v4";
+const VERSION = "v5";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
@@ -51,6 +51,7 @@ const SHELL = [
   "js/qr.js",
   "js/pwa.js",
   "manifest.webmanifest",
+  "manifest.de.webmanifest",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "fonts/anton-latin.woff2",

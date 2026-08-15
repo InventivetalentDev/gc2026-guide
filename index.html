@@ -17,7 +17,12 @@
         var supported = ["en", "de"];
         var pick = new URLSearchParams(location.search).get("lang");
         if (supported.indexOf(pick) === -1) {
-          pick = JSON.parse(localStorage.getItem("gc2026.prefs.v1") || "{}").lang;
+          try {
+            var prefs = JSON.parse(localStorage.getItem("gc2026.prefs.v1") || "{}");
+            pick = prefs && prefs.lang;
+          } catch (storageError) {
+            pick = null;
+          }
         }
         if (supported.indexOf(pick) === -1) {
           var wanted = navigator.languages || [navigator.language || "en"];
@@ -40,7 +45,12 @@
        points search engines at the new domain without redirecting anyone. A
        redirect would strand every saved list on the old origin. -->
   <link rel="canonical" href="https://gamescom.guide/">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="manifest" id="app-manifest" href="manifest.webmanifest">
+  <script>
+    if (document.documentElement.lang === "de") {
+      document.getElementById("app-manifest").href = "manifest.de.webmanifest";
+    }
+  </script>
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -71,7 +81,7 @@
         </span>
       </a>
       <div class="header-meta">
-        <p class="meta-line" id="event-dates">Koelnmesse, Cologne · Aug 26–30, 2026</p>
+        <p class="meta-line" id="event-dates" data-i18n="header.eventFallback">Koelnmesse, Cologne · Aug 26–30, 2026</p>
         <p class="countdown" id="countdown" aria-live="polite"></p>
         <p class="offline-flag" data-i18n="header.offline">Offline · showing saved data</p>
         <!-- Labelled with the other language's own name by js/i18n.js, and

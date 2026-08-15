@@ -21,6 +21,7 @@ window.GC_STRINGS.en = {
   "nav.skip": "Skip to content",
   "nav.sections": "Sections",
   "brand.kicker": "Unofficial visitor guide",
+  "header.eventFallback": "Koelnmesse, Cologne · Aug 26–30, 2026",
   "header.offline": "Offline · showing saved data",
   "tab.exhibitors": "Exhibitors",
   "tab.planner": "Visit planner",
@@ -165,7 +166,7 @@ window.GC_STRINGS.en = {
   "directory.lede":
     "The raw official list as published on {date} — booths with a card above included, and no lineups, crowd ratings or saving down here.",
   "directory.tradeOnly":
-    "{n} of these stand only in the business area (halls 1–4), which a consumer ticket does not open.",
+    "{n} of these is only in the business area (halls 2–4), which a consumer ticket does not open.|{n} of these are only in the business area (halls 2–4), which a consumer ticket does not open.",
   "directory.noMatches": "Nothing here matches the current search or hall.",
   "directory.showMore": "Show {n} more",
   "directory.noBooth": "no booth listed",
@@ -337,6 +338,8 @@ window.GC_STRINGS.en = {
     "This is an unofficial guide, and booth numbers and lineups keep changing until the doors open. If a detail decides your day, check it at the source.",
 
   /* ---------- calendar export ---------- */
+  "ics.filename": "gamescom-2026-itinerary.ics",
+  "ics.locationFallback": "Koelnmesse, Cologne",
   "ics.summary": "gamescom — {day} plan ({n} stop)|gamescom — {day} plan ({n} stops)",
   "ics.exhibitor": "{name} — {where} (queue {queue})",
   "ics.hallBooth": "Hall {hall}, booth {booth}",
@@ -457,6 +460,9 @@ window.GC_STRINGS.en = {
   "trade.listPlannable": "Save a booth and it plans like any other stop.",
   "trade.listNoMatches": "Nothing here matches the current search, hall or category.",
   "trade.exhibitorCount": "{n} exhibitor|{n} exhibitors",
+  "trade.shared": "shared · {n}",
+  "trade.sharedTitle":
+    "{n} exhibitors are listed at this booth — a collective, usually a national or regional pavilion",
   "trade.offers": "Offers",
   "trade.offerCount": "{n} thing|{n} things",
   "trade.accessLabel": "Access",
@@ -506,6 +512,7 @@ window.GC_STRINGS.en = {
   "map.coveredNone": "none",
   "map.tradeVisitorsOnly": ", trade visitors only",
   "map.tradeOnlySuffix": ", trade & media only",
+  "map.tradeOnlyLabel": "trade only",
   "map.showExhibitors": "I have a badge — show exhibitors",
   "map.hideExhibitors": "hide exhibitors",
   "map.showTrade": "show trade exhibitors",

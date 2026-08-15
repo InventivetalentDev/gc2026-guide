@@ -15,7 +15,12 @@
       var supported = ["en", "de"];
       var pick = new URLSearchParams(location.search).get("lang");
       if (supported.indexOf(pick) === -1) {
-        pick = JSON.parse(localStorage.getItem("gc2026.prefs.v1") || "{}").lang;
+        try {
+          var prefs = JSON.parse(localStorage.getItem("gc2026.prefs.v1") || "{}");
+          pick = prefs && prefs.lang;
+        } catch (storageError) {
+          pick = null;
+        }
       }
       if (supported.indexOf(pick) === -1) {
         var wanted = navigator.languages || [navigator.language || "en"];

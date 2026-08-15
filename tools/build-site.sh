@@ -18,7 +18,7 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-SITE="_headers css data fonts icons imprint.html index.html js manifest.webmanifest map.html privacy.html sw.js"
+SITE="_headers css data fonts icons imprint.html index.html js manifest.de.webmanifest manifest.webmanifest map.html privacy.html sw.js"
 
 # Repo furniture, plus CNAME: that one is GitHub Pages' custom-domain marker,
 # and Cloudflare takes its hostnames from the routes in wrangler.toml instead.

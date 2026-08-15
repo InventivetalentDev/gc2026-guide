@@ -65,10 +65,12 @@ const GCI18N = window.GCI18N || {
   lang: "en",
   t: (key) => key,
   dayName: (date) => String(date),
+  formatDate: (date) => String(date),
   apply() {},
   setLang() {},
 };
 const t = GCI18N.t;
+const formatDate = GCI18N.formatDate || ((date) => String(date));
 
 /* Category, crowd and age vocabularies are ids, not text — display labels
    live in js/i18n/<lang>.js under type.*, crowd.* and age.*. "experience"
@@ -204,6 +206,7 @@ function mergeStrings(exhibitors, event, meta, strings) {
     }
   }
   const ev = overlay.event || {};
+  event.location = ev.location || event.location || "";
   event.dates = ev.dates || "";
   event.tickets = ev.tickets || "";
   event.crowdTips = ev.crowdTips || [];
@@ -1338,7 +1341,9 @@ function openSources(kind, key) {
   $("#sources-subject").textContent = subject.name;
   $("#sources-note").textContent =
     t(`sources.note.${subject.what}`, { n: list.length }) +
-    (subject.updated ? t("sources.lastChecked", { date: subject.updated }) : "");
+    (subject.updated
+      ? t("sources.lastChecked", { date: formatDate(subject.updated) })
+      : "");
   $("#sources-list").innerHTML = list
     .map((url, i) => {
       const { host, rest } = sourceParts(url);
@@ -1465,6 +1470,8 @@ function matchesQuery(ex, q) {
   const hay = [
     ex.name,
     ex.description,
+    ex.country || "",
+    countryLabel(ex.country || ""),
     /* Both spellings of "hall 7.1", so the word works in either language
        whichever one the page is in. */
     ex.hall ? `hall ${ex.hall} ${t("hall.word")} ${ex.hall}` : "",
@@ -2194,7 +2201,8 @@ function directoryMatches() {
     const hay = [
       entry.name,
       entry.country,
-      ...stands.map((s) => `hall ${s.hall} ${s.booth}`),
+      countryLabel(entry.country),
+      ...stands.map((s) => `${t("hall.word")} ${s.hall} hall ${s.hall} ${s.booth}`),
     ]
       .join(" ")
       .toLowerCase();
@@ -2212,7 +2220,7 @@ function profileUrl(entry) {
 function profileLink(entry) {
   const href = profileUrl(entry);
   return href
-    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(entry.name)}<span aria-hidden="true"> ↗</span><span class="sr-only">, official directory entry, opens in a new tab</span></a>`
+    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(entry.name)}<span aria-hidden="true"> ↗</span><span class="sr-only">${esc(t("directory.entryAria"))}</span></a>`
     : esc(entry.name);
 }
 
@@ -2317,7 +2325,9 @@ function renderDirectory() {
       ? t("directory.booths", { n: state.directory.count })
       : t("directory.boothsFiltered", { n: matches.length, total: state.directory.count });
 
-  const bits = [esc(t("directory.lede", { date: state.directory.lastUpdated }))];
+  const bits = [
+    esc(t("directory.lede", { date: formatDate(state.directory.lastUpdated) })),
+  ];
   if (state.hall === "all" && trade) {
     bits.push(esc(t("directory.tradeOnly", { n: trade })));
   }
@@ -2580,7 +2590,10 @@ function tradeMatches({ category = true } = {}) {
     const hay = [
       entry.name,
       entry.country,
-      ...(entry.stands || []).map((s) => `hall ${s.hall} ${s.booth}`),
+      countryLabel(entry.country),
+      ...(entry.stands || []).map(
+        (s) => `${t("hall.word")} ${s.hall} hall ${s.hall} ${s.booth}`
+      ),
       /* Both spellings stay searchable, the same way tags do. */
       ...(entry.cats || []).map((id) => groups[id] || ""),
       ...(entry.cats || []).map((id) => groupLabel(id, groups[id])),
@@ -2607,9 +2620,9 @@ function tradeRow(entry, byBooth) {
      so the threshold sits above the noise, and the label states the count
      without telling you what to conclude from it. */
   const shared = share >= TRADE_SHARED_MIN
-    ? `<span class="trade-shared" title="${esc(
-        `${share} exhibitors are listed on this stand — a collective, usually a national or regional pavilion`
-      )}">shared · ${share}</span>`
+    ? `<span class="trade-shared" title="${esc(t("trade.sharedTitle", { n: share }))}">${esc(
+        t("trade.shared", { n: share })
+      )}</span>`
     : "";
   return `<li class="dir-row trade-row" data-saved="${isSaved("exhibitor", key)}">
     <span class="dir-name">${profileLink(entry)}</span>
@@ -2713,7 +2726,11 @@ function renderTrade() {
   keepingFocus(list, () => {
     list.innerHTML = matches.length
       ? `<ol class="dir-list trade-list">${shown.map((e) => tradeRow(e, byBooth)).join("")}</ol>` +
-        (rest > 0 ? `<button class="reset dir-more" type="button">Show ${rest} more</button>` : "")
+        (rest > 0
+          ? `<button class="reset dir-more" type="button">${esc(
+              t("directory.showMore", { n: rest })
+            )}</button>`
+          : "")
       : "";
   });
 
@@ -3232,7 +3249,7 @@ function buildICS() {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//gc2026-guide//gamescom 2026 itinerary//EN",
+    `PRODID:-//gc2026-guide//gamescom 2026 itinerary//${GCI18N.lang.toUpperCase()}`,
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
   ];
@@ -3260,7 +3277,7 @@ function buildICS() {
       `SUMMARY:${icsEscape(
         t("ics.summary", { day: dayName(d.date), n: dayItems.length })
       )}`,
-      `LOCATION:${icsEscape(state.event.location || "Koelnmesse, Cologne")}`,
+      `LOCATION:${icsEscape(state.event.location || t("ics.locationFallback"))}`,
       `DESCRIPTION:${icsEscape(dayItems.map(icsDescription).join("\n"))}`,
       "END:VEVENT"
     );
@@ -3275,7 +3292,7 @@ function downloadICS() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "gamescom-2026-itinerary.ics";
+  link.download = t("ics.filename");
   link.hidden = true;
   document.body.append(link);
   link.click();
@@ -3639,7 +3656,7 @@ function renderChangelog() {
     .map(
       (e) => `<div class="timeline-entry">
         <div class="timeline-head">
-          <span class="timeline-date">${esc(e.date)}</span>
+          <span class="timeline-date">${esc(formatDate(e.date))}</span>
           <span class="rev-tag">${esc(t("updates.rev", { n: e.revision }))}</span>
         </div>
         <ul>${(e.changes || []).map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
@@ -3743,7 +3760,8 @@ function renderCountdown() {
 function renderFreshness() {
   const m = state.meta;
   $("#data-freshness").textContent =
-    t("meta.freshness", { date: m.lastUpdated, rev: m.revision }) + (m.note ? ` ${m.note}` : "");
+    t("meta.freshness", { date: formatDate(m.lastUpdated), rev: m.revision }) +
+    (m.note ? ` ${m.note}` : "");
 }
 
 /* ---------- views ----------

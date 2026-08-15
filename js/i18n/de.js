@@ -7,7 +7,7 @@
    Deliberately untranslated: game and exhibitor names, platform names,
    "gamescom", "Opening Night Live", official area names, hall and booth
    numbers, and the scene vocabulary German gamers use in English anyway
-   (Indie, Merch, Demo, Hands-on, Queue, Community, Lifestyle).
+   (Indie, Merch, Demo, Hands-on, Community, Lifestyle).
 
    Key parity with en.js — including plural forms and {placeholders} — is
    enforced by tools/check-i18n.mjs before every deploy. */
@@ -17,10 +17,11 @@ window.GC_STRINGS = window.GC_STRINGS || {};
 window.GC_STRINGS.de = {
   /* ---------- document & navigation ---------- */
   "meta.description":
-    "Inoffizieller Guide zur gamescom 2026 — Aussteller, Spiele, Hallen- und Standorte, Andrangprognosen und Besuchsplanung.",
+    "Inoffizieller Guide zur gamescom 2026 — Aussteller, Spiele, Hallen- und Standnummern, erwarteter Andrang und Besuchsplanung.",
   "nav.skip": "Zum Inhalt springen",
   "nav.sections": "Bereiche",
-  "brand.kicker": "Inoffizieller Besucherguide",
+  "brand.kicker": "Inoffizieller gamescom-Guide",
+  "header.eventFallback": "Koelnmesse, Köln · 26.–30. Aug. 2026",
   "header.offline": "Offline · gespeicherte Daten",
   "tab.exhibitors": "Aussteller",
   "tab.planner": "Besuchsplaner",
@@ -30,9 +31,9 @@ window.GC_STRINGS.de = {
   /* ---------- toolbar & filters ---------- */
   "field.search": "Suche",
   "field.sort": "Sortieren",
-  "search.placeholder": "Aussteller, Spiel oder Tag…",
-  "sort.crowdDesc": "Andrang — vollste zuerst",
-  "sort.crowdAsc": "Andrang — ruhigste zuerst",
+  "search.placeholder": "Aussteller, Spiel oder Stichwort…",
+  "sort.crowdDesc": "Andrang — vollste Stände zuerst",
+  "sort.crowdAsc": "Andrang — ruhigste Stände zuerst",
   "sort.name": "Name A–Z",
   "sort.hall": "Hallennummer",
   "toolbar.filters": "Filter",
@@ -41,13 +42,13 @@ window.GC_STRINGS.de = {
   "toolbar.onlyShow": "Nur zeigen",
   "toggle.playable": "Spielbare Demos",
   "toggle.confirmed": "Bestätigte Standorte",
-  "toggle.saved": "Gespeichert",
-  "toggle.savedOnly": "Nur gespeicherte",
+  "toggle.saved": "Gemerkt",
+  "toggle.savedOnly": "Nur gemerkte",
   "toggle.hidePlayed": "Gespielte ausblenden",
   "filter.all": "Alle",
   "action.shareList": "Liste teilen",
-  "action.clearSaved": "Gespeicherte löschen",
-  "action.clearPlayed": "Gespielt-Marken löschen",
+  "action.clearSaved": "Merkliste leeren",
+  "action.clearPlayed": "„Gespielt“-Markierungen löschen",
   "action.yourPlan": "Dein Plan →",
   "action.clearFilters": "Filter zurücksetzen",
   "action.exportIcs": "In Kalender exportieren (.ics)",
@@ -59,14 +60,14 @@ window.GC_STRINGS.de = {
   "summary.onlyAdult": "nur 18+",
   "summary.playableOnly": "nur spielbar",
   "summary.confirmedOnly": "nur bestätigt",
-  "summary.savedOnly": "nur gespeicherte",
-  "summary.playedHidden": "gespielte versteckt",
+  "summary.savedOnly": "nur gemerkte",
+  "summary.playedHidden": "gespielte ausgeblendet",
 
   "count.exhibitors": "{n} Aussteller|{n} Aussteller",
   "count.exhibitorsFiltered": "{n} / {total} Aussteller",
   "empty.noMatches": "Nichts gefunden — versuch es ohne Filter.",
   "empty.noSavedYet":
-    "Noch nichts gespeichert — tipp auf + bei einem Stand oder einem Spiel im Lineup, um eine Liste zu starten.",
+    "Noch nichts gemerkt — tippe bei einem Stand oder Spiel auf +, um eine Liste zu starten.",
 
   /* ---------- vocabularies ---------- */
   "type.platform": "Plattformen",
@@ -76,24 +77,24 @@ window.GC_STRINGS.de = {
   "type.experience": "Erlebnisse & Aktionen",
   "type.media": "Medien & Community",
   "type.merch": "Merch & Lifestyle",
-  "type.trade": "Trade & Business",
+  "type.trade": "Business",
 
   "crowd.0": "Unbekannt",
   "crowd.1": "Ruhig",
-  "crowd.2": "Wenig",
+  "crowd.2": "Wenig los",
   "crowd.3": "Mittel",
   "crowd.4": "Voll",
   "crowd.5": "Extrem",
 
   "status.confirmed": "Bestätigt",
   "status.expected": "erwartet",
-  "status.rumored": "Gerücht",
+  "status.rumored": "Vermutet",
   "badge.playable": "spielbar",
 
   "age.filter.all": "Alle",
   "age.filter.hide": "Ohne 18+",
   "age.filter.only": "Nur 18+",
-  "age.confirmedTitle": "18+ Bändchen erforderlich",
+  "age.confirmedTitle": "Bändchen ab 18 nötig",
   "age.expectedTitle": "18+ erwartet — nicht bestätigt",
   "age.expectedBadge": "18+ erwartet",
 
@@ -109,20 +110,20 @@ window.GC_STRINGS.de = {
   "plate.statusKicker": "Status",
   "plate.absent": "Nicht da",
   "plate.noBooth": "kein Stand",
-  "plate.tba": "Offen",
+  "plate.tba": "Noch offen",
   "plate.notAnnounced": "nicht angekündigt",
-  "plate.boothTba": "Stand offen",
-  "plate.unconfSuffix": " · unbestät.",
+  "plate.boothTba": "Stand noch offen",
+  "plate.unconfSuffix": " · unbestätigt",
   "plate.confirmedTitle": "Offiziell bestätigter Standort",
-  "plate.unconfirmedTitle": "Beste Schätzung — nicht offiziell bestätigt",
+  "plate.unconfirmedTitle": "Vermuteter Standort — nicht offiziell bestätigt",
 
-  "card.lineup": "Lineup",
+  "card.lineup": "Spiele",
   "card.titles": "{n} Titel|{n} Titel",
   "card.playableCount": "{n} spielbar",
   "card.showFewer": "− Weniger zeigen",
   "card.showMore": "+ {n} weitere",
-  "card.queueIndex": "Queue-Index",
-  "card.queueAria": "Queue-Index {n} von 5",
+  "card.queueIndex": "Erwarteter Andrang",
+  "card.queueAria": "Erwarteter Andrang: {n} von 5",
   "card.planLabel": "Plan",
   "card.officialPage": "Offizielle Ausstellerseite",
   "card.officialPageAria": " für {name}, öffnet in einem neuen Tab",
@@ -147,7 +148,7 @@ window.GC_STRINGS.de = {
 
   /* ---------- full official directory ---------- */
   "directory.title": "Komplettes Verzeichnis",
-  "directory.summaryLede": "Alle bei der gamescom registrierten Stände, nicht nur die kuratierten",
+  "directory.summaryLede": "Alle bei der gamescom registrierten Stände, nicht nur die ausgewählten",
   "directory.booths": "{n} Stand|{n} Stände",
   "directory.boothsFiltered": "{n} / {total} Stände",
   "directory.loading": "Offizielle Liste wird geladen…",
@@ -155,36 +156,36 @@ window.GC_STRINGS.de = {
   "directory.error":
     "Verzeichnis konnte nicht geladen werden ({error}). Es muss einmal online geladen werden, bevor es offline funktioniert.",
   "directory.lede":
-    "Die offizielle Rohliste mit Stand vom {date} — Stände mit Karte oben inklusive, hier unten aber ohne Lineups, Andrangprognosen und Merken.",
+    "Die vollständige offizielle Liste vom {date}. Sie enthält auch die oben vorgestellten Stände; hier unten gibt es aber keine Spielelisten, Angaben zum Andrang oder Merkfunktion.",
   "directory.tradeOnly":
-    "{n} davon stehen nur im Business-Bereich (Hallen 1–4), den ein Privatbesucher-Ticket nicht öffnet.",
+    "{n} davon steht nur im Business-Bereich (Hallen 2–4). Ein Privatbesucher-Ticket gilt dort nicht.|{n} davon stehen nur im Business-Bereich (Hallen 2–4). Ein Privatbesucher-Ticket gilt dort nicht.",
   "directory.noMatches": "Hier passt nichts zur aktuellen Suche oder Halle.",
   "directory.showMore": "{n} weitere zeigen",
   "directory.noBooth": "kein Stand angegeben",
   "directory.hostedAt": " bei {name}",
   "directory.entryAria": ", offizieller Verzeichniseintrag, öffnet in einem neuen Tab",
-  "directory.businessArea": "Business-Bereich — nur Fach- und Medienbesucher",
+  "directory.businessArea": "Business-Bereich — nur für Fach- und Medienbesucher",
   "directory.fallbackHint":
-    "Keine Karte passt — aber ein Stand im Verzeichnis unten.|Keine Karte passt — aber {n} Stände im Verzeichnis unten.",
+    "Oben gibt es keinen Treffer — aber einen Stand im Verzeichnis unten.|Oben gibt es keinen Treffer — aber {n} Stände im Verzeichnis unten.",
 
   /* ---------- planner ---------- */
   "planner.title": "Wann du was besuchst",
   "planner.lede":
-    "Grobe Strategie nach erwartetem Andrang. Stark nachgefragte Stände (Queue-Index 4–5) bedeuten lange Wartezeiten — geh da gleich morgens hin oder nimm die Schlange in Kauf. Ruhige Stände sind gute Nachmittagsfüller.",
+    "Grobe Strategie nach erwartetem Andrang. Bei stark gefragten Ständen (Stufe 4–5) musst du lange warten — geh gleich morgens hin oder nimm die Schlange in Kauf. Ruhigere Stände passen gut in den Nachmittag.",
   "planner.fiveDays": "Die fünf Tage",
   "planner.yourPlan": "Dein Plan",
-  "planner.queuePriority": "Queue-Priorität",
+  "planner.queuePriority": "Stände mit hohem Andrang",
   "planner.queueSub":
-    "Vollste Stände zuerst. Wenn dir einer davon wichtig ist, mach ihn zu deinem ersten Stopp des Tages.",
-  "planner.wristband": "18+ Bändchen",
+    "Stände mit dem höchsten Andrang zuerst. Wenn dir einer davon wichtig ist, mach ihn zum ersten Stopp des Tages.",
+  "planner.wristband": "Bändchen ab 18",
   "planner.wristbandSub":
-    "Stände mit 18+ Demos kontrollieren den Ausweis und geben ein rotes Bändchen aus — hol es dir bei der Ankunft, nicht erst vorne in der Schlange.",
+    "Bei Ständen mit Demos ab 18 wird dein Ausweis kontrolliert und du bekommst ein rotes Bändchen — hol es dir gleich bei der Ankunft, nicht erst vorne in der Schlange.",
   "planner.crowdTips": "Allgemeine Andrang-Tipps",
 
   "plan.sub.day":
     "Gib jedem gemerkten Stand und Spiel einen Tag. Nicht zugeordnetes steht oben, bis du es einsortierst.",
   "plan.sub.hall":
-    "Deine Stopps nach Halle gruppiert, in Hallennummer-Reihenfolge — arbeite die Liste ab, dann läufst du nicht kreuz und quer.",
+    "Deine Stopps sind nach Hallen gruppiert und nach Hallennummer sortiert — arbeite die Liste ab, dann läufst du nicht kreuz und quer.",
   "plan.arrangeAria": "Deinen Plan anordnen",
   "plan.lensDay": "Nach Tag",
   "plan.lensHall": "Nach Halle",
@@ -192,11 +193,11 @@ window.GC_STRINGS.de = {
   "plan.unassigned": "Ohne Tag",
   "plan.savedHere": "Hier gemerkt",
   "plan.absentStop": "Nicht da — kein Stand",
-  "plan.offsite": "Außerhalb",
-  "plan.hallTba": "Halle offen",
-  "plan.boothTba": "Stand offen",
-  "plan.queueWith": "Queue {n}/5 {label}",
-  "plan.queueUnknown": "Queue unbekannt",
+  "plan.offsite": "Außerhalb des Messegeländes",
+  "plan.hallTba": "Halle noch offen",
+  "plan.boothTba": "Stand noch offen",
+  "plan.queueWith": "Andrang {n}/5 {label}",
+  "plan.queueUnknown": "Andrang unbekannt",
   "plan.assignAria": "{name} einem Tag zuordnen",
   "plan.assignToDay": "{day} zuordnen",
   "plan.removeFromDay": "Von {day} entfernen",
@@ -204,14 +205,14 @@ window.GC_STRINGS.de = {
   "plan.itemCount": "{n} Eintrag|{n} Einträge",
   "plan.placedSuffix": " · {n} zugeordnet",
   "plan.emptyNoSaved":
-    "Noch nichts gemerkt — tipp auf + bei einem Stand oder Spiel im Aussteller-Tab.",
+    "Noch nichts gemerkt — tippe bei einem Stand oder Spiel im Aussteller-Tab auf +.",
   "plan.emptyStale":
-    "Nichts von deiner Liste ist noch im aktuellen Lineup — Aussteller kommen und gehen zwischen Daten-Updates.",
+    "Kein Eintrag aus deiner Liste steht noch in den aktuellen Daten — Aussteller können sich zwischen den Updates ändern.",
 
   /* ---------- planner, hall lens ---------- */
   "route.locationKicker": "Ort",
-  "route.locationTba": "Ort offen",
-  "route.locationTbaShort": "Ort offen",
+  "route.locationTba": "Ort noch offen",
+  "route.locationTbaShort": "Ort noch offen",
   "route.stops": "{n} Stopp|{n} Stopps",
   "route.halls": "{n} Halle|{n} Hallen",
   "route.queueShort": "Q{n}",
@@ -221,25 +222,25 @@ window.GC_STRINGS.de = {
   "route.onlyUnassigned": "Nur Stopps ohne Tag",
   "route.absentNote": "Auf deiner Liste, aber nicht auf dem Messegelände: {names}.",
   "route.emptyNoSaved":
-    "Noch nichts gemerkt — tipp auf + bei einem Stand oder Spiel im Aussteller-Tab, dann reihen sich deine Stopps hier Halle für Halle auf.",
-  "route.emptyAllPlayed": "Jeder Stopp hier ist gespielt — stark.",
+    "Noch nichts gemerkt — tippe bei einem Stand oder Spiel im Aussteller-Tab auf +. Dann werden deine Stopps hier nach Hallen sortiert.",
+  "route.emptyAllPlayed": "Du hast alle Stopps hier als gespielt markiert — stark.",
   "route.emptyAllAssigned":
-    "Jeder Stopp auf deiner Liste hat einen Tag — wechsle zu Nach Tag, um den Plan durchzugehen.",
+    "Jeder Stopp auf deiner Liste hat einen Tag — wechsle zur Ansicht „Nach Tag“, um den Plan durchzugehen.",
   "route.emptyForDay":
-    "Für {day} ist noch nichts geplant. Ordne Stopps in der Ansicht Nach Tag zu.",
+    "Für {day} ist noch nichts geplant. Ordne Stopps in der Ansicht „Nach Tag“ zu.",
   "route.emptyStale":
     "Keine aktuellen Stopps passen zu deiner Liste — die Ausstellerdaten haben sich vermutlich geändert.",
 
   /* ---------- queue priority ---------- */
-  "priority.count": "{n} Stand mit hoher Queue|{n} Stände mit hoher Queue",
-  "priority.countFiltered": "{n} / {total} Stände mit hoher Queue",
+  "priority.count": "{n} Stand mit hohem Andrang|{n} Stände mit hohem Andrang",
+  "priority.countFiltered": "{n} / {total} Stände mit hohem Andrang",
   "priority.playedSuffix": " · {n} gespielt",
-  "priority.emptyAllPlayed": "Alles auf deiner Liste in der Hoch-Queue-Gruppe ist gespielt — stark.",
+  "priority.emptyAllPlayed": "Du hast alle Stände mit hohem Andrang auf deiner Liste als gespielt markiert — stark.",
   "priority.emptyNoneHigh":
-    "Nichts von deiner Liste ist in der Hoch-Queue-Gruppe — gute Nachricht, da kommst du wohl ohne lange Wartezeit rein.",
+    "Auf deiner Liste steht kein Stand mit hohem Andrang — gute Nachricht: Wahrscheinlich kommst du überall ohne lange Wartezeit dran.",
   "priority.emptyNoSaved":
-    "Noch nichts gemerkt — tipp auf + bei einem Stand oder Spiel im Aussteller-Tab.",
-  "wristband.wholeBooth": "Kompletter Stand ist altersbeschränkt",
+    "Noch nichts gemerkt — tippe bei einem Stand oder Spiel im Aussteller-Tab auf +.",
+  "wristband.wholeBooth": "Der gesamte Stand ist ab 18",
 
   /* ---------- event info ---------- */
   "event.theShow": "Die Messe",
@@ -258,7 +259,7 @@ window.GC_STRINGS.de = {
   /* ---------- updates ---------- */
   "updates.title": "Daten-Updates",
   "updates.lede":
-    "Dieser Guide wird bis zur Messe alle paar Tage aktualisiert, sobald Aussteller Lineups und Standorte bekanntgeben. Was sich in welcher Revision geändert hat:",
+    "Dieser Guide wird bis zur Messe alle paar Tage aktualisiert, sobald Aussteller ihre Spiele und Standorte bekannt geben. Was sich in welcher Revision geändert hat:",
   "updates.rev": "Rev. {n}",
   "updates.englishOnly": "Die Änderungsliste unten erscheint auf Englisch.",
 
@@ -266,23 +267,23 @@ window.GC_STRINGS.de = {
   "countdown.days": "T−{n} Tag|T−{n} Tage",
   "countdown.live": "● Läuft gerade",
   "countdown.over": "Bis nächstes Jahr",
-  "meta.freshness": "Daten aktualisiert {date} · Rev. {rev}.",
+  "meta.freshness": "Daten aktualisiert am {date} · Rev. {rev}.",
 
   /* ---------- sharing ---------- */
   "share.overline": "Dein Plan",
-  "share.title": "Gemerkte Liste teilen",
+  "share.title": "Merkliste teilen",
   "share.closeAria": "Teilen-Dialog schließen",
   "share.withLegend": "Teilen mit",
   "share.modeFriend": "Jemand anderem",
   "share.modeDevice": "Einem anderen meiner Geräte",
   "share.includeLegend": "Was mitkommt",
-  "share.partSaved": "Gemerkte Liste",
+  "share.partSaved": "Merkliste",
   "share.partDays": "Tagesplan",
-  "share.partPlayed": "Gespielt-Marken",
+  "share.partPlayed": "„Gespielt“-Markierungen",
   "share.linkLabel": "Link zum Teilen",
   "share.copyAction": "Link kopieren",
   "share.nativeAction": "Teilen…",
-  "share.nativeTitle": "gamescom 2026 gemerkte Liste",
+  "share.nativeTitle": "gamescom 2026 – Merkliste",
   "share.qrHint": "Scannen, um diese Liste auf einem anderen Gerät zu öffnen.",
   "share.qrAlt": "QR-Code",
   "share.qrTooLong": "Diese Liste ist zu lang für einen QR-Code — schick stattdessen den Link.",
@@ -291,51 +292,53 @@ window.GC_STRINGS.de = {
   "share.copyManually": "Zum Kopieren ⌘C / Strg+C drücken.",
   "share.failed": "Teilen fehlgeschlagen — kopier stattdessen den Link.",
 
-  "share.items": "{n} gemerkten Eintrag|{n} gemerkte Einträge",
-  "share.readyWithStale": "{items} bereit zum Teilen.",
+  "share.items": "{n} Eintrag|{n} Einträge",
+  "share.readyWithStale": "Du kannst {items} teilen.",
   "share.staleOlder":
     " {n} älterer Eintrag ist nicht mehr im Guide.| {n} ältere Einträge sind nicht mehr im Guide.",
   "share.stale": " {n} davon ist nicht mehr im Guide.| {n} davon sind nicht mehr im Guide.",
   "share.carried.days": "einen Tagesplan",
-  "share.carried.played": "Gespielt-Marken",
+  "share.carried.played": "„Gespielt“-Markierungen",
   "share.carried.join": " und ",
   "share.carried.note": " Enthält außerdem {what}.",
   "share.outOfDate": "Diese geteilte Liste ist veraltet — es bleibt nichts zum Hinzufügen.",
-  "share.loadedMoved": "{items} übernommen, die du mitgebracht hast.",
-  "share.loadedShared": "{items} aus einem geteilten Link geladen.",
+  "share.loadedMoved": "Du hast {items} übernommen.",
+  "share.loadedShared": "Du hast {items} aus einem geteilten Link geladen.",
   "share.newToYou": " — {n} neu für dich",
   "share.replaceCost":
     " Beim Ersetzen fällt {n} Eintrag weg, den nur du hier hast.| Beim Ersetzen fallen {n} Einträge weg, die nur du hier hast.",
-  "share.movedPlan": "Dein mitgebrachter Plan hat {items}{news}.",
+  "share.movedPlan": "Der übertragene Plan enthält {items}{news}.",
   "share.replaceAction": "Meine Liste ersetzen",
-  "share.replaced": "Deine Liste entspricht jetzt dem mitgebrachten Plan.",
+  "share.replaced": "Deine Liste entspricht jetzt dem übertragenen Plan.",
   "share.alreadyHave": "Du hast schon alles aus diesem geteilten Link.",
-  "share.linkHas": "Ein geteilter Link hat {items} — {n} neu für dich.",
+  "share.linkHas": "Ein geteilter Link enthält {items} — {n} neu für dich.",
   "share.addAction": "Zu meiner Liste hinzufügen",
-  "share.added": "{items} aus dem geteilten Link hinzugefügt.",
+  "share.added": "Du hast {items} aus dem geteilten Link hinzugefügt.",
   "toast.moveUndone": "Übernahme rückgängig gemacht.",
-  "toast.importUndone": "Import der geteilten Liste rückgängig gemacht.",
+  "toast.importUndone": "Hinzufügen aus dem geteilten Link rückgängig gemacht.",
   "moved.withList": "Der Guide ist auf gamescom.guide umgezogen. Deine Liste kommt mit.",
   "moved.plain": "Der Guide ist auf gamescom.guide umgezogen.",
   "moved.open": "Öffnen",
 
   /* ---------- sources & attribution ---------- */
-  "sources.overline": "Woher das kommt",
+  "sources.overline": "Woher die Infos kommen",
   "sources.title": "Quellen",
   "sources.closeAria": "Quellen schließen",
-  "sources.thisGuide": "diesem Guide",
+  "sources.thisGuide": "diesen Guide",
   "sources.aria": "Quellen für {name} — {n} Link|Quellen für {name} — {n} Links",
   "sources.note.event":
-    "Daten, Zeiten, Tickets und Hallenbereiche auf dieser Seite stammen aus {n} Quelle.|Daten, Zeiten, Tickets und Hallenbereiche auf dieser Seite stammen aus {n} Quellen.",
+    "Termine, Öffnungszeiten, Tickets und Hallenbereiche auf dieser Seite stammen aus {n} Quelle.|Termine, Öffnungszeiten, Tickets und Hallenbereiche auf dieser Seite stammen aus {n} Quellen.",
   "sources.note.card":
-    "Standort, Lineup und Andrangprognose auf dieser Karte stammen aus {n} Quelle.|Standort, Lineup und Andrangprognose auf dieser Karte stammen aus {n} Quellen.",
-  "sources.lastChecked": " Zuletzt geprüft {date}.",
+    "Standort, Spiele und erwarteter Andrang in diesem Eintrag stammen aus {n} Quelle.|Standort, Spiele und erwarteter Andrang in diesem Eintrag stammen aus {n} Quellen.",
+  "sources.lastChecked": " Zuletzt geprüft am {date}.",
   "sources.caveat":
-    "Das hier ist ein inoffizieller Guide, und Standnummern und Lineups ändern sich bis zur Türöffnung. Wenn ein Detail über deinen Tag entscheidet, prüf es an der Quelle.",
+    "Das hier ist ein inoffizieller Guide. Standnummern und Spieleangebote können sich bis zur Messe ändern. Wenn ein Detail für deinen Tag wichtig ist, prüf es an der Quelle.",
 
   /* ---------- calendar export ---------- */
+  "ics.filename": "gamescom-2026-plan.ics",
+  "ics.locationFallback": "Koelnmesse, Köln",
   "ics.summary": "gamescom — Plan für {day} ({n} Stopp)|gamescom — Plan für {day} ({n} Stopps)",
-  "ics.exhibitor": "{name} — {where} (Queue {queue})",
+  "ics.exhibitor": "{name} — {where} (Andrang {queue})",
   "ics.hallBooth": "Halle {hall}, Stand {booth}",
   "ics.queueUnknown": "unbekannt",
   "ics.gameAt": "{name} — bei {booths}",
@@ -343,18 +346,18 @@ window.GC_STRINGS.de = {
 
   /* ---------- confirmations & boot ---------- */
   "confirm.clearSaved":
-    "{n} gemerkten Eintrag und seine Tagzuordnung wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} gemerkten Einträge und ihre Tagzuordnungen wirklich löschen? Das lässt sich nicht rückgängig machen.",
+    "{n} gemerkten Eintrag und seine Tagesplanung wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} gemerkten Einträge und ihre Tagesplanung wirklich löschen? Das lässt sich nicht rückgängig machen.",
   "confirm.clearPlayed":
-    "{n} Gespielt-Marke wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} Gespielt-Marken wirklich löschen? Das lässt sich nicht rückgängig machen.",
+    "{n} „Gespielt“-Markierung wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} „Gespielt“-Markierungen wirklich löschen? Das lässt sich nicht rückgängig machen.",
   "boot.loadFailed":
-    "Daten konnten nicht geladen werden ({error}). Falls du die Datei direkt geöffnet hast, liefere sie stattdessen aus:",
+    "Daten konnten nicht geladen werden ({error}). Falls du die Datei direkt geöffnet hast, öffne sie stattdessen über einen Webserver:",
 
   /* ---------- footer ---------- */
   "footer.unofficial": "Inoffizieller Fan-Guide.",
   "footer.notAffiliated":
-    "Nicht verbunden mit der gamescom, der Koelnmesse oder dem game (Verband der deutschen Games-Branche).",
+    "Dieser Guide steht nicht in Verbindung mit der gamescom, der Koelnmesse oder game – Verband der deutschen Games-Branche.",
   "footer.storage":
-    "Deine gemerkte Liste bleibt in diesem Browser — kein Konto, kein Server; nichts verlässt das Gerät, außer du teilst selbst einen Link.",
+    "Deine Merkliste bleibt in diesem Browser — kein Konto, kein Server; nichts verlässt das Gerät, außer du teilst selbst einen Link.",
   "footer.createdBy":
     'Erstellt von <a class="subtle-link" href="https://inventivetalent.org">inventivetalent</a> mit Claude Code. <a class="subtle-link" href="https://github.com/InventivetalentDev/gc2026-guide">Open Source</a>.',
   /* The legal pages stay English, but the links wear the German names —
@@ -362,13 +365,13 @@ window.GC_STRINGS.de = {
      being easy to find. */
   "footer.imprint": "Impressum",
   "footer.privacy": "Datenschutz",
-  "footer.statusKey": "Spiel-Statuslegende",
+  "footer.statusKey": "Legende zum Spielstatus",
   "legend.confirmed":
     '<span class="dot" data-status="confirmed"></span> <b>Bestätigt</b> — offiziell für die gamescom angekündigt',
   "legend.expected":
-    '<span class="dot" data-status="expected"></span> <b>Erwartet</b> — stark naheliegend, nicht angekündigt',
+    '<span class="dot" data-status="expected"></span> <b>Erwartet</b> — wahrscheinlich, aber nicht angekündigt',
   "legend.rumored":
-    '<span class="dot" data-status="rumored"></span> <b>Gerücht</b> — unsere Vermutung, unbestätigt',
+    '<span class="dot" data-status="rumored"></span> <b>Vermutet</b> — unsere Einschätzung, unbestätigt',
   "legend.age":
     '<span class="badge badge-age" data-age-status="confirmed">18+</span> — Demo ist altersbeschränkt, Ausweis und rotes Bändchen nötig',
 
@@ -382,7 +385,7 @@ window.GC_STRINGS.de = {
 
   /* ---------- hall map page (map.html, js/map.js) ---------- */
   "map.metaDescription":
-    "Hallenpläne der gamescom 2026 bis auf Standebene, mit deinen gemerkten Ständen markiert. Funktioniert offline.",
+    "Hallenpläne der gamescom 2026 mit einzelnen Ständen und deinen gemerkten Ständen. Funktioniert offline.",
   "map.docTitle": "Hallenplan · gamescom 2026 Guide",
   "map.title": "Hallenplan",
   "map.offline": "Offline",
@@ -399,7 +402,7 @@ window.GC_STRINGS.de = {
   "map.sheetLoc": "Halle {hall} · Stand {nr}",
   "map.sheetAlso": " · auch {list}",
   "map.unconfBadge": "Standort unbestätigt",
-  "map.queueForecast": "Andrangprognose Q{n} {label}",
+  "map.queueForecast": "Erwarteter Andrang: Q{n} · {label}",
   "map.gamesCount": "{n} Spiel|{n} Spiele",
   "map.plusMore": ", +{n} weitere",
   "map.alsoHere": "ebenfalls hier",
@@ -410,98 +413,102 @@ window.GC_STRINGS.de = {
   "map.counts": "{n} Stände · {covered} im Guide",
   "map.countsSaved": " · {n} gemerkt",
   "map.chipSavedAria": ", {n} gemerkt",
-  "map.outlines": "Standumrisse",
+  "map.outlines": "Standflächen",
   "map.officialHallPlan": "offizieller Hallenplan",
-  "map.checkedOn": "geprüft {date} · schematisch, inoffiziell",
+  "map.checkedOn": "geprüft am {date} · schematisch, inoffiziell",
 
-  /* ---------- the trade badge & the business halls ----------
+  /* ---------- business access & the business halls ----------
 
      "Fachbesucher" is the word the German trade press and gamescom itself
-     use for a trade visitor, so the badge chips and the gate copy use it
-     rather than a translation of "trade". */
-  "toolbar.badge": "Badge",
-  "toolbar.badgeAria": "Welches Badge du hast",
+     use for a trade visitor. gamescom calls the matching admission product a
+     Business Ticket, so the UI uses Ticket rather than the English "badge". */
+  "toolbar.badge": "Ticket",
+  "toolbar.badgeAria": "Welches Ticket du hast",
   "badge.consumer": "Privatbesucher",
   "badge.consumerTitle": "Privatbesucher-Ticket — die Entertainment-Hallen",
-  "badge.trade": "Fach- & Medienbesucher",
-  "badge.tradeTitle": "Fach- oder Medienbesucher-Badge — bringt die Business-Hallen 2 bis 4 dazu",
-  "summary.tradePrefix": "Fachbesucher-Badge · {filters}",
+  "badge.trade": "Business",
+  "badge.tradeTitle": "Business-Ticket — zeigt zusätzlich die Business-Hallen 2 bis 4",
+  "summary.tradePrefix": "Business-Hallen · {filters}",
   "summary.noneLower": "alle Kategorien, alle Hallen",
 
   "trade.sectionTitle": "Business-Aussteller",
   "trade.sectionLede":
-    "Die Business-Hallen — Publishing, Entwicklungsdienstleistungen, Plattformen. Nur mit Fach- oder Medienbesucher-Badge",
+    "Die Business-Hallen: Publisher, Dienstleister für Spieleentwickler und Plattformen. Nur für Fach- und Medienbesucher.",
   "trade.gateWhat":
-    "Die Hallen 2–4 sind der <strong>Business-Bereich</strong> der gamescom: rund 800 Aussteller, die das Geschäft der Branche machen — Publisher, die sich Pitches anhören, Outsourcing- und Lokalisierungsstudios, Engines und Plattformen, Länderpavillons und Verbände. Er läuft Mittwoch bis Freitag und ist am Wochenende geschlossen.",
+    "Die Hallen 2–4 sind der <strong>Business-Bereich</strong> der gamescom. Dort treffen sich rund 800 Aussteller: Publisher, Dienstleister für Entwicklung und Übersetzung, Anbieter von Engines und Plattformen, Länderstände und Verbände. Der Bereich ist von Mittwoch bis Freitag geöffnet und am Wochenende geschlossen.",
   "trade.gateBadge":
-    "Ein <strong>Fach- oder Medienbesucher-Badge</strong> öffnet ihn. Ein Privatbesucher-Ticket nicht, deshalb ist er standardmäßig aus — schalte ihn ein und diese Stände werden merkbare, planbare Stopps wie alle anderen, mit eigener Liste unten und eigenen Karten im Raster oben.",
-  "trade.enable": "Ich habe ein Fachbesucher-Badge — Business-Aussteller zeigen",
+    "Mit einem <strong>Business-Ticket</strong> hast du Zutritt; mit einem Privatbesucher-Ticket nicht. Deshalb blendet der Guide diesen Bereich zunächst aus. Wenn du die Business-Aussteller einblendest, kannst du die Stände wie alle anderen merken und einplanen. Du findest sie in der Liste unten und in der Übersicht oben.",
+  "trade.enable": "Ich habe ein Business-Ticket — Business-Aussteller zeigen",
   "trade.hide": "Business-Aussteller ausblenden",
   "trade.turnOff": "Business-Aussteller ausschalten",
   "trade.showList": "Zur Liste →",
   "trade.toastOn":
-    "Business-Aussteller an — die Stände stehen im Raster und in ihrer eigenen Liste darunter.",
-  "trade.toastOff": "Business-Aussteller aus — zurück zu den Publikumshallen.",
+    "Business-Aussteller an — die Stände stehen in der Übersicht und in ihrer eigenen Liste darunter.",
+  "trade.toastOff": "Business-Aussteller aus — zurück zu den Entertainment-Hallen.",
   "trade.catFilterAria": "Business-Aussteller nach Produktgruppe filtern",
   "trade.loading": "Business-Hallen werden geladen…",
   "trade.loadError":
     "Die Business-Liste konnte nicht geladen werden ({error}). Sie muss einmal online geladen werden, bevor sie offline funktioniert.",
   "trade.dataPending":
-    "Auf deiner Liste stehen Stände aus den Business-Hallen. Diese Daten müssen einmal online geladen werden, bevor sie planbar sind — danach sind sie zwischengespeichert.",
+    "Deine Liste enthält Stände aus den Business-Hallen. Lade die Daten einmal online, bevor du sie einplanst. Danach sind sie auch offline verfügbar.",
   "trade.listWhat":
-    "Der Business-Bereich (Hallen 2–4), wo die Branche ihre Geschäfte macht. Ein Fach- oder Medienbesucher-Badge öffnet diese Hallen; ein Privatbesucher-Ticket nicht, und nach Freitag sind sie zu.",
+    "Im Business-Bereich (Hallen 2–4) trifft sich die Spielebranche. Mit einem Business-Ticket hast du Zutritt; mit einem Privatbesucher-Ticket nicht. Nach Freitag sind die Hallen geschlossen.",
   "trade.listWalkUp":
-    "Fast alles davon ist ohne Termin zugänglich: An jedem Länder- und Regionalpavillon teilen sich ein Dutzend oder mehr Firmen den Stand, und die kleinen Stände in den Hallen 2.1 und 2.2 sind Theken, an denen du einfach ansprechen kannst. Nur etwa zwanzig Stände — die großen Einzelbauten in Halle 4.2 — sind geschlossene Räume, für die du einen Termin brauchst. Die Angabe „geteilt“ markiert die Gemeinschaftsstände; was ein Stand tatsächlich anbietet, steht auf den Karten oben.",
-  "trade.listPlannable": "Merk dir einen Stand und er lässt sich planen wie jeder andere Stopp.",
+    "Fast alle Stände sind ohne Termin zugänglich: An den Länder- und Regionalständen teilen sich oft ein Dutzend oder mehr Firmen die Fläche. Bei den kleinen Theken in den Hallen 2.1 und 2.2 kannst du einfach vorbeischauen. Nur etwa zwanzig große Einzelstände in Halle 4.2 sind geschlossen und brauchen einen Termin. Die Angabe „geteilt“ markiert Gemeinschaftsstände; in den Einträgen oben steht, was sie anbieten.",
+  "trade.listPlannable": "Gemerkte Stände kannst du wie jeden anderen Stopp einplanen.",
   "trade.listNoMatches": "Hier passt nichts zur aktuellen Suche, Halle oder Kategorie.",
   "trade.exhibitorCount": "{n} Aussteller|{n} Aussteller",
-  "trade.offers": "Angebot",
-  "trade.offerCount": "{n} Punkt|{n} Punkte",
+  "trade.shared": "geteilt · {n}",
+  "trade.sharedTitle":
+    "An diesem Stand sind {n} Aussteller eingetragen — meist ist das ein Länder- oder Regionalstand",
+  "trade.offers": "Bietet",
+  "trade.offerCount": "{n} Angebot|{n} Angebote",
   "trade.accessLabel": "Zugang",
   "trade.access.open.label": "Ohne Termin",
   "trade.access.open.note":
-    "Ein offener Stand — während der Geschäftszeiten besetzt, kein Termin nötig.",
+    "Ein offener Stand — während der Öffnungszeiten besetzt, kein Termin nötig.",
   "trade.access.appointment.label": "Nur mit Termin",
   "trade.access.appointment.note":
-    "Ein geschlossener Besprechungsbau. Der Zutritt erfolgt nur mit vereinbartem Termin; vom Gang aus gibt es nichts zu sehen.",
-  "trade.access.mixed.label": "Ohne Termin + Meetings",
+    "Ein geschlossener Stand mit Besprechungsräumen. Du kommst nur mit einem vereinbarten Termin hinein; vom Gang aus gibt es nichts zu sehen.",
+  "trade.access.mixed.label": "Spontan + mit Termin",
   "trade.access.mixed.note":
-    "Eine offene Theke mit geschlossenen Besprechungsräumen dahinter — du kannst hingehen und fragen, die Räume sind aber vorab gebucht.",
+    "Eine offene Theke mit geschlossenen Besprechungsräumen dahinter — du kannst einfach zur Theke gehen; für die Räume brauchst du einen Termin.",
 
   "hall.businessAria": "Halle {hall}, Business-Bereich, nur Fach- und Medienbesucher",
   "card.faceToTrade": "Business-Stand zeigen — Halle {hall}, nur Fach- und Medienbesucher",
   "card.faceToPublic": "Zurück zum Publikumsstand — Halle {hall}",
-  "plan.tradeBadge": "Fachbesucher-Badge",
+  "plan.tradeBadge": "Business-Ticket",
   "plan.dayClosedSuffix": "{action} — der Business-Bereich ist am {day} geschlossen",
   "plan.closedWarn":
-    "Business-Bereich am {day} geschlossen — dieser Stopp liegt an dem Tag hinter einer Badge-Schranke.",
+    "Der Business-Bereich ist am {day} geschlossen — dieser Stopp ist dann nicht zugänglich.",
   "plan.closedGroupWarn":
     "{n} Stopp liegt im Business-Bereich, der am {day} geschlossen ist.|{n} Stopps liegen im Business-Bereich, der am {day} geschlossen ist.",
-  "ics.tradeExhibitor": "{name} — {where} (Fach- und Medienbesucher-Badge{shut})",
+  "ics.tradeExhibitor": "{name} — {where} (Business-Ticket{shut})",
   "ics.businessClosed": "; Business-Bereich an diesem Tag GESCHLOSSEN",
 
-  "event.yourBadge": "Dein Badge",
+  "event.yourBadge": "Dein Ticket",
   "event.badgeWhat":
-    "Die Hallen 2–4 sind der <strong>Business-Bereich</strong>: rund 800 Aussteller, die das Geschäft der Branche machen, geöffnet Mittwoch bis Freitag und am Wochenende geschlossen. Ein <strong>Fach- oder Medienbesucher-Badge</strong> öffnet sie; ein Privatbesucher-Ticket nicht.",
+    "Die Hallen 2–4 sind der <strong>Business-Bereich</strong>: rund 800 Aussteller aus der Spielebranche, geöffnet von Mittwoch bis Freitag und am Wochenende geschlossen. Mit einem <strong>Business-Ticket</strong> hast du Zutritt; mit einem Privatbesucher-Ticket nicht.",
   "event.badgeOnNote":
-    "Business-Stände werden angezeigt — im Ausstellerraster, im Hallenfilter, auf der Karte und als eigene Liste auf der Ausstellerseite.",
+    "Business-Stände werden angezeigt — in der Ausstellerübersicht, im Hallenfilter, auf der Karte und als eigene Liste auf der Ausstellerseite.",
   "event.badgeOffNote":
-    "Der Guide zeigt nur die Publikumshallen. Das ist eine Anzeigeeinstellung; sie ändert nichts daran, was dein Ticket tatsächlich öffnet.",
+    "Der Guide zeigt nur die Entertainment-Hallen. Diese Einstellung ändert nur die Anzeige, nicht den Zutritt mit deinem Ticket.",
 
   /* ---------- map areas ---------- */
   "map.area.entertainment.label": "Entertainment",
   "map.area.business.label": "Business",
   "map.area.business.access":
-    "nur mit Fach- oder Medienbesucher-Badge. Ein Privatbesucher-Ticket öffnet diese Hallen nicht, und nach Freitag sind sie zu.",
+    "nur mit Business-Ticket. Ein Privatbesucher-Ticket gilt in diesen Hallen nicht. Nach Freitag sind sie geschlossen.",
   "map.areaSuffix": "{label}-Bereich",
   "map.coveredNone": "keiner",
-  "map.tradeVisitorsOnly": ", nur Fachbesucher",
+  "map.tradeVisitorsOnly": ", nur Fach- und Medienbesucher",
   "map.tradeOnlySuffix": ", nur Fach- und Medienbesucher",
-  "map.showExhibitors": "Ich habe ein Badge — Aussteller zeigen",
+  "map.tradeOnlyLabel": "nur Fach- und Medienbesucher",
+  "map.showExhibitors": "Ich habe ein Business-Ticket — Aussteller zeigen",
   "map.hideExhibitors": "Aussteller ausblenden",
   "map.showTrade": "Business-Aussteller zeigen",
   "map.gatedHint":
-    "Business-Bereich — die meisten davon stehen im Guide, wenn Business-Aussteller an sind",
+    "Business-Bereich — die meisten Aussteller erscheinen im Guide, wenn du Business-Aussteller einblendest",
   "map.officialProfile": "offizielles Profil ↗",
 
   "footer.feedback":

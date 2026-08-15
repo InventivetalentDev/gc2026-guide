@@ -25,8 +25,15 @@ const SVGNS = "http://www.w3.org/2000/svg";
 /* Same string registry as the guide (js/i18n.js runs first on this page
    too), so the queue vocabulary is one set of crowd.* keys rather than a
    second copy to drift. The shim keeps a stale cached shell booting. */
-const GCI18N = window.GCI18N || { lang: "en", t: (key) => key, apply() {}, dayName: String };
+const GCI18N = window.GCI18N || {
+  lang: "en",
+  t: (key) => key,
+  apply() {},
+  dayName: String,
+  formatDate: String,
+};
 const t = GCI18N.t;
+const formatDate = GCI18N.formatDate || ((date) => String(date));
 /* Country and product-group names arrive in English from the generated
    data/directory.json; their display names live in the locale overlay the
    guide loads. The map fetches that overlay only for these two maps — see
@@ -667,7 +674,7 @@ function renderChips() {
         if (area.label)
           head = `<span class="hall-group" style="--area:${esc(area.colour || "")}"
             aria-hidden="true">${esc(area.label)}${
-            area.trade ? ' <i class="hall-group-trade">trade only</i>' : ""
+            area.trade ? ` <i class="hall-group-trade">${esc(t("map.tradeOnlyLabel"))}</i>` : ""
           }</span>`;
       }
       const n = hallSavedCount(h.id);
@@ -895,7 +902,7 @@ function selectStand(rec, { zoom = false } = {}) {
       who += `<br>${esc(t("map.alsoHere"))}: ${rest.slice(0, 6).map((x) => esc(x.name)).join(", ")}` +
         (rest.length > 6 ? esc(t("map.plusMore", { n: rest.length - 6 })) : "");
     }
-    who += '<br><span class="map-sheet-dim">business area — trade &amp; media badge only</span>';
+    who += `<br><span class="map-sheet-dim">${esc(t("directory.businessArea"))}</span>`;
   } else if (ex) {
     const games = ex.games || [];
     who = `<b>${esc(ex.name)}</b>`;
@@ -1007,10 +1014,7 @@ window.addEventListener("storage", (e) => {
    re-dates it without anyone remembering to. */
 function renderSourceNote() {
   const { source, fetched } = state.index;
-  const when = new Date(`${fetched}T00:00:00Z`);
-  const date = isNaN(when) ? fetched : when.toLocaleDateString(GCI18N.lang, {
-    day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
-  });
+  const date = formatDate(fetched);
   $("#srcnote").innerHTML =
     `${esc(t("map.outlines"))}: <a href="${esc(source)}" target="_blank" rel="noopener nofollow">${esc(
       t("map.officialHallPlan")

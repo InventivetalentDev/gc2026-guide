@@ -91,6 +91,26 @@
     }
   }
 
+  /* Dates in the data files stay as sortable ISO values. Format them only at
+     the display edge so German readers see "15. Aug. 2026" while English
+     keeps its familiar month-first form. UTC preserves the authored day in
+     every timezone. */
+  function formatDate(date) {
+    const raw = String(date || "");
+    const when = new Date(`${raw}T12:00:00Z`);
+    if (Number.isNaN(when.getTime())) return raw;
+    try {
+      return new Intl.DateTimeFormat(lang, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(when);
+    } catch {
+      return raw;
+    }
+  }
+
   /* Translate the static markup in place. English is the authored markup,
      so for en this is a no-op and English users pay nothing. data-i18n-html
      is reserved for the handful of nodes with our own inline <b>/<a> —
@@ -156,7 +176,7 @@
     });
   }
 
-  window.GCI18N = { lang, t, apply, setLang, dayName };
+  window.GCI18N = { lang, t, apply, setLang, dayName, formatDate };
 
   /* This script loads at the end of <body>, after the static markup and
      before app.js/map.js — translate and wire now, before first paint. */
