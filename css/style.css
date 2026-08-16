@@ -2148,32 +2148,32 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
      just strand the route heading 140px down the screen */
   #route-section { scroll-margin-top: 16px; }
 
-  /* The phone masthead. The controls stop being a row and take their own
-     places in the grid: share in the dead space beside the wordmark, the
-     language toggle directly under it against the same right edge, then the
-     dates and the install prompt across the full width.
+  /* The phone masthead. The control row dissolves and each button takes its
+     own place in the grid's right column: share beside the wordmark, the
+     language toggle directly under it beside the dates. Two columns, two
+     rows — neither button gets a row of its own, so nothing is pushed down
+     the page to make space for a control.
 
-     The right column is sized by the share button alone. Everything under it
-     spans both columns and is right-aligned rather than sitting in that
-     column, because a grid track is as wide as its widest item — and
-     "Deutsch", let alone "App installieren", would take that width out of
-     the wordmark's row, where a 360px phone has none to give. */
+     The install prompt is the exception. It is the only one of the three
+     wide enough ("App installieren") to squeeze the wordmark out of its own
+     row if it sat in that column, so it keeps a full-width line under the
+     dates, where its width costs nothing. */
   .header-inner {
     align-items: center;
-    column-gap: 12px;
+    column-gap: 8px;
     row-gap: 10px;
     padding-bottom: 14px;
   }
   .brand { grid-row: 1; }
   .header-actions { display: contents; }
-  /* Bottom of the wordmark's row, so it reads level with "gamescom 2026"
-     and stays a tight pair with the language toggle under it. */
+  /* End of the wordmark's row, start of the dates' — the two buttons close
+     up into a pair across the row gap instead of drifting apart. */
   .header-share { grid-column: 2; grid-row: 1; justify-self: end; align-self: end; }
-  .lang-switch { grid-column: 1 / -1; grid-row: 2; justify-self: end; }
+  .lang-switch { grid-column: 2; grid-row: 2; justify-self: end; align-self: start; }
   /* Left edge with everything else in the stack — right alignment was for
      the wide masthead, and there is nothing here to align against. */
-  .header-meta { grid-column: 1 / -1; grid-row: 3; text-align: left; }
-  .install-btn { grid-column: 1 / -1; grid-row: 4; justify-self: start; }
+  .header-meta { grid-column: 1; grid-row: 2; text-align: left; }
+  .install-btn { grid-column: 1 / -1; grid-row: 3; justify-self: start; }
 
   .grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; gap: 26px; }
@@ -2199,6 +2199,18 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .share-qr { grid-template-columns: 1fr; }
   .share-qr-image { max-width: 280px; margin: 0 auto; }
   .share-qr p { text-align: center; }
+}
+
+/* Under ~370px the venue line and the language toggle cannot share a row —
+   "Koelnmesse, Cologne · Aug 26–30, 2026" alone is 250px — and a date
+   broken after the comma to seat a button is a bad trade. The toggle takes
+   a line of its own under the share button instead, and the dates get the
+   full width back. The right column narrows to the share button with it,
+   which is also what keeps the wordmark on one line down here. */
+@media (max-width: 369px) {
+  .lang-switch { grid-column: 1 / -1; grid-row: 2; align-self: auto; }
+  .header-meta { grid-column: 1 / -1; grid-row: 3; }
+  .install-btn { grid-row: 4; }
 }
 
 /* Under ~340px the wordmark and the share button no longer fit on one line
