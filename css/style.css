@@ -139,21 +139,30 @@ body {
   z-index: 50;
 }
 
+/* Two columns, two rows: the wordmark on the left across both, the dates and
+   the controls stacked on the right. A grid rather than a flex row because
+   the controls belong *under* the meta block, not beside it — sitting beside
+   it, they push the dates and countdown off the right edge they are aligned
+   to. The phone layout in the responsive section re-places the same items. */
 .header-inner {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: 20px;
+  row-gap: 6px;
   padding-top: 20px;
   padding-bottom: 16px;
 }
 
 .brand {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  /* content width, not column width — a stretched grid item would make the
+     empty half of the masthead a link to the top of the exhibitor list */
+  justify-self: start;
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-right: auto; /* holds the meta block and share button at the right edge */
   text-decoration: none;
   color: inherit;
 }
@@ -180,10 +189,14 @@ body {
 }
 .brand-year { color: var(--ink-dim); font-weight: 600; }
 
-/* order + the auto margin, not source order: the share button is written
-   next to the wordmark so the phone grid can lift it into the gap there,
-   and belongs at the far right of the masthead everywhere else. */
-.header-meta { text-align: right; display: flex; flex-direction: column; gap: 2px; order: 2; }
+.header-meta {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 .meta-line { color: var(--ink-mid); font-size: .84rem; }
 .countdown {
   font-family: var(--font-mono);
@@ -199,12 +212,13 @@ body {
    individually aligned buttons — each aligning itself against the meta text
    above is what left the language toggle floating mid-air on a phone. */
 .header-actions {
+  grid-column: 2;
+  grid-row: 2;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 6px;
 }
 
 /* ---- tabs: signage strip, not browser chrome ---- */
@@ -1967,12 +1981,7 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .lang-switch:hover,
 .header-share:hover { border-color: var(--ink-mid); color: var(--ink); }
 
-/* Bottom edge comes from .header-inner's flex-end, so it lands level with
-   the language toggle rather than with the top of the meta block. */
-.header-share {
-  order: 3;
-  white-space: nowrap;
-}
+.header-share { white-space: nowrap; }
 
 /* The footer copy runs as prose, so the backstop switcher there reads as
    one more link in the Imprint · Privacy row rather than a second button. */
@@ -2116,41 +2125,6 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
    responsive
    ============================================================ */
 
-/* The masthead's own breakpoint, wider than the phone one below: the single
-   row wants ~640px before the share button starts wrapping onto a line of
-   its own, and a lone button under the wordmark reads as a mistake. Stacking
-   early costs nothing — the row is mostly air at these widths anyway. */
-@media (max-width: 760px) {
-  /* Grid, not a column: the share button rides up beside the wordmark into
-     the masthead's one piece of empty space, while the meta block keeps the
-     full width underneath. Column flex could only stack all three. */
-  .header-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 12px;
-    padding-bottom: 14px;
-  }
-  .brand { grid-column: 1; grid-row: 1; margin-right: 0; }
-  .header-share { grid-column: 2; grid-row: 1; justify-self: end; }
-  /* Left edge with everything else in the stack — right alignment was for
-     the wide row, and there is nothing here to align against. */
-  .header-meta { grid-column: 1 / -1; grid-row: 2; text-align: left; }
-  .header-actions { justify-content: flex-start; }
-}
-
-/* Under ~340px the wordmark and the share button no longer fit on one line
-   together, and "gamescom 2026" breaking across two is worse than a slightly
-   smaller masthead. Everything gives a few pixels rather than one thing
-   giving all of them. */
-@media (max-width: 340px) {
-  .header-inner { column-gap: 8px; }
-  .brand { gap: 10px; }
-  .brand-mark { width: 40px; height: 40px; font-size: 1.1rem; }
-  .brand-title { font-size: 1.5rem; }
-  .header-share { padding: 3px 8px; }
-}
-
 @media (max-width: 860px) {
   .footer-inner { grid-template-columns: 1fr 1fr; }
   .priority-item { grid-template-columns: 34px 1fr auto; row-gap: 4px; }
@@ -2173,6 +2147,34 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   /* …and with nothing pinned on top, the sticky-header scroll offset would
      just strand the route heading 140px down the screen */
   #route-section { scroll-margin-top: 16px; }
+
+  /* The phone masthead. The control row dissolves and each button takes its
+     own place in the grid's right column: share beside the wordmark, the
+     language toggle directly under it beside the dates. Two columns, two
+     rows — neither button gets a row of its own, so nothing is pushed down
+     the page to make space for a control.
+
+     The install prompt is the exception. It is the only one of the three
+     wide enough ("App installieren") to squeeze the wordmark out of its own
+     row if it sat in that column, so it keeps a full-width line under the
+     dates, where its width costs nothing. */
+  .header-inner {
+    align-items: center;
+    column-gap: 8px;
+    row-gap: 10px;
+    padding-bottom: 14px;
+  }
+  .brand { grid-row: 1; }
+  .header-actions { display: contents; }
+  /* End of the wordmark's row, start of the dates' — the two buttons close
+     up into a pair across the row gap instead of drifting apart. */
+  .header-share { grid-column: 2; grid-row: 1; justify-self: end; align-self: end; }
+  .lang-switch { grid-column: 2; grid-row: 2; justify-self: end; align-self: start; }
+  /* Left edge with everything else in the stack — right alignment was for
+     the wide masthead, and there is nothing here to align against. */
+  .header-meta { grid-column: 1; grid-row: 2; text-align: left; }
+  .install-btn { grid-column: 1 / -1; grid-row: 3; justify-self: start; }
+
   .grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; gap: 26px; }
   .day-row { grid-template-columns: 76px 1fr; row-gap: 8px; }
@@ -2197,6 +2199,30 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .share-qr { grid-template-columns: 1fr; }
   .share-qr-image { max-width: 280px; margin: 0 auto; }
   .share-qr p { text-align: center; }
+}
+
+/* Under ~370px the venue line and the language toggle cannot share a row —
+   "Koelnmesse, Cologne · Aug 26–30, 2026" alone is 250px — and a date
+   broken after the comma to seat a button is a bad trade. The toggle takes
+   a line of its own under the share button instead, and the dates get the
+   full width back. The right column narrows to the share button with it,
+   which is also what keeps the wordmark on one line down here. */
+@media (max-width: 369px) {
+  .lang-switch { grid-column: 1 / -1; grid-row: 2; align-self: auto; }
+  .header-meta { grid-column: 1 / -1; grid-row: 3; }
+  .install-btn { grid-row: 4; }
+}
+
+/* Under ~340px the wordmark and the share button no longer fit on one line
+   together, and "gamescom 2026" breaking across two is worse than a slightly
+   smaller masthead. Everything gives a few pixels rather than one thing
+   giving all of them. */
+@media (max-width: 340px) {
+  .header-inner { column-gap: 8px; }
+  .brand { gap: 10px; }
+  .brand-mark { width: 40px; height: 40px; font-size: 1.1rem; }
+  .brand-title { font-size: 1.5rem; }
+  .header-share { padding: 3px 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
