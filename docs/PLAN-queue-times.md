@@ -126,9 +126,11 @@ elegant year-round answer, but it is a second new platform concept in a repo
 that currently has zero, and mid-show debugging means talking to an opaque
 object. **Analytics Engine** samples reads; a queue with 4 sessions can
 answer with 2 of them. **D1** makes the sessions table a table: aggregation
-is SQL, and a misbehaving client or garbage flood on day 2 can be inspected
-and cleaned with `wrangler d1 execute` from a laptop. D1 it is, on
-debuggability during the five days that matter.
+is SQL, ad-hoc questions are queries, and the moderation surface (§6) is a
+handful of SELECTs and DELETEs rather than bespoke storage traversal. D1 it
+is, on debuggability during the five days that matter — with the proviso
+that the debugging interface has to fit in a pocket, which §6 takes
+seriously.
 
 ```sql
 CREATE TABLE sessions (
@@ -154,6 +156,9 @@ CREATE TABLE queue_meta (        -- mechanics: slow-changing, separately aggrega
   batch       INTEGER,           -- rough batch/wave size bucket, NULL = unknown
   reported_at INTEGER NOT NULL
 );
+-- moderation (§6): denylist checked on every write; admin actions logged
+CREATE TABLE denylist  (client TEXT PRIMARY KEY, added_at INTEGER NOT NULL);
+CREATE TABLE admin_log (action TEXT NOT NULL, detail TEXT, at INTEGER NOT NULL);
 ```
 
 Every timestamp is stamped from the **server** clock; the client's opinion of
@@ -363,8 +368,45 @@ them. The defense is layered cheapness:
 - **Escalation path, not default**: if show week brings a real flood,
   Turnstile on the write endpoint is the next dial — deliberately *not* in
   the MVP, because it would be the site's first third-party script, traded
-  away for abuse that may never come. D1 makes the manual fallback real:
-  identify the client id, delete its rows, deny-list it.
+  away for abuse that may never come. The manual fallback — identify the
+  client id, delete its rows, deny-list it — is real because the moderation
+  surface below makes it a button, not a laptop.
+
+### Moderation from a phone
+
+The operator is at the show, phone-only — no laptop, no checkout, no SSH box
+with the repo on it. Anything that assumes `wrangler` mid-show is a plan
+that fails on day 1, so moderation is part of the *product*, not a runbook:
+
+- **The worker serves its own admin page** at `/api/admin/` — a single
+  phone-first HTML page rendered by the script, guarded by a bearer token
+  (`wrangler secret put ADMIN_TOKEN` once at deploy time, pasted into the
+  phone once, kept in that page's localStorage). Serving it from the worker
+  rather than `dist/` keeps it off the public site, outside the service
+  worker's caches, and means the page can never exist half-updated — it
+  ships inside the same script that implements its actions.
+- **What it shows**: report volume per queue and per hour; the estimator's
+  current answer next to its inputs for any queue that looks wrong; top
+  clients by report count; cheap anomaly lists (clients touching many queues
+  at once, flip-flopping `ahead` values, `closed` reports contradicted by
+  everyone else).
+- **What it does, as buttons**: delete a client's rows and deny-list the id
+  (a `denylist` table, checked on every write — one indexed lookup, cached
+  in the isolate for a minute); purge one queue's last N minutes (one bad
+  actor cleaned without losing the day); clear or force a `closed` state;
+  and a global **pause writes** switch (reads keep serving) as the break-
+  glass control while thinking.
+- **Every admin action is logged** to an `admin_log` table — mostly so that
+  day-3 Haylee can see what day-2 Haylee already tried.
+- Failed token attempts are rate-limited and never distinguish "wrong token"
+  from "no such route" beyond a plain 404.
+
+Two fallbacks exist without any of this and are worth knowing about, but
+neither is the plan: the Cloudflare dashboard's D1 console runs SQL from a
+phone browser (clunky, no guardrails, real), and a claude.ai/code cloud
+session with the repo can run `wrangler` on Haylee's behalf from a phone.
+Good escape hatches; bad primary interfaces for minute two of an incident in
+a crowded hall.
 
 **Privacy page** (`privacy.html`, both languages): this is the site's first
 feature where a visitor action leaves the browser, and the page currently
@@ -396,9 +438,10 @@ Two things will bite if not done deliberately:
    exactly the "must be believed rather than eventually refreshed" rule the
    VERSION comment sets.
 
-Deploy order: D1 database created and migrated first; `wrangler.toml` gains
-`main` + `run_worker_first` + `[[d1_databases]]` + `[triggers]`; one normal
-deploy then carries site and API together. Rollback is one motion — removing
+Deploy order: D1 database created and migrated first, `ADMIN_TOKEN` set via
+`wrangler secret put`; `wrangler.toml` gains `main` + `run_worker_first` +
+`[[d1_databases]]` + `[triggers]`; one normal deploy then carries site and
+API together. Rollback is one motion — removing
 `main` returns the Worker to assets-only. `workers_dev` stays true, which
 gives a staging URL where the full loop runs against real D1 before the
 domains see it.
@@ -408,8 +451,9 @@ domains see it.
 **MVP (must ship before Aug 26):** worker + D1 + both endpoints; sessions
 with `joined`/`update`/`entered`/`left`/`closed`; all three estimator tiers;
 mechanics capture (`meta`) and label display; report flow + live chips on
-cards; queue-priority integration; the reopen prompt bar; SW bypass; i18n;
-privacy page; changelog/meta bump.
+cards; queue-priority integration; the reopen prompt bar; the phone admin
+surface with deny-list, purge and pause (it exists *for* show week, so it
+cannot be phase 2); SW bypass; i18n; privacy page; changelog/meta bump.
 
 **Phase 2 (shippable mid-show — the PWA updates itself):** map popover
 chips; wave-aware range display from observed cycle times; estimator tuning
@@ -440,6 +484,7 @@ show-days check, D1 is deleted per the privacy promise.
 | file | change |
 |---|---|
 | `worker/index.js` | new — routing, validation, session logic, rate limits, estimator, cron prune |
+| `worker/admin.js` | new — phone-first admin page + actions, token guard, audit log |
 | `worker/schema.sql` | new — D1 migration |
 | `wrangler.toml` | `main`, `run_worker_first`, D1 binding, cron trigger |
 | `js/app.js` | report flow, session state + prompt bar, live chips, polling |
@@ -466,4 +511,8 @@ inside the cache window; throttled repeats reject; trade-id and
 out-of-hours reports 4xx; "I'm in!" fired offline lands after reconnect
 with its deferred duration; the reopen prompt resurfaces a 20-minute
 session; offline shows the honest fallback and the report control
-disappears.
+disappears. The admin surface is verified **on a phone, from scratch**:
+paste the token, find a planted troll client in the anomaly list, deny-list
+it, watch its rows vanish from the estimate within the cache window, pause
+and unpause writes — the whole loop the show floor will actually demand,
+on the device it will be demanded from.
