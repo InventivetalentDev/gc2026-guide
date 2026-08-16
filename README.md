@@ -57,21 +57,28 @@ the edge, no Worker script. `.github/workflows/cloudflare.yml` deploys every pus
 asset directory has to hold the site and nothing else.
 
 It runs there rather than on GitHub Pages because Pages gives a repository one custom
-domain and the guide answers on three: `gc26.guide`, plus `gamescom.guide` and the
-original `gc2026.inventivetalent.org` for as long as those two take to drain. Both
-older names are bookmarked and installed on people's phones, and a saved list is
-per-origin — so they keep serving the guide rather than a redirect until the people
-standing on them have been offered the move.
+domain and the guide answers on four: **`hallgui.de`**, plus `gamescom.guide`,
+`gc26.guide` and the original `gc2026.inventivetalent.org` for as long as those three
+take to drain. All three are bookmarked or installed on somebody's phone, and a saved
+list is per-origin — so they keep serving the guide rather than a redirect until the
+people standing on them have been offered the move.
 
-`gc26.guide` is the home address because `gamescom.guide` could not stay one: the name
-is a registered mark of game — Verband der deutschen Games-Branche e.V., who license it
-to exhibitors and have had unofficial sites warned off carrying it in a domain. The
-guide still calls the show by its name throughout, which is ordinary referential use and
-is not the part anyone objects to.
+The address moved twice, for different reasons. `gamescom.guide` had to go: the name is
+a registered mark of game — Verband der deutschen Games-Branche e.V., who license it to
+exhibitors and have had unofficial sites warned off carrying it in a domain. `gc26.guide`
+replaced it and then went too, for a softer reason — it is an abbreviation with a year in
+it, fine to type and useless to say across a queue, and it would have needed replacing
+again next August.
 
-The three `.de` names — `gc26.de`, `gc2026.de`, `gcguide.de` — redirect to `gc26.guide`
-rather than serving the guide, so they cost nothing in extra origins. `gc26.de` is the
-one to say out loud to a German crowd.
+`hallgui.de` is the one that stays. It names the thing the guide is actually built
+around, the hall map; it reads as "hallguide" once the dot stops being punctuation; and
+it has no year in it. Six alias domains redirect to it rather than serving the guide, so
+they cost nothing in extra origins — `hallguide.de` most importantly, because it is how
+somebody who only *heard* the name would spell it, and owning both means it does not
+matter which side of the `de` they put the dot on.
+
+Throughout all of it the guide still calls the show by its name, which is ordinary
+referential use and was never the part anyone objects to. Only the domain moved.
 
 Any static host works, but two routing options are not optional if you move it
 elsewhere: `/map.html` must be served without a redirect, and `/` must serve
@@ -205,9 +212,11 @@ Moving between your own devices is what the **Played marks** box in the share di
 exists for — there your progress follows you, alongside the day plan.
 
 Moving yourself between the guide's hostnames is the one case that is not a share, so
-it carries everything: accepting the notice on `gc2026.inventivetalent.org` or on
-`gamescom.guide` brings the saved list, the played marks and the day assignments over
-to `gc26.guide` in one step. See [`docs/DEPLOYING.md`](docs/DEPLOYING.md).
+it carries everything: accepting the notice on any of the three draining hostnames
+brings the saved list, the played marks and the day assignments over to `hallgui.de` in
+one step. Somebody who accepted an earlier notice gets asked once more, because what
+they accepted then was an address that has since moved on. See
+[`docs/DEPLOYING.md`](docs/DEPLOYING.md).
 
 ## Architecture
 
@@ -275,7 +284,7 @@ Two licences, because the repository holds two different kinds of thing.
 | | Licence | |
 |---|---|---|
 | **Code** — `index.html`, `map.html`, `js/`, `css/`, `sw.js`, `tools/` | [MIT](LICENSE) | Take it, fork it for another show, no conditions beyond the notice |
-| **Data** — `data/` | [CC BY 4.0](data/LICENSE) | Credit *gc26.guide* and say when you took it |
+| **Data** — `data/` | [CC BY 4.0](data/LICENSE) | Credit *hallgui.de* and say when you took it |
 
 The data licence covers the editorial layer — the selection, the
 confirmed/expected/rumored calls, the crowd forecasts, the sources and check

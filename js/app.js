@@ -603,15 +603,19 @@ function encodeEntries() {
    very origin they are trying to leave, so sharing could never move a list
    forward.
 
-   Two hosts are draining, not one. gamescom.guide was the intended home for
-   about a day: "gamescom" is a registered mark of game — Verband der deutschen
+   Three hosts are draining, and they left for different reasons. gamescom.guide
+   went because "gamescom" is a registered mark of game — Verband der deutschen
    Games-Branche e.V., which licenses it to exhibitors and has had unofficial
-   sites warned off carrying it in a domain name. It sits on this list for the
-   same reason the original hostname does — people are on it, and their lists
-   have to be able to leave. Only these two are rewritten; gc26.guide and
-   localhost share themselves, as they should. */
-const LEGACY_HOSTS = ["gc2026.inventivetalent.org", "gamescom.guide"];
-const SHARE_ORIGIN = "https://gc26.guide";
+   sites warned off carrying it in a domain name. gc26.guide went because it was
+   an abbreviation nobody could hold in their head: fine to type, useless to say
+   across a queue. hallgui.de is the last of it — a name that survives the year
+   in it, and reads as "hallguide" once the dot stops being punctuation.
+
+   All three stay on this list for one reason: people are standing on them, and
+   a saved list cannot cross an origin by itself. Only these are rewritten;
+   hallgui.de and localhost share themselves, as they should. */
+const LEGACY_HOSTS = ["gc2026.inventivetalent.org", "gamescom.guide", "gc26.guide"];
+const SHARE_ORIGIN = "https://hallgui.de";
 
 function onLegacyHost() {
   return LEGACY_HOSTS.includes(location.host);
@@ -710,7 +714,7 @@ function buildShareLink({ move = false, days = false, played = false } = {}) {
    day assignments included — because this is not a share: it is one person's
    own plan following them to an address that is going to outlive the old
    one, the exact case the played and day toggles exist to default off for.
-   The legacy-origin rewrite in buildShareLink aims it at gc26.guide.
+   The legacy-origin rewrite in buildShareLink aims it at hallgui.de.
 
    Payload lives in the hash, so none of it is ever sent to a server — the
    same reason a shared list can be built offline.
@@ -735,12 +739,14 @@ function buildMoveLink() {
    taking on purpose: everything the guide holds is per-origin, so accepting is
    what carries it (buildMoveLink above) and ignoring leaves it here.
 
-   Bumped to v2 because the destination changed under the people who already
-   answered v1. Whichever way they answered it, they are now on a host that is
-   itself being retired — the ones who accepted moved to gamescom.guide, the
-   ones who dismissed stayed put — and a remembered v1 answer would mean never
-   hearing about gc26.guide at all. One more nudge each, then quiet again. */
-const MOVED_KEY = "gc2026.moved.v2";
+   Bumped on every change of destination, and this is the third. Answering the
+   notice does not settle anyone permanently — it moves them to whatever the
+   answer pointed at, which twice now has become a host that is itself draining.
+   Anyone still carrying a v1 or v2 answer is somewhere on that chain, and the
+   remembered answer is what would keep them from ever hearing about hallgui.de.
+   So the key carries the destination's generation rather than the notice's: one
+   more nudge each time the address changes, then quiet again. */
+const MOVED_KEY = "gc2026.moved.v3";
 
 function moveNoticeAnswered() {
   try {

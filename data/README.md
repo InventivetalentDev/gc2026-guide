@@ -52,7 +52,7 @@ and there is a great deal in these files that nobody here holds:
 
 ## Attributing this
 
-Credit *gc26.guide* with a link, and say when you took the data — it goes
+Credit *hallgui.de* with a link, and say when you took the data — it goes
 stale fast, and a copy dated to the week it was taken is more honest to your
 own readers than one that looks current forever. The revision it came from is
 in `meta.json`.
