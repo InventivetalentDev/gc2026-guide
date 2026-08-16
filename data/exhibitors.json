@@ -239,7 +239,7 @@
     "name": "Electronic Arts",
     "type": "publisher",
     "hall": "6.1",
-    "booth": null,
+    "booth": "B011/A010",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/ea-swiss-sarl",
     "games": [
@@ -250,9 +250,10 @@
     "tags": ["AAA", "sports", "shooter"],
     "crowd": 3,
     "sources": [
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
+      "https://exhibitors.gamescom.global/exhibitor/ea_swiss/"
     ],
-    "lastUpdated": "2026-08-10"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "square-enix",
@@ -470,14 +471,14 @@
       "https://gamesfinest.de/gamescom/gamescom-2026-welche-spiele-sind-vor-ort-und-wo-findest-du-sie/",
       "https://exhibitors.gamescom.global/exhibitor/focus_entertainment/"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "hoyoverse",
     "name": "HoYoverse",
     "type": "publisher",
     "hall": "6.1",
-    "booth": "B030",
+    "booth": "B030/C031",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/hoyoverse",
     "games": [
@@ -491,9 +492,10 @@
     "crowd": 5,
     "sources": [
       "https://www.hoyoverse.com/en-us/news/165264",
-      "https://finalweapon.net/2026/07/17/hoyoverse-gamescom-2026-lineup-honkai-nexus-anima-petit-planet/"
+      "https://finalweapon.net/2026/07/17/hoyoverse-gamescom-2026-lineup-honkai-nexus-anima-petit-planet/",
+      "https://exhibitors.gamescom.global/exhibitor/hoyoverse/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "level-infinite",
@@ -556,9 +558,11 @@
     "sources": [
       "https://x.com/NetEaseGames_EN/status/2078511437178380513",
       "https://www.neteasegames.com/news/Corporate/20260811/37075_1310671.html",
-      "https://www.theouterhaven.net/etease-games-gamescom-2026-lineup/"
+      "https://www.theouterhaven.net/etease-games-gamescom-2026-lineup/",
+      "https://exhibitors.gamescom.global/exhibitor/netease_interactive/",
+      "https://exhibitors.gamescom.global/exhibitor/uk_netease_interacti/"
     ],
-    "lastUpdated": "2026-08-11"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "pearl-abyss",
@@ -658,9 +662,10 @@
     "sources": [
       "https://www.invenglobal.com/articles/23789/eclipse-glow-games-to-host-tides-of-annihilation-demo-booth-at-gamescom-2026",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
-      "https://worthplaying.com/article/2026/7/15/news/150452"
+      "https://worthplaying.com/article/2026/7/15/news/150452",
+      "https://exhibitors.gamescom.global/exhibitor/eclipse_glow_games/"
     ],
-    "lastUpdated": "2026-08-11"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "indie-arena-booth",
@@ -1248,6 +1253,29 @@
     "lastUpdated": "2026-08-13"
   },
   {
+    "id": "daedalic",
+    "name": "Daedalic Entertainment",
+    "type": "publisher",
+    "hall": "10.2",
+    "booth": "E020/D021",
+    "locationConfirmed": true,
+    "games": [
+      { "title": "Woodo", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Ghost Haunting", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Star Trek: Voyager — Across the Unknown", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Surviving Deponia", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Horseguard: Winds of the North", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "The Curse of the Crimson Stag", "status": "confirmed", "playable": true, "platforms": ["PC"] }
+    ],
+    "tags": ["indie", "adventure", "playable demos"],
+    "crowd": 2,
+    "sources": [
+      "https://www.gameswirtschaft.de/marketing-pr/daedalic-days-2026-showcase-140826/",
+      "https://exhibitors.gamescom.global/exhibitor/daedalic/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
     "id": "gamescom-campus",
     "name": "gamescom Campus",
     "type": "media",
@@ -1414,9 +1442,10 @@
     "sources": [
       "https://www.eventbrite.co.uk/e/wargaming-community-party-cologne-2026-tickets-1991050336153",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
-      "https://exhibitors.gamescom.global/exhibitor/wargaming/"
+      "https://exhibitors.gamescom.global/exhibitor/wargaming/",
+      "https://worldoftanks.eu/en/news/general-news/gamescom-player-party-2026-wot-tickets/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "kuro-games",
@@ -1431,9 +1460,10 @@
     "tags": ["gacha", "unconfirmed"],
     "crowd": 1,
     "sources": [
-      "https://wutheringwaves.kurogames.com/en/main"
+      "https://wutheringwaves.kurogames.com/en/main",
+      "https://gamingpartys.de/2019/2026/07/tencent-bringt-worlds-of-play-zur-gamescom-2026-nach-koeln/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "take-two",
@@ -1450,9 +1480,11 @@
     "crowd": 1,
     "sources": [
       "https://variety.com/2026/gaming/news/gta-6-trailer-netflix-youtube-aug-27-1236789693/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-hersteller-wer-ist-wo-070826/",
+      "https://www.rockstargames.com/newswire/article/9k2kaa1o3297k9/grand-theft-auto-vi-an-extended-look"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "thq-nordic",

@@ -5,9 +5,9 @@
   "event": {
     "location": "Koelnmesse, Köln",
     "dates": "26.–30. Aug. 2026",
-    "tickets": "Nur online über den offiziellen gamescom-Shop — keine Tageskasse vor Ort. Tagestickets: Do/Fr/So 31,50 € (ermäßigt 22,50 €), Samstag 41,00 €; Abendtickets ab 16:00 Uhr 10,50–13,00 €; Familienticket 69,50–86,00 €; Mittwochs-Wildcard 65,50 € (ausverkauft am 5. Aug. 2026). Tickets für Opening Night Live sind ausverkauft; Samstagstickets sind erfahrungsgemäß schon vor der Messe ausverkauft. Tagestickets enthalten die kostenlose Fahrt mit Bus und Bahn im VRS-Gebiet.",
+    "tickets": "Nur online über den offiziellen gamescom-Shop — keine Tageskasse vor Ort. Tagestickets: Do/Fr/So 31,50 € (ermäßigt 22,50 €), Samstag 41,00 €; Abendtickets ab 16:00 Uhr 10,50–13,00 €; Familienticket 69,50–86,00 €; Mittwochs-Wildcard 65,50 € (ausverkauft am 5. Aug. 2026). Tickets für Opening Night Live sind ausverkauft; die Samstags-Tagestickets sind seit dem 14. Aug. 2026 ebenfalls ausverkauft — für diesen Tag gibt es nur noch das Abendticket ab 16:00 Uhr für 13 €. Tagestickets enthalten die kostenlose Fahrt mit Bus und Bahn im VRS-Gebiet.",
     "crowdTips": [
-      "Samstag ist der vollste und teuerste Tag und meist ausverkauft — geh lieber am Donnerstag oder Sonntag zum Anspielen.",
+      "Die Samstags-Tagestickets sind ausverkauft (Stand 14. Aug. 2026) — geh lieber am Donnerstag oder Sonntag zum Anspielen; für Samstag gibt es nur noch das Abendticket ab 16:00 Uhr.",
       "Die Mittwochs-Wildcard (Einlass ab 13:00 Uhr) ist der ruhigste Weg zu den heißesten Demos, war aber am 5. Aug. ausverkauft — ohne sie ist Donnerstagmorgen das nächstbeste Zeitfenster mit wenig Andrang.",
       "Auch mit einem Business-Ticket kommst du am Mittwoch nicht überall hinein: Mehrere AAA-Stände lassen vormittags nur geladene Presse zu oder bleiben den ganzen Tag geschlossen (Xbox 2026: Stand öffnet erst Donnerstag; Capcom 2025: bis ca. 11:00 Uhr nur Presse). Schau auf die Kanäle des Standes, bevor du deinen Mittwoch danach planst.",
       "Sei deutlich vor Türöffnung da und nimm den Eingang, der deinem ersten Muss-Stand am nächsten liegt — große Stände bauen in der ersten Stunde 2–4 h Wartezeit auf. Nord ist am kürzesten für die Hallen 6–9, Ost für Halle 10, Süd für die Business-Hallen; siehe Eingänge unter Event-Infos.",
@@ -42,7 +42,7 @@
       "2026-08-29": {
         "access": "öffentlich",
         "hours": "Entertainment 09:00–20:00 (Business-Bereich geschlossen)",
-        "note": "Vollster und teuerster Tag, meist ausverkauft — wenn möglich zum Spielen meiden. Abends City Festival."
+        "note": "Vollster und teuerster Tag; Tagestickets seit 14. Aug. 2026 ausverkauft — wenn möglich zum Spielen meiden. Abends City Festival."
       },
       "2026-08-30": {
         "access": "öffentlich",
@@ -581,7 +581,7 @@
       }
     },
     "eclipse-glow": {
-      "description": "Das chinesische Studio hinter dem Artus-Actionspiel Tides of Annihilation betreibt einen Hands-on-Demostand in Halle 6.1 — eines der bemerkenswerten neuen chinesischen Singleplayer-Spiele auf der Messe. Die Standnummer stammt aus Berichten der Fachpresse, nicht aus dem offiziellen Verzeichnis — prüf sie vor Ort anhand des Hallenplans.",
+      "description": "Das chinesische Studio hinter dem Artus-Actionspiel Tides of Annihilation betreibt einen Hands-on-Demostand in Halle 6.1 — eines der bemerkenswerten neuen chinesischen Singleplayer-Spiele auf der Messe. Der Stand Halle 6.1, B050 ist inzwischen im offiziellen Ausstellerverzeichnis bestätigt.",
       "crowdNote": "Die Trailer haben viel Aufmerksamkeit erzeugt, aber der Stand zeigt nur einen Titel — rechne mit mittleren Schlangen, die nach einem ONL-Auftritt schnell länger werden.",
       "visitAdvice": "Wenn es bei Opening Night Live auftaucht, stell dich am nächsten Morgen früh an, bevor es sich herumspricht.",
       "games": {
@@ -797,6 +797,19 @@
       "crowdNote": "Kaum jemand kommt wegen Lautsprechern zur gamescom — eine der ruhigsten Ecken einer vollen Halle.",
       "visitAdvice": "Ein guter Ort, um die Schlange von jemand anderem auszusitzen, und ungefähr der einzige Stand auf der Fläche, an dem man wirklich etwas hören kann."
     },
+    "daedalic": {
+      "description": "Der Hamburger Adventure-Publisher ist mit sechs Titeln in Halle 10.2 zurück, vorgestellt bei der ersten „Daedalic Days“-Show am 13. August: die neuen Adventures Woodo, Ghost Haunting und Star Trek: Voyager — Across the Unknown, dazu die bekannten Reihen Surviving Deponia, Horseguard: Winds of the North und The Curse of the Crimson Stag. Die meisten Titel sind auf der Messe spielbar.",
+      "crowdNote": "Ein Adventure-Publikum statt AAA-Andrang — stetiges Interesse, aber selten lange Schlangen.",
+      "visitAdvice": "Problemloser Walk-up im Indie-Bereich von Halle 10.2, an jedem Messetag.",
+      "games": {
+        "Woodo": "Neues Adventure, erstmals bei den Daedalic Days gezeigt.",
+        "Ghost Haunting": "Neues Adventure, erstmals bei den Daedalic Days gezeigt.",
+        "Star Trek: Voyager — Across the Unknown": "Neues Star-Trek-Adventure, erstmals bei den Daedalic Days gezeigt.",
+        "Surviving Deponia": "Neuer Teil der Deponia-Adventure-Reihe.",
+        "Horseguard: Winds of the North": "Adventure-Titel im nordischen Setting.",
+        "The Curse of the Crimson Stag": "Neues Adventure."
+      }
+    },
     "a-maze": {
       "description": "Der dritte Digital PlayGround des Berliner Independent-Games-Festivals auf der gamescom: experimentelle Spiele und Art Games, die noch ungewöhnlicher sind als das Angebot am Indie Arena Booth. Der Stand liegt nur wenige Plätze entfernt in derselben Halle.",
       "crowdNote": "Klein, kuratiert und ruhig direkt neben dem Indie Arena Booth — die Rechner werden schnell wieder frei.",
@@ -862,7 +875,7 @@
       }
     },
     "kuro-games": {
-      "description": "Der Entwickler von Wuthering Waves war 2024 und 2025 dabei, hat für die gamescom 2026 aber nichts angekündigt — eine Teilnahme wirkt fraglich; der aktuelle Fokus liegt auf dem WuWa-3.6-Broadcast und dem neuen Elysium-Anime.",
+      "description": "Der Entwickler von Wuthering Waves war 2024 und 2025 dabei, hat für die gamescom 2026 aber nichts angekündigt — eine Teilnahme wirkt fraglich; der aktuelle Fokus liegt auf dem WuWa-3.6-Broadcast und dem neuen Elysium-Anime. Wuthering-Waves-Kunstwerke sind zwar auf der Messe zu sehen, aber nur in Tencents eigener Offsite-Ausstellung „Worlds of Play“ — nicht an einem von Kuro betriebenen Stand.",
       "crowdNote": "Noch gibt es nichts Bestätigtes, wofür du anstehen könntest. Falls doch ein Stand kommt, ist wie bei HoYoverse mit großem Andrang beim Merch zu rechnen.",
       "visitAdvice": "Richte deine Planung nicht nach Kuro Games aus; prüfe in den letzten zwei Wochen noch einmal das offizielle Verzeichnis und die Kanäle von @Wuthering_Waves.",
       "games": {

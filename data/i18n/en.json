@@ -5,9 +5,9 @@
   "event": {
     "location": "Koelnmesse, Cologne",
     "dates": "Aug 26–30, 2026",
-    "tickets": "Online-only via the official gamescom shop — no on-site box office. Day tickets: Thu/Fri/Sun €31.50 (discounted €22.50), Saturday €41.00; evening tickets from 16:00 €10.50–13.00; family ticket €69.50–86.00; Wednesday Wildcard €65.50 (sold out Aug 5, 2026). Opening Night Live tickets are sold out; Saturday historically sells out before the show. Day tickets include free VRS public transport in the Cologne region.",
+    "tickets": "Online-only via the official gamescom shop — no on-site box office. Day tickets: Thu/Fri/Sun €31.50 (discounted €22.50), Saturday €41.00; evening tickets from 16:00 €10.50–13.00; family ticket €69.50–86.00; Wednesday Wildcard €65.50 (sold out Aug 5, 2026). Opening Night Live tickets are sold out; Saturday day tickets sold out too, as of Aug 14, 2026 — only the €13 evening ticket (from 16:00) is left for that day. Day tickets include free VRS public transport in the Cologne region.",
     "crowdTips": [
-      "Saturday is the busiest, priciest day and usually sells out — do hands-on play Thursday or Sunday instead.",
+      "Saturday day tickets are sold out (Aug 14, 2026) — do hands-on play Thursday or Sunday instead; only the evening ticket from 16:00 remains for Saturday.",
       "Wednesday's Wildcard ticket (entry from 13:00) is the quietest way into the hottest demos, but it sold out on Aug 5 — without one, Thursday morning is the next-best low-crowd window.",
       "On trade Wednesday, a trade badge doesn't open every door: several AAA booths run invited-press-only previews in the morning or skip the day entirely (Xbox 2026: booth opens Thursday; Capcom 2025: press-only until ~11:00). Check a booth's own channels before planning your Wednesday around it.",
       "Arrive well before doors open and pick the entrance nearest your first must-play booth — big booths build 2–4 h queues within the first hour. North is shortest for halls 6–9, East for Hall 10, South for the business halls; see Entrances on the Info tab.",
@@ -42,7 +42,7 @@
       "2026-08-29": {
         "access": "public",
         "hours": "Entertainment 09:00–20:00 (business area closed)",
-        "note": "Busiest and most expensive day, usually sells out — avoid for hands-on play if you can. City Festival in the evening."
+        "note": "Busiest and most expensive day; day tickets sold out Aug 14, 2026 — avoid for hands-on play if you can. City Festival in the evening."
       },
       "2026-08-30": {
         "access": "public",
@@ -581,7 +581,7 @@
       }
     },
     "eclipse-glow": {
-      "description": "The Chinese studio behind Arthurian action game Tides of Annihilation runs a hands-on demo booth in Hall 6.1 — one of the notable new Chinese single-player entrants. The booth number comes from trade-press reports rather than the official directory, so check it against the hall plan on site.",
+      "description": "The Chinese studio behind Arthurian action game Tides of Annihilation runs a hands-on demo booth in Hall 6.1 — one of the notable new Chinese single-player entrants. Its Hall 6.1, booth B050 stand is now confirmed in the official exhibitor directory.",
       "crowdNote": "High-profile trailer buzz but a single-title booth — moderate lines, spiking after any ONL appearance.",
       "visitAdvice": "If it appears at Opening Night Live, queue early the next morning before word spreads.",
       "games": {
@@ -797,6 +797,19 @@
       "crowdNote": "Almost nobody comes to gamescom for loudspeakers — one of the quietest corners of a busy hall.",
       "visitAdvice": "A good place to sit out someone else's queue, and about the only stand on the floor where you can hear anything properly."
     },
+    "daedalic": {
+      "description": "The Hamburg adventure-game publisher returns with a six-title Hall 10.2 booth, revealed at its first-ever \"Daedalic Days\" showcase on Aug 13: new adventures Woodo, Ghost Haunting and Star Trek: Voyager — Across the Unknown, alongside returning names Surviving Deponia, Horseguard: Winds of the North and The Curse of the Crimson Stag. Most titles are playable on the show floor.",
+      "crowdNote": "An adventure-game crowd rather than an AAA one — steady interest, rarely a long line.",
+      "visitAdvice": "Easy walk-up in the Hall 10.2 indie area any day of the show.",
+      "games": {
+        "Woodo": "New adventure title, first revealed at Daedalic Days.",
+        "Ghost Haunting": "New adventure title, first revealed at Daedalic Days.",
+        "Star Trek: Voyager — Across the Unknown": "New Star Trek adventure game, first shown at Daedalic Days.",
+        "Surviving Deponia": "Returning entry in the Deponia adventure series.",
+        "Horseguard: Winds of the North": "Nordic-set adventure title.",
+        "The Curse of the Crimson Stag": "New adventure title."
+      }
+    },
     "a-maze": {
       "description": "The Berlin independent-games festival's third Digital PlayGround at gamescom: experimental and art games curated well outside what the Indie Arena Booth covers, a few stands away in the same hall.",
       "crowdNote": "Small, curated and quiet next to the Indie Arena Booth — machines free up quickly.",
@@ -862,7 +875,7 @@
       }
     },
     "kuro-games": {
-      "description": "Wuthering Waves developer exhibited in 2024 and 2025 but has made no gamescom 2026 announcement — attendance looks doubtful; its current focus is the WuWa 3.6 broadcast and the new Elysium anime.",
+      "description": "Wuthering Waves developer exhibited in 2024 and 2025 but has made no gamescom 2026 announcement — attendance looks doubtful; its current focus is the WuWa 3.6 broadcast and the new Elysium anime. Wuthering Waves artwork does appear at the show, but only inside Tencent's own offsite \"Worlds of Play\" exhibition — not a Kuro-run booth.",
       "crowdNote": "Nothing confirmed to queue for; if a booth materializes expect HoYoverse-style merch crowds.",
       "visitAdvice": "Don't plan around Kuro Games; re-check the official directory and @Wuthering_Waves socials in the final two weeks.",
       "games": {
