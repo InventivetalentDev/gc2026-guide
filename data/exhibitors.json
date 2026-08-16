@@ -266,6 +266,7 @@
     "games": [
       { "title": "Dragon Quest VII Reimagined", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"] },
       { "title": "Final Fantasy VII Rebirth", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Switch 2", "Xbox"] },
+      { "title": "Final Fantasy VII Remake", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Switch 2", "Xbox"] },
       { "title": "Final Fantasy XIV", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox"] },
       { "title": "Final Fantasy X/X-2 HD Remaster", "status": "confirmed", "playable": true, "platforms": ["Multi"] },
       { "title": "Final Fantasy VII Revelation", "status": "confirmed", "playable": false, "platforms": ["TBA"] }
@@ -419,15 +420,18 @@
       { "title": "Silver Pines", "status": "confirmed", "playable": true, "platforms": ["PC"] },
       { "title": "Bus Simulator 27", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
       { "title": "Construction Simulator Evolution", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
-      { "title": "Firefighting Simulator: Ignite", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] }
+      { "title": "Firefighting Simulator: Ignite", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Seafarer: The Ship Sim", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Worms W.M.D.", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] }
     ],
     "tags": ["indie", "simulation", "playable demos"],
     "crowd": 2,
     "sources": [
       "https://www.astragon.com/news/detail/astragon-and-team17-return-to-gamescom-2026-with-beloved-brands-and-exciting-newcomers",
-      "https://exhibitors.gamescom.global/exhibitor/team17_digital_ltd/"
+      "https://exhibitors.gamescom.global/exhibitor/team17_digital_ltd/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "giants-software",
@@ -529,15 +533,17 @@
     "officialUrl": "https://www.gamescom.global/en/exhibitor/tencent-games",
     "games": [
       { "title": "Worlds of Play (40-title art exhibition)", "status": "confirmed", "playable": false, "platforms": [] },
-      { "title": "Tencent Hall 8.1 booth (program TBA)", "status": "confirmed", "playable": null, "platforms": [] }
+      { "title": "Honor of Kings", "status": "confirmed", "playable": null, "platforms": ["Mobile", "PC"] },
+      { "title": "Arena of Valor", "status": "confirmed", "playable": null, "platforms": ["Mobile"] }
     ],
-    "tags": ["art", "exhibition", "offsite"],
+    "tags": ["art", "exhibition", "offsite", "mobile"],
     "crowd": 3,
     "sources": [
       "https://www.gameshub.com/news/news/tencent-worlds-of-play-game-art-exhibition-gamescom-2026-2887179/",
-      "https://exhibitors.gamescom.global/exhibitor/tencent_games/"
+      "https://exhibitors.gamescom.global/exhibitor/tencent_games/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "netease",
@@ -614,16 +620,23 @@
     "games": [
       { "title": "Winter Resort 3", "status": "confirmed", "playable": null, "platforms": ["PC"] },
       { "title": "Professional Ship Simulator", "status": "confirmed", "playable": null, "platforms": ["PC"] },
-      { "title": "Five unannounced simulators", "status": "confirmed", "playable": null, "platforms": ["PC"] }
+      { "title": "Notruf 112 – Die Feuerwehr", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Firefighters Code Red", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Notaufnahme Simulator", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Heavy Cargo: The Truck Simulator", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Bergwerk: A Mining Sim", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Forensics: Crime Scene Detective", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Seaworks: Trap Season", "status": "confirmed", "playable": null, "platforms": ["PC"] }
     ],
     "tags": ["simulation", "German"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/aerosoft/",
       "https://www.gamesmarket.global/aerosoft-confirms-gamescom-2026-presence/",
-      "https://www.univers-simu.com/en/news/la-gamescom-2026-affiche-complet-giants-aerosoft-et-lopening-night-live-se-devoilent-124784/"
+      "https://www.univers-simu.com/en/news/la-gamescom-2026-affiche-complet-giants-aerosoft-et-lopening-night-live-se-devoilent-124784/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "ggg-poe2",
@@ -668,6 +681,263 @@
     "lastUpdated": "2026-08-16"
   },
   {
+    "id": "4divinity",
+    "name": "4Divinity",
+    "type": "publisher",
+    "hall": "7.1",
+    "booth": "B021/C020",
+    "stands": [
+      { "hall": "7.1", "booth": "B021/C020" },
+      { "hall": "6.1", "booth": "A030" }
+    ],
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/4divinity-uk-ltd",
+    "games": [
+      { "title": "The Defiant", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Showa American Story", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Guns of Eschaton", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "A Whisper of Fall: Jinyiwei", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "Genigods: Nezha", "status": "confirmed", "playable": null, "platforms": ["PC", "Xbox"] },
+      { "title": "Sword Sage: Awakening", "status": "confirmed", "playable": null, "platforms": ["PC"] }
+    ],
+    "tags": ["publisher", "action-RPG", "shooter", "discovery"],
+    "crowd": 3,
+    "sources": [
+      "https://www.globenewswire.com/news-release/2026/08/12/3343428/0/en/gcl-s-subsidiary-4divinity-to-showcase-six-titles-at-gamescom-2026.html",
+      "https://www.gamespress.com/en-GB/4Divinity-Powers-Into-Western-Market-With-Six-Title-Showcase-at-gamesc",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
+      "https://exhibitors.gamescom.global/en/exhibitor/4divinity_uk_ltd/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "secret-mode",
+    "name": "Secret Mode",
+    "type": "publisher",
+    "hall": "6.1",
+    "booth": "B040",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/secret-mode-limited",
+    "games": [],
+    "tags": ["publisher", "indie"],
+    "crowd": 2,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/secret_mode_limited/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-hersteller-wer-ist-wo-070826/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "pawprint-aniimo",
+    "name": "Pawprint Interactive (Aniimo)",
+    "type": "publisher",
+    "hall": "6.1",
+    "booth": "C041",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/pawprint-interactive-entertainment",
+    "games": [
+      { "title": "Aniimo", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles", "Mobile"] }
+    ],
+    "tags": ["action-RPG", "anime", "mobile"],
+    "crowd": 3,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/pawprint_interactive/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-hersteller-wer-ist-wo-070826/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "elementa-games",
+    "name": "Elementa Games",
+    "type": "publisher",
+    "hall": "6.1",
+    "booth": "C021",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/elementa-games-pte-ltd",
+    "games": [
+      { "title": "Silver Palace", "status": "confirmed", "playable": null, "platforms": ["PC"] }
+    ],
+    "tags": ["action-RPG", "adventure", "discovery"],
+    "crowd": 2,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/elementa_games_pteefly-amz/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "huawei-appgallery",
+    "name": "Huawei AppGallery (Aspiegel)",
+    "type": "platform",
+    "hall": "7.1",
+    "booth": "B031",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/aspiegel-se",
+    "games": [],
+    "tags": ["platform", "mobile", "commerce"],
+    "crowd": 2,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/aspiegel/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "webedia-fyng-city",
+    "name": "Webedia — FYNG City",
+    "type": "media",
+    "hall": "7.1",
+    "booth": "B051/C050, C052",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/webedia-gmbh",
+    "games": [],
+    "tags": ["media", "community", "theater", "walk-up"],
+    "crowd": 3,
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
+      "https://exhibitors.gamescom.global/en/exhibitor/webedia/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "mbc-game-studio",
+    "name": "MBC Game Studio",
+    "type": "publisher",
+    "hall": "8.1",
+    "booth": "A011/B010",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/mbc-game-studio-limited",
+    "games": [],
+    "tags": ["publisher", "studio", "discovery"],
+    "crowd": 2,
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
+      "https://exhibitors.gamescom.global/en/exhibitor/mbc_game_studio_limi/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "the-district",
+    "name": "The District (esports area)",
+    "type": "experience",
+    "hall": "8.1",
+    "booth": "B060",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/sk-gaming-gmbh-and-co-kg",
+    "games": [
+      { "title": "Clutch", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Star Wars Galactic Racer", "status": "confirmed", "playable": null, "platforms": ["PC"] },
+      { "title": "EA Sports FC 27", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+    ],
+    "tags": ["esports", "attraction", "community", "hands-on", "walk-up"],
+    "crowd": 3,
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
+      "https://esportsadvocate.net/2026/08/marqed-agency-the-district-gamescom-2026/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/",
+      "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
+      "https://exhibitors.gamescom.global/en/exhibitor/sk_gaming_gmbh_-_co/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "gigabyte-aorus",
+    "name": "GIGABYTE / AORUS",
+    "type": "hardware",
+    "hall": "8.1",
+    "booth": "C050",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/giga-byte-technology-co-ltd",
+    "games": [],
+    "tags": ["hardware", "components", "monitors", "peripherals", "PC"],
+    "crowd": 2,
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
+      "https://exhibitors.gamescom.global/en/exhibitor/giga-byte_technology/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "mattel",
+    "name": "Mattel",
+    "type": "publisher",
+    "hall": "8.1",
+    "booth": "B020",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/mattel-europa-bv",
+    "games": [],
+    "tags": ["family-friendly", "merch", "tabletop", "licensing"],
+    "crowd": 2,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/mattel_europa_bv/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "jbl-quantum",
+    "name": "JBL Quantum (Harman)",
+    "type": "hardware",
+    "hall": "9.1",
+    "booth": "B034/C035",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/harman-deutschland-gmbh",
+    "games": [],
+    "tags": ["hardware", "audio", "peripherals"],
+    "crowd": 2,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/harman/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "rocket-beans",
+    "name": "Rocket Beans TV",
+    "type": "media",
+    "hall": "9.1",
+    "booth": "A046/B047",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/beans-entertainment-gmbh",
+    "games": [],
+    "tags": ["media", "community", "theater", "German", "walk-up"],
+    "crowd": 3,
+    "sources": [
+      "https://rocketbeans.tv/blog/1033",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-rocket-beans-programm-170426/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
+      "https://exhibitors.gamescom.global/en/exhibitor/beans_entertainment/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
+    "id": "gamescom-merch",
+    "name": "gamescom merchandise shops",
+    "type": "experience",
+    "hall": "5.2",
+    "booth": "D010, C033/B032",
+    "stands": [
+      { "hall": "5.2", "booth": "D010" },
+      { "hall": "5.2", "booth": "C033/B032" },
+      { "hall": "6.1", "booth": "C010" },
+      { "hall": "7.1", "booth": "C031" },
+      { "hall": "8.1", "booth": "C031" },
+      { "hall": "9.1", "booth": "A039" },
+      { "hall": "10.1", "booth": "B010/C011" },
+      { "hall": "10.1", "booth": "A080" },
+      { "hall": "10.2", "booth": "D040/C041" },
+      { "hall": "10.2", "booth": "F031" }
+    ],
+    "locationConfirmed": true,
+    "games": [],
+    "tags": ["merch", "commerce", "walk-up"],
+    "crowd": 2,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/campus_sportswear/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-16"
+  },
+  {
     "id": "indie-arena-booth",
     "name": "Indie Arena Booth",
     "type": "indie",
@@ -691,7 +961,7 @@
     "tags": ["indie", "playable demos", "meet the devs"],
     "crowd": 2,
     "sources": [
-      "https://indiearena.org/",
+      "https://indiearenabooth.de/",
       "https://www.gamesmarket.global/indie-arena-booth-full-gamescom-2026-lineup/",
       "https://www.gamespress.com/beyerdynamic-to-become-First-Presenter-of-the-Indie-Arena-Booth-at-gam"
     ],
@@ -1336,16 +1606,18 @@
     "name": "ASUS ROG",
     "type": "hardware",
     "hall": "8.1",
-    "booth": "B041/C040",
+    "booth": "B041/C040, B040",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/asus-global-pte-ltd",
     "games": [],
     "tags": ["hardware", "handheld", "PC"],
     "crowd": 3,
     "sources": [
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://exhibitors.gamescom.global/en/exhibitor/asus_global_pte_ltd/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-16"
   },
   {
     "id": "samsung",

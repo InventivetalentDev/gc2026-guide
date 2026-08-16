@@ -64,7 +64,8 @@
       "Signing Area": "Content creator autograph and meet-and-greet sessions.",
       "gamescom epix": "Free digital quest program (7 story chapters, started Aug 3) — on-site booth quests, collector cards, and free Sunday tickets for completing all chapters.",
       "gamescom GDQ": "A first-time Games Done Quick speedrunning charity showcase, Aug 28–30, Konrad-Adenauer-Halle (Congress Center North).",
-      "City Festival": "Free open-air concerts and gaming zones in Cologne's city center (Ringe), Aug 29–30 evenings."
+      "City Festival": "Free open-air concerts and gaming zones in Cologne's city center (Ringe), Aug 29–30 evenings.",
+      "Outdoor Area P8": "The reactivated open-air area behind Hall 8, back for 2026: gamescom Beach, an Asian Garden and a Community Wall, plus the outdoor half of The District. Red Bull's booth runs an EA Sports FC 27 tournament here, CD Projekt Red's Apollo Tent shows The Witcher 3: Songs of the Past, and Maverick Games gives CLUTCH its hands-on preview. Food trucks too."
     },
     "entrances": {
       "lede": "Four gates — South, West, East and North — all feed the central Boulevard that runs the length of the grounds from north to south. Which one you pick decides your first half hour. Koelnmesse also steers arriving crowds between gates when a queue backs up, so signs and stewards on the day overrule any plan made in advance.",
@@ -412,7 +413,8 @@
         "Final Fantasy VII Rebirth": "Play stations, likely new-platform versions.",
         "Final Fantasy XIV": "MMO community presence.",
         "Final Fantasy X/X-2 HD Remaster": "Catalog play station.",
-        "Final Fantasy VII Revelation": "'New Look' presentation at Opening Night Live (Aug 25), led by director Naoki Hamaguchi with fresh footage — an ONL segment, not a show-floor demo."
+        "Final Fantasy VII Revelation": "'New Look' presentation at Opening Night Live (Aug 25), led by director Naoki Hamaguchi with fresh footage — an ONL segment, not a show-floor demo.",
+        "Final Fantasy VII Remake": "Catalog play station alongside Rebirth."
       }
     },
     "cdpr": {
@@ -473,7 +475,7 @@
       }
     },
     "team17-astragon": {
-      "description": "A group booth at B060/C061, in a stand block shared with Focus Entertainment: Team17's creature-collector LumenTale and Silver Pines alongside astragon's simulator lineup (Bus Simulator 27, Construction Simulator Evolution, Firefighting Simulator: Ignite).",
+      "description": "A group booth at B060/C061, in a stand block shared with Focus Entertainment: Team17's creature-collector LumenTale and Silver Pines alongside astragon's simulator lineup (Bus Simulator 27, Construction Simulator Evolution, Firefighting Simulator: Ignite, Seafarer: The Ship Sim).",
       "crowdNote": "Indie-scale titles at a shared booth — queues short outside peak Saturday hours.",
       "visitAdvice": "An easy low-queue stop while waiting out timed queues elsewhere in Hall 6.",
       "games": {
@@ -481,7 +483,9 @@
         "Silver Pines": "Second confirmed Team17 title.",
         "Bus Simulator 27": "astragon side; launches days after the show.",
         "Construction Simulator Evolution": "astragon simulator lineup.",
-        "Firefighting Simulator: Ignite": "astragon simulator lineup."
+        "Firefighting Simulator: Ignite": "astragon simulator lineup.",
+        "Seafarer: The Ship Sim": "astragon simulator lineup.",
+        "Worms W.M.D.": "Team17 catalog station."
       }
     },
     "giants-software": {
@@ -526,12 +530,13 @@
       }
     },
     "tencent-worlds-of-play": {
-      "description": "Tencent Games has a show-floor stand in Hall 8.1 with no announced program, plus the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27–29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's playable games are at Level Infinite in Hall 6.1.",
+      "description": "Tencent Games' Hall 8.1 stand shows Honor of Kings and Arena of Valor with cosplayers and competitions, and the company also runs the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27-29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's other playable games are at Level Infinite in Hall 6.1.",
       "crowdNote": "Timed/curated and off the main floor — moderate queues; the real crowds gather at Level Infinite.",
       "visitAdvice": "A calmer palate-cleanser between hall sessions; check whether entry needs free time-slot registration closer to the show.",
       "games": {
         "Worlds of Play (40-title art exhibition)": "Art exhibition Aug 27–29, off the main show floor.",
-        "Tencent Hall 8.1 booth (program TBA)": "Registered stand at Hall 8.1, B050/A051 — what's shown there hasn't been announced yet."
+        "Honor of Kings": "On the Hall 8.1 stand, with cosplayers and competitions.",
+        "Arena of Valor": "On the Hall 8.1 stand, with cosplayers and competitions."
       }
     },
     "netease": {
@@ -563,13 +568,19 @@
       }
     },
     "aerosoft": {
-      "description": "The Paderborn simulation specialist brings Winter Resort 3 and Professional Ship Simulator, plus five simulators revealed for the first time at the show — police work, mining, firefighting, crab fishing and roadmaking. A compact stand among Hall 9.1's big booths (plus a business-area stand in Hall 4.2).",
+      "description": "The Paderborn simulation specialist brings Winter Resort 3 and Professional Ship Simulator alongside the simulators it first revealed for the show, now named: emergency-services, firefighting, hospital, haulage, mining, forensics and crab fishing. A compact stand among Hall 9.1's big booths (plus a business-area stand in Hall 4.2).",
       "crowdNote": "Dedicated sim niche — steady interest but rarely long lines.",
       "visitAdvice": "Pairs into a sim circuit with GIANTS and the Team17 × astragon stand in Hall 6.1; reveal stations are busiest right after doors.",
       "games": {
         "Winter Resort 3": "Alpine ski-resort sim sequel.",
         "Professional Ship Simulator": "Part of the confirmed lineup.",
-        "Five unannounced simulators": "First reveals: police work, mining, firefighting, crab fishing and roadmaking."
+        "Notruf 112 – Die Feuerwehr": "German emergency-services sim.",
+        "Firefighters Code Red": "Firefighting sim.",
+        "Notaufnahme Simulator": "Hospital emergency-room sim.",
+        "Heavy Cargo: The Truck Simulator": "Heavy-haulage trucking sim.",
+        "Bergwerk: A Mining Sim": "Mining sim.",
+        "Forensics: Crime Scene Detective": "Crime-scene investigation sim; also shown at Binary Impact in Hall 10.2.",
+        "Seaworks: Trap Season": "Crab-fishing sim; also shown at Binary Impact in Hall 10.2."
       }
     },
     "ggg-poe2": {
@@ -591,7 +602,7 @@
     "indie-arena-booth": {
       "description": "The world's biggest indie booth — 2026 theme 'Democratree: games for everyone': ~200 games from 182 developers across 41 countries, with publisher pods (11 bit, Fireshine, Headup, Wired Productions) and a Nintendo section with Switch/Switch 2 stations. Audio brand beyerdynamic is this year's 'First Presenter' sponsor, kitting out 230+ developer stations with MMX 300 PRO headsets and running a vinyl soundtrack listening station.",
       "crowdNote": "Busy but far more bearable than AAA halls; short rotating lines per station, worst Saturday afternoon.",
-      "visitAdvice": "Thu/Fri morning is ideal. Browse the lineup on indiearena.org or the IAB Steam curator page beforehand and pick targets — devs are at their stations, so it's the best place to actually talk to the people making the games. Combine with the Retro & Family area in the same hall.",
+      "visitAdvice": "Thu/Fri morning is ideal. Browse the lineup on indiearenabooth.de or the IAB Steam curator page beforehand and pick targets — devs are at their stations, so it's the best place to actually talk to the people making the games. Combine with the Retro & Family area in the same hall.",
       "games": {
         "Stronghold 4": "Firefly's castle-sim revival — a headline title of the booth.",
         "Paralives": "Highly wishlisted life sim — expect one of the longer indie lines.",
@@ -837,7 +848,7 @@
       }
     },
     "asus-rog": {
-      "description": "Large Hall 8.1 presence plus an outdoor area at Hall 8 North: ROG laptops, monitors and the ROG Xbox Ally handheld family playable on-site.",
+      "description": "Large Hall 8.1 presence across B041/C040 and B040, plus an outdoor area at Hall 8 North: ROG laptops, monitors and the ROG Xbox Ally handheld family playable on-site.",
       "crowdNote": "ROG handheld try-out stations build 15–45 min lines; the rest flows freely.",
       "visitAdvice": "Morning visit if you want hands-on time with the ROG Ally handhelds."
     },
@@ -1347,6 +1358,87 @@
         "Publishing submissions",
         "Distribution and partner meetings"
       ]
+    },
+    "4divinity": {
+      "description": "GCL's publishing arm, showing six titles across three stands: the main one in Hall 7.1, a second in Hall 6.1 and a business booth in Hall 4.2. The lineup spans a World War II shooter (The Defiant), NEKCOM's retro-Americana RPG Showa American Story, the occult-western Guns of Eschaton and three Chinese-mythology action RPGs. Which titles are hands-on rather than trailer-only has not been broken down.",
+      "crowdNote": "A large Hall 7.1 stand beside Xbox, but a lineup still new to Western audiences — busy without AAA-scale queues.",
+      "visitAdvice": "The two stands show different games: Showa American Story and The Defiant in Hall 6.1, Guns of Eschaton in Hall 7.1. Check which one you actually want before walking over.",
+      "games": {
+        "The Defiant": "AAA World War II shooter from Hoothanes; shown at the Hall 6.1 stand.",
+        "Showa American Story": "NEKCOM's retro pop-culture RPG; shown at the Hall 6.1 stand.",
+        "Guns of Eschaton": "Occult-western soulslike shooter from Eschatology Entertainment; shown at the Hall 7.1 stand.",
+        "A Whisper of Fall: Jinyiwei": "Ming-dynasty action RPG from CangMo Game Entertainment.",
+        "Genigods: Nezha": "Chinese-mythology action RPG from Genigods Lab — also on Xbox's Hall 7.1 stand.",
+        "Sword Sage: Awakening": "Myth-driven action RPG from Sword Panda."
+      }
+    },
+    "secret-mode": {
+      "description": "Sumo Group's publishing label takes a Hall 6.1 stand at B040. Its gamescom entry files it under racing games and lists no titles, and nothing has been announced for the booth.",
+      "crowdNote": "A small stand for an indie-scale publisher — walk-up.",
+      "visitAdvice": "Nothing announced yet, so treat it as something to glance at while passing B040 rather than a planned stop."
+    },
+    "pawprint-aniimo": {
+      "description": "Singapore's Pawprint Interactive at Hall 6.1 C041, registered under its game's own brand: Aniimo, an open-world creature-collecting RPG for PC, console and mobile.",
+      "crowdNote": "Creature-collectors draw steady interest and this is a mid-size stand — expect a short rotating line.",
+      "visitAdvice": "Sits in the same Hall 6.1 aisle as Elementa Games and Secret Mode, so the three make one short detour off the publisher row.",
+      "games": {
+        "Aniimo": "Open-world creature-collecting RPG; the booth is registered under this brand rather than the studio name."
+      }
+    },
+    "elementa-games": {
+      "description": "Singapore developer Elementa, with a Hall 6.1 stand at C021 and a business booth in Hall 2.2. Trade press lists Silver Palace for the show; the gamescom entry files the studio under action/adventure and role-playing and names no titles.",
+      "crowdNote": "Small stand with an all-but-unannounced lineup — low queues.",
+      "visitAdvice": "A discovery stop rather than a planned one."
+    },
+    "huawei-appgallery": {
+      "description": "Aspiegel SE — Huawei's European entity — running AppGallery and its GameCenter at Hall 7.1 B031. A mobile-platform stand rather than a games booth: it is filed under app stores, platforms and mobile phones.",
+      "crowdNote": "Platform stand: browse-through, no demo queues.",
+      "visitAdvice": "A two-minute stop between Xbox and Konami if mobile storefronts are of interest."
+    },
+    "webedia-fyng-city": {
+      "description": "FYNG City, the games-media village Webedia builds in Hall 7.1: over 1,500 m² across several stand blocks, with the GameStar and MeinMMO editorial teams on site and Mercedes-Benz as main partner. Webedia's registered brands here include GameStar, GamePro, MeinMMO, Moviepilot and Filmstarts.",
+      "crowdNote": "A hangout area rather than a demo queue — busy but flowing.",
+      "visitAdvice": "One of the few places in Hall 7 to sit down mid-hall. AMD's stand shares the same block at B041/C040."
+    },
+    "mbc-game-studio": {
+      "description": "A large Hall 8.1 stand — roughly 610 m² at A011/B010, at the far end of the hall next to Square Enix — plus a business booth in Hall 2.1, for the British-Saudi studio, registered under the brand 'MGS'. Neither gamescom's listing nor the trade press names a game for it yet.",
+      "crowdNote": "The booth size implies a real presence, but with no announced lineup the draw is unknown.",
+      "visitAdvice": "Worth a look on your first pass down Hall 8.1 — it is one of the hall's bigger unknowns."
+    },
+    "the-district": {
+      "description": "New for 2026: a competitive-gaming area of about 2,000 m² in Hall 8.1 plus roughly 1,000 m² in the reactivated outdoor area P8 behind the hall, with an esports stage at the back of the hall. Cologne's SK Gaming is the headline partner; REWE, Techniker Krankenkasse, Nestlé, Logitech, Deutsche Telekom, Philips, SanDisk, Subway and Esports Virtual Arenas are among the brands on the shared stand and around it.",
+      "crowdNote": "Stage-driven: quiet between sessions, packed while a tournament runs.",
+      "visitAdvice": "Come for a scheduled session rather than wandering in. The P8 outdoor half is straight out the back of Hall 8 and also holds CD Projekt Red's Apollo Tent, the Red Bull bar and the gamescom Beach.",
+      "games": {
+        "Clutch": "Maverick Games' open-world driving game, hands-on all five days in the P8 outdoor half.",
+        "Star Wars Galactic Racer": "Listed at HP/HyperX in the P8 outdoor half in the trade-press games list; no detail published.",
+        "EA Sports FC 27": "Red Bull runs an FC 27 tournament at its booth in the P8 outdoor area — separate from EA's own Hall 6.1 stand."
+      }
+    },
+    "gigabyte-aorus": {
+      "description": "GIGABYTE and its AORUS gaming brand at Hall 8.1 C050: graphics cards, monitors, laptops and peripherals, registered across components, displays and VR.",
+      "crowdNote": "Product-wall stand — browse without queueing.",
+      "visitAdvice": "Part of the same Hall 8.1 hardware run as ASUS ROG, AGON by AOC and Logitech."
+    },
+    "mattel": {
+      "description": "Mattel on two stands — Hall 8.1 B020, directly behind Square Enix, and one in the Hall 5.1 merchandise area — for Hot Wheels, Masters of the Universe, UNO and the Mattel Brick Shop.",
+      "crowdNote": "Family-facing brand stand; busiest at the weekend.",
+      "visitAdvice": "Pair it with the Hall 5 merchandise area if you are shopping rather than demoing."
+    },
+    "jbl-quantum": {
+      "description": "Harman's JBL and JBL Quantum gaming-audio line at Hall 9.1 B034/C035 — headsets, headphones and speakers to try on.",
+      "crowdNote": "Small listening stand, no real queue.",
+      "visitAdvice": "Two minutes off the Nintendo-to-Capcom walk through Hall 9.1."
+    },
+    "rocket-beans": {
+      "description": "Rocket Beans TV broadcasts the whole show from Hall 9.1 A046/B047 — filed under BEANS Entertainment GmbH — and runs a second stage at the Capcom stand daily from 11:30, including the new BEANSCOMPETITION at 17:00. Live from Tuesday evening through Sunday, with a separate merch stand in Hall 5.2.",
+      "crowdNote": "German-language streaming audience: crowds gather for the scheduled formats and thin out between them.",
+      "visitAdvice": "Come for a specific slot. The Capcom-stand programme covers Onimusha: Way of the Sword, Dragon's Dogma 2, Mega Man: Dual Override, Street Fighter 6 and Pragmata."
+    },
+    "gamescom-merch": {
+      "description": "The official gamescom merchandise shops, run by Campus Sportswear under the gamescomwear brand. The main shops are in the Hall 5.2 merchandise area, with smaller counters in Halls 6.1, 7.1, 8.1, 9.1, 10.1 and 10.2 — which is what those unnamed kiosks along the entertainment-hall aisles are.",
+      "crowdNote": "The Hall 5.2 shops build queues; the in-hall counters stay short.",
+      "visitAdvice": "Use whichever counter is in the hall you are already in rather than walking to Hall 5.2 for it."
     }
   }
 }

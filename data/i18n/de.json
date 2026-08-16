@@ -64,7 +64,8 @@
       "Signing Area": "Autogramme und Treffen mit Content Creators.",
       "gamescom epix": "Kostenloses digitales Quest-Programm (7 Story-Kapitel, gestartet am 3. Aug.) — Quests an den Ständen, Sammelkarten und kostenlose Sonntagstickets, wenn du alle Kapitel abschließt.",
       "gamescom GDQ": "Zum ersten Mal gibt es ein Games-Done-Quick-Event mit Speedruns für einen guten Zweck: 28.–30. Aug. in der Konrad-Adenauer-Halle (Congress Center Nord).",
-      "City Festival": "Kostenlose Open-Air-Konzerte und Gaming-Zonen in der Kölner Innenstadt (Ringe), abends am 29. und 30. Aug."
+      "City Festival": "Kostenlose Open-Air-Konzerte und Gaming-Zonen in der Kölner Innenstadt (Ringe), abends am 29. und 30. Aug.",
+      "Outdoor Area P8": "Die reaktivierte Außenfläche hinter Halle 8, 2026 wieder dabei: gamescom Beach, ein Asian Garden und eine Community Wall, dazu der Außenteil von The District. Red Bull veranstaltet an seinem Stand ein EA-Sports-FC-27-Turnier, CD Projekt Reds Apollo Tent zeigt The Witcher 3: Songs of the Past, und Maverick Games lässt CLUTCH hier erstmals anspielen. Foodtrucks gibt es auch."
     },
     "entrances": {
       "lede": "Vier Tore — Süd, West, Ost und Nord — führen alle auf den zentralen Boulevard, der das Gelände von Nord nach Süd durchzieht. Welches du nimmst, entscheidet über deine erste halbe Stunde. Die Koelnmesse lenkt ankommende Besucherströme außerdem zwischen den Toren um, wenn sich eine Schlange staut — Beschilderung und Ordner vor Ort schlagen also jeden vorab gemachten Plan.",
@@ -412,7 +413,8 @@
         "Final Fantasy VII Rebirth": "Spielstationen, wahrscheinlich Fassungen für neue Plattformen.",
         "Final Fantasy XIV": "MMO-Community-Präsenz.",
         "Final Fantasy X/X-2 HD Remaster": "Spielstation mit dem bekannten Titel.",
-        "Final Fantasy VII Revelation": "„New Look“-Präsentation bei Opening Night Live (25. Aug.), geführt von Director Naoki Hamaguchi mit neuem Material — ein ONL-Segment, keine Demo auf der Fläche."
+        "Final Fantasy VII Revelation": "„New Look“-Präsentation bei Opening Night Live (25. Aug.), geführt von Director Naoki Hamaguchi mit neuem Material — ein ONL-Segment, keine Demo auf der Fläche.",
+        "Final Fantasy VII Remake": "Katalog-Spielstation neben Rebirth."
       }
     },
     "cdpr": {
@@ -473,7 +475,7 @@
       }
     },
     "team17-astragon": {
-      "description": "Ein Gemeinschaftsstand bei B060/C061, im selben Standblock wie Focus Entertainment: Team17s Creature-Collector LumenTale und Silver Pines neben astragons Simulator-Lineup (Bus Simulator 27, Construction Simulator Evolution, Firefighting Simulator: Ignite).",
+      "description": "Ein Gemeinschaftsstand bei B060/C061, im selben Standblock wie Focus Entertainment: Team17s Creature-Collector LumenTale und Silver Pines neben astragons Simulator-Lineup (Bus Simulator 27, Construction Simulator Evolution, Firefighting Simulator: Ignite, Seafarer: The Ship Sim).",
       "crowdNote": "Titel im Indie-Maßstab an einem geteilten Stand — außerhalb der Samstags-Stoßzeiten kurze Schlangen.",
       "visitAdvice": "Ein einfacher Stopp ohne lange Wartezeit, während du anderswo in Halle 6 auf einen Zeitslot wartest.",
       "games": {
@@ -481,7 +483,9 @@
         "Silver Pines": "Zweiter bestätigter Team17-Titel.",
         "Bus Simulator 27": "Von astragon; erscheint wenige Tage nach der Messe.",
         "Construction Simulator Evolution": "Aus astragons Simulator-Lineup.",
-        "Firefighting Simulator: Ignite": "Aus astragons Simulator-Lineup."
+        "Firefighting Simulator: Ignite": "Aus astragons Simulator-Lineup.",
+        "Seafarer: The Ship Sim": "Aus astragons Simulator-Lineup.",
+        "Worms W.M.D.": "Katalog-Station von Team17."
       }
     },
     "giants-software": {
@@ -526,12 +530,13 @@
       }
     },
     "tencent-worlds-of-play": {
-      "description": "Tencent Games hat einen Stand in Halle 8.1 ohne angekündigtes Programm, dazu außerhalb des Geländes die „Worlds of Play: The Game Art Exhibition“ in der Wassermannhalle (27.–29. Aug.): fünf Themenzonen mit Artworks aus 40 Titeln, Entwicklertalks und Cosplay-Showcases. Tencents spielbare Titel stehen bei Level Infinite in Halle 6.1.",
+      "description": "Tencent Games zeigt am Stand in Halle 8.1 Honor of Kings und Arena of Valor mit Cosplayern und Wettbewerben und veranstaltet außerdem die Ausstellung „Worlds of Play: The Game Art Exhibition“ außerhalb des Geländes in der Wassermannhalle (27.–29.8.): fünf thematische Zonen mit Artworks aus 40 Titeln, Entwicklertalks und Cosplay-Showcases. Tencents übrige spielbare Titel stehen bei Level Infinite in Halle 6.1.",
       "crowdNote": "Die kuratierte Ausstellung liegt abseits der Haupthallen und arbeitet mit Zeitfenstern. Rechne mit mittlerem Andrang; bei Level Infinite ist deutlich mehr los.",
       "visitAdvice": "Ein ruhigerer Ausgleich zwischen zwei Hallenrunden; prüf kurz vor der Messe, ob du dich für ein kostenloses Zeitfenster anmelden musst.",
       "games": {
         "Worlds of Play (40-title art exhibition)": "Kunstausstellung vom 27.–29. Aug., außerhalb des Messegeländes.",
-        "Tencent Hall 8.1 booth (program TBA)": "Registrierter Stand in Halle 8.1, B050/A051 — was dort gezeigt wird, ist noch nicht angekündigt."
+        "Honor of Kings": "Am Stand in Halle 8.1, mit Cosplayern und Wettbewerben.",
+        "Arena of Valor": "Am Stand in Halle 8.1, mit Cosplayern und Wettbewerben."
       }
     },
     "netease": {
@@ -563,13 +568,19 @@
       }
     },
     "aerosoft": {
-      "description": "Der Paderborner Simulationsspezialist bringt Winter Resort 3 und Professional Ship Simulator mit, dazu fünf erstmals auf der Messe gezeigte Simulatoren — Polizeiarbeit, Bergbau, Feuerwehr, Krabbenfischerei und Straßenbau. Ein kompakter Stand zwischen den großen Ständen in Halle 9.1 (plus ein Stand im Business-Bereich in Halle 4.2).",
+      "description": "Der Simulations-Spezialist aus Paderborn bringt Winter Resort 3 und Professional Ship Simulator mit, dazu die zur Messe erstmals gezeigten Simulatoren, die jetzt Namen haben: Rettungsdienst, Feuerwehr, Notaufnahme, Schwertransport, Bergbau, Spurensicherung und Krabbenfang. Ein kompakter Stand zwischen den großen Ständen der Halle 9.1 (plus ein Stand im Business-Bereich in Halle 4.2).",
       "crowdNote": "Kleine, treue Sim-Fangemeinde — konstantes Interesse, aber selten lange Schlangen.",
       "visitAdvice": "Lässt sich mit GIANTS und dem Stand von Team17 × astragon in Halle 6.1 zu einer Sim-Runde verbinden; an den Stationen mit neuen Spielen ist direkt nach Türöffnung am meisten los.",
       "games": {
         "Winter Resort 3": "Fortsetzung der Skigebietssimulation in den Alpen.",
         "Professional Ship Simulator": "Teil des bestätigten Lineups.",
-        "Five unannounced simulators": "Erstmals gezeigt: Polizeiarbeit, Bergbau, Feuerwehr, Krabbenfischerei und Straßenbau."
+        "Notruf 112 – Die Feuerwehr": "Simulation des deutschen Rettungsdienstes.",
+        "Firefighters Code Red": "Feuerwehr-Simulation.",
+        "Notaufnahme Simulator": "Simulation einer Krankenhaus-Notaufnahme.",
+        "Heavy Cargo: The Truck Simulator": "Simulation von Schwertransporten.",
+        "Bergwerk: A Mining Sim": "Bergbau-Simulation.",
+        "Forensics: Crime Scene Detective": "Simulation der Spurensicherung; läuft auch bei Binary Impact in Halle 10.2.",
+        "Seaworks: Trap Season": "Krabbenfang-Simulation; läuft auch bei Binary Impact in Halle 10.2."
       }
     },
     "ggg-poe2": {
@@ -591,7 +602,7 @@
     "indie-arena-booth": {
       "description": "Der größte Indie-Stand der Welt — Motto 2026 „Democratree: games for everyone“: rund 200 Spiele von 182 Entwicklerteams aus 41 Ländern, dazu Publisher-Bereiche (11 bit, Fireshine, Headup, Wired Productions) und ein Nintendo-Bereich mit Switch- und Switch-2-Stationen. Die Audiomarke beyerdynamic ist dieses Jahr „First Presenter“-Sponsor, rüstet über 230 Entwicklerstationen mit MMX-300-PRO-Headsets aus und betreibt eine Hörstation für Soundtracks auf Vinyl.",
       "crowdNote": "Gut besucht, aber deutlich erträglicher als die AAA-Hallen; an den einzelnen Stationen gibt es meist kurze Schlangen, am längsten am Samstagnachmittag.",
-      "visitAdvice": "Do/Fr vormittags ist ideal. Schau dir das Lineup vorher auf indiearena.org oder der IAB-Steam-Kuratorenseite an und such dir Ziele aus — die Entwickler stehen selbst an den Stationen, es ist also der beste Ort, um wirklich mit den Machern zu reden. Kombinier es mit dem Retro-&-Family-Bereich in derselben Halle.",
+      "visitAdvice": "Do/Fr vormittags ist ideal. Schau dir das Lineup vorher auf indiearenabooth.de oder der IAB-Steam-Kuratorenseite an und such dir Ziele aus — die Entwickler stehen selbst an den Stationen, es ist also der beste Ort, um wirklich mit den Machern zu reden. Kombinier es mit dem Retro-&-Family-Bereich in derselben Halle.",
       "games": {
         "Stronghold 4": "Fireflys Wiederbelebung der Burgen-Sim — ein Aushängeschild des Stands.",
         "Paralives": "Lebenssimulation, die auf besonders vielen Wunschlisten steht — rechne mit einer der längeren Indie-Schlangen.",
@@ -837,7 +848,7 @@
       }
     },
     "asus-rog": {
-      "description": "Großer Auftritt in Halle 8.1 plus eine Außenfläche bei Halle 8 Nord: ROG-Laptops, Monitore und die Handheld-Familie ROG Xbox Ally vor Ort spielbar.",
+      "description": "Großer Auftritt in Halle 8.1 auf B041/C040 und B040 plus eine Außenfläche bei Halle 8 Nord: ROG-Laptops, Monitore und die Handheld-Familie ROG Xbox Ally vor Ort spielbar.",
       "crowdNote": "An den Teststationen für ROG-Handhelds entstehen Wartezeiten von 15–45 Minuten; beim Rest geht es ohne Warten.",
       "visitAdvice": "Vormittags hingehen, wenn du Zeit mit den ROG-Ally-Handhelds willst."
     },
@@ -1347,6 +1358,87 @@
         "Publishing-Einreichungen",
         "Termine zu Vertrieb und Partnerschaften"
       ]
+    },
+    "4divinity": {
+      "description": "Der Publishing-Arm von GCL zeigt sechs Titel auf drei Ständen: dem Hauptstand in Halle 7.1, einem zweiten in Halle 6.1 und einem Business-Stand in Halle 4.2. Das Lineup reicht vom Zweiter-Weltkrieg-Shooter The Defiant über NEKCOMs Retro-Americana-Rollenspiel Showa American Story und den Okkult-Western Guns of Eschaton bis zu drei Action-Rollenspielen aus der chinesischen Mythologie. Welche Titel anspielbar sind und welche nur als Trailer laufen, ist nicht aufgeschlüsselt.",
+      "crowdNote": "Großer Stand in Halle 7.1 direkt neben Xbox, aber das Lineup ist im Westen noch weitgehend unbekannt — viel los, ohne AAA-Schlangen.",
+      "visitAdvice": "Die beiden Stände zeigen unterschiedliche Spiele: Showa American Story und The Defiant in Halle 6.1, Guns of Eschaton in Halle 7.1. Schau vorher, welchen du eigentlich willst.",
+      "games": {
+        "The Defiant": "AAA-Shooter im Zweiten Weltkrieg von Hoothanes; am Stand in Halle 6.1.",
+        "Showa American Story": "NEKCOMs Retro-Popkultur-Rollenspiel; am Stand in Halle 6.1.",
+        "Guns of Eschaton": "Okkulter Western-Soulslike-Shooter von Eschatology Entertainment; am Stand in Halle 7.1.",
+        "A Whisper of Fall: Jinyiwei": "Action-Rollenspiel zur Ming-Dynastie von CangMo Game Entertainment.",
+        "Genigods: Nezha": "Action-Rollenspiel nach chinesischer Mythologie von Genigods Lab — steht auch bei Xbox in Halle 7.1.",
+        "Sword Sage: Awakening": "Mythologisches Action-Rollenspiel von Sword Panda."
+      }
+    },
+    "secret-mode": {
+      "description": "Das Publishing-Label der Sumo Group bekommt in Halle 6.1 den Stand B040. Der gamescom-Eintrag führt es unter Rennspielen und nennt keine Titel; für den Stand wurde bisher nichts angekündigt.",
+      "crowdNote": "Kleiner Stand eines Publishers in Indie-Größe — ohne Wartezeit.",
+      "visitAdvice": "Noch ist nichts angekündigt: eher ein Blick im Vorbeigehen bei B040 als ein geplanter Stopp."
+    },
+    "pawprint-aniimo": {
+      "description": "Pawprint Interactive aus Singapur in Halle 6.1 bei C041, registriert unter der Marke des eigenen Spiels: Aniimo, ein Open-World-Rollenspiel ums Sammeln von Kreaturen für PC, Konsole und Mobile.",
+      "crowdNote": "Kreaturensammler ziehen stetig Publikum, und der Stand ist mittelgroß — rechne mit einer kurzen, rotierenden Schlange.",
+      "visitAdvice": "Liegt in derselben Gasse in Halle 6.1 wie Elementa Games und Secret Mode — die drei ergeben einen kurzen Abstecher von der Publisher-Reihe.",
+      "games": {
+        "Aniimo": "Open-World-Rollenspiel ums Sammeln von Kreaturen; der Stand läuft unter dieser Marke statt unter dem Studionamen."
+      }
+    },
+    "elementa-games": {
+      "description": "Der Entwickler Elementa aus Singapur, mit einem Stand in Halle 6.1 bei C021 und einem Business-Stand in Halle 2.2. Die Fachpresse nennt Silver Palace für die Messe; der gamescom-Eintrag führt das Studio unter Action/Adventure und Rollenspiel und nennt keine Titel.",
+      "crowdNote": "Kleiner Stand mit fast unangekündigtem Lineup — kaum Wartezeit.",
+      "visitAdvice": "Eher etwas zum Entdecken als ein geplanter Stopp."
+    },
+    "huawei-appgallery": {
+      "description": "Aspiegel SE — Huaweis europäische Gesellschaft — betreibt AppGallery und das GameCenter in Halle 7.1 bei B031. Ein Plattform-Stand, kein Spielestand: registriert unter App Stores, Plattformen und Mobiltelefonen.",
+      "crowdNote": "Plattform-Stand: zum Durchgehen, keine Demo-Schlangen.",
+      "visitAdvice": "Ein Zwei-Minuten-Stopp zwischen Xbox und Konami, wenn dich mobile Stores interessieren."
+    },
+    "webedia-fyng-city": {
+      "description": "FYNG City, das Medien-Dorf, das Webedia in Halle 7.1 aufbaut: über 1.500 m² auf mehreren Standblöcken, mit den Redaktionen von GameStar und MeinMMO vor Ort und Mercedes-Benz als Hauptpartner. Webedias registrierte Marken hier sind unter anderem GameStar, GamePro, MeinMMO, Moviepilot und Filmstarts.",
+      "crowdNote": "Eher Aufenthaltsfläche als Demo-Schlange — voll, aber in Bewegung.",
+      "visitAdvice": "Eine der wenigen Gelegenheiten in Halle 7, sich mittendrin hinzusetzen. Der AMD-Stand liegt im selben Block bei B041/C040."
+    },
+    "mbc-game-studio": {
+      "description": "Ein großer Stand in Halle 8.1 — rund 610 m² bei A011/B010, am hinteren Hallenende neben Square Enix — dazu ein Business-Stand in Halle 2.1, für das britisch-saudische Studio, registriert unter der Marke „MGS“. Weder das gamescom-Verzeichnis noch die Fachpresse nennt bislang ein Spiel dafür.",
+      "crowdNote": "Die Standgröße spricht für einen echten Auftritt, aber ohne angekündigtes Lineup ist der Andrang nicht abzuschätzen.",
+      "visitAdvice": "Beim ersten Gang durch Halle 8.1 einen Blick wert — einer der größeren unbekannten Stände der Halle."
+    },
+    "the-district": {
+      "description": "Neu für 2026: eine Fläche für Competitive Gaming von rund 2.000 m² in Halle 8.1 plus etwa 1.000 m² im reaktivierten Außenbereich P8 hinter der Halle, mit einer E-Sport-Bühne im hinteren Hallenteil. Das Kölner SK Gaming ist Headline-Partner; REWE, Techniker Krankenkasse, Nestlé, Logitech, Deutsche Telekom, Philips, SanDisk, Subway und Esports Virtual Arenas gehören zu den Marken auf dem Gemeinschaftsstand und drumherum.",
+      "crowdNote": "Bühnengetrieben: zwischen den Sessions ruhig, während eines Turniers voll.",
+      "visitAdvice": "Komm zu einer festen Session statt einfach reinzuschlendern. Der Außenteil P8 liegt direkt hinter Halle 8 und beherbergt auch CD Projekt Reds Apollo Tent, die Red-Bull-Bar und den gamescom Beach.",
+      "games": {
+        "Clutch": "Maverick Games' Open-World-Rennspiel, an allen fünf Tagen anspielbar im Außenteil P8.",
+        "Star Wars Galactic Racer": "In der Spieleliste der Fachpresse bei HP/HyperX im Außenteil P8 geführt; keine weiteren Angaben veröffentlicht.",
+        "EA Sports FC 27": "Red Bull veranstaltet an seinem Stand im Außenbereich P8 ein FC-27-Turnier — unabhängig von EAs eigenem Stand in Halle 6.1."
+      }
+    },
+    "gigabyte-aorus": {
+      "description": "GIGABYTE und seine Gaming-Marke AORUS in Halle 8.1 bei C050: Grafikkarten, Monitore, Notebooks und Peripherie, registriert quer über Komponenten, Displays und VR.",
+      "crowdNote": "Produktwand-Stand — Stöbern ohne Warten.",
+      "visitAdvice": "Gehört zur selben Hardware-Reihe in Halle 8.1 wie ASUS ROG, AGON by AOC und Logitech."
+    },
+    "mattel": {
+      "description": "Mattel auf zwei Ständen — Halle 8.1 bei B020, direkt hinter Square Enix, und einer in der Merchandise-Fläche in Halle 5.1 — für Hot Wheels, Masters of the Universe, UNO und den Mattel Brick Shop.",
+      "crowdNote": "Markenstand für Familien; am Wochenende am vollsten.",
+      "visitAdvice": "Kombinier ihn mit der Merchandise-Fläche in Halle 5, wenn du shoppen statt anspielen willst."
+    },
+    "jbl-quantum": {
+      "description": "Harmans Gaming-Audio-Linie JBL und JBL Quantum in Halle 9.1 bei B034/C035 — Headsets, Kopfhörer und Lautsprecher zum Ausprobieren.",
+      "crowdNote": "Kleiner Hörstand, praktisch keine Wartezeit.",
+      "visitAdvice": "Zwei Minuten Abstecher auf dem Weg von Nintendo zu Capcom durch Halle 9.1."
+    },
+    "rocket-beans": {
+      "description": "Rocket Beans TV sendet die ganze Messe über aus Halle 9.1 bei A046/B047 — im Verzeichnis als BEANS Entertainment GmbH geführt — und bespielt eine zweite Bühne am Capcom-Stand täglich ab 11:30 Uhr, inklusive des neuen Formats BEANSCOMPETITION um 17:00 Uhr. Live von Dienstagabend bis Sonntag, dazu ein eigener Merch-Stand in Halle 5.2.",
+      "crowdNote": "Deutschsprachiges Streaming-Publikum: zu den festen Formaten sammeln sich Leute, dazwischen wird es leer.",
+      "visitAdvice": "Komm zu einem bestimmten Slot. Das Programm am Capcom-Stand dreht sich um Onimusha: Way of the Sword, Dragon's Dogma 2, Mega Man: Dual Override, Street Fighter 6 und Pragmata."
+    },
+    "gamescom-merch": {
+      "description": "Die offiziellen gamescom-Merchandise-Shops, betrieben von Campus Sportswear unter der Marke gamescomwear. Die Hauptshops liegen in der Merchandise-Fläche in Halle 5.2, dazu kommen kleinere Theken in den Hallen 6.1, 7.1, 8.1, 9.1, 10.1 und 10.2 — genau das sind die namenlosen Kioske an den Gängen der Entertainment-Hallen.",
+      "crowdNote": "Vor den Shops in Halle 5.2 bilden sich Schlangen; an den Theken in den Hallen bleibt es kurz.",
+      "visitAdvice": "Nimm die Theke in der Halle, in der du ohnehin bist, statt dafür nach Halle 5.2 zu laufen."
     }
   }
 }
