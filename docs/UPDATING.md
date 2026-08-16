@@ -608,6 +608,39 @@ If the endpoint ever changes shape the tool fails loudly and writes nothing,
 leaving the committed snapshot in place; the map keeps working. Nothing at
 runtime talks to Koelnmesse — visitors only ever fetch our own files.
 
+### Hall doors are ours — `data/hallplan/entrances.json`
+
+One file in that directory is hand-written, and `fetch-hallplan.mjs` neither
+reads nor writes it. The endpoint files blocks and stands and nothing else:
+there is no wall in the data and no doorway, so where a hall opens onto the
+Boulevard or into its neighbour is not something a re-run can fix. The map
+draws each hall's outline from the snapshot's own `size`, and the openings in
+that outline come from this file.
+
+One entry is one doorway, in the hall's own metre frame — the same
+coordinates as its `hall-<id>.json`, x running west to east and y north to
+south:
+
+```json
+{ "edge": "e", "at": 45.5, "span": 11, "to": "boulevard" }
+{ "edge": "n", "at": 42,   "span": 8,  "to": "hall:7.1" }
+```
+
+`edge` is the wall (`n`/`e`/`s`/`w`), `at` the centre of the opening measured
+along it, `span` its width. `to` is what is on the other side: `boulevard`,
+or `hall:<id>` — which the map turns into a tap that switches hall, when
+that hall is one we draw. Add `"approx": true` where the opening is not
+backed by a gap the official geometry leaves, and the map draws it held
+back; the file's own `note` records which doors those are and why.
+
+Editing it needs no re-snapshot, no code change and no `--update` run — it is
+read at load like every other data file. It does need adding to `DATA` in
+`sw.js` if it is ever renamed. **The right kind of edit is a correction from
+walking the hall**: the positions were placed from the campus layout the
+hall-plan page carries, which is schematic and good to about ±15 m, then
+snapped to the nearest aisle the hall's own blocks leave. A number moved
+after actually standing in the doorway beats every one of them.
+
 ## Refreshing the webfonts
 
 Fonts are self-hosted in `fonts/` so no visitor request reaches a third party. They

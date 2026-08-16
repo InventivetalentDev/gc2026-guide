@@ -51,6 +51,7 @@ const DEFAULT_HALL = "7.1";
 const state = {
   index: null,          // data/hallplan/index.json
   areas: {},            // area key -> {label, colour, trade?, access?}
+  doors: {},            // hall id -> [door] from data/hallplan/entrances.json
   labels: {},           // {countries, dirGroups} from data/i18n/<lang>.json
   exhibitors: [],       // data/exhibitors.json
   trade: [],            // business-hall rows from data/directory.json, once loaded
@@ -337,6 +338,170 @@ function fitName(name, box, area) {
   return best;
 }
 
+/* ================= the hall's outline and its doors =================
+
+   Koelnmesse files no wall. The endpoint carries blocks and stands, so a
+   hall's extent is only ever implied by where its contents stop — which
+   reads fine on a dense hall and leaves 7.1's three empty aisles looking
+   like the hall simply ends there. The snapshot does carry the hall's
+   size, so the boundary is drawn from that, in the hall's area colour:
+   the same colour as the chip you tapped to get here, and the only other
+   place on the map it appears, so booth state stays the loud channel.
+
+   The doors are ours (data/hallplan/entrances.json — see the note in it).
+   They matter more than they look: the halls connect to each other and to
+   the Boulevard at a handful of points, and knowing which end of hall 7
+   faces the Boulevard is the difference between a 30 m walk and a 200 m
+   one. A door that leads into another hall we draw is a tap that goes
+   there — the hall row does the same job for a keyboard or a screen
+   reader, which is why this whole layer is aria-hidden rather than
+   pretending to be a second set of buttons. */
+
+/* Metres of slack around the hall in the viewBox. The outline stroke is
+   centred on the boundary and the door brackets stand off it, so without
+   this the outer half of both would be clipped by the SVG viewport.
+   Labels are allowed past it (#map { overflow: visible }) — they are text
+   in the margin, and reserving hall-sized room for them would shrink
+   every hall to fit a word. */
+const PAD = 4;
+
+/* Where a wall runs and which way is out of the hall, per edge. `at` is
+   a distance along the wall from its 0 end: x for the north and south
+   walls, y for the east and west ones. */
+const EDGES = {
+  n: { pt: (t, W, H) => [t, 0], out: [0, -1], len: (W, H) => W },
+  s: { pt: (t, W, H) => [t, H], out: [0, 1], len: (W, H) => W },
+  w: { pt: (t, W, H) => [0, t], out: [-1, 0], len: (W, H) => H },
+  e: { pt: (t, W, H) => [W, t], out: [1, 0], len: (W, H) => H },
+};
+
+const DOOR_DEPTH = 3.2;  /* how far a door's bracket stands off the wall */
+const DOOR_FS = 4.2;     /* door label size, metres — offered from z1 */
+
+const hallOf = (to) => (to && to.startsWith("hall:") ? to.slice(5) : null);
+
+/* "Boulevard" for the concourse, "Hall 6.1" for a passage. An unknown
+   destination gets no label rather than a raw key on the map. */
+function doorLabel(to) {
+  const hall = hallOf(to);
+  if (hall) return t("where.hall", { hall });
+  const key = `map.door.${to}`;
+  const label = t(key);
+  return label === key ? "" : label;
+}
+
+/* The stretches of one wall that are actually wall, i.e. its full length
+   minus every opening in it. Openings are clamped and merged, so two
+   doors filed overlapping leave one gap rather than a sliver of wall
+   between them. */
+function wallSegments(len, doors) {
+  const gaps = doors
+    .map((d) => [Math.max(0, d.at - d.span / 2), Math.min(len, d.at + d.span / 2)])
+    .filter(([a, b]) => b > a)
+    .sort((a, b) => a[0] - b[0]);
+  const out = [];
+  let cur = 0;
+  for (const [a, b] of gaps) {
+    if (a > cur) out.push([cur, a]);
+    cur = Math.max(cur, b);
+  }
+  if (cur < len) out.push([cur, len]);
+  return out;
+}
+
+function renderOutline(svg, id, W, H) {
+  const doors = (state.doors[id] || []).filter((d) => EDGES[d.edge] && d.span > 0);
+  const g = document.createElementNS(SVGNS, "g");
+  g.setAttribute("class", "hall-outline");
+  g.setAttribute("aria-hidden", "true");
+
+  /* All four walls as one path: a few dozen segments at most, and one
+     element keeps the boundary a single thing to style. */
+  let d = "";
+  for (const [key, edge] of Object.entries(EDGES)) {
+    const len = edge.len(W, H);
+    for (const [a, b] of wallSegments(len, doors.filter((x) => x.edge === key))) {
+      const [ax, ay] = edge.pt(a, W, H);
+      const [bx, by] = edge.pt(b, W, H);
+      d += `M${ax} ${ay}L${bx} ${by}`;
+    }
+  }
+  const wall = document.createElementNS(SVGNS, "path");
+  wall.setAttribute("class", "hall-wall");
+  wall.setAttribute("d", d);
+  g.appendChild(wall);
+
+  /* Each opening gets a bracket standing off the wall — the gap alone
+     reads as a missing bit of outline, the bracket reads as a doorway. */
+  for (const door of doors) {
+    const edge = EDGES[door.edge];
+    const len = edge.len(W, H);
+    const a = Math.max(0, door.at - door.span / 2);
+    const b = Math.min(len, door.at + door.span / 2);
+    const [ox, oy] = edge.out;
+    const [ax, ay] = edge.pt(a, W, H);
+    const [bx, by] = edge.pt(b, W, H);
+    const path =
+      `M${ax} ${ay}L${ax + ox * DOOR_DEPTH} ${ay + oy * DOOR_DEPTH}` +
+      `L${bx + ox * DOOR_DEPTH} ${by + oy * DOOR_DEPTH}L${bx} ${by}`;
+
+    const hall = hallOf(door.to);
+    const link = hall && hallExists(hall);
+    const p = document.createElementNS(SVGNS, "path");
+    p.setAttribute("class",
+      `hall-door${hall ? " to-hall" : ""}${door.approx ? " approx" : ""}`);
+    p.setAttribute("d", path);
+    g.appendChild(p);
+    /* A 3 px stroke is not a tap target on a phone, so a tappable door
+       carries an invisible fat one over it. */
+    if (link) {
+      const hit = document.createElementNS(SVGNS, "path");
+      hit.setAttribute("class", "hall-door-hit");
+      hit.setAttribute("d", path);
+      hit.dataset.hall = hall;
+      g.appendChild(hit);
+    }
+  }
+
+  /* One label per destination per wall, not per door: hall 7's east end
+     has three openings onto the same Boulevard, and saying so three times
+     is noise. Labels sit outside the wall, where there is nothing to
+     collide with and no booth name to cover. */
+  const groups = new Map();
+  for (const door of doors) {
+    const text = doorLabel(door.to);
+    if (!text) continue;
+    const key = `${door.edge}|${door.to}`;
+    if (!groups.has(key)) groups.set(key, { edge: door.edge, text, ats: [] });
+    groups.get(key).ats.push(door.at);
+  }
+  for (const { edge: key, text, ats } of groups.values()) {
+    const edge = EDGES[key];
+    const [px, py] = edge.pt(ats.reduce((a, b) => a + b, 0) / ats.length, W, H);
+    const off = DOOR_DEPTH + 1.8;
+    const el = document.createElementNS(SVGNS, "text");
+    /* The anchor is a class rather than the text-anchor attribute: the
+       map's own `#map text` rule sets it to middle, and a presentation
+       attribute loses to any stylesheet rule — which put "Boulevard"
+       straddling the doorway it names. */
+    el.setAttribute("class", `door-lbl on-${key}`);
+    el.setAttribute("font-size", DOOR_FS);
+    if (key === "n" || key === "s") {
+      el.setAttribute("x", px);
+      /* glyphs sit above their baseline, so only the south wall's label
+         has to be pushed down by a line to clear the wall */
+      el.setAttribute("y", py + edge.out[1] * off + (key === "s" ? DOOR_FS * 0.8 : 0));
+    } else {
+      el.setAttribute("x", px + edge.out[0] * off);
+      el.setAttribute("y", py + DOOR_FS * 0.34);
+    }
+    el.textContent = text;
+    g.appendChild(el);
+  }
+
+  svg.appendChild(g);
+}
+
 /* ================= hall rendering ================= */
 
 function renderHall(id) {
@@ -345,9 +510,13 @@ function renderHall(id) {
 
   const svg = document.createElementNS(SVGNS, "svg");
   svg.setAttribute("id", "map");
-  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  svg.setAttribute("width", W);
-  svg.setAttribute("height", H);
+  /* The drawing is the hall plus PAD metres of margin all round, so the
+     outline and its door brackets are inside the picture rather than half
+     outside it. Everything downstream — fitView, clampView, zoomToStand —
+     works in this padded box. */
+  svg.setAttribute("viewBox", `${-PAD} ${-PAD} ${W + PAD * 2} ${H + PAD * 2}`);
+  svg.setAttribute("width", W + PAD * 2);
+  svg.setAttribute("height", H + PAD * 2);
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", t("map.planAria", { hall: id }));
   /* The hall's structure is washed in its area colour — the only thing
@@ -462,6 +631,11 @@ function renderHall(id) {
     svg.appendChild(g);
     labels.appendChild(lg);
   }
+  /* After the stands: a stand that runs up to the wall would otherwise
+     paint over the boundary it stops at, and a door's tap target has to
+     sit above the stand behind it. Still under the label layer, which
+     stays the topmost thing on the map. */
+  renderOutline(svg, id, W, H);
   svg.appendChild(labels);
 
   $("#map")?.remove();
@@ -481,7 +655,7 @@ function renderHall(id) {
     requestAnimationFrame(() => { if ($("#map") === svg) declutter(); }));
 
   refreshMarks();
-  fitView(svg, W, H);
+  fitView(svg, W + PAD * 2, H + PAD * 2);
 }
 
 /* Decide, per zoom band, which labels are actually drawn.
@@ -821,8 +995,16 @@ function endPointer(e) {
       lastTap = { t: 0, x, y };
     } else {
       lastTap = { t: now, x, y };
-      const g = tap.target.closest?.(".stand");
-      selectStand(g ? state.stands.find((r) => r.g === g) : null);
+      /* A door into another hall goes there. Checked before the stand
+         underneath it, which is the whole reason its hit path is drawn on
+         top: tapping the passage out of hall 7 must not select the booth
+         standing beside it. */
+      const door = tap.target.closest?.(".hall-door-hit");
+      if (door) showHall(door.dataset.hall);
+      else {
+        const g = tap.target.closest?.(".stand");
+        selectStand(g ? state.stands.find((r) => r.g === g) : null);
+      }
     }
     tap = null;
   }
@@ -842,9 +1024,10 @@ function zoomToStand(rec) {
   const box = bbox(rec.data.poly);
   const r = stage.getBoundingClientRect();
   view.s = Math.min(view.max, Math.max(view.fit * 3.4, view.fit));
-  view.tx = r.width / 2 - box.cx * view.s;
+  /* +PAD: the drawing's own origin is PAD metres outside the hall's */
+  view.tx = r.width / 2 - (box.cx + PAD) * view.s;
   /* 0.4 rather than 0.5: the sheet covers the bottom of the stage */
-  view.ty = r.height * 0.4 - box.cy * view.s;
+  view.ty = r.height * 0.4 - (box.cy + PAD) * view.s;
   clampView();
   applyView();
 }
@@ -1015,10 +1198,16 @@ window.addEventListener("storage", (e) => {
 function renderSourceNote() {
   const { source, fetched } = state.index;
   const date = formatDate(fetched);
+  /* The doors are the one thing on this map that is not traceable to the
+     official plan — it files no wall and no doorway — so the credit line
+     stops short of claiming them. Per hall, not for the map as a whole:
+     five of the twelve have no doors filed yet, and a disclaimer about
+     something that isn't on the screen is just a longer footer. */
+  const ours = state.doors[state.hall]?.length ? ` · ${esc(t("map.doorsApprox"))}` : "";
   $("#srcnote").innerHTML =
     `${esc(t("map.outlines"))}: <a href="${esc(source)}" target="_blank" rel="noopener nofollow">${esc(
       t("map.officialHallPlan")
-    )}</a> · ${esc(t("map.checkedOn", { date }))}`;
+    )}</a> · ${esc(t("map.checkedOn", { date }))}${ours}`;
 }
 
 /* ================= boot ================= */
@@ -1035,6 +1224,7 @@ async function showHall(id, { standCode = null } = {}) {
        yank the row back while someone is reading along it. */
     $("#halls .chip.active")?.scrollIntoView({ inline: "center", block: "nearest" });
     renderAccess(id);
+    renderSourceNote(); /* its door clause is per hall */
     if (!state.halls.has(id)) $("#load").hidden = false;
     await loadHall(id);
     renderHall(id);
@@ -1066,12 +1256,20 @@ window.addEventListener("resize", () => {
 async function main() {
   loadMarks();
   const bust = `?v=${Date.now()}`;
-  const [index, exhibitors] = await Promise.all([
+  const [index, exhibitors, doors] = await Promise.all([
     fetch(`data/hallplan/index.json${bust}`).then((r) => r.json()),
     fetch(`data/exhibitors.json${bust}`).then((r) => r.json()),
+    /* Optional, unlike the other two: an installed shell whose service
+       worker predates this file has nothing to serve for it offline, and
+       a hall without doors is the map as it was — outline, no openings.
+       Not worth failing a boot over. */
+    fetch(`data/hallplan/entrances.json${bust}`)
+      .then((r) => (r.ok ? r.json() : {}))
+      .catch(() => ({})),
   ]);
   state.index = index;
   state.areas = index.areas || {};
+  state.doors = doors?.halls || {};
   state.exhibitors = exhibitors;
   buildJoin();
   renderSourceNote();

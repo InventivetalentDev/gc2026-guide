@@ -13,6 +13,12 @@
      data/hallplan/index.json
      data/hallplan/hall-<id>.json      e.g. hall-7.1.json
 
+   data/hallplan/entrances.json is the exception in that directory: it is
+   hand-authored and this tool neither reads nor writes it. The endpoint
+   files blocks and stands and nothing else — no wall, no doorway — so
+   where a hall opens onto the Boulevard or into its neighbour is not
+   ours to snapshot. Re-running this leaves that file alone.
+
    Run it from anywhere (no dependencies):
 
      node tools/fetch-hallplan.mjs             # re-snapshot, then report

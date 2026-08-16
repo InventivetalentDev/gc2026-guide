@@ -127,6 +127,11 @@
   transform-origin: 0 0;
   display: block;
   -webkit-user-drag: none;
+  /* A door's label sits outside the hall it names, and "Hall 10.1" is
+     28 m of text against a hall 82 m deep — reserving room for it inside
+     the viewBox would shrink every hall to fit a word. #stage clips
+     instead, which is the visible edge of the map anyway. */
+  overflow: visible;
 }
 .map-load {
   position: absolute; inset: 0;
@@ -153,6 +158,50 @@
 #map .stand.unconf path { stroke: var(--warn); stroke-dasharray: 5 4; }
 #map .stand.sel path { stroke: var(--ink); stroke-width: 2; }
 #map path { vector-effect: non-scaling-stroke; }
+
+/* --- the hall's boundary and its doors ---
+   The snapshot has no wall in it, so the outline is drawn from the hall's
+   recorded size and carries the area colour, washed back so it frames the
+   hall rather than competing with it. The doors are the bright part: they
+   are the only wayfinding on the map, and they are few. See the block
+   comment above renderOutline() in js/map.js. */
+.hall-outline { pointer-events: none; }
+#map .hall-wall {
+  fill: none;
+  stroke: var(--area, var(--rule));
+  stroke-width: 1.1;
+  opacity: .6;
+}
+#map .hall-door {
+  fill: none;
+  stroke: var(--area, var(--rule));
+  stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round;
+}
+/* A way into another hall, rather than out onto the concourse — and the
+   only thing in this layer you can tap, so it reads as ink, not as more
+   hall colour. */
+#map .hall-door.to-hall { stroke: var(--ink-mid); }
+/* Placed from recollection rather than at a gap the official geometry
+   actually leaves. Held back rather than dashed: a dash length is in
+   metres like everything else here, and a 6 m doorway is two dashes and
+   a gap, which reads as a drawing fault rather than as a hedge. */
+#map .hall-door.approx { opacity: .55; }
+#map .hall-door-hit {
+  fill: none; stroke: transparent; stroke-width: 18;
+  pointer-events: stroke; cursor: pointer;
+}
+#map .door-lbl {
+  font-family: var(--font-mono); fill: var(--ink-mid);
+  letter-spacing: .04em;
+}
+/* Written away from the hall, so the word starts at the doorway and runs
+   out into the margin rather than back across the booths. */
+#map .door-lbl.on-w { text-anchor: end; }
+#map .door-lbl.on-e { text-anchor: start; }
+/* Zoomed all the way out the brackets alone say "there are ways in and
+   out here"; at 4.2 m the words would be five pixels of grey. They arrive
+   with the mid-size booth names, one band in. */
+#map.z0 .door-lbl { display: none; }
 
 #map text {
   pointer-events: none; user-select: none; -webkit-user-select: none;

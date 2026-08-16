@@ -1,0 +1,36 @@
+{
+ "note": "Hand-authored, and the one file in data/hallplan/ that is. tools/fetch-hallplan.mjs never writes or reads it: Koelnmesse's booth-geometry endpoint files blocks and stands and nothing else, so no door in here came from it. Each entry is a doorway on the hall's own boundary, in the metre frame of that hall's hall-<id>.json — x runs west to east, y runs north to south, both starting at 0, exactly as the map draws it. edge: which wall (n/e/s/w). at: the centre of the opening, measured along that wall from its x=0 / y=0 end. span: how wide the opening is, in metres. to: what is on the other side — \"boulevard\", or \"hall:<id>\" for a direct passage, which the map turns into a tap that switches hall when that hall is drawn. approx: true where the opening is not backed by a gap in the official geometry, i.e. where we placed it from recollection rather than evidence; the map draws those dashed. Sources, per door: the Boulevard sides and every hall-to-hall passage come from the hall-plan page's own campus layout (its `hallen` array, which files each Durchgang as a polygon between two halls); positions along a wall are then snapped to the nearest aisle the hall's blocks actually leave, because that campus drawing is schematic and good to about ±15 m. Halls 6, 7 and 9 each carry a third Boulevard door on local recollection — the official geometry leaves only two openings on those end walls. Ground truth is a walk through the halls; correcting a number here needs no re-snapshot and no code change.",
+ "checked": "2026-08-16",
+ "halls": {
+  "6.1": [
+   { "edge": "e", "at": 6.5, "span": 7, "to": "boulevard" },
+   { "edge": "e", "at": 45.5, "span": 11, "to": "boulevard" },
+   { "edge": "e", "at": 75.5, "span": 7, "to": "boulevard", "approx": true },
+   { "edge": "n", "at": 42, "span": 8, "to": "hall:7.1" },
+   { "edge": "s", "at": 12, "span": 6, "to": "hall:1" }
+  ],
+  "7.1": [
+   { "edge": "e", "at": 6.5, "span": 7, "to": "boulevard" },
+   { "edge": "e", "at": 48, "span": 11, "to": "boulevard" },
+   { "edge": "e", "at": 75.5, "span": 7, "to": "boulevard", "approx": true },
+   { "edge": "n", "at": 87.5, "span": 8, "to": "hall:8.1" },
+   { "edge": "s", "at": 27, "span": 6, "to": "hall:6.1", "approx": true }
+  ],
+  "8.1": [
+   { "edge": "s", "at": 87, "span": 6, "to": "boulevard" },
+   { "edge": "s", "at": 117, "span": 6, "to": "boulevard" },
+   { "edge": "s", "at": 147.5, "span": 6, "to": "boulevard" },
+   { "edge": "s", "at": 27, "span": 6, "to": "hall:7.1", "approx": true }
+  ],
+  "9.1": [
+   { "edge": "w", "at": 6.5, "span": 7, "to": "boulevard" },
+   { "edge": "w", "at": 39, "span": 11, "to": "boulevard" },
+   { "edge": "w", "at": 60.5, "span": 7, "to": "boulevard", "approx": true },
+   { "edge": "s", "at": 117.5, "span": 6, "to": "hall:10.1" }
+  ],
+  "10.1": [
+   { "edge": "n", "at": 74, "span": 10, "to": "hall:9.1" },
+   { "edge": "w", "at": 35, "span": 16, "to": "boulevard", "approx": true }
+  ]
+ }
+}

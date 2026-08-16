@@ -87,6 +87,10 @@ const DATA = [
   "data/i18n/en.json",
   "data/i18n/de.json",
   "data/hallplan/index.json",
+  /* Half a kilobyte of doorways, and the one part of the map that is
+     wayfinding rather than booth-finding — exactly what you want in a
+     hall with no signal. */
+  "data/hallplan/entrances.json",
   "data/hallplan/hall-5.2.json",
   "data/hallplan/hall-6.1.json",
   "data/hallplan/hall-7.1.json",

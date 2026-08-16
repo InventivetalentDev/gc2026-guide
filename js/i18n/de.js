@@ -429,6 +429,9 @@ window.GC_STRINGS.de = {
   "map.outlines": "Standflächen",
   "map.officialHallPlan": "offizieller Hallenplan",
   "map.checkedOn": "geprüft am {date} · schematisch, inoffiziell",
+  /* Der Boulevard heißt auf dem offiziellen Plan auch auf Deutsch so. */
+  "map.door.boulevard": "Boulevard",
+  "map.doorsApprox": "Hallentüren von uns, ungefähr",
 
   /* ---------- business access & the business halls ----------
 
