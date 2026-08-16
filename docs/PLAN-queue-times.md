@@ -1,45 +1,64 @@
 # Live queue times — crowd-sourced wait reports
 
-**Status: research/plan only. Nothing here is implemented, and the open
-questions at the end are genuinely open — this document is the groundwork for
-that conversation, not a settled spec.**
+**Status: research/plan only, revision 2 — reworked around session-based
+reporting after design discussion. Nothing here is implemented; the open
+questions at the end are genuinely open.**
 
 ## Context
 
 The guide already talks about queues everywhere — it just does it in the past
 tense. Every entertainment exhibitor carries a static `crowd` forecast (1–5),
 rendered as the queue meter on cards, ranked in the planner's queue-priority
-list, echoed in plan rows, route stops and calendar exports. What it cannot say
-is what the queue at Xbox is *right now*, and on the show floor that is the
-question. The official Wartezeit boards answer it per booth, but only when you
-are standing in front of one.
+list, echoed in plan rows, route stops and calendar exports. What it cannot
+say is what the queue for *Call of Duty* is right now, and on the show floor
+that is the question. The official Wartezeit boards answer it per booth, but
+only when you are standing in front of one.
 
-The ask: let a visitor standing at a booth report the current wait with a
-couple of taps, aggregate those reports server-side, discard garbage, and show
-every other visitor a live queue status alongside the forecast.
+The ask: let a visitor standing in a queue report it with a couple of taps,
+aggregate those reports server-side, discard garbage, and show every other
+visitor a live status alongside the forecast.
 
 This is the first feature that cannot be static. Everything the guide does
 today ships as files; a live report has to land somewhere all visitors can
-read within a minute or two. So the plan splits into two halves of different
-character: a small backend (new territory for this repo) and a client surface
-(routine, follows existing patterns).
+read within a minute or two. So the plan splits into a small backend (new
+territory for this repo) and a client surface (routine, follows existing
+patterns).
+
+Three design decisions were settled in discussion and shape revision 2:
+
+- **One tracker per individual queue, not per booth.** A single number for
+  Xbox — twelve playable titles, each its own line — is meaningless.
+- **Reports are facts, not estimates.** Revision 1 asked "how long is the
+  queue?", which nobody actually knows — it invited guesses. What a person in
+  a queue *does* know: how long they have been standing in it, and roughly
+  how many people are ahead. Facts aggregate honestly; and successive facts
+  from the same person turn into measurements nobody reported directly — the
+  queue's actual speed.
+- **Queue mechanics are data, but optional data.** Queues move one-by-one,
+  in pairs (co-op stations), in squads of 5–10 (team games), or in
+  presentation waves that swallow 50 people at once. Knowing which changes
+  both the estimate and the reader's expectations — but someone twenty
+  minutes into a wave queue may not yet know it *is* one. So mechanics are a
+  detail you can add when you know it, never a gate in front of "I've been
+  waiting this long".
 
 Two constraints shape everything below:
 
-1. **The halls eat mobile reception.** The whole PWA exists because Koelnmesse
-   kills phones. A live feature degrades by nature when offline — the plan's
-   job is to make it degrade honestly (age labels, "live unavailable") rather
-   than silently show stale numbers as current.
-2. **The clock.** The show runs Aug 26–30; today is Aug 16. The feature is
-   worthless on Aug 31. Whatever ships must be buildable in days and only has
-   to survive five of them — which argues for the simplest architecture that
-   is honest and abuse-resistant, not the most elegant one.
+1. **The halls eat mobile reception.** The whole PWA exists because
+   Koelnmesse kills phones. A live feature degrades by nature when offline —
+   the plan's job is to make it degrade honestly (age labels, "live
+   unavailable") rather than silently show stale numbers as current.
+2. **The clock.** The show runs Aug 26–30; today is Aug 16. Whatever ships
+   must be buildable in days and only has to survive five of them. The
+   architecture below is tiered so the estimator can start simple and grow
+   mid-show — the PWA's update path makes that a real option, not a wish.
 
 ## 1. Where the backend lives
 
-The site deploys as an **assets-only Cloudflare Worker** — `wrangler.toml` has
-no `main` script, just `[assets]`. Cloudflare's supported path for exactly this
-situation is to add a script to the same Worker and route selected paths to it:
+The site deploys as an **assets-only Cloudflare Worker** — `wrangler.toml`
+has no `main` script, just `[assets]`. Cloudflare's supported path for
+exactly this situation is to add a script to the same Worker and route
+selected paths to it:
 
 ```toml
 main = "worker/index.js"
@@ -55,214 +74,310 @@ run_worker_first = ["/api/*"]
 `not_found_handling = "single-page-application"`, an unmatched path is
 answered with `index.html` — without the explicit route list, whether an
 `/api/` request reaches the script depends on the browser's `Sec-Fetch-Mode`
-header. The array opts out of that inference: `/api/*` always runs the script,
-everything else keeps today's behaviour byte for byte. (Needs wrangler ≥
-4.20.0.)
+header. The array opts out of that inference: `/api/*` always runs the
+script, everything else keeps today's behaviour byte for byte. (Needs
+wrangler ≥ 4.20.0.)
 
 Same Worker means **same origin on every hostname** — hallgui.de, the three
-draining legacy domains, workers.dev — so no CORS, no per-environment API URL
-in the client, and the `_headers` file needs nothing (there is no CSP to
-extend; response headers for `/api/*` are set by the script itself).
-`worker/` sits outside `dist/`, so `tools/build-site.sh` needs no change —
-wrangler picks `main` up from the repo root.
+draining legacy domains, workers.dev — so no CORS, no per-environment API
+URL in the client, and `_headers` needs nothing (there is no CSP to extend;
+`/api/*` response headers are set by the script). `worker/` sits outside
+`dist/`, so `tools/build-site.sh` needs no change — wrangler picks `main` up
+from the repo root.
 
 A separate Worker on an api. subdomain was considered and rejected: it buys
 independent deploys at the cost of CORS preflights on every report, a second
 runbook, and a hardcoded origin in a client that currently has none.
 
-## 2. Storage
+## 2. The session model
 
-Four Cloudflare options, one honest fit:
+The unit of reporting is a **queue session**: one person, in one queue, over
+the time they stand in it. A session is opened by the first report, fed by
+updates, and closed by an outcome. That gives the server:
 
-- **KV** — last-write-wins and eventually consistent; concurrent appends from
-  two phones at the same booth eat each other. Fine for a computed snapshot,
-  wrong for the raw reports.
-- **Durable Objects** — a single DO serializing all queue state is the elegant
-  answer and would be the pick for a year-round service. It is also a second
-  new platform concept in a repo that currently has zero, and mid-show
-  debugging means talking to an opaque object rather than running a query.
-- **Workers Analytics Engine** — built for exactly this write pattern, but
-  reads are sampled; a booth with 4 reports can answer with 2 of them.
-- **D1** — one SQLite table of raw reports, aggregation is a SQL query, and
-  mid-show a misbehaving client or a garbage flood can be inspected and
-  cleaned with `wrangler d1 execute` from a laptop. Free tier (5M reads,
-  100k writes/day) is an order of magnitude above any plausible load once
-  reads are edge-cached (§4).
+- **completed waits** — "joined at 11:02 (server clock), entered at 11:49" is
+  a 47-minute ground-truth sample, and the reporter never estimated anything;
+  the client's own timer did the remembering.
+- **queue speed** — the same person reporting "~100 ahead" and, twenty
+  minutes later, "~50 ahead" has measured ≈2.5 people/min. Nobody can report
+  throughput directly; paired counts yield it for free.
+- **dedup by construction** — one person is one session, however many
+  updates they send. The revision-1 "newest report per client wins" rule
+  falls out naturally instead of being bolted on.
 
-**D1**, on debuggability during the five days that matter. One table:
+Sessions live server-side keyed by `(client, queue)` — the open session for
+that pair, no session id on the wire. A `joined` report replaces any open
+session (you re-queued), an outcome closes it, and a session with no update
+for 4 hours expires as `abandoned` (forgotten phones must not become
+99-minute "waits").
+
+Late starters are first-class: someone who discovers the tracker twenty
+minutes into the line opens their session with a claimed elapsed bucket
+("waiting ~20 min already"), which back-dates the join anchor. The claim is
+coarser than a timer but it is still a fact about themselves, not a guess
+about the queue.
+
+### Storage
+
+Four Cloudflare options, one honest fit. **KV** is last-write-wins and
+eventually consistent — concurrent updates from two phones at the same booth
+eat each other. **Durable Objects** serializing per-queue state is the
+elegant year-round answer, but it is a second new platform concept in a repo
+that currently has zero, and mid-show debugging means talking to an opaque
+object. **Analytics Engine** samples reads; a queue with 4 sessions can
+answer with 2 of them. **D1** makes the sessions table a table: aggregation
+is SQL, and a misbehaving client or garbage flood on day 2 can be inspected
+and cleaned with `wrangler d1 execute` from a laptop. D1 it is, on
+debuggability during the five days that matter.
 
 ```sql
-CREATE TABLE reports (
-  exhibitor  TEXT    NOT NULL,   -- ex.id, validated against exhibitors.json
-  game       TEXT,               -- gameKey(title), NULL = booth-level (open Q1)
-  wait       INTEGER NOT NULL,   -- minutes bucket, or -1 = queue closed
-  client     TEXT    NOT NULL,   -- anonymous per-device id (see §6)
-  reported_at INTEGER NOT NULL   -- unixepoch(), server clock only
+CREATE TABLE sessions (
+  id          INTEGER PRIMARY KEY,
+  exhibitor   TEXT    NOT NULL,  -- ex.id, validated against exhibitors.json
+  game        TEXT,              -- gameKey(title); NULL = booth-level queue
+  client      TEXT    NOT NULL,  -- anonymous per-device id (§6)
+  joined_at   INTEGER NOT NULL,  -- server clock, possibly back-dated by claim
+  claimed     INTEGER NOT NULL DEFAULT 0,  -- minutes of back-dating (audit)
+  outcome     TEXT,              -- NULL=open | entered | left | closed | abandoned
+  closed_at   INTEGER
 );
-CREATE INDEX idx_reports_time ON reports (reported_at);
-CREATE INDEX idx_reports_booth ON reports (exhibitor, reported_at);
+CREATE TABLE updates (
+  session     INTEGER NOT NULL REFERENCES sessions(id),
+  ahead       INTEGER,           -- people-ahead bucket value, NULL = "still here" ping
+  reported_at INTEGER NOT NULL   -- server clock only
+);
+CREATE TABLE queue_meta (        -- mechanics: slow-changing, separately aggregated
+  exhibitor   TEXT    NOT NULL,
+  game        TEXT,
+  client      TEXT    NOT NULL,
+  qtype       TEXT    NOT NULL,  -- single | pairs | group | wave
+  batch       INTEGER,           -- rough batch/wave size bucket, NULL = unknown
+  reported_at INTEGER NOT NULL
+);
 ```
 
-The nullable `game` column is there from day one even though the MVP UI is
-booth-level (open question 1) — adding it later is a migration on live
-show-week data; carrying it unused costs nothing.
+Every timestamp is stamped from the **server** clock; the client's opinion of
+the time is never trusted (a phone that just left airplane mode after two
+hours in Hall 7 will happily claim any time). Rows older than ~24h are
+pruned by a Cron Trigger; `queue_meta` alone survives the whole show, because
+a booth's mechanics on Wednesday still hold on Sunday.
 
-Rows older than ~24h are pruned by a Cron Trigger (`0 3 * * *`); the working
-set is only ever the last hour, so the table stays tiny either way.
+### Which queues exist
+
+One tracker per **playable game** (104 at revision 26), plus one
+**booth-level tracker** per entertainment exhibitor — that covers the 45
+exhibitors with no playable lineup (the PlayStation experience, merch halls,
+signing lines) and doubles as "the entry queue to the booth itself", which
+big booths have in front of their per-station lines. Business (`trade`)
+exhibitors get none: appointments, not queues, and the app already excludes
+them from every queue surface. The worker validates ids against the deployed
+`data/exhibitors.json` through its own `ASSETS` binding — no build step, and
+the allowlist can never drift from the data actually being served.
 
 ## 3. API
 
-Two endpoints, both under `/api/queue/`.
+**`POST /api/queue/report`** — one endpoint, a `kind` field, client id
+header on everything. Validation on every kind: known queue (§2), show-hours
+gate (server time inside `event.days` open–close ±30 min, from the same
+ASSETS binding — kills the entire category of bored-at-home garbage), rate
+limits (§6). Kinds:
 
-**`POST /api/queue/report`** — body `{ "exhibitor": "xbox", "wait": 30 }`
-plus the client id header. Validation, in order, each rejecting with a 4xx:
+| kind | payload | effect |
+|---|---|---|
+| `joined` | optional `claimed` bucket, optional `ahead` bucket | opens (or replaces) the session, anchor = now − claimed |
+| `update` | optional `ahead` bucket | "still in line", feeds elapsed + throughput |
+| `entered` | — | closes session → completed wait sample |
+| `left` | — | closes session, excluded from wait stats |
+| `closed` | — | "they shut the queue" — attaches to the queue, not the session |
+| `meta` | `qtype`, optional `batch` bucket | upserts this client's row in `queue_meta` |
 
-1. `exhibitor` must be a real id with a queue to report — present in
-   `data/exhibitors.json` and not a `trade` exhibitor (business booths run on
-   appointments; the app already excludes them from every queue surface). The
-   worker reads the deployed `exhibitors.json` through its own `ASSETS`
-   binding and caches the id set in the isolate — no build step, and the
-   allowlist can never drift from the data actually being served.
-2. `wait` must be one of the fixed buckets (§5) or the closed sentinel. Free
-   minutes are not accepted from the wire even if the UI someday offers them —
-   the bucket list is the first and cheapest garbage filter.
-3. Show-hours gate: server time must be within `event.days` open–close (±30
-   min grace), else 403 "the show is closed". Kills the entire category of
-   bored-at-home garbage, and `event.json` rides the same ASSETS binding.
-4. Rate limits (§6).
+All numeric inputs are **chip vocabularies, not free numbers** — elapsed
+claims reuse the wait buckets (§5), people-ahead comes as ~10 / ~20 / ~30 /
+~50 / ~75 / ~100 / ~150 / 200+. Nobody counts a switchback to the person,
+buckets are one-handed in a crowd, and the fixed vocabulary is the first and
+cheapest garbage filter: the wire rejects everything else.
 
-Accepted reports get `reported_at` stamped from the **server** clock; the
-client's opinion of the time is never trusted (a phone that just left airplane
-mode after two hours in Hall 7 will happily claim any time).
-
-**`GET /api/queue/live`** — the whole show in one blob:
+**`GET /api/queue/live`** — the whole show in one blob, no per-queue fan-out:
 
 ```json
 { "at": 1756202400,
-  "booths": { "xbox":   { "wait": 45, "n": 6, "newest": 1756202100 },
-              "nintendo": { "closed": true, "n": 3, "newest": 1756201800 } } }
+  "queues": {
+    "xbox": {
+      "_booth":              { "est": 10, "how": "flow", "n": 4, "newest": 1756202220 },
+      "call-of-duty-modern-warfare-4":
+                             { "est": 90, "how": "done", "n": 6, "newest": 1756202100,
+                               "qtype": "group", "batch": 10 },
+      "fable":               { "closed": true, "n": 3, "newest": 1756201800 } } } }
 ```
 
-One request answers every card, the map, and the planner — there is no
-per-booth endpoint to fan out. The handler computes aggregates for all booths
-in one query and the response is cached (§4), so cost does not scale with the
-number of booths a visitor looks at.
+`how` is the estimator tier that produced the number (§4) — the client
+renders each differently, because they mean different things.
 
-## 4. Aggregation and garbage
+**Read cost**: the response is held in the edge cache (`caches.default`) for
+**60 seconds** plus `Cache-Control: max-age=30` for the browser. D1 is
+touched about once a minute total — the entire audience stands in one city,
+one colo — regardless of how many phones poll. The account is on Workers
+Paid, so request volume from 2-minute polling is a non-issue (§5).
 
-Aggregation runs at read time over a **rolling 60-minute window**:
+## 4. Estimation
 
-- **One voice per device per booth**: only each client's *newest* report in
-  the window counts. Updating your estimate replaces it rather than stacking
-  it, and one keyboard cannot outvote a queue by tapping ten times.
-- **Median** of the counted reports, snapped back to the nearest bucket.
-  Median is the outlier filter: with bucketed inputs bounding the range and
-  dedup bounding repetition, a lone troll report at 120 against four honest
-  30s simply does not move the answer. Explicit IQR/MAD trimming was
-  considered and adds nothing a median over buckets doesn't already do — noted
-  here so it isn't re-invented later.
-- **Closed** wins when reported by ≥2 devices more recently than the median
-  wait report — "they shut the queue" is news that outranks a number.
-- **No minimum count, but the count always shows.** The guide's house pattern
-  is provenance over suppression (source markers, "unconfirmed" flags). A
-  single report renders as "~30 min · 1 report · 5 min ago" and the reader
-  weighs it — data will be thin at a fan guide's scale, and hiding n<3 could
-  mean hiding the feature.
-- Staleness is display-side: the client renders age from `newest` and fades
-  to "no recent reports" past the window. Nothing pretends 9 a.m. data is
-  current at noon.
+Read-time, per queue, over rolling windows. The tiers degrade gracefully —
+each exists because show-floor data will be thin, and a thin-data answer that
+is honest about *what kind* of answer it is beats a confident blend:
 
-**Read cost**: the GET response is held in the edge cache
-(`caches.default`) for **60 seconds**, plus `Cache-Control: max-age=30` for
-the browser. D1 is touched roughly once a minute per colo — effectively once
-a minute total, since the entire audience stands in one city — regardless of
-how many phones poll. Worker *invocations* still count per request: at an
-optimistic 30k show-day users polling every 2 minutes while visible, that is
-a few hundred thousand requests/day against the free tier's 100k/day cap.
-**Either enable Workers Paid ($5/mo, 10M included) for show week, or accept
-the free cap and poll only on demand** — cost question is open question 5.
+- **Tier "flow"** — the live one. Queue length now = median `ahead` from
+  recently-opened sessions (last ~15 min); speed = within-session pairs of
+  `ahead` reports, `(a₁−a₂)/(t₂−t₁)`, pooled median over ~45 min. Estimate =
+  length / speed. This is the only tier that measures the queue *as it is
+  now* — and wave queues average out correctly here, because a 50-person
+  lurch every 15 minutes is still ≈3.3 people/min across pairs spanning a
+  wave or two.
+- **Tier "done"** — median of completed waits from sessions that `entered`
+  in the last hour. Ground truth, but lagged: a 50-minute sample describes
+  the queue as it stood 50 minutes ago. Rendered as what it is: "people just
+  getting in waited ~50 min".
+- **Tier "sofar"** — open sessions only: the upper quartile of current
+  elapsed times. Not an estimate at all, a bound: "people in line have been
+  waiting 30+ min". First minutes of the show, this is often all there is,
+  and it is already worth showing.
+- **`closed`** overrides the number when ≥2 devices report it more recently
+  than the median counter-evidence — "they shut the queue" outranks any wait,
+  and at gamescom (capped queues, full-for-the-day boards) it is arguably the
+  single most valuable report in the system.
+- **Mechanics ride alongside, not inside**: `qtype`/`batch` come from
+  `queue_meta` by majority vote across the whole show and render as a label —
+  "moves in waves of ~50". For wave/group queues the honest display is a
+  range (miss the wave, wait a full cycle), which needs observed cycle time;
+  that refinement is explicitly **phase 2**, informed by real day-1 data. The
+  MVP shows the flow-tier average, which is correct *on average* even for
+  waves.
+
+Garbage handling beyond the bucket vocabulary: pairs with rising `ahead` are
+excluded from speed (a correction, not movement — people ahead of you cannot
+multiply); pairs spanning < 3 min are ignored (bucket noise dominates);
+speeds above a sanity cap (~100 people/min) are dropped; `left` sessions
+never enter wait stats; expiry keeps forgotten phones out of "sofar". With
+bucketed inputs bounding the range, per-session dedup bounding repetition,
+and medians throughout, a lone troll cannot move any tier — explicit IQR/MAD
+trimming was considered and adds nothing a median over buckets doesn't
+already do (noted so it isn't re-invented later).
+
+**No minimum count, but the count always shows.** The guide's house pattern
+is provenance over suppression (source markers, "unconfirmed" flags). A
+single session renders as "~30 min · 1 report · 5 min ago" and the reader
+weighs it — at a fan guide's scale, hiding n<3 could mean hiding the feature.
+Staleness is display-side: the client renders age from `newest` and fades to
+"no recent reports" past the window. Nothing pretends 9 a.m. data is current
+at noon.
 
 ## 5. Client surface
 
-**Reporting.** The report control lives where the visitor already is: on the
-exhibitor card (and later the map popover), a small button near the queue
-meter — "Queue right now?". It opens a chip row, one tap reports:
+**Starting a session.** The control lives where the visitor already is: on
+the exhibitor card, per game row (and the booth-level line in the card foot),
+later the map popover. Tap "I'm in this queue" →
 
 ```
-No queue · ~15 · ~30 · ~45 · ~1 h · ~1½ h · 2 h+ · Queue closed
+Just joined · waiting ~10 · ~20 · ~30 · ~45 · ~1 h · ~1½ h · 2 h+
 ```
 
-Buckets, not a number field: nobody times a queue to the minute, chips are
-one-handed in a crowd, and the vocabulary doubles as input validation.
-"Queue closed" is a real gamescom mechanic (capped queues close for the day)
-and is arguably the single most valuable report — it saves someone a walk
-across two halls. After reporting: a toast confirms, the button shows "you
-reported ~30 min" and re-arms after the 5-minute per-booth throttle.
+one tap opens the session (the non-first chips are the late-starter claim),
+then an optional second row — "roughly how many ahead of you?" — and, tucked
+behind a "queue details" disclosure for those who know: mechanics chips
+(one-by-one / pairs / groups / waves) and batch size. The disclosure ordering
+*is* the settled design decision: elapsed first, mechanics only ever
+optional, because you can be twenty minutes into a wave queue before
+learning it moves in waves.
 
-The control renders only when online, only during show days/hours (from
-`event.json`, which the client already has), and never for business booths.
-Before Aug 26 the whole feature is invisible — no dead UI to explain.
-Reports made offline are **dropped, not queued**: a Background-Sync'd report
-delivered 40 minutes later is precisely the garbage the server exists to
-discard, so it is not collected. (Rejected alternative, recorded.)
+**Living with a session.** The client keeps the active session in
+localStorage (`gc2026.queue.v1`): queue, joined-at, last-ahead. While it is
+open, the card control becomes a live timer with three buttons — **Still
+waiting** (optionally re-asking the ahead bucket), **I'm in!**, **I left** —
+and, the load-bearing nudge: whenever the app is reopened or the tab
+refocuses with a session past ~10 min, a quiet prompt bar surfaces it:
+"Still queueing for Fable? 23 min · [Still waiting] [I'm in!] [I left]".
+That reopen moment is when ground truth gets captured or lost — no
+notifications, no background anything, just meeting the visitor at the
+moment they already came back to their phone. One active session per queue,
+multiple parallel sessions allowed (you *will* stand in a merch line while a
+friend holds your spot elsewhere), each rendered on its own card.
+
+**Reporting "queue closed"** stays a session-less one-tap on the same chip
+row — you see the sign, you report it, you walk away.
 
 **Displaying.** A live chip beside the existing forecast, visually distinct
 from it (the meter is a *prediction*, the chip is a *measurement* — the two
-must not blur):
-
-- cards: `Live: ~45 min · 6 reports · 4 min ago`
-- queue-priority table and plan rows: a compact live figure next to the
-  forecast where one exists
-- map popovers: same chip (phase 2 — `map.js` is a separate page and script;
-  the MVP can ship without it)
+must not blur). Tier shapes the wording: flow → "Live: ~45 min", done →
+"~50 min for people just in", sofar → "30+ min so far", each with
+"· n reports · age". Game rows carry their own chips; the card foot
+summarises the worst of them next to the forecast meter; the queue-priority
+table and plan rows get the compact figure where one exists. Map popovers
+are **phase 2** (`map.js` is a separate page and script; the MVP ships
+without it).
 
 **Fetching.** `GET /api/queue/live` on boot (after core data — it must never
 gate first render), then every ~2 minutes while the tab is visible
-(`visibilitychange` + interval), plus on regaining focus. No polling when
-hidden, no polling outside show hours. The existing `?v=Date.now()`
-cache-bust pattern is *not* used here — the endpoint's own `max-age=30` is
-the freshness contract, and busting it would defeat the edge cache that makes
-the feature cheap.
+(`visibilitychange` + interval), plus on regaining focus; nothing when
+hidden, nothing outside show hours. The existing `?v=Date.now()` cache-bust
+pattern is deliberately *not* used here — the endpoint's `max-age=30` is the
+freshness contract, and busting it would defeat the edge cache that makes
+polling cheap. Workers Paid is already on the account, so 2-minute polling
+is settled.
 
 **Offline.** No live data, no lie: the chip shows "live queue needs a
-connection" or the age of the last in-memory fetch if it is still inside the
-window. The SW never serves API responses (§7), so there is no stale-cache
-path to guard.
+connection", or the age of the last in-memory fetch while it is still inside
+the window. An open session's *timer* keeps running offline — it is local —
+and "I'm in!" tapped offline is worth special-casing: the elapsed time was
+measured client-side, so the completion is queued and submitted with its
+locally-recorded duration on reconnect, flagged `deferred` for the server to
+sanity-check (the one place client timing is accepted, because the session
+anchor still came from the server). All other report kinds are dropped when
+offline, not queued — a 40-minute-late "~100 ahead" is precisely the garbage
+the server exists to discard.
 
-**i18n**: every string above lands in `js/i18n/en.js` *and* `de.js`
+**Lifecycle.** Before Aug 26 the whole feature is invisible — show days come
+from `event.json`, which the client already has; no dead UI to explain.
+After the show it goes quiet the same way.
+
+**i18n**: every string lands in `js/i18n/en.js` *and* `de.js`
 (`tools/check-i18n.mjs` enforces parity).
 
 ## 6. Abuse, identity, privacy
 
-No accounts — the guide has none and show week is not the moment to add them.
-The defense is layered cheapness:
+No accounts — the guide has none and show week is not the moment to add
+them. The defense is layered cheapness:
 
 - **Anonymous client id**: a random UUID minted into localStorage on first
-  report, sent with each one. It is the dedup and throttle key: 1 report per
-  booth per 5 min, ~30/day per client. Trivially resettable, which is fine —
-  it is a speed bump, not an identity.
-- **Per-IP limits exist but must be loose** (~20/min): the entire audience
-  sits behind Koelnmesse wifi NAT and a handful of carrier CGNAT exits, so a
-  tight IP limit would throttle the honest crowd, not the troll. The client
-  id does the fine-grained work; the IP limit only catches raw scripted
-  floods.
-- **Everything in §3–4**: bucket vocabulary, show-hours gate, id allowlist,
-  server timestamps, median + dedup.
+  report, sent with each one — the session key and throttle key. Trivially
+  resettable, which is fine: it is a speed bump, not an identity.
+- **Throttles shaped like queueing, not like spam**: one open session per
+  (client, queue); updates ≥ 2 min apart; ~10 sessions per client per hour,
+  ~40/day (nobody stands in more lines than that); `meta` once per (client,
+  queue) per day.
+- **Per-IP limits exist but must be loose** (~20 writes/min): the entire
+  audience sits behind Koelnmesse wifi NAT and a handful of carrier CGNAT
+  exits, so a tight IP limit throttles the honest crowd, not the troll. The
+  client id does the fine-grained work; the IP limit only catches raw
+  scripted floods.
+- **Everything in §3–4**: chip vocabularies, show-hours gate, id allowlist,
+  server timestamps, medians over deduped sessions.
 - **Escalation path, not default**: if show week brings a real flood,
-  Turnstile on the report endpoint is the next dial — deliberately *not* in
-  the MVP, because it would be the site's first third-party script and its
-  first external runtime dependency, traded away for abuse that may never
-  come. A D1 table also makes the manual fallback real: identify the client
-  id, delete its rows, add it to a deny list.
+  Turnstile on the write endpoint is the next dial — deliberately *not* in
+  the MVP, because it would be the site's first third-party script, traded
+  away for abuse that may never come. D1 makes the manual fallback real:
+  identify the client id, delete its rows, deny-list it.
 
 **Privacy page** (`privacy.html`, both languages): this is the site's first
 feature where a visitor action leaves the browser, and the page currently
 promises the opposite ("what stays in your browser"). It needs an honest new
-section: what a report contains (booth, bucket, random id, server time —
-no name, no account, no location), that the IP is used transiently for rate
-limiting and not stored with reports, retention (pruned within 24h; the whole
-database is deleted after the show), and that reporting is entirely optional.
-GDPR framing: legitimate interest, anonymous-by-design data.
+section: what a session contains (queue, coarse counts, random id, server
+timestamps — no name, no account, no location), that the IP is used
+transiently for rate limiting and not stored with reports, retention
+(sessions pruned within 24h, mechanics votes kept for the show, everything
+deleted after it), and that reporting is entirely optional. Worth saying
+plainly in the plan: a day of sessions from one client id *is* a sketch of
+that person's day at the show — the 24-hour prune and the resettable id are
+what keep that a sketch nobody retains. GDPR framing: legitimate interest,
+anonymous-by-design.
 
 ## 7. Service worker and deploy mechanics
 
@@ -272,65 +387,65 @@ Two things will bite if not done deliberately:
    stale-while-revalidate for *any* same-origin GET it doesn't otherwise
    route — a live-queue GET would be served from cache first and refreshed
    behind the reader's back, showing hour-old queues as current. One early
-   return (`url.pathname.includes("/api/")` → let the network handle it)
-   before the strategy dispatch. POSTs already pass through (`method !==
-   "GET"` returns first).
-2. **Cache `VERSION` bump.** The report UI spans `index.html`
-   (network-first) and `js/app.js` + `sw.js` (stale-while-revalidate) — the
-   known first-load-after-deploy mismatch. Same reasoning as rev 21's share
-   dialog: bump, let the update toast land a coherent shell. And the SW
-   change here is load-bearing (point 1), which is exactly the "must be
-   believed rather than eventually refreshed" rule the VERSION comment sets.
+   return before the strategy dispatch; POSTs already pass through
+   (`method !== "GET"` returns first).
+2. **Cache `VERSION` bump.** The feature spans `index.html` (network-first)
+   and `js/app.js` + `sw.js` (stale-while-revalidate) — the known
+   first-load-after-deploy mismatch. Same reasoning as rev 21's share
+   dialog; and the SW change here is load-bearing (point 1), which is
+   exactly the "must be believed rather than eventually refreshed" rule the
+   VERSION comment sets.
 
-Deploy order: D1 database created and migrated first, `wrangler.toml` gains
-`main` + `run_worker_first` + `[[d1_databases]]` + `[triggers]`, then one
-normal deploy carries site and API together. Rollback is equally one motion:
-removing `main` returns the Worker to assets-only. `workers.dev` stays true,
-which gives a staging URL where the full loop can be tested against the real
-D1 before the domains see it.
+Deploy order: D1 database created and migrated first; `wrangler.toml` gains
+`main` + `run_worker_first` + `[[d1_databases]]` + `[triggers]`; one normal
+deploy then carries site and API together. Rollback is one motion — removing
+`main` returns the Worker to assets-only. `workers_dev` stays true, which
+gives a staging URL where the full loop runs against real D1 before the
+domains see it.
 
 ## 8. Phasing
 
-**MVP (must ship before Aug 26):** worker + D1 + both endpoints, aggregation,
-rate limits, report chips + live chip on cards, queue-priority integration,
-SW bypass, i18n, privacy page, changelog/meta bump.
+**MVP (must ship before Aug 26):** worker + D1 + both endpoints; sessions
+with `joined`/`update`/`entered`/`left`/`closed`; all three estimator tiers;
+mechanics capture (`meta`) and label display; report flow + live chips on
+cards; queue-priority integration; the reopen prompt bar; SW bypass; i18n;
+privacy page; changelog/meta bump.
 
 **Phase 2 (shippable mid-show — the PWA updates itself):** map popover
-integration, per-game reporting if wanted (schema is ready), tuning knobs
-(window, weights) informed by real day-1 data, deny list if needed.
+chips; wave-aware range display from observed cycle times; estimator tuning
+informed by real day-1 data; deny list if needed.
 
-**After the show:** the endpoints return 410, the worker (or just the
-feature flag in `event.json` terms — show days are over) goes quiet, D1 is
-deleted per the privacy promise.
+**After the show:** the endpoints return 410, the feature sleeps on its own
+show-days check, D1 is deleted per the privacy promise.
 
 ## Open questions (deliberately unresolved)
 
-1. **Granularity: booth or game?** A booth-level number is nearly meaningless
-   at Xbox (12+ playable titles, each its own line). Per-game reporting is
-   more honest and splits already-thin data thinner. Schema supports both;
-   the UI choice is the real decision.
-2. **Bucket vocabulary** — the eight chips in §5 are a proposal. Fewer chips
-   = more taps land, coarser data.
-3. **Seeding the display**: should the live chip fall back to showing the
-   static forecast when there are no reports, or is blank more honest?
-4. **Polling cadence vs cost** (§4): 2-minute polling with Workers Paid for
-   show week, or fetch-on-demand (boot + manual refresh) inside the free tier?
-5. **Prompting**: nudge people to report ("been here a while? report the
-   queue") or keep it strictly pull? Nudges raise volume and annoyance
-   together.
-6. **Trust display**: is "n reports · age" enough signal, or is a
-   confidence tint (solid at n≥3, hollow below) worth the pixels?
+1. **The ahead-bucket vocabulary** — proposed ~10/~20/~30/~50/~75/~100/
+   ~150/200+. Coarser = more taps land; finer = better speed math.
+2. **Booth-level tracker on every booth, or only where there's no lineup?**
+   Everywhere doubles as the entry-gate queue but adds a chooser step to the
+   report flow on multi-game booths.
+3. **Forecast fallback**: when a queue has no live data, should the chip
+   show the static 1–5 forecast in its place, or is blank more honest?
+4. **Nudge aggressiveness**: reopen/refocus prompt only (planned), or also a
+   gentle in-page reminder after N minutes with the tab open?
+5. **Abandonment as signal**: `left` sessions are captured but unused —
+   "40% of people give up on this line" is genuinely useful and slightly
+   demoralising. Show it?
+6. **Wave range display** (phase 2 by default) — worth pulling into MVP for
+   the handful of big presentation booths if day-1 data is rich enough?
 
 ## Files (when implemented)
 
 | file | change |
 |---|---|
-| `worker/index.js` | new — routing, validation, rate limits, aggregation, cron prune |
+| `worker/index.js` | new — routing, validation, session logic, rate limits, estimator, cron prune |
 | `worker/schema.sql` | new — D1 migration |
 | `wrangler.toml` | `main`, `run_worker_first`, D1 binding, cron trigger |
-| `js/app.js` | report control, live chip, polling, state |
-| `index.html` | report chips markup, live chip slots |
-| `css/style.css` | chips, live chip, reported state |
+| `js/app.js` | report flow, session state + prompt bar, live chips, polling |
+| `js/marks.js` | (or app.js) localStorage session store alongside existing keys |
+| `index.html` | chip rows, disclosure, prompt bar, live chip slots |
+| `css/style.css` | chips, timer state, live chip tiers, prompt bar |
 | `js/i18n/en.js`, `de.js` | all new UI strings |
 | `sw.js` | `/api/` bypass + `VERSION` bump |
 | `privacy.html` (en/de) | new section: queue reports |
@@ -342,10 +457,13 @@ deleted per the privacy promise.
 ## Verification (sketch, to be expanded at implementation)
 
 Local: `wrangler dev` serves assets + worker + local D1 together — the full
-loop (report → D1 row → aggregate → chip) runs on one laptop, including the
-SW bypass. Then on workers.dev against real D1: two devices report and read
-each other within the cache window; a third device's throttled repeat is
-rejected; a report for a trade id and an out-of-hours report both 4xx; median
-survives one planted garbage report; offline shows the honest fallback and
-the report control disappears; free-tier request math is checked against real
-polling traffic for an hour.
+loop (join → updates → entered → estimate → chip) runs on one laptop,
+including the SW bypass. A small script drives synthetic sessions against
+local D1 to check the estimator: a steady queue, a wave queue, a troll
+client, a rising-`ahead` correction, a forgotten session hitting expiry.
+Then on workers.dev against real D1: two devices see each other's sessions
+inside the cache window; throttled repeats reject; trade-id and
+out-of-hours reports 4xx; "I'm in!" fired offline lands after reconnect
+with its deferred duration; the reopen prompt resurfaces a 20-minute
+session; offline shows the honest fallback and the report control
+disappears.
