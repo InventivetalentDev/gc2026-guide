@@ -1,6 +1,22 @@
 [
   {
     "date": "2026-08-16",
+    "revision": 27,
+    "changes": [
+      "Coverage pass over the entertainment halls: thirteen booths that were showing as uncovered on the map now have cards. Hall 6.1 gains 4Divinity (A030), Secret Mode (B040), Pawprint Interactive with Aniimo (C041) and Elementa Games (C021); Hall 7.1 gains 4Divinity's main stand (B021/C020), Huawei's AppGallery under Aspiegel (B031) and Webedia's FYNG City (B051/C050); Hall 8.1 gains MBC Game Studio (A011/B010), The District (B060), GIGABYTE/AORUS (C050) and Mattel (B020); Hall 9.1 gains JBL Quantum (B034/C035) and Rocket Beans TV (A046/B047).",
+      "New: The District, gamescom's first competitive-gaming area — about 2,000 m² at the back of Hall 8.1 plus roughly 1,000 m² outdoors in P8, headlined by SK Gaming. Maverick Games' CLUTCH gets its hands-on preview there, HP/HyperX shows Star Wars Galactic Racer, and Red Bull runs an EA Sports FC 27 tournament at its P8 booth.",
+      "New: 4Divinity brings six titles across Halls 6.1, 7.1 and 4.2 — The Defiant, Showa American Story, Guns of Eschaton, A Whisper of Fall: Jinyiwei, Genigods: Nezha and Sword Sage: Awakening.",
+      "New area on the Info tab: Outdoor Area P8, the reactivated open-air space behind Hall 8 — gamescom Beach, Asian Garden, Community Wall, CD Projekt Red's Apollo Tent and the outdoor half of The District.",
+      "Those small unnamed counters in Halls 6.1, 7.1, 8.1 and 9.1 are the official gamescom merchandise shops (Campus Sportswear / gamescomwear). They now have a card, and the map names them instead of calling them uncovered.",
+      "Aerosoft's five \"unannounced simulators\" now have names: Notruf 112 – Die Feuerwehr, Firefighters Code Red, Notaufnahme Simulator, Heavy Cargo: The Truck Simulator, Bergwerk: A Mining Sim, Forensics: Crime Scene Detective and Seaworks: Trap Season.",
+      "Tencent's Hall 8.1 stand has a programme after all: Honor of Kings and Arena of Valor with cosplayers and competitions, replacing the \"programme TBA\" placeholder.",
+      "Added Seafarer: The Ship Sim and Worms W.M.D. to the Team17 × astragon booth, and Final Fantasy VII Remake to Square Enix.",
+      "Fixed: ASUS also holds B040 next to its main Hall 8.1 stand — the map was calling that booth uncovered.",
+      "Fixed a dead link: the Indie Arena Booth's site is indiearenabooth.de, not indiearena.org, which now 404s. Every other outbound link in the guide was re-checked and resolves."
+    ]
+  },
+  {
+    "date": "2026-08-16",
     "revision": 26,
     "changes": [
       "Electronic Arts' Hall 6.1 stand is confirmed: booth B011/A010, next to the hall entrance. The 2026 lineup itself is still unannounced beyond EA Sports FC 27.",

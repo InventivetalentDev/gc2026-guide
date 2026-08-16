@@ -23,6 +23,7 @@
     { "name": "Campus Area", "hall": "10.1" },
     { "name": "Hardware & peripherals row", "hall": "10.1" },
     { "name": "Signing Area", "hall": "11.1" },
+    { "name": "Outdoor Area P8", "hall": null },
     { "name": "gamescom epix", "hall": null },
     { "name": "gamescom GDQ", "hall": null },
     { "name": "City Festival", "hall": null }
@@ -38,6 +39,10 @@
   "sources": [
     "https://www.gamescom.global/en/tickets",
     "https://www.gamescom.global/en/info/hall-plan",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-hallenplan-erklaert-210726/",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
+    "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/",
+    "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
     "https://www.gamescom.global/en/info/trade-visitors",
     "https://media.koelnmesse.io/gamescom/redaktionell/gamescom/downloads/pdf/anmeldeunterlagen/das_wichtigste_in_kuerze.pdf",
     "https://www.gameswirtschaft.de/gamescom/gamescom-2026-bester-eingang-040826/",
