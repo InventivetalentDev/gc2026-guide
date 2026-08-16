@@ -333,8 +333,8 @@ window.GC_STRINGS.en = {
   "share.added": "Added {items} from the shared link.",
   "toast.moveUndone": "Move undone.",
   "toast.importUndone": "Shared list import undone.",
-  "moved.withList": "The guide has moved to gc26.guide. Your list comes with you.",
-  "moved.plain": "The guide has moved to gc26.guide.",
+  "moved.withList": "The guide has moved to hallgui.de. Your list comes with you.",
+  "moved.plain": "The guide has moved to hallgui.de.",
   "moved.open": "Open",
 
   /* ---------- sources & attribution ---------- */
@@ -544,7 +544,7 @@ window.GC_STRINGS.en = {
   "map.officialProfile": "official profile ↗",
 
   "footer.feedback":
-    'Something wrong, missing or out of date? Send corrections to <a class="subtle-link" href="mailto:content@gc26.guide?subject=gamescom%20guide%20feedback">content@gc26.guide</a>.',
+    'Something wrong, missing or out of date? Send corrections to <a class="subtle-link" href="mailto:content@hallgui.de?subject=gamescom%20guide%20feedback">content@hallgui.de</a>.',
 
   /* ---------- accessibility ---------- */
   "a11y.newTab": ", opens in a new tab",

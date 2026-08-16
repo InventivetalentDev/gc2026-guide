@@ -26,13 +26,16 @@
    the header's share-the-guide button after it) rides one load with dead
    controls unless the version change announces it.
 
-   v7 is the gc26.guide move, and it is the same problem pointed at the two
-   hosts being retired: the move notice lives in app.js and the i18n files,
-   all three served stale-while-revalidate. Left at v6, a visitor already
-   holding the old shell gets the old app.js — which has never heard of
-   gc26.guide — and the one nudge they were owed does not fire until some
-   later load. The bump is what makes it the first one. */
-const VERSION = "v7";
+   v7 was the gc26.guide move and v8 is the hallgui.de one, both the same
+   problem pointed at the hosts being retired: the move notice lives in app.js
+   and the i18n files, all served stale-while-revalidate. Left unbumped, a
+   visitor already holding the old shell gets the old app.js — which has never
+   heard of the new address — and the one nudge they were owed does not fire
+   until some later load. The bump is what makes it the first one.
+
+   So the rule is narrower than "bump on every deploy": bump when a shell file
+   has to be believed rather than merely eventually refreshed. */
+const VERSION = "v8";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;

@@ -51,16 +51,18 @@ html_handling = "none"
 not_found_handling = "single-page-application"
 
 # The home address. Everything the guide says about itself — the canonical
-# links, the share links, content@gc26.guide — points here.
+# links, the share links, content@hallgui.de — points here. It has no year in
+# it, which is the property the two names before it lacked.
 [[routes]]
-pattern = "gc26.guide"
+pattern = "hallgui.de"
 custom_domain = true
 
-# Two hostnames are draining behind it, and both serve the guide rather than a
-# redirect for exactly one reason: a saved list is per-origin, so a redirect
-# would strand every list built on them. They stay until the move notice has
-# had a fair run at the people standing on them (offerMove in js/app.js), and
-# come off one at a time, in the order docs/DEPLOYING.md sets out.
+# Three hostnames are draining behind it, and all three serve the guide rather
+# than redirect for exactly one reason: a saved list is per-origin, so a
+# redirect would strand every list built on them. They stay until the move
+# notice has had a fair run at the people standing on them (offerMove in
+# js/app.js), and come off one at a time, in the order docs/DEPLOYING.md sets
+# out.
 #
 # gamescom.guide is the urgent one. "gamescom" is a registered mark of game —
 # Verband der deutschen Games-Branche e.V., unofficial sites have been warned
@@ -71,12 +73,25 @@ custom_domain = true
 pattern = "gamescom.guide"
 custom_domain = true
 
+# gc26.guide was the home address for a day and a half. Nothing is wrong with
+# it — it is simply an abbreviation, fine to type and useless to say across a
+# queue. Its population is small for the same reason gamescom.guide's is.
+[[routes]]
+pattern = "gc26.guide"
+custom_domain = true
+
 [[routes]]
 pattern = "gc2026.inventivetalent.org"
 custom_domain = true
 
-# The three .de names are NOT routed here, deliberately. They are redirects to
-# gc26.guide, set up as Cloudflare Redirect Rules on each zone — no Worker and
-# no entry in this file. Serving the app on them instead would give the guide
-# five origins, and five per-origin copies of everybody's saved list to keep
-# apart. A 301 carries the fragment, so gc26.de/#s?t=... still arrives intact.
+# The alias domains are NOT routed here, deliberately — hallguide.de, gc26.de,
+# gc2026.de, gc27.de, gcgui.de, gcguide.de. They are 301s to hallgui.de, set up
+# as Cloudflare Redirect Rules on each zone (docs/DEPLOYING.md step 6): no
+# Worker and no entry in this file. Serving the app on them instead would give
+# the guide ten origins, and ten per-origin copies of everybody's saved list to
+# keep apart. A 301 carries the fragment, so gc26.de/#s?t=... still arrives
+# intact.
+#
+# hallguide.de is the one that matters most: it is how somebody who only heard
+# the name would spell it, which is the whole reason the dot can sit where it
+# does in hallgui.de.
