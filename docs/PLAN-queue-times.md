@@ -1,8 +1,9 @@
 # Live queue times — crowd-sourced wait reports
 
-**Status: research/plan only, revision 2 — reworked around session-based
-reporting after design discussion. Nothing here is implemented; the open
-questions at the end are genuinely open.**
+**Status: plan, revision 3 — session-based reporting settled in design
+discussion, phone-first moderation added, and the six open questions closed
+in review (see the end). Nothing is implemented yet; this is ready to
+build.**
 
 ## Context
 
@@ -169,13 +170,17 @@ a booth's mechanics on Wednesday still hold on Sunday.
 
 ### Which queues exist
 
-One tracker per **playable game** (104 at revision 26), plus one
-**booth-level tracker** per entertainment exhibitor — that covers the 45
-exhibitors with no playable lineup (the PlayStation experience, merch halls,
-signing lines) and doubles as "the entry queue to the booth itself", which
-big booths have in front of their per-station lines. Business (`trade`)
-exhibitors get none: appointments, not queues, and the app already excludes
-them from every queue surface. The worker validates ids against the deployed
+One tracker per **playable game** (104 at revision 26). Exhibitors with a
+lineup get *only* per-game trackers — no separate booth-level queue, settled
+in review: past shows haven't really had global entry queues in front of the
+per-station lines, and an extra "the booth itself" option on every Xbox
+report would be a chooser step paid for a queue that mostly doesn't exist.
+The 45 entertainment exhibitors with **no playable lineup** (the PlayStation
+experience, merch halls, signing lines) get a single tracker each — not an
+extra queue beside game queues but their only one, and some of those lines
+are among the longest at the show. Business (`trade`) exhibitors get none:
+appointments, not queues, and the app already excludes them from every queue
+surface. The worker validates ids against the deployed
 `data/exhibitors.json` through its own `ASSETS` binding — no build step, and
 the allowlist can never drift from the data actually being served.
 
@@ -198,9 +203,13 @@ limits (§6). Kinds:
 
 All numeric inputs are **chip vocabularies, not free numbers** — elapsed
 claims reuse the wait buckets (§5), people-ahead comes as ~10 / ~20 / ~30 /
-~50 / ~75 / ~100 / ~150 / 200+. Nobody counts a switchback to the person,
-buckets are one-handed in a crowd, and the fixed vocabulary is the first and
-cheapest garbage filter: the wire rejects everything else.
+~50 / ~75 / ~100 / ~150 / 200+ (settled in review, top bucket included:
+wave and group queues genuinely hold hundreds — four waves of 50 is 200
+people — and being bad at estimating big crowds is exactly why the top
+buckets only need to be right to the nearest hundred). Nobody counts a
+switchback to the person, buckets are one-handed in a crowd, and the fixed
+vocabulary is the first and cheapest garbage filter: the wire rejects
+everything else.
 
 **`GET /api/queue/live`** — the whole show in one blob, no per-queue fan-out:
 
@@ -208,11 +217,14 @@ cheapest garbage filter: the wire rejects everything else.
 { "at": 1756202400,
   "queues": {
     "xbox": {
-      "_booth":              { "est": 10, "how": "flow", "n": 4, "newest": 1756202220 },
       "call-of-duty-modern-warfare-4":
                              { "est": 90, "how": "done", "n": 6, "newest": 1756202100,
                                "qtype": "group", "batch": 10 },
-      "fable":               { "closed": true, "n": 3, "newest": 1756201800 } } } }
+      "fable":               { "closed": true, "n": 3, "newest": 1756201800 } },
+    "playstation": {
+      "_booth":              { "est": 25, "how": "flow", "n": 4, "newest": 1756202220 } } } }
+
+(`_booth` appears only for lineup-less exhibitors — see §2.)
 ```
 
 `how` is the estimator tier that produced the number (§4) — the client
@@ -261,7 +273,11 @@ Garbage handling beyond the bucket vocabulary: pairs with rising `ahead` are
 excluded from speed (a correction, not movement — people ahead of you cannot
 multiply); pairs spanning < 3 min are ignored (bucket noise dominates);
 speeds above a sanity cap (~100 people/min) are dropped; `left` sessions
-never enter wait stats; expiry keeps forgotten phones out of "sofar". With
+never enter wait stats; expiry keeps forgotten phones out of "sofar".
+Abandonment itself is **captured but not displayed** in the MVP — settled
+in review: "~40% gave up on this line" is real signal but demoralising and
+jumpy on thin data, so the call on showing it waits for day-1 numbers,
+shippable mid-show if they argue for it. With
 bucketed inputs bounding the range, per-session dedup bounding repetition,
 and medians throughout, a lone troll cannot move any tier — explicit IQR/MAD
 trimming was considered and adds nothing a median over buckets doesn't
@@ -315,7 +331,10 @@ must not blur). Tier shapes the wording: flow → "Live: ~45 min", done →
 "~50 min for people just in", sofar → "30+ min so far", each with
 "· n reports · age". Game rows carry their own chips; the card foot
 summarises the worst of them next to the forecast meter; the queue-priority
-table and plan rows get the compact figure where one exists. Map popovers
+table and plan rows get the compact figure where one exists. A queue with
+**no live reports shows nothing** — settled in review: the forecast meter
+already sits beside the chip's slot, so a fallback would render the same
+expectation twice and blur the prediction/measurement line. Map popovers
 are **phase 2** (`map.js` is a separate page and script; the MVP ships
 without it).
 
@@ -462,22 +481,27 @@ informed by real day-1 data; deny list if needed.
 **After the show:** the endpoints return 410, the feature sleeps on its own
 show-days check, D1 is deleted per the privacy promise.
 
-## Open questions (deliberately unresolved)
+## Settled in review (2026-08-16)
 
-1. **The ahead-bucket vocabulary** — proposed ~10/~20/~30/~50/~75/~100/
-   ~150/200+. Coarser = more taps land; finer = better speed math.
-2. **Booth-level tracker on every booth, or only where there's no lineup?**
-   Everywhere doubles as the entry-gate queue but adds a chooser step to the
-   report flow on multi-game booths.
-3. **Forecast fallback**: when a queue has no live data, should the chip
-   show the static 1–5 forecast in its place, or is blank more honest?
-4. **Nudge aggressiveness**: reopen/refocus prompt only (planned), or also a
-   gentle in-page reminder after N minutes with the tab open?
-5. **Abandonment as signal**: `left` sessions are captured but unused —
-   "40% of people give up on this line" is genuinely useful and slightly
-   demoralising. Show it?
-6. **Wave range display** (phase 2 by default) — worth pulling into MVP for
-   the handful of big presentation booths if day-1 data is rich enough?
+The six questions this plan left open were walked through and closed; the
+decisions are folded into the sections above and recorded here so the
+reasoning survives:
+
+1. **Ahead buckets**: the 8-chip vocabulary, 200+ top bucket kept — big
+   wave/group queues genuinely reach hundreds, and the coarse top end is
+   the accommodation for nobody being good at estimating crowds (§3).
+2. **Queue granularity**: strictly per-game on exhibitors with a lineup —
+   no booth-level entry-queue tracker, which past shows suggest mostly
+   doesn't exist as a thing. Lineup-less exhibitors get a single tracker as
+   their only queue (§2).
+3. **No-data chip**: hidden, no forecast fallback — the forecast meter
+   already sits next to it (§5).
+4. **Nudges**: reopen/refocus prompt only; no in-page reminders, and
+   "Still waiting" keeps the ahead re-ask optional (§5).
+5. **Abandonment**: captured, not displayed; revisit mid-show against real
+   day-1 numbers (§4).
+6. **Wave ranges**: phase 2, built against observed cycle times rather than
+   blind (§4, §8).
 
 ## Files (when implemented)
 
