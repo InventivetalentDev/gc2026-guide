@@ -30,11 +30,15 @@
   --signal-wash: rgba(255, 77, 23, .12);
   --grain:       rgba(255, 255, 255, .025);
 
-  /* The business area's own colour, taken from the official hall plan's
+  /* The two areas' own colours, taken from the official hall plan's
      `farbenvorgabe` and carried through data/hallplan/index.json — so the
-     map's hall washes, the trade plates and the trade cards all mean the
-     same thing by it. Needs light ink: see .hall-marker-trade. */
-  --business: #7800ff;
+     map's hall washes, the card plates and the trade cards all mean the
+     same thing by them. tools/fetch-hallplan.mjs re-checks both against the
+     source on every snapshot, so a repaint by Koelnmesse stops that run
+     rather than leaving these two lines a season behind. The ink each one
+     needs inverts: see .hall-plate[data-area]. */
+  --entertainment: #00b9ff;
+  --business:      #7800ff;
 
   /* ---- status ---- */
   --ok:      #2fbf85;
@@ -451,28 +455,51 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .hall-marker {
   flex: 1 1 auto;
   padding: 14px 12px;
-  background: var(--signal);
-  color: var(--signal-ink);
+  position: relative;
+  background: var(--hall, var(--signal));
+  color: var(--hall-ink, var(--signal-ink));
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 2px;
 }
-.hall-marker[data-state="unconfirmed"] { background: var(--warn); }
 .hall-marker[data-state="tba"],
 .hall-marker[data-state="absent"] { background: var(--ground-3); color: var(--ink-dim); }
 
-/* --- the two faces of a card ---
+/* --- what the plate's colour says ---
 
-   A booth in the business halls is drawn in Koelnmesse's own colour for that
-   area (#7800FF, the same fill the map washes those halls with), so the plate
-   itself says which show you are looking at. Note the ink inverts: the orange
-   plate needs near-black (5.93:1, white would be 3.32:1) and the purple one
-   needs the warm off-white (5.64:1, near-black would be 3.04:1). */
-.hall-marker-trade .hall-marker,
-.hall-marker-trade .hall-marker[data-state="unconfirmed"] {
-  background: var(--business);
-  color: var(--ink);
+   The plate is filled with the colour Koelnmesse gives that hall on its own
+   plan: cyan for the entertainment halls, purple for the business ones. They
+   are the fills the map washes those halls with, so a card plate, a hall on
+   the map and the official plan all mean the same thing by a colour — and a
+   card you turn over teaches that in one gesture, because both faces are
+   plates and the colour is the whole difference between them.
+
+   Halls 5 and 10 are left uncoloured on the official plan (they hold several
+   areas each). The snapshot files them as what they are, a consumer ticket's
+   halls, and the map washes them cyan — so their plates do too. A hall the
+   guide can't place at all keeps the signal colour, which is what every plate
+   used to be.
+
+   The ink inverts, measured not guessed: cyan needs near-black (8.79:1, the
+   off-white would be 1.95:1), purple needs the warm off-white (5.64:1,
+   near-black would be 3.04:1). */
+.hall-plate[data-area="entertainment"] { --hall: var(--entertainment); --hall-ink: var(--signal-ink); }
+.hall-plate[data-area="business"]      { --hall: var(--business);      --hall-ink: var(--ink); }
+
+/* A guessed location can no longer be an amber plate: amber on cyan is
+   1.04:1, and the fill is now saying which hall you are walking to. The map's
+   other half of that language carries it instead — the dashed edge it draws
+   round an unconfirmed booth — set in the plate's own ink so it holds on
+   either fill. The "· unconf." under the booth number still says it in
+   words, and the plate's title attribute in full. */
+.hall-marker[data-state="unconfirmed"]::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px dashed currentColor;
+  opacity: .55;
+  pointer-events: none;
 }
 
 /* The way to the other booth, notched into the plate's corner: the corner a
@@ -482,7 +509,12 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
    Top-right rather than bottom-right, because the two faces carry different
    booth numbers and a long one wraps to a second line — anchored to the
    bottom, the square would sit at a different height on each face and move
-   out from under the finger that just tapped it. The top edge does not move. */
+   out from under the finger that just tapped it. The top edge does not move.
+
+   The square wears the *other* face's hall colour — it is that plate in
+   miniature, so the swap is legible before you make it: purple to cross into
+   the business halls, cyan to come back. Its own vars, not the plate's,
+   because it sits inside the plate it does not match. */
 .face-switch {
   position: absolute;
   right: 0;
@@ -493,8 +525,8 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   border: 0;
   border-bottom: 1px solid var(--ground);
   border-left: 1px solid var(--ground);
-  background: var(--signal);
-  color: var(--signal-ink);
+  background: var(--face, var(--signal));
+  color: var(--face-ink, var(--signal-ink));
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -506,7 +538,8 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   font-variant-numeric: tabular-nums;
   transition: filter .12s;
 }
-.face-switch-trade { background: var(--business); color: var(--ink); }
+.face-switch[data-area="entertainment"] { --face: var(--entertainment); --face-ink: var(--signal-ink); }
+.face-switch[data-area="business"]      { --face: var(--business);      --face-ink: var(--ink); }
 .face-switch:hover { filter: brightness(1.18); }
 .face-switch:focus-visible { outline: 2px solid var(--ink); outline-offset: -3px; }
 /* The other side's saved state, so a saved trade stop is not invisible until
@@ -525,7 +558,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 /* The plate doubles as the link to that booth on the hall map when the
    map covers its hall (see hallMarker) — an anchor wearing the same
    plate, not a new control. */
-a.hall-marker { text-decoration: none; position: relative; }
+a.hall-marker { text-decoration: none; }
 .hall-map-cue {
   font-family: var(--font-mono);
   font-size: .56rem; letter-spacing: .1em; text-transform: uppercase;

@@ -16,7 +16,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours and crowd advice inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter)
 - **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up; tap a booth for its lineup and queue call. The entertainment halls and the trade-only business halls, each washed in the colour the official plan gives that area, with the business ones flagged as the door a consumer ticket does not open. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory — opens it on that stand, and it works offline like everything else
 - **Trade exhibitors**, behind one setting — "I have a trade badge", off by default, switchable from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters, curated cards for the platforms, services and national pavilions standing there, and the one thing that decides whether walking over is worth it — whether a booth is an open stand or a closed room you need an appointment for. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
-- **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the orange one to turn it back. Purple means business area everywhere in the guide — it is the colour the official hall plan gives those halls. The two booths stay separate stops in your plan, because they keep different hours
+- **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the cyan one to turn it back. The square is the other booth's plate in miniature, and both colours are Koelnmesse's own — purple for the business halls, cyan for the entertainment ones — so a plate means the same thing here as it does on the official plan. The two booths stay separate stops in your plan, because they keep different hours
 - Event info: dates, hours, tickets, special areas, Opening Night Live, and which of the four **entrances** to use — including what a trade badge changes about that and about when you get in
 - **Installable and offline-capable** — add it to your home screen and the whole guide
   stays readable in a hall with no reception
@@ -81,11 +81,13 @@ cutover and why those two matter to the service worker.
 ## Design
 
 **"Hall Signage"** — trade-fair wayfinding crossed with print. The hall number is
-what you actually read while walking a show floor, so it gets a solid orange plate
-and the largest type on the card (amber when the location is still a guess, grey
-when it's TBA). Exhibitors are discrete panels with hard, unblurred offset shadows
-rather than cells sharing hairlines. One signal colour, near-square corners, no
-gradients, no emoji, no blurred elevation.
+what you actually read while walking a show floor, so it gets a solid plate and the
+largest type on the card, filled in that hall's own colour on the official plan —
+cyan for the entertainment halls, purple for the business ones, the same fills the
+map washes those halls with (dashed edge when the location is still a guess, grey
+plate when it's TBA). Exhibitors are discrete panels with hard, unblurred offset
+shadows rather than cells sharing hairlines. One signal colour, near-square corners,
+no gradients, no emoji, no blurred elevation.
 
 Two details that look like mistakes but aren't:
 
