@@ -18,9 +18,9 @@ and the map links back to a card. A card may hold several stands and the
 map lights every one of them; a booth's gallery level, which Koelnmesse
 files as a second stand on the same outline, is drawn as the one booth it
 is. Each hall is framed in its area colour and its doors are drawn as
-openings in that frame — the doors from `data/hallplan/entrances.json`,
-which is ours rather than Koelnmesse's, because their data has no wall in
-it (decision 5b). This document records the discovery, the design decisions and
+openings in that frame — both from `data/hallplan/outline.json`, which is
+ours rather than Koelnmesse's, because their data has no wall in it
+(decision 5b). This document records the discovery, the design decisions and
 the test script — the integration steps below are done, kept because they
 say *where* everything is wired.
 
@@ -262,34 +262,62 @@ Two gaps that only show up once you are standing in a hall.
 `staende` are all there is, so a hall's extent was only ever implied by
 where its contents stopped — fine on hall 10.1's 180 stands, useless on
 7.1, whose three empty aisles look like the hall simply ending. The
-snapshot does carry `size`, so the boundary is drawn from that, in the
-hall's area colour: the same cyan or purple as the chip you tapped to get
-here, at 60 %, one weight up from a stand's stroke. It is the third and
-last place that colour is spent (decision 5a), and booth state stays the
-loud channel.
+boundary is drawn in the hall's area colour: the same cyan or purple as
+the chip you tapped to get here, at 60 %, one weight up from a stand's
+stroke. It is the third and last place that colour is spent (decision
+5a), and booth state stays the loud channel.
+
+`size` is *not* where to draw it, which is the mistake this shipped with
+for a day. It is the tight box around the blocks and stands, so an
+outline drawn on it touches the outermost booth on all four sides by
+construction — the hall came out shrink-wrapped, which is not what any
+plan of these halls looks like. Nothing published measures the gap: the
+endpoint's own `minmax` is `minmaxFound: "BLOECKE"`, i.e. that same box;
+the interactive plan's margins fall out of per-hall fudge factors (it
+scales hall 7 by ±1.06/0.94 to sit on campus artwork, and hall 8's
+content overflows its outline entirely); the 2017 press plans show the
+margin as whatever that year's layout left over. So the margin is a
+stated drawing allowance in `outline.json`, not a measurement: 2 m north,
+where every one of these halls files a 3 m-deep row of stands hard
+against the boundary, and 6–7 m elsewhere, where the outermost thing is a
+full-depth block that needs a perimeter aisle behind it. One number to
+change if a walk says otherwise.
 
 **Which end faces the Boulevard?** That one is worth more than it looks:
 halls 6, 7 and 9 all open onto the same concourse, and knowing whether it
 is behind you or 200 m the other way is most of what a hall map is for.
-The plan page exposes nothing directly — no door, no entrance marker — but
-it does carry the campus layout its own overview draws from (`var hallen`),
-and that files every `Durchgang` as a polygon *between* two halls: `D67`
-sits in the gap between 6 and 7, `D78` between 7 and 8, `D109` between 9
-and 10, and the Boulevard runs down the east side of 6 and 7 and the west
-side of 9. That is adjacency, and adjacency is the answer to the question.
-It also independently confirms the orientation the tool derives (open
-question 1): the one cross-aisle in each of 6, 7 and 9 runs out at exactly
-the wall the campus says the Boulevard is on.
+The current plan page exposes nothing directly — no door, no entrance
+marker — but it carries the campus layout its own overview draws from
+(`var hallen`), and that files every `Durchgang` as a polygon *between*
+two halls: `D67` sits in the gap between 6 and 7, `D78` between 7 and 8,
+`D109` between 9 and 10, and the Boulevard runs down the east side of 6
+and 7 and the west side of 9. That is adjacency, and adjacency answers
+the question. It also independently confirms the orientation the tool
+derives (open question 1): the one cross-aisle in each of 6, 7 and 9 runs
+out at exactly the wall the campus says the Boulevard is on. What it is
+*not* is metric — those polygons sit on a 5-unit grid, and halls 6 and 7
+come out at different metres-per-unit, so a passage is good to about
+±15 m.
 
-What it is *not* is metric. Those polygons are hand-drawn on a 5-unit
-grid — halls 6 and 7 come out at different metres-per-unit — so a passage
-is good to about ±15 m. So each door is placed by taking the campus
-position and snapping it to the nearest opening the hall's own blocks
-actually leave, which is where a door would be anyway: hall 8's three
-Boulevard doors land dead on three 6 m aisles. Three of them could not be
-snapped to anything — halls 6, 7 and 9 are each remembered as having three
-doors onto the Boulevard where the official geometry leaves two openings —
-and those are marked `approx` in the data and drawn held back.
+The doorways themselves come from the **2017 press hall plans**
+(pcgames.de, from Koelnmesse's own artwork), which draw them: a break in
+the wall with a tab naming what is through it. The building has not
+moved, so those are read off the pixels as fractions of each wall and
+laid onto ours. It settles what the geometry could not — hall 7 does have
+three doors onto the Boulevard, at 19/48/79 % of its east wall, and its
+passage to hall 6 is at the south-west corner rather than the aisle we
+had snapped it to. Where the two sources meet they agree, which is the
+reassuring part: hall 9's passage to hall 10, hall 10.1's to halls 4, 5,
+9 and 11, all land where the campus polygons put them.
+
+Three caveats are in the data as `approx`, because that set is artwork
+too and it shows: hall 8's east-wall doors there are the hall-7 template
+reused (hall 8 faces the Boulevard across its *south* wall, where the
+campus puts it and where three real 6 m aisles line up), hall 9's
+Boulevard doorways are simply not drawn although the hall plainly opens
+that way, and hall 6 has no plan in the set at all. Those borrow hall 7's
+spacing — same 82 m depth, same building module — and are drawn held
+back.
 
 Consequences worth naming:
 
@@ -297,10 +325,11 @@ Consequences worth naming:
   official hall plan · … · hall doors ours, approximate`. Everything else
   on this map is traceable to Koelnmesse; these are not, and the file
   records its own provenance per door.
-- **They live in `data/hallplan/entrances.json`, hand-written**, and the
+- **They live in `data/hallplan/outline.json`, hand-written**, and the
   tool neither reads nor writes it — the one file in that directory the
   "never hand-edit `data/hallplan/`" rule does not cover, because no
-  re-snapshot can supply it. Correcting a door is a number, not a run.
+  re-snapshot can supply either the wall or the doors in it. Correcting
+  one is a number, not a run.
 - **A door into another drawn hall is a tap that goes there.** The hall
   row already does that job for a keyboard or a screen reader, which is
   why the whole layer is `aria-hidden` rather than pretending to be a
@@ -312,13 +341,15 @@ Consequences worth naming:
   `overflow: visible`: reserving hall-sized room inside the viewBox for
   the word "Boulevard" would shrink every hall to fit a label.
 
-Rejected: deriving the doors in `tools/fetch-hallplan.mjs` from the campus
-polygons at snapshot time (it would make a ±15 m guess look generated, and
-tie fixing a door to a network round-trip to Koelnmesse); drawing the
-outline in the area colour at full strength (it then reads as a booth
-state, the same reason decision 5a washes the blocks); putting the doors on
-`index.json` (regenerated by the tool, so a hand-added door would be lost
-on the next refresh — the same trap `map.area.*.access` is kept out of).
+Rejected: drawing the outline on the snapshot's `size` (it is the box
+around the booths, so it always touches them — this is the bug the margin
+fixes); deriving the doors in `tools/fetch-hallplan.mjs` at snapshot time
+(it would make a hand-read fraction look generated, and tie fixing a door
+to a network round-trip to Koelnmesse); drawing the outline in the area
+colour at full strength (it then reads as a booth state, the same reason
+decision 5a washes the blocks); putting any of it on `index.json`
+(regenerated by the tool, so a hand-added door would be lost on the next
+refresh — the same trap `map.area.*.access` is kept out of).
 
 ### 6. It stays its own page
 
@@ -534,8 +565,8 @@ Serve the repo root; clear `gc2026.saved.v1`.
     Tapping the "Hall 7.1" door in 8.1 switches hall; tapping a stand
     still opens that stand, and the deep-linked stand still lands dead
     centre of the stage (the drawing gained a 4 m margin). Delete
-    `data/hallplan/entrances.json` and the map draws outlines, no doors,
-    and drops "hall doors ours" from the credit line.
+    `data/hallplan/outline.json` and the map falls back to the booth box,
+    no doors, and drops "hall doors ours" from the credit line.
 10a. **Areas** — the hall row groups into Entertainment and Business
     behind a coloured swatch, the business group is flagged trade-only,
     and the chips of a group carry that colour on their edge. Opening
@@ -608,15 +639,15 @@ Serve the repo root; clear `gc2026.saved.v1`.
    those are labelled on the campus artwork, not against a hall wall,
    and guessing which of hall 8's openings *is* Eingang Nord is a walk,
    not a derivation.
-7. **Which doors are actually there.** Three of the openings on the map
-   are one person's recollection: halls 6, 7 and 9 are remembered as
-   having three doors each onto the Boulevard, and the official geometry
-   leaves two openings on each of those end walls. They are flagged
-   `approx` in `data/hallplan/entrances.json` and drawn held back, and
-   the whole file is hedged in the credit line. Hall 8 is the opposite
-   case and needs no hedge — its three Boulevard doors fell on three
-   real aisles. Settling any of this is a walk down the Boulevard with
-   the map open, and the fix is a number in one file.
+7. **Which doors are actually there.** Halls 6 and 9 borrow hall 7's
+   door spacing — hall 6 has no 2017 plan and hall 9's Boulevard side is
+   not drawn in its own — and hall 8's Boulevard doors are placed from
+   the campus layout rather than read off a plan. They are flagged
+   `approx` in `data/hallplan/outline.json` and drawn held back, and the
+   whole file is hedged in the credit line. The margin the wall stands
+   off the booths is in the same position: a stated allowance, because
+   no source measures it. Settling either is a walk down the Boulevard
+   with the map open, and the fix is a number in one file.
 6. **Day-route overlay.** Numbered stops from the plan board's day
    assignments drawn on the hall — the natural second iteration once the
    base map is in.

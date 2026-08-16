@@ -185,7 +185,7 @@
    actually leaves. Held back rather than dashed: a dash length is in
    metres like everything else here, and a 6 m doorway is two dashes and
    a gap, which reads as a drawing fault rather than as a hedge. */
-#map .hall-door.approx { opacity: .55; }
+#map .hall-door.approx { opacity: .72; }
 #map .hall-door-hit {
   fill: none; stroke: transparent; stroke-width: 18;
   pointer-events: stroke; cursor: pointer;

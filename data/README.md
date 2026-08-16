@@ -40,7 +40,7 @@ and there is a great deal in these files that nobody here holds:
   hall-plan data (the source URL and fetch date are recorded in
   `hallplan/index.json`). They are reproduced here so an unofficial guide can
   draw a map. They are not this project's to relicense, and the CC BY grant
-  does not reach them. `hallplan/entrances.json` is the exception in that
+  does not reach them. `hallplan/outline.json` is the exception in that
   directory and goes the other way: nothing in it came from Koelnmesse — the
   published data has no wall in it and no doorway — so it is hand-written
   editorial work like everything in the list above, and is covered by the
