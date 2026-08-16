@@ -80,29 +80,27 @@
           <span class="brand-title">gamescom <span class="brand-year">2026</span></span>
         </span>
       </a>
-      <!-- Sits in the masthead's one piece of dead space on a phone — the
-           gap beside the wordmark — because handing the guide to the person
-           next to you in a queue is a thing you do standing up, one-handed.
-           A sibling of .brand rather than a child of .header-meta so the
-           mobile grid can lift it up into that gap; on a wide screen CSS
-           order puts it back with the other masthead controls. -->
-      <button class="header-share" id="share-site" type="button" aria-haspopup="dialog"
-              data-i18n="shareSite.action" data-i18n-attr="aria-label:shareSite.actionAria"
-              aria-label="Share this guide">Share</button>
       <div class="header-meta">
         <p class="meta-line" id="event-dates" data-i18n="header.eventFallback">Koelnmesse, Cologne · Aug 26–30, 2026</p>
         <p class="countdown" id="countdown" aria-live="polite"></p>
         <p class="offline-flag" data-i18n="header.offline">Offline · showing saved data</p>
-        <!-- One row so the stamped controls line up with each other instead of
-             each aligning itself against the meta text above — which is what
-             left the language toggle floating mid-air on a phone. -->
-        <div class="header-actions">
-          <!-- Labelled with the other language's own name by js/i18n.js, and
-               hidden until it wires up so a scripting failure cannot leave a
-               dead control in the header. -->
-          <button class="lang-switch" data-lang-switch type="button" hidden></button>
-          <button class="install-btn" id="install-app" type="button" hidden data-i18n="pwa.install">Install app</button>
-        </div>
+      </div>
+      <!-- The stamped controls, kept out of .header-meta so they never widen
+           the block the dates and countdown are right-aligned against. One row
+           under the countdown on a wide screen; on a phone the group dissolves
+           (display: contents) and each button takes its own place in the
+           masthead grid — share in the dead space beside the wordmark, because
+           handing the guide to the person next to you in a queue is a thing
+           you do standing up, one-handed. -->
+      <div class="header-actions">
+        <button class="header-share" id="share-site" type="button" aria-haspopup="dialog"
+                data-i18n="shareSite.action" data-i18n-attr="aria-label:shareSite.actionAria"
+                aria-label="Share this guide">Share</button>
+        <!-- Labelled with the other language's own name by js/i18n.js, and
+             hidden until it wires up so a scripting failure cannot leave a
+             dead control in the header. -->
+        <button class="lang-switch" data-lang-switch type="button" hidden></button>
+        <button class="install-btn" id="install-app" type="button" hidden data-i18n="pwa.install">Install app</button>
       </div>
     </div>
     <nav class="tabs-outer" aria-label="Sections" data-i18n-attr="aria-label:nav.sections">
