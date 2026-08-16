@@ -34,6 +34,9 @@ const state = {
   planDay: "all",
   /* hall ids the hall map can draw; filled from data/hallplan/index.json */
   mapHalls: new Set(),
+  /* hall id -> official area key ("entertainment" | "business"), from the same
+     file: what colour a card's hall plate is painted (see hallArea) */
+  hallAreas: new Map(),
   /* raw official directory: null until the section is first opened */
   directory: null,
   directoryError: null,
@@ -175,6 +178,9 @@ async function loadData() {
   state.meta = meta;
   state.changelog = changelog;
   state.mapHalls = new Set((hallplan?.halls || []).map((h) => String(h.id)));
+  state.hallAreas = new Map(
+    (hallplan?.halls || []).filter((h) => h.area).map((h) => [String(h.id), h.area])
+  );
   buildShareCodeMap();
 }
 
@@ -1737,6 +1743,24 @@ function platformCodes(platforms) {
    snapshot doesn't cover), and every link below is gated on it — a plate
    that opens an empty map is worse than a plate that doesn't link. */
 const hasMap = (hall) => state.mapHalls.has(String(hall));
+
+/* Which area of the show a hall stands in, and so which colour its plate is
+   painted (see .hall-plate[data-area] — the official plan's own fills).
+
+   The snapshot is the source, because it is what the map colours halls from;
+   when it is missing the guide's own business-hall boundary answers instead,
+   so a cold cache repaints the plates rather than dropping the distinction.
+   A hall neither can place — an offsite venue, a hall we've never heard of —
+   returns "" and its plate keeps the signal colour. */
+const hallArea = (hall) => {
+  if (!hall) return "";
+  const filed = state.hallAreas.get(String(hall));
+  if (filed) return filed;
+  if (isBusinessHall(hall)) return "business";
+  const level = parseFloat(hall);
+  return level >= 5 && level < 11 ? "entertainment" : "";
+};
+
 const mapLink = (hall, booth) =>
   `map.html#${encodeURIComponent(hall)}` +
   (booth ? `/${encodeURIComponent([...GCMarks.boothCodes(booth)][0] || "")}` : "");
@@ -1763,10 +1787,11 @@ function hallLink(hall, booth, label) {
    of the card because that is the corner your thumb is already near and the
    one place the swap reads as an exchange rather than a jump.
 
-   The colour is not decoration: #7800FF is the fill Koelnmesse gives the
-   business halls on its own plan, carried through the snapshot into the map's
-   hall washes. So a purple plate means "business area" in the same way here as
-   it does there, and turning the card over teaches that in one gesture.
+   The colour is not decoration: the square is the other face's plate in
+   miniature, painted in the colour Koelnmesse gives that hall on its own plan
+   — purple across to the business halls, cyan back to the entertainment ones,
+   the same fills the map washes those halls with. So turning the card over
+   teaches what a plate's colour means in one gesture.
 
    The small square carries the other side's saved state, because otherwise a
    saved trade stop is invisible until you turn the card. */
@@ -1777,11 +1802,12 @@ function faceSwitch(ex) {
   const label = toTrade
     ? t("card.faceToTrade", { hall: other.hall })
     : t("card.faceToPublic", { hall: other.hall });
+  const area = hallArea(other.hall) || (toTrade ? "business" : "");
   /* data-face-other names whose saved state the dot reflects, so syncMarkUI
      can keep it live: a mark toggle patches buttons in place rather than
      rebuilding the grid, and without this the dot only appeared on the next
      full render. */
-  return `<button class="face-switch${toTrade ? " face-switch-trade" : ""}" type="button"
+  return `<button class="face-switch" type="button" data-area="${esc(area)}"
       data-face="${esc(ex.businessOf || ex.id)}" data-face-to="${toTrade ? "trade" : "public"}"
       data-face-other="${esc(other.id)}" data-face-saved="${hasSaved(other)}"
       title="${esc(label)}" aria-label="${esc(label)}">
@@ -1796,8 +1822,9 @@ function hallMarker(ex) {
   /* Every return goes through wrap(), so a card with a business booth still
      offers the way to it even when this side has no location at all —
      Wargaming has no consumer hall and a stand in 2.2. */
-  const trade = ex.type === "trade" ? " hall-marker-trade" : "";
-  const wrap = (plate) => `<div class="hall-plate${trade}">${plate}${faceSwitch(ex)}</div>`;
+  const area = hallArea(ex.hall) || (ex.type === "trade" ? "business" : "");
+  const wrap = (plate) =>
+    `<div class="hall-plate" data-area="${esc(area)}">${plate}${faceSwitch(ex)}</div>`;
   if ((ex.tags || []).includes("not exhibiting")) {
     return wrap(`<div class="hall-marker" data-state="absent">
       <span class="hall-kicker">${esc(t("plate.statusKicker"))}</span>
@@ -2136,9 +2163,9 @@ function renderFilters() {
         const label = business
           ? t("hall.businessAria", { hall: h })
           : t("where.hall", { hall: h });
-        return `<button class="chip hall-chip${business ? " hall-chip-trade" : ""} ${
+        return `<button class="chip hall-chip ${
           state.hall === h ? "active" : ""
-        }" type="button" data-hall="${esc(h)}" aria-label="${esc(label)}"${
+        }" type="button" data-hall="${esc(h)}" data-area="${esc(hallArea(h))}" aria-label="${esc(label)}"${
           business ? ` title="${esc(t("directory.businessArea"))}"` : ""
         }>${esc(h)}</button>`;
       })
