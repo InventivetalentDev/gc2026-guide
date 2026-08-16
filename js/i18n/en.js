@@ -430,6 +430,15 @@ window.GC_STRINGS.en = {
   "map.outlines": "booth outlines",
   "map.officialHallPlan": "official hall plan",
   "map.checkedOn": "checked {date} · schematic, unofficial",
+  /* Drawn on the hall's outline where it opens onto the concourse, or out
+     of the grounds. A door into another hall is labelled with that hall
+     instead (where.hall). */
+  "map.door.boulevard": "Boulevard",
+  "map.door.entrance-east": "Entrance East",
+  /* The credit line stops short of claiming the doors: the official plan
+     files blocks and stands, never a wall or a doorway, so every opening
+     on the map is our own reading of where one is. */
+  "map.doorsApprox": "hall doors ours, approximate",
 
   /* ---------- the trade badge & the business halls ----------
 

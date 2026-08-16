@@ -1,0 +1,58 @@
+{
+ "note": "Hand-authored, and the one file in data/hallplan/ that is — tools/fetch-hallplan.mjs neither reads nor writes it. Koelnmesse's endpoint files stand blocks and stands and nothing else: there is no wall in the data and no doorway, and the size in each hall-<id>.json is the tight box around the contents, so an outline drawn on it touches the outermost booth on all four sides by construction. This file supplies the two things that box cannot: how far the wall stands off it, and where the openings in it are. Coordinates are the hall's own metre frame, the same as its hall-<id>.json — x west to east, y north to south, 0 at the corner of that box. MARGIN is how many metres of hall lie beyond the box on each side (n/e/s/w); the top-level one applies to every hall and a hall may override it. It is a drawing allowance, not a measurement — nothing published measures it. It is deepest at the south because that is where every entertainment hall's outermost thing is a full-depth stand block, which needs a perimeter aisle behind it, and shallowest at the north, where each of these halls files a 3 m-deep row of stands hard against the boundary. DOORS: edge is the wall (n/e/s/w), at the centre of the opening measured along that wall in the same frame (so it runs from -margin to extent+margin and may sit outside the box), span its width, to what is on the other side — \"boulevard\", \"entrance-<name>\", or \"hall:<id>\", which the map turns into a tap that switches hall when that hall is one we draw. Bare hall numbers (\"hall:4\") are used where the storey a passage lands on is not certain; they label but do not link. approx marks an opening we placed ourselves with nothing to check it against, and the map draws those held back. SOURCES: the 2017 press hall plans (pcgames.de, from Koelnmesse's own artwork) draw the doorways directly, and the building has not moved — halls 7, 9, 10.1 and 10.2 are read from those, as fractions of the wall. Hall 8's east-wall doors in that set are the hall-7 template reused and are ignored: hall 8 faces the Boulevard across its south wall, per the campus layout on the hall-plan page, and its three doors there fall on three real 6 m aisles. Hall 9's Boulevard doorways are simply not drawn in the 2017 artwork although the hall plainly opens that way, so they carry hall 7's spacing and are marked approx. Hall 6 has no plan in that set and takes hall 7's spacing too — the two halls share the same 82 m depth. Ground truth is a walk through the halls; correcting a number here needs no re-snapshot and no code change.",
+ "checked": "2026-08-16",
+ "margin": { "n": 2, "e": 6, "s": 7, "w": 6 },
+ "halls": {
+  "6.1": {
+   "doors": [
+    { "edge": "e", "at": 15, "span": 7.5, "to": "boulevard", "approx": true },
+    { "edge": "e", "at": 42, "span": 7.5, "to": "boulevard", "approx": true },
+    { "edge": "e", "at": 69.5, "span": 7.5, "to": "boulevard", "approx": true },
+    { "edge": "n", "at": 42, "span": 8, "to": "hall:7.1" },
+    { "edge": "s", "at": 12, "span": 6, "to": "hall:1" }
+   ]
+  },
+  "7.1": {
+   "doors": [
+    { "edge": "e", "at": 15, "span": 7.5, "to": "boulevard" },
+    { "edge": "e", "at": 42, "span": 7.5, "to": "boulevard" },
+    { "edge": "e", "at": 69.5, "span": 7.5, "to": "boulevard" },
+    { "edge": "n", "at": 70, "span": 7, "to": "hall:8.1" },
+    { "edge": "s", "at": 2, "span": 7, "to": "hall:6.1" }
+   ]
+  },
+  "8.1": {
+   "doors": [
+    { "edge": "s", "at": 87, "span": 6, "to": "boulevard" },
+    { "edge": "s", "at": 117, "span": 6, "to": "boulevard" },
+    { "edge": "s", "at": 147.5, "span": 6, "to": "boulevard" },
+    { "edge": "s", "at": 2, "span": 7, "to": "hall:7.1" }
+   ]
+  },
+  "9.1": {
+   "doors": [
+    { "edge": "w", "at": 12, "span": 6.5, "to": "boulevard", "approx": true },
+    { "edge": "w", "at": 35, "span": 6.5, "to": "boulevard", "approx": true },
+    { "edge": "w", "at": 57.5, "span": 6.5, "to": "boulevard", "approx": true },
+    { "edge": "s", "at": 71.5, "span": 7, "to": "hall:10.1" }
+   ]
+  },
+  "10.1": {
+   "doors": [
+    { "edge": "n", "at": 56.5, "span": 6, "to": "hall:9.1" },
+    { "edge": "w", "at": 30, "span": 12, "to": "hall:5" },
+    { "edge": "w", "at": 168, "span": 7, "to": "hall:4" },
+    { "edge": "s", "at": 34.5, "span": 11, "to": "hall:11" },
+    { "edge": "s", "at": 98, "span": 11, "to": "entrance-east" }
+   ]
+  },
+  "10.2": {
+   "doors": [
+    { "edge": "w", "at": 33, "span": 16, "to": "hall:5" },
+    { "edge": "w", "at": 172, "span": 16, "to": "hall:4" },
+    { "edge": "s", "at": 42, "span": 17, "to": "hall:11" },
+    { "edge": "s", "at": 115.5, "span": 17, "to": "hall:11" }
+   ]
+  }
+ }
+}

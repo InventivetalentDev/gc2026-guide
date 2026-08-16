@@ -608,6 +608,60 @@ If the endpoint ever changes shape the tool fails loudly and writes nothing,
 leaving the committed snapshot in place; the map keeps working. Nothing at
 runtime talks to Koelnmesse — visitors only ever fetch our own files.
 
+### The hall around the booths is ours — `data/hallplan/outline.json`
+
+One file in that directory is hand-written, and `fetch-hallplan.mjs` neither
+reads nor writes it. The endpoint files stand blocks and stands and nothing
+else: there is no wall in the data and no doorway. Worse, the `size` it
+records is the *tight box around those contents*, so an outline drawn on it
+touches the outermost booth on all four sides by construction — which is
+what the map did at first, and it looked shrink-wrapped. This file supplies
+the two things that box cannot: how far the wall stands off it, and where the
+openings in it are.
+
+Coordinates are the hall's own metre frame, the same as its
+`hall-<id>.json` — x west to east, y north to south, 0 at the corner of the
+booth box.
+
+**Margin** is how many metres of hall lie beyond the box on each side. The
+top-level one applies everywhere; a hall may override it:
+
+```json
+"margin": { "n": 2, "e": 6, "s": 7, "w": 6 }
+```
+
+It is a drawing allowance, not a measurement — nothing published measures it.
+It is shallowest at the north, where each of these halls files a 3 m-deep row
+of stands hard against the boundary, and deepest at the south, where the
+outermost thing is a full-depth stand block that needs a perimeter aisle
+behind it. Raise it if a hall still reads as shrink-wrapped; it changes only
+the drawing.
+
+**Doors** are one entry each:
+
+```json
+{ "edge": "e", "at": 42, "span": 7.5, "to": "boulevard" }
+{ "edge": "n", "at": 70, "span": 7,   "to": "hall:8.1" }
+```
+
+`edge` is the wall (`n`/`e`/`s`/`w`), `at` the centre of the opening measured
+along it — in the same frame, so it runs from `-margin` to `extent + margin`
+and may sit outside the box — and `span` its width. `to` is what is on the
+other side: `boulevard`, `entrance-<name>`, or `hall:<id>`, which the map
+turns into a tap that switches hall when that hall is one we draw. A bare
+hall number (`hall:4`) is the right value where the storey a passage lands on
+is not certain: it labels but does not link. Add `"approx": true` where we
+placed an opening with nothing to check it against, and the map draws it held
+back; the file's own `note` records which those are and why.
+
+Editing it needs no re-snapshot, no code change and no `--update` run — it is
+read at load like every other data file. It does need its name kept in step
+with `DATA` in `sw.js`. **The right kind of edit is a correction from walking
+the hall.** The doors came from the 2017 press hall plans, which draw the
+doorways directly and are read as fractions of each wall; the halls with no
+plan in that set borrow the spacing of the one next door. A number moved
+after actually standing in the doorway beats all of it.
+
 ## Refreshing the webfonts
 
 Fonts are self-hosted in `fonts/` so no visitor request reaches a third party. They
