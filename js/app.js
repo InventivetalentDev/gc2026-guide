@@ -2163,9 +2163,9 @@ function renderFilters() {
         const label = business
           ? t("hall.businessAria", { hall: h })
           : t("where.hall", { hall: h });
-        return `<button class="chip hall-chip${business ? " hall-chip-trade" : ""} ${
+        return `<button class="chip hall-chip ${
           state.hall === h ? "active" : ""
-        }" type="button" data-hall="${esc(h)}" aria-label="${esc(label)}"${
+        }" type="button" data-hall="${esc(h)}" data-area="${esc(hallArea(h))}" aria-label="${esc(label)}"${
           business ? ` title="${esc(t("directory.businessArea"))}"` : ""
         }>${esc(h)}</button>`;
       })

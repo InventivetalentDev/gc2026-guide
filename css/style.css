@@ -370,14 +370,19 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .chip.hall-chip { font-family: var(--font-mono); font-weight: 500; font-size: .75rem; }
 .chip.hall-chip.active,
 .chip.age-chip.active { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
-/* Business-area halls, offered only in trade mode. Amber is the guide's
-   badge-required colour throughout — the directory's stand plates and the
-   map's hall groups carry the same one. */
-.chip.hall-chip-trade { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 34%, var(--rule)); }
-.chip.hall-chip-trade:hover { border-color: var(--warn); }
-.chip.hall-chip-trade.active { background: var(--warn); border-color: var(--warn); color: var(--signal-ink); }
-/* The badge pair sits above the filter rows and carries the same amber on its
-   trade side, so the switch and the halls it unlocks read as one idea. */
+/* Each hall chip carries its hall's own colour on the official plan, the same
+   fill its card plates take — so the row doubles as the legend for them. The
+   edge is the whole cue and it survives the active state, which stays the
+   signal orange like every other chip in the app; the map's hall row makes
+   exactly this trade and the two now agree. The 2px comes off the padding so
+   an edged chip sets its number in the same place "All" does. */
+.chip.hall-chip[data-area="entertainment"] { border-left: 3px solid var(--entertainment); padding-left: 9px; }
+.chip.hall-chip[data-area="business"]      { border-left: 3px solid var(--business);      padding-left: 9px; }
+/* The badge pair sits above the filter rows. Amber is the guide's
+   badge-required colour — the directory's stand plates and the map's hall
+   groups carry the same one — and it stays that here: what the switch says is
+   "a ticket does not open this", which is about the door, not the hall. Which
+   halls it unlocks is the purple edge that appears in the row below. */
 .chip.badge-chip-trade { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 34%, var(--rule)); }
 .chip.badge-chip-trade:hover { border-color: var(--warn); }
 .chip.badge-chip-trade.active { background: var(--warn); border-color: var(--warn); color: var(--signal-ink); }
