@@ -126,6 +126,12 @@
         <button class="tab" role="tab" aria-selected="false" data-view="planner"><span class="tab-index">02</span> <span data-i18n="tab.planner">Visit planner</span></button>
         <button class="tab" role="tab" aria-selected="false" data-view="event"><span class="tab-index">03</span> <span data-i18n="tab.event">Event info</span></button>
         <button class="tab" role="tab" aria-selected="false" data-view="updates"><span class="tab-index">04</span> <span data-i18n="tab.updates">Updates</span></button>
+        <!-- Appended rather than slotted next to the planner so the other four
+             keep the numbers regulars already know. Hidden outside the show
+             days by the same rule that hides every other queue surface: the
+             feature has nothing to say before Aug 26, and a dead tab is worse
+             than no tab. app.js owns the `hidden` flag. -->
+        <button class="tab" role="tab" aria-selected="false" data-view="queues" hidden><span class="tab-index">05</span> <span data-i18n="tab.queues">Live queues</span></button>
       </div>
     </nav>
   </header>
@@ -312,6 +318,39 @@
         <p class="mono-note" data-i18n="updates.englishOnly" data-i18n-only="de" hidden></p>
       </div>
       <div id="changelog" class="timeline"></div>
+    </section>
+
+    <!-- ============ Live queues view ============
+         Reporting lives here rather than on the cards. Per-game controls put
+         two buttons under every playable title, which is twenty-four of them
+         on a card like Xbox's; the cards now carry the live figures alone and
+         send you here to report. Everything below is rendered by app.js. -->
+    <section id="view-queues" class="view">
+      <div class="lede">
+        <h2 data-i18n="queues.title">Live queues</h2>
+        <p data-i18n="queues.lede">Report the line you are standing in, and read what everyone else is reporting. Nothing here needs an account — reports carry a random ID for this device and nothing else.</p>
+      </div>
+
+      <p class="queues-notice" id="queues-notice" role="status" aria-live="polite" hidden></p>
+
+      <section id="queues-mine-section" aria-labelledby="queues-mine-title" hidden>
+        <h3 class="section-title" id="queues-mine-title"><span class="section-num">01</span> <span data-i18n="queues.mine">Queues you are in</span></h3>
+        <p class="section-sub" data-i18n="queues.mineSub">Your timer runs on this device. Tell the queue you got in and the wait becomes a measurement everyone can see.</p>
+        <div id="queues-mine" class="queues-list"></div>
+      </section>
+
+      <section aria-labelledby="queues-report-title">
+        <h3 class="section-title" id="queues-report-title"><span class="section-num">02</span> <span data-i18n="queues.report">Report a queue</span></h3>
+        <div class="queues-scope" id="queues-scope" hidden></div>
+        <label class="field field-search queues-field">
+          <span class="field-label" data-i18n="queues.searchLabel">Find the queue</span>
+          <input type="search" id="queues-search" autocomplete="off" placeholder="Game or booth…" data-i18n-attr="placeholder:queues.searchPlaceholder"
+            aria-describedby="queues-result-count">
+        </label>
+        <p class="result-count" id="queues-result-count" role="status" aria-live="polite" aria-atomic="true"></p>
+        <div id="queues-results" class="queues-list"></div>
+        <p class="empty" id="queues-empty" hidden></p>
+      </section>
     </section>
   </main>
 

@@ -312,9 +312,38 @@ at noon.
 
 ## 5. Client surface
 
-**Starting a session.** The control lives where the visitor already is: on
-the exhibitor card, per game row (and the booth-level line in the card foot),
-later the map popover. Tap "I'm in this queue" →
+**Where reporting lives — revised after the MVP shipped.** The original design
+put the controls on the card, per game row. Built out, that is two buttons
+under every playable title and three more once you are in a line: twenty-four
+controls on Xbox's card alone, under a lineup that is the reason anyone opened
+it. Reading and reporting were competing for the same space and reading lost.
+
+So they are separated. **The cards read**: each game row keeps its live figure
+and nothing else, the card foot keeps the worst-queue summary beside the
+forecast meter, and one link — *Report a queue →* — sits with them, carrying
+the exhibitor id (`#queues?ex=xbox`). **A fifth tab reports**: *Live queues*,
+appended as 05 so the other four keep the numbers regulars know, and hidden
+outside the show days like every other queue surface.
+
+The tab holds, in order: the queues you are in, with their timers and the three
+session actions; then a search box over all 162 queue identities. Untyped it
+shows the queues at booths on your saved list, which is where most reports come
+from and often removes the typing entirely. Arriving from a card link narrows
+it to that booth with a chip that clears back to the whole show. Matching is
+ranked — exact title, title prefix, word start, then substring — and
+deliberately not fuzzy: "hlo" should not offer Halo to somebody standing in
+front of a sign.
+
+Two consequences worth stating. The card no longer says *why* a figure is
+missing; "no reports yet" and "reported, now stale" are told apart only in the
+queues view, where the difference changes what you would do, and the offline
+case is stated once at the top of that view rather than under all seventy-six
+cards. And with the controls gone from the card, "I'm in!" at the booth is two
+taps rather than one — the reopen prompt bar (below) is what keeps the common
+case at one, and it is the reason that bar is load-bearing rather than a nicety.
+
+**Starting a session.** From a row in the queues view, tap "I'm in this
+queue" →
 
 ```
 Just joined · waiting ~10 · ~20 · ~30 · ~45 · ~1 h · ~1½ h · 2 h+
@@ -330,9 +359,10 @@ learning it moves in waves.
 
 **Living with a session.** The client keeps the active session in
 localStorage (`gc2026.queue.v1`): queue, joined-at, last-ahead. While it is
-open, the card control becomes a live timer with three buttons — **Still
+open, its row in the queues view is a live timer with three buttons — **Still
 waiting** (optionally re-asking the ahead bucket), **I'm in!**, **I left** —
-and, the load-bearing nudge: whenever the app is reopened or the tab
+its booth's card link reads "You're in 1 line here", and, the load-bearing
+nudge: whenever the app is reopened or the tab
 refocuses with a session past ~10 min, a quiet prompt bar surfaces it:
 "Still queueing for Fable? 23 min · [Still waiting] [I'm in!] [I left]".
 That reopen moment is when ground truth gets captured or lost — no
@@ -341,8 +371,8 @@ moment they already came back to their phone. One active session per queue,
 multiple parallel sessions allowed (you *will* stand in a merch line while a
 friend holds your spot elsewhere), each rendered on its own card.
 
-**Reporting "queue closed"** stays a session-less one-tap on the same chip
-row — you see the sign, you report it, you walk away.
+**Reporting "queue closed"** stays a session-less one-tap, now on the queue's
+row in the queues view — you see the sign, you report it, you walk away.
 
 **Displaying.** A live chip beside the existing forecast, visually distinct
 from it (the meter is a *prediction*, the chip is a *measurement* — the two
@@ -351,11 +381,13 @@ must not blur). Tier shapes the wording: flow → "Live: ~45 min", done →
 "· n reports · age". Game rows carry their own chips; the card foot
 summarises the worst of them next to the forecast meter; the queue-priority
 table and plan rows get the compact figure where one exists. A queue with
-**no live reports shows nothing** — settled in review: the forecast meter
-already sits beside the chip's slot, so a fallback would render the same
-expectation twice and blur the prediction/measurement line. Map popovers
-are **phase 2** (`map.js` is a separate page and script; the MVP ships
-without it).
+**no live reports shows nothing** on a card — settled in review: the forecast
+meter already sits beside the chip's slot, so a fallback would render the same
+expectation twice and blur the prediction/measurement line. (In the queues
+view the empty state is spelled out instead, because there it is the thing you
+might act on.) Map popovers are **phase 2** (`map.js` is a separate page and
+script; it can now reuse the card's one link rather than growing controls of
+its own).
 
 **Fetching.** `GET /api/queue/live` on boot (after core data — it must never
 gate first render), then every ~2 minutes while the tab is visible

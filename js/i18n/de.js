@@ -27,6 +27,7 @@ window.GC_STRINGS.de = {
   "tab.planner": "Besuchsplaner",
   "tab.event": "Event-Infos",
   "tab.updates": "Updates",
+  "tab.queues": "Wartezeiten",
 
   /* ---------- toolbar & filters ---------- */
   "field.search": "Suche",
@@ -197,6 +198,30 @@ window.GC_STRINGS.de = {
   "queue.enteredDeferred":
     "Du bist als eingelassen markiert. Die gemessene Wartezeit wird gesendet, sobald die Verbindung zurück ist.",
   "queue.pendingCompletion": "Abgeschlossene Wartezeit wartet auf Synchronisierung",
+  "queue.reportLink": "Wartezeit melden →",
+  "queue.reportLinkActive": "Du stehst hier in 1 Schlange →|Du stehst hier in {n} Schlangen →",
+  "queue.reportLinkAria": "Wartezeit bei {exhibitor} melden",
+  "queue.noReports": "Noch keine Meldungen",
+  "queues.title": "Live-Wartezeiten",
+  "queues.lede":
+    "Melde die Schlange, in der du stehst, und sieh, was alle anderen melden. Dafür braucht es kein Konto — Meldungen tragen nur eine zufällige ID für dieses Gerät.",
+  "queues.mine": "Schlangen, in denen du stehst",
+  "queues.mineSub":
+    "Deine Zeit läuft auf diesem Gerät. Sag Bescheid, wenn du drin bist, und aus der Wartezeit wird eine Messung, die alle sehen.",
+  "queues.report": "Wartezeit melden",
+  "queues.searchLabel": "Schlange finden",
+  "queues.searchPlaceholder": "Spiel oder Stand…",
+  "queues.scopedTo": "Schlangen bei {exhibitor}",
+  "queues.showAll": "Alle Schlangen durchsuchen",
+  "queues.countMatches": "{n} Schlange|{n} Schlangen",
+  "queues.countSaved": "{n} Schlange aus deiner Merkliste|{n} Schlangen aus deiner Merkliste",
+  "queues.emptyDefault":
+    "Suche das Spiel, für das du anstehst. Gemerkte Stände aus dem Aussteller-Tab erscheinen hier zuerst.",
+  "queues.emptySearch": "Nichts passt zu „{query}“.",
+  "queues.emptyScoped": "An diesem Stand passt nichts zu „{query}“. Durchsuche alle Schlangen, um weiter zu suchen.",
+  "queues.noticeBeforeShow": "Die Live-Wartezeiten starten mit der Messe am 26. August.",
+  "queues.noticeClosed": "Die Messe ist gerade geschlossen, Meldungen pausieren. Live-Zahlen gibt es wieder zur Öffnung.",
+  "queues.noticeOffline": "Keine Verbindung — keine Live-Zahlen. Eine Wartezeit, die du jetzt beendest, wird gespeichert und später gesendet.",
   "queue.leftOffline":
     "Wartesitzung auf diesem Gerät beendet. Ohne Verbindung wurde der Ausgang nicht gesendet.",
   "queue.offlineNotSent": "Keine Verbindung — diese Meldung wurde nicht gesendet.",

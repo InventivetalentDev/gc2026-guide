@@ -244,6 +244,10 @@ body {
   gap: 8px;
   transition: color .12s, border-color .12s;
 }
+/* `display: flex` above outranks the UA's `[hidden] { display: none }`, so the
+   queues tab would sit there all through the run-up with the attribute set and
+   no effect. Same fix the prompt bar, toast and share actions already carry. */
+.tab[hidden] { display: none; }
 .tab:first-child { padding-left: 0; }
 .tab .tab-index { transition: color .12s; }
 .tab:hover { color: var(--ink); }
@@ -1139,10 +1143,32 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   padding-top: 8px;
   border-top: 1px dashed var(--rule-soft);
 }
-.booth-queue {
-  padding-top: 9px;
-  border-top: 1px dashed var(--rule-soft);
+/* One control per card now, sitting with the forecast meter rather than under
+   every game. Pushed to the end of the queue row so the reading (index, then
+   live figure) comes before the doing. */
+.queue-report {
+  margin-left: auto;
+  display: flex;
 }
+.queue-report:empty { display: none; }
+.queue-report-link {
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  white-space: nowrap;
+  /* A 44px target without a 44px box: the row is already tight, so the reach
+     is bought with padding that does not push the meter around. */
+  padding: 12px 0;
+  margin: -12px 0;
+}
+.queue-report-link:hover,
+.queue-report-link:focus-visible { color: var(--ink); border-bottom-color: var(--ink-dim); }
+.queue-report-link-active { color: var(--signal); }
 .queue-live {
   display: flex;
   align-items: baseline;
@@ -1225,6 +1251,73 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .queue-meta-save:disabled { opacity: .5; cursor: wait; }
 .queue-start-actions .queue-action,
 .queue-session-actions .queue-action { min-height: 44px; padding-block: 6px; }
+
+/* ============================================================
+   live queues view
+   ============================================================ */
+
+.queues-notice {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--warn);
+  padding: 10px 13px;
+  font-size: .82rem;
+  color: var(--ink-mid);
+  margin-bottom: 20px;
+}
+.queues-scope {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.queues-scope[hidden] { display: none; }
+.queues-scope-label {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .06em;
+  color: var(--ink-mid);
+}
+.queues-field { max-width: 26rem; }
+.queues-list { display: flex; flex-direction: column; }
+
+/* A row is three parts that stack on a phone and spread on a wide screen:
+   what the queue is, what it is doing, and what you can do about it. */
+.queue-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule-soft);
+}
+.queue-row:first-child { border-top: none; }
+.queue-row-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.15;
+  margin: 0;
+}
+.queue-row-sub,
+.queue-row-place {
+  margin: 2px 0 0;
+  font-size: .76rem;
+  color: var(--ink-dim);
+}
+.queue-row-place { font-family: var(--font-mono); letter-spacing: .04em; }
+.queue-row-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.queue-row-actions:empty { display: none; }
+.queue-live-none { font-size: .76rem; color: var(--ink-dim); }
+
+@media (min-width: 40rem) {
+  .queue-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 20px;
+  }
+  .queue-row-live { grid-column: 2; grid-row: 1; text-align: right; justify-content: flex-end; }
+  .queue-row-live .queue-live { justify-content: flex-end; }
+  .queue-row-actions { grid-column: 2; grid-row: 2; justify-content: flex-end; }
+}
 
 .advice { font-size: .82rem; color: var(--ink-mid); line-height: 1.5; }
 .advice-label {

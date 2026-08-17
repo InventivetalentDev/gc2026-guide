@@ -27,6 +27,7 @@ window.GC_STRINGS.en = {
   "tab.planner": "Visit planner",
   "tab.event": "Event info",
   "tab.updates": "Updates",
+  "tab.queues": "Live queues",
 
   /* ---------- toolbar & filters ---------- */
   "field.search": "Search",
@@ -208,6 +209,31 @@ window.GC_STRINGS.en = {
   "queue.enteredDeferred":
     "You're marked as in. The measured wait will be sent when the connection returns.",
   "queue.pendingCompletion": "Completed wait waiting to sync",
+  /* ---------- the Live queues view ---------- */
+  "queue.reportLink": "Report a queue →",
+  "queue.reportLinkActive": "You're in 1 line here →|You're in {n} lines here →",
+  "queue.reportLinkAria": "Report a queue at {exhibitor}",
+  "queue.noReports": "No reports yet",
+  "queues.title": "Live queues",
+  "queues.lede":
+    "Report the line you are standing in, and read what everyone else is reporting. Nothing here needs an account — reports carry a random ID for this device and nothing else.",
+  "queues.mine": "Queues you are in",
+  "queues.mineSub":
+    "Your timer runs on this device. Tell the queue you got in and the wait becomes a measurement everyone can see.",
+  "queues.report": "Report a queue",
+  "queues.searchLabel": "Find the queue",
+  "queues.searchPlaceholder": "Game or booth…",
+  "queues.scopedTo": "Showing queues at {exhibitor}",
+  "queues.showAll": "Search all queues",
+  "queues.countMatches": "{n} queue|{n} queues",
+  "queues.countSaved": "{n} queue from your saved list|{n} queues from your saved list",
+  "queues.emptyDefault":
+    "Search for the game you are queueing for. Save booths on the Exhibitors tab and their queues show up here first.",
+  "queues.emptySearch": "Nothing matches “{query}”.",
+  "queues.emptyScoped": "Nothing at this booth matches “{query}”. Search all queues to look wider.",
+  "queues.noticeBeforeShow": "Live queues open when the show does, on 26 August.",
+  "queues.noticeClosed": "The show is closed right now, so reports are paused. Live figures return when it opens.",
+  "queues.noticeOffline": "No connection — live figures are unavailable. A wait you finish now is kept and sent when you are back online.",
   "queue.leftOffline":
     "Queue session closed on this device. The outcome was not sent while offline.",
   "queue.offlineNotSent": "No connection — this report was not sent.",

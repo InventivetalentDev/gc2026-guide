@@ -147,7 +147,7 @@ const PLATFORM_CODES = {
   tbc: "TBA",
 };
 
-const VIEWS = ["exhibitors", "planner", "event", "updates"];
+const VIEWS = ["exhibitors", "planner", "event", "updates", "queues"];
 
 async function loadData() {
   const bust = `?v=${Date.now()}`;
@@ -1812,13 +1812,13 @@ function queueLiveMain(live) {
   return "";
 }
 
-function queueLiveMarkup(queue, { compact = false, unavailable = true } = {}) {
+/* Empty when there is no current figure. The "why it is empty" question —
+   never reported, or reported and gone stale — is answered only in the queues
+   view, where it changes what you would do about it. Answering it on a card
+   put the word "unavailable" under every game of all seventy-six. */
+function queueLiveMarkup(queue, { compact = false } = {}) {
   const live = QUEUES?.live(queue);
-  if (!live) {
-    return unavailable && QUEUES?.unavailable(queue)
-      ? `<span class="queue-live queue-live-unavailable">${esc(t("queue.liveUnavailable"))}</span>`
-      : "";
-  }
+  if (!live) return "";
   const main = queueLiveMain(live);
   if (!main) return "";
   const reports = t("queue.reports", { n: Number(live.n) || 0 });
@@ -1841,58 +1841,54 @@ function queueElapsedMarkup(queue, session) {
   )}</span>`;
 }
 
-function queueTrackerInner(queue, { showLive = true } = {}) {
+/* A game row states its live figure and nothing else. Controls used to live
+   here — join and closed on every playable title, three more once you were in
+   the line — which on a twelve-game card like Xbox's put twenty-four buttons
+   under one lineup. Reporting moved to the Live queues view; a card now reads.
+
+   The unavailable notice goes with them. It made sense beside a control you
+   could no longer use; repeated down a card, and again on all seventy-six of
+   them, it is just the word "offline" seventy-six times. The queues view says
+   it once. */
+function queueTrackerInner(queue) {
   if (!QUEUES?.visible() || !queue) return "";
-  const active = QUEUES.session(queue);
-  const pending = QUEUES.pendingFor(queue);
-  const name = queueName(queue);
-  /* Booth queues are already the card's worst-queue summary. Their tracker
-     keeps the controls without repeating the same live figure, except for the
-     connection warning which has no summary equivalent. */
-  const live = showLive || QUEUES.unavailable(queue) ? queueLiveMarkup(queue) : "";
-  if (pending) {
-    return `${live}<span class="queue-session queue-session-pending">
-      <span class="queue-session-time">${esc(t("queue.pendingCompletion"))}</span>
-    </span>`;
-  }
-  if (active) {
-    const online = QUEUES.canReport();
-    return `${live}<span class="queue-session">
-      ${queueElapsedMarkup(queue, active)}
-      <span class="queue-session-actions">
-        ${
-          online
-            ? `<button class="queue-action" type="button" data-queue-action="update" ${queueAttrs(queue)}
-                aria-label="${esc(t("queue.action.updateAria", { queue: name }))}">${esc(t("queue.action.update"))}</button>`
-            : ""
-        }
-        <button class="queue-action queue-action-primary" type="button" data-queue-action="entered" ${queueAttrs(queue)}
-          aria-label="${esc(t("queue.action.enteredAria", { queue: name }))}">${esc(t("queue.action.entered"))}</button>
-        <button class="queue-action" type="button" data-queue-action="left" ${queueAttrs(queue)}
-          aria-label="${esc(t("queue.action.leftAria", { queue: name }))}">${esc(t("queue.action.left"))}</button>
-      </span>
-    </span>`;
-  }
-  if (!QUEUES.canReport()) return live;
-  return `${live}<span class="queue-start-actions">
-    <button class="queue-action queue-action-primary" type="button" data-queue-action="join" ${queueAttrs(queue)}
-      aria-label="${esc(t("queue.action.joinAria", { queue: name }))}">${esc(t("queue.action.join"))}</button>
-    <button class="queue-action" type="button" data-queue-action="closed" ${queueAttrs(queue)}
-      aria-label="${esc(t("queue.action.closedAria", { queue: name }))}">${esc(t("queue.action.closed"))}</button>
-  </span>`;
+  return queueLiveMarkup(queue);
 }
 
-function queueTracker(queue, extraClass = "", { showLive = true } = {}) {
+function queueTracker(queue, extraClass = "") {
   if (!QUEUES?.visible() || !queue) return "";
-  return `<span class="queue-tracker${extraClass ? ` ${extraClass}` : ""}" data-queue-surface="tracker" data-queue-show-live="${
-    showLive
-  }" tabindex="-1" ${queueAttrs(queue)}>${queueTrackerInner(queue, { showLive })}</span>`;
+  return `<span class="queue-tracker${extraClass ? ` ${extraClass}` : ""}" data-queue-surface="tracker"
+    tabindex="-1" ${queueAttrs(queue)}>${queueTrackerInner(queue)}</span>`;
+}
+
+/* One control per card, next to the forecast meter, replacing every per-game
+   button. It carries the exhibitor so the queues view opens already narrowed
+   to this booth — an ordinary hash link, the same shape as the card deep-links
+   the map already emits, so Back returns to the card. */
+function queueReportLinkInner(ex) {
+  if (!QUEUES?.visible() || !ex) return "";
+  const mine = QUEUES.sessions().filter((entry) => entry.exhibitor === ex.id).length;
+  const label = mine ? t("queue.reportLinkActive", { n: mine }) : t("queue.reportLink");
+  return `<a class="queue-report-link${mine ? " queue-report-link-active" : ""}" href="#queues?ex=${encodeURIComponent(ex.id)}"
+    aria-label="${esc(t("queue.reportLinkAria", { exhibitor: ex.name }))}">${esc(label)}</a>`;
+}
+
+function queueReportLink(ex) {
+  /* The wrapper is emitted whenever the booth *has* queues, even before the
+     show opens and the contents appear. refreshQueueSurfaces() can only refill
+     surfaces that are already in the DOM, so a card rendered at 08:29 on the
+     Wednesday still gains its link when the gate flips at 08:30. */
+  if (!QUEUES || !ex || ex.type === "trade" || isAbsent(ex)) return "";
+  if (!QUEUES.queuesFor(ex).length) return "";
+  return `<span class="queue-report" data-queue-surface="report" data-queue-exhibitor="${esc(
+    ex.id
+  )}">${queueReportLinkInner(ex)}</span>`;
 }
 
 function queueSummaryInner(ex, compact = false) {
   if (!QUEUES?.visible()) return "";
   const worst = QUEUES?.worst(ex);
-  return worst ? queueLiveMarkup(worst.queue, { compact, unavailable: false }) : "";
+  return worst ? queueLiveMarkup(worst.queue, { compact }) : "";
 }
 
 function queueSummary(ex, { compact = false, kind = "summary" } = {}) {
@@ -1925,7 +1921,7 @@ function itemQueueInner(item) {
   const entry = itemQueueEntry(item);
   if (!entry) return "";
   const at = item.kind === "game" && item.at.length > 1 ? queueEx(entry.queue)?.name : "";
-  return `${queueLiveMarkup(entry.queue, { compact: true, unavailable: false })}${
+  return `${queueLiveMarkup(entry.queue, { compact: true })}${
     at ? `<span class="queue-live-at">${esc(t("queue.atExhibitor", { exhibitor: at }))}</span>` : ""
   }`;
 }
@@ -2269,9 +2265,9 @@ function card(ex) {
           title="${esc(ex.crowdNote || "")}"><i></i><i></i><i></i><i></i><i></i></span>
         <span class="queue-val">${crowd ? `${crowd}/5` : "—"} ${esc(crowdLabel(crowd))}</span>
         ${queueSummary(ex)}
+        ${queueReportLink(ex)}
       </div>`
       }
-      ${!isTrade ? queueTracker(boothQueue(ex), "booth-queue", { showLive: false }) : ""}
       ${
         ex.visitAdvice
           ? `<p class="advice"><span class="advice-label">${esc(t("card.planLabel"))}</span>${esc(
@@ -4137,6 +4133,229 @@ function queueItem(kind, key) {
   return itineraryItems().find((item) => item.kind === kind && item.key === key) || null;
 }
 
+/* ---------- the Live queues view ----------
+
+   One searchable list of every reportable queue, replacing the controls that
+   used to hang off each game row. Built once per data load: 162 entries at
+   revision 29, small enough to filter on every keystroke without the debounce
+   the exhibitor grid needs, because only this list re-renders. */
+
+let queueIndex = [];
+let queueScopeEx = null;
+let queueQuery = "";
+
+function buildQueueIndex() {
+  queueIndex = [];
+  if (!QUEUES) return;
+  for (const ex of state.exhibitors) {
+    for (const queue of QUEUES.queuesFor(ex)) {
+      const game = queueGame(queue);
+      queueIndex.push({
+        queue,
+        ex,
+        title: game ? game.title : ex.name,
+        /* A booth queue is the booth, so repeating the name as a subtitle
+           would read "Nintendo — Nintendo". */
+        subtitle: game ? ex.name : "",
+        haystack: [game?.title || "", ex.name, ex.hall || "", ex.booth || "", ...(ex.tags || [])]
+          .join(" ")
+          .toLowerCase(),
+        lead: (game ? game.title : ex.name).toLowerCase(),
+      });
+    }
+  }
+  queueIndex.sort((a, b) => byName(a.title, b.title));
+}
+
+/* Ranked so a typed title beats a booth that merely mentions it: exact lead,
+   then lead prefix, then a word start anywhere, then any substring. Pure, and
+   deliberately no fuzzy matching — "hlo" should not offer Halo to somebody
+   standing in front of a sign. */
+function matchQueues(query, entries) {
+  const needle = String(query || "").trim().toLowerCase();
+  if (!needle) return [];
+  const scored = [];
+  for (const entry of entries) {
+    let score = -1;
+    if (entry.lead === needle) score = 0;
+    else if (entry.lead.startsWith(needle)) score = 1;
+    else if (new RegExp(`\\b${needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).test(entry.haystack)) score = 2;
+    else if (entry.haystack.includes(needle)) score = 3;
+    if (score >= 0) scored.push({ entry, score });
+  }
+  return scored
+    .sort((a, b) => a.score - b.score || byName(a.entry.title, b.entry.title))
+    .map(({ entry }) => entry);
+}
+
+/* The one place the empty states are worth telling apart. "No reports yet" is
+   an invitation — you could be the first. A figure that has aged out is not:
+   the queue was being reported and has gone quiet, and saying "no reports"
+   there would be a lie. The stale case is only claimed while connected, since
+   offline everything looks stale and the notice at the top already says so. */
+function queueLiveRowCell(queue) {
+  const markup = queueLiveMarkup(queue);
+  if (markup) return markup;
+  const stale = QUEUES.connected() && QUEUES.unavailable(queue);
+  return `<span class="queue-live ${stale ? "queue-live-unavailable" : "queue-live-none"}">${esc(
+    t(stale ? "queue.liveUnavailable" : "queue.noReports")
+  )}</span>`;
+}
+
+function queueRowMarkup(entry) {
+  const { queue, ex } = entry;
+  const name = queueName(queue);
+  const active = QUEUES.session(queue);
+  const pending = QUEUES.pendingFor(queue);
+  const canReport = QUEUES.canReport();
+  const place = ex.hall
+    ? t(ex.booth ? "where.hallDotBooth" : "where.hall", { hall: ex.hall, booth: ex.booth || "" })
+    : ex.booth || "";
+
+  let actions = "";
+  if (pending) {
+    actions = `<span class="queue-session-time">${esc(t("queue.pendingCompletion"))}</span>`;
+  } else if (active) {
+    actions = `${queueElapsedMarkup(queue, active)}
+      <span class="queue-session-actions">
+        ${
+          canReport
+            ? `<button class="queue-action" type="button" data-queue-action="update" ${queueAttrs(queue)}
+                aria-label="${esc(t("queue.action.updateAria", { queue: name }))}">${esc(t("queue.action.update"))}</button>`
+            : ""
+        }
+        <button class="queue-action queue-action-primary" type="button" data-queue-action="entered" ${queueAttrs(queue)}
+          aria-label="${esc(t("queue.action.enteredAria", { queue: name }))}">${esc(t("queue.action.entered"))}</button>
+        <button class="queue-action" type="button" data-queue-action="left" ${queueAttrs(queue)}
+          aria-label="${esc(t("queue.action.leftAria", { queue: name }))}">${esc(t("queue.action.left"))}</button>
+      </span>`;
+  } else if (canReport) {
+    actions = `<span class="queue-session-actions">
+      <button class="queue-action queue-action-primary" type="button" data-queue-action="join" ${queueAttrs(queue)}
+        aria-label="${esc(t("queue.action.joinAria", { queue: name }))}">${esc(t("queue.action.join"))}</button>
+      <button class="queue-action" type="button" data-queue-action="closed" ${queueAttrs(queue)}
+        aria-label="${esc(t("queue.action.closedAria", { queue: name }))}">${esc(t("queue.action.closed"))}</button>
+    </span>`;
+  }
+
+  return `<article class="queue-row" ${queueAttrs(queue)}>
+    <div class="queue-row-head">
+      <h4 class="queue-row-title">${esc(entry.title)}</h4>
+      ${entry.subtitle ? `<p class="queue-row-sub">${esc(entry.subtitle)}</p>` : ""}
+      ${place ? `<p class="queue-row-place">${esc(place)}</p>` : ""}
+    </div>
+    <div class="queue-row-live">${queueLiveRowCell(queue)}</div>
+    <div class="queue-row-actions">${actions}</div>
+  </article>`;
+}
+
+function renderQueuesMine() {
+  const section = $("#queues-mine-section");
+  const list = $("#queues-mine");
+  if (!section || !list) return;
+  const open = QUEUES.sessions()
+    .map((entry) => queueIndex.find((row) => row.queue.exhibitor === entry.exhibitor && row.queue.game === entry.game))
+    .filter(Boolean)
+    .sort((a, b) => Number(QUEUES.session(b.queue)?.joinedAt || 0) - Number(QUEUES.session(a.queue)?.joinedAt || 0));
+  const pending = queueIndex.filter((row) => QUEUES.pendingFor(row.queue));
+  const rows = [...open, ...pending.filter((row) => !open.includes(row))];
+  section.hidden = rows.length === 0;
+  list.innerHTML = rows.map((entry) => queueRowMarkup(entry)).join("");
+}
+
+function renderQueuesScope() {
+  const scope = $("#queues-scope");
+  if (!scope) return;
+  const ex = queueScopeEx && state.exhibitors.find((entry) => entry.id === queueScopeEx);
+  scope.hidden = !ex;
+  scope.innerHTML = ex
+    ? `<span class="queues-scope-label">${esc(t("queues.scopedTo", { exhibitor: ex.name }))}</span>
+       <button class="chip" type="button" id="queues-scope-clear">${esc(t("queues.showAll"))}</button>`
+    : "";
+}
+
+function renderQueuesResults() {
+  const list = $("#queues-results");
+  const count = $("#queues-result-count");
+  const empty = $("#queues-empty");
+  if (!list || !count || !empty) return;
+
+  const scoped = queueScopeEx ? queueIndex.filter((entry) => entry.ex.id === queueScopeEx) : queueIndex;
+  /* Scoped to a booth, the whole (short) list is the answer and typing
+     narrows it. Unscoped, an untyped list of 162 queues is not a useful
+     starting point, so the saved list stands in for it. */
+  let rows;
+  let heading = "";
+  if (queueQuery) {
+    rows = matchQueues(queueQuery, scoped);
+    heading = t("queues.countMatches", { n: rows.length });
+  } else if (queueScopeEx) {
+    rows = scoped;
+    heading = t("queues.countMatches", { n: rows.length });
+  } else {
+    rows = queueIndex.filter((entry) => isSaved("exhibitor", entry.ex.id) || isSaved("game", entry.queue.game));
+    heading = rows.length ? t("queues.countSaved", { n: rows.length }) : "";
+  }
+
+  const shown = rows.slice(0, 40);
+  list.innerHTML = shown.map((entry) => queueRowMarkup(entry)).join("");
+  count.textContent = heading;
+  empty.hidden = shown.length > 0;
+  if (!shown.length) {
+    empty.textContent = queueQuery
+      ? t(queueScopeEx ? "queues.emptyScoped" : "queues.emptySearch", { query: queueQuery })
+      : t("queues.emptyDefault");
+  }
+}
+
+function renderQueuesNotice() {
+  const notice = $("#queues-notice");
+  if (!notice) return;
+  let message = "";
+  if (!QUEUES.visible()) message = t("queues.noticeBeforeShow");
+  else if (!QUEUES.canReport()) message = t("queues.noticeClosed");
+  else if (!QUEUES.connected()) message = t("queues.noticeOffline");
+  notice.hidden = !message;
+  notice.textContent = message;
+}
+
+function renderQueues() {
+  if (!QUEUES || !$("#view-queues")) return;
+  if (!queueIndex.length) buildQueueIndex();
+  renderQueuesNotice();
+  renderQueuesMine();
+  renderQueuesScope();
+  renderQueuesResults();
+}
+
+/* Narrow the view to one booth, or clear it. Landing scoped also clears any
+   stale query, so arriving from a card never shows another booth's matches. */
+function applyQueueScope(exhibitorId) {
+  const ex = exhibitorId && state.exhibitors.find((entry) => entry.id === exhibitorId);
+  queueScopeEx = ex ? ex.id : null;
+  queueQuery = "";
+  const search = $("#queues-search");
+  if (search) search.value = "";
+  renderQueues();
+  /* Arriving from a card link is a view change, not a scroll: the card that
+     sent you here can be a long way down the grid, and switching tabs keeps
+     the offset, which lands you in the middle of the queue list. Only the
+     link and a deep link reach here — the tab itself replaces the hash rather
+     than changing it — and on a deep link the page is already at the top, so
+     this costs nothing there. No smooth scroll: a tab switch is instant
+     everywhere else in the app. */
+  window.scrollTo(0, 0);
+}
+
+/* The tab is absent outside the show days, like every other queue surface. */
+function syncQueueTab() {
+  const tab = $('.tab[data-view="queues"]');
+  if (!tab || !QUEUES) return;
+  const show = QUEUES.visible();
+  tab.hidden = !show;
+  if (!show && state.view === "queues") showView(VIEWS[0]);
+}
+
 function refreshQueueSurfaces() {
   if (!QUEUES) return;
   queueSurfaceGate = `${QUEUES.visible()}:${QUEUES.canReport()}`;
@@ -4145,9 +4364,12 @@ function refreshQueueSurfaces() {
     const action = focused?.dataset.queueAction;
     let html = "";
     if (surface.dataset.queueSurface === "tracker") {
-      html = queueTrackerInner(queueFromElement(surface), { showLive: surface.dataset.queueShowLive !== "false" });
+      html = queueTrackerInner(queueFromElement(surface));
     } else if (surface.dataset.queueSurface === "item") {
       html = itemQueueInner(queueItem(surface.dataset.queueItemKind, surface.dataset.queueItemKey));
+    } else if (surface.dataset.queueSurface === "report") {
+      const ex = state.exhibitors.find((entry) => entry.id === surface.dataset.queueExhibitor);
+      html = ex ? queueReportLinkInner(ex) : "";
     } else {
       const ex = state.exhibitors.find((entry) => entry.id === surface.dataset.queueExhibitor);
       html = ex ? queueSummaryInner(ex, surface.dataset.queueCompact === "true") : "";
@@ -4165,6 +4387,12 @@ function refreshQueueSurfaces() {
       else if (surface.matches('[tabindex]')) surface.focus({ preventScroll: true });
     }
   });
+  /* The queues view is rendered whole rather than through surfaces: its rows
+     appear and disappear as sessions open and close, which a per-surface
+     refresh cannot express. Only while it is the visible tab — rebuilding a
+     hidden list on every 30-second tick is work nobody sees. */
+  syncQueueTab();
+  if (state.view === "queues") renderQueues();
 }
 
 function updateQueueTimes() {
@@ -4494,6 +4722,24 @@ function renderQueuePrompt(allowNew) {
 
 function bindQueueControls() {
   if (!QUEUES || !$("#queue-dialog")) return;
+
+  /* No debounce, unlike the exhibitor search: that one rebuilds the grid and
+     both directory lists, this one rebuilds at most forty rows. */
+  const search = $("#queues-search");
+  search?.addEventListener("input", () => {
+    queueQuery = search.value.trim();
+    renderQueuesResults();
+  });
+  /* The scope chip is replaced on every render, so the listener lives on its
+     container rather than the button. */
+  $("#queues-scope")?.addEventListener("click", (event) => {
+    if (!event.target.closest("#queues-scope-clear")) return;
+    queueScopeEx = null;
+    renderQueuesScope();
+    renderQueuesResults();
+    search?.focus();
+  });
+
   const dialog = $("#queue-dialog");
   bindDialogDismiss(dialog, $("#close-queue"));
   dialog.addEventListener("close", () => {
@@ -4790,6 +5036,10 @@ function showView(route, { push = true } = {}) {
   });
   $$(".view").forEach((v) => v.classList.remove("active"));
   $(`#view-${name}`).classList.add("active");
+  /* Unlike the other four, this view is a snapshot of live state rather than
+     of the dataset: sessions opened and figures arrived while it was hidden,
+     and flushViewRender() only ever fires once. */
+  if (name === "queues") renderQueues();
   if (push) syncHash();
 }
 
@@ -4989,6 +5239,9 @@ function bindControls() {
     const landing = parseHash();
     showView(incoming ? SAVED_ROUTE : landing.route);
     if (incoming) offerIncomingWhenReady(incoming);
+    /* `?ex=` means "this booth" on both views, and each reads it its own way:
+       the grid scrolls to the card, the queues view narrows to its lines. */
+    else if (landing.route === "queues") applyQueueScope(landing.params.get("ex"));
     else focusExhibitor(landing.params.get("ex"));
   });
 }
@@ -5041,16 +5294,21 @@ async function main() {
     planner: renderPlanner,
     event: renderEvent,
     updates: renderChangelog,
+    queues: renderQueues,
   };
   const landingView = route === SAVED_ROUTE ? "exhibitors" : route;
   const first = VIEWS.includes(landingView) ? landingView : VIEWS[0];
   bootRender[first]();
   for (const view of VIEWS) if (view !== first) queueViewRender(view, bootRender[view]);
   showView(route, { push: false });
+  syncQueueTab();
   /* Live data is deliberately last and unawaited: the static guide has
      already rendered, so a dead hall connection can never hold first paint. */
   QUEUES?.start();
-  if (!incoming) focusExhibitor(landing.params.get("ex"));
+  if (!incoming) {
+    if (route === "queues") applyQueueScope(landing.params.get("ex"));
+    else focusExhibitor(landing.params.get("ex"));
+  }
   if (offer) offerIncomingWhenReady(offer);
   /* Last, so an import prompt is the thing on screen when both apply — that one
      is priority anyway, and it carries the only Add/Undo the visitor gets. */

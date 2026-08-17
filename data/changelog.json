@@ -7,7 +7,8 @@
       "Live chips now sit beside the guide's forecast without replacing it. They distinguish current queue flow, waits reported by people who just entered, and the minimum time people still in line have already waited — always with report count and age.",
       "Queue sessions keep running offline. If you get in with no reception, that measured completion waits on this device and is submitted on reconnect; stale crowd counts and closure reports are deliberately never replayed.",
       "A phone-first moderation page, random-device throttles, fixed report buckets and short report retention keep the five show days useful without adding accounts or collecting names or locations.",
-      "The service worker now leaves every /api/ response to the network, so live data and the moderation page can never be mistaken for offline guide content."
+      "The service worker now leaves every /api/ response to the network, so live data and the moderation page can never be mistaken for offline guide content.",
+      "Live queue reporting moved off the cards and into its own Live queues tab. Per-game controls meant two buttons under every playable title — two dozen on a booth like Xbox's — so the cards now show the live figures alone with a single \"Report a queue\" link that opens the new tab already narrowed to that booth. The tab lists the lines you are standing in and searches every queue in the show; it appears when the show opens and goes away when it closes."
     ]
   },
   {
