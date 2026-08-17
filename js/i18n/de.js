@@ -134,6 +134,7 @@ window.GC_STRINGS.de = {
   "queue.live.flow": "Live: ~{n} Min.",
   "queue.live.done": "~{n} Min. für gerade Eingelassene",
   "queue.live.sofar": "Bisher {n}+ Min.",
+  "queue.live.doneCapped": "{n} Std.+ für gerade Eingelassene",
   "queue.live.closed": "Warteschlange geschlossen",
   "queue.liveUnavailable": "Live-Wartezeit nicht verfügbar",
   "queue.reports": "{n} Meldung|{n} Meldungen",

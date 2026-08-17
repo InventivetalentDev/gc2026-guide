@@ -159,7 +159,28 @@ function upperQuartile(values) {
   return sorted[Math.max(0, Math.ceil(sorted.length * 0.75) - 1)];
 }
 
+/* The longest show day is eleven hours and the worst real gamescom queues run to
+   about three, so anything past this ceiling is arithmetic rather than a queue.
+   The flow tier is what reaches it: a single slow pair — one bucket step across
+   forty minutes is 0.25 people/min — divided into a long line yields figures
+   like 675 minutes, which the card would happily print as "Live: ~675 min" on a
+   ten-hour show day.
+
+   Hence two different treatments below. A *derived* figure past the ceiling is
+   discarded, because its divisor is the thing at fault and a measured tier is
+   the better answer. A *measured* one is merely clamped: a genuine four-hour
+   wait should read as "4 h+", not vanish. */
+export const MAX_ESTIMATE_MINUTES = 240;
+
 const roundFive = (minutes) => Math.max(0, Math.round(minutes / 5) * 5);
+
+/* Carries the clamp in the payload rather than leaving the client to compare
+   against a copy of the ceiling — a duplicated constant that drifts is exactly
+   how "4 h+" would silently become a flat "240 min" one deploy later. */
+function measuredMinutes(minutes) {
+  const rounded = roundFive(minutes);
+  return rounded > MAX_ESTIMATE_MINUTES ? { est: MAX_ESTIMATE_MINUTES, capped: true } : { est: rounded };
+}
 
 function groupByQueue(rows) {
   const groups = new Map();
@@ -314,43 +335,53 @@ export function estimateLive(input, now) {
     const speeds = speedSamples.get(key) || [];
     const length = median(lengthRows.map((row) => Number(row.ahead)));
     const speed = median(speeds.map((row) => row.speed));
+    /* Tried in order, each falling through when it has nothing to say — so an
+       implausible flow projection defers to a measured tier instead of being
+       published, which a plain if/else chain could not express. */
     if (length !== null && speed !== null && speed > 0) {
-      const sessions = new Set([
-        ...lengthRows.map((row) => String(row.session)),
-        ...speeds.map((row) => String(row.session)),
-      ]);
-      value = {
-        est: roundFive(length / speed),
-        how: "flow",
-        n: sessions.size,
-        newest: Math.max(
-          ...lengthRows.map((row) => Number(row.reported_at)),
-          ...speeds.map((row) => row.at)
-        ),
-      };
-    } else {
+      const projected = roundFive(length / speed);
+      if (projected <= MAX_ESTIMATE_MINUTES) {
+        const sessions = new Set([
+          ...lengthRows.map((row) => String(row.session)),
+          ...speeds.map((row) => String(row.session)),
+        ]);
+        value = {
+          est: projected,
+          how: "flow",
+          n: sessions.size,
+          newest: Math.max(
+            ...lengthRows.map((row) => Number(row.reported_at)),
+            ...speeds.map((row) => row.at)
+          ),
+        };
+      }
+    }
+    if (!value) {
       const doneRows = completed.get(key) || [];
       if (doneRows.length) {
         value = {
-          est: roundFive(
+          ...measuredMinutes(
             median(doneRows.map((row) => Number(row.closed_at) - Number(row.joined_at))) / 60
           ),
           how: "done",
           n: new Set(doneRows.map((row) => String(row.session))).size,
           newest: Math.max(...doneRows.map((row) => Number(row.closed_at))),
         };
-      } else {
-        const openRows = open.get(key) || [];
-        if (openRows.length) {
-          value = {
-            est: roundFive(
-              upperQuartile(openRows.map((row) => Math.max(0, now - Number(row.joined_at)))) / 60
-            ),
-            how: "sofar",
-            n: new Set(openRows.map((row) => String(row.session))).size,
-            newest: Math.max(...openRows.map((row) => Number(row.updated_at))),
-          };
-        }
+      }
+    }
+    if (!value) {
+      const openRows = open.get(key) || [];
+      if (openRows.length) {
+        value = {
+          /* "sofar" already reads "{n}+ min so far", so the clamp needs no
+             separate wording here — it only lowers the floor it states. */
+          est: measuredMinutes(
+            upperQuartile(openRows.map((row) => Math.max(0, now - Number(row.joined_at)))) / 60
+          ).est,
+          how: "sofar",
+          n: new Set(openRows.map((row) => String(row.session))).size,
+          newest: Math.max(...openRows.map((row) => Number(row.updated_at))),
+        };
       }
     }
 

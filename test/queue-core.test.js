@@ -150,6 +150,48 @@ describe("live estimator", () => {
     expect(sofar.xbox.fable).toMatchObject({ est: 20, how: "sofar", n: 4 });
   });
 
+  it("discards an implausible flow projection but clamps a measured one", () => {
+    const now = 100_000;
+    /* One slow but individually legal pair: a single bucket step across forty
+       minutes is 0.25 people/min, which against a 150-deep line projects to
+       ten hours. The queue is 45 minutes by measurement, and that is what a
+       card must show. */
+    const slowPair = [
+      row({ session: "slow", ahead: 30, reported_at: now - 50 * 60 }),
+      row({ session: "slow", ahead: 20, reported_at: now - 10 * 60 }),
+    ];
+    const initial = [row({ session: "joiner", ahead: 150, reported_at: now - 60 })];
+
+    const withFallback = estimateLive(
+      {
+        initial,
+        speedUpdates: slowPair,
+        completed: [row({ session: "done", joined_at: now - 3 * 3600, closed_at: now - 3 * 3600 + 2700 })],
+      },
+      now
+    );
+    expect(withFallback.xbox.fable).toMatchObject({ est: 45, how: "done" });
+    expect(withFallback.xbox.fable.capped).toBeUndefined();
+
+    /* With nothing measured to fall back to, the projection is withheld rather
+       than published — no wait tier at all. */
+    const withoutFallback = estimateLive({ initial, speedUpdates: slowPair }, now);
+    expect(withoutFallback.xbox?.fable?.how).toBeUndefined();
+
+    /* A measured wait beyond the ceiling is real data, so it is clamped and
+       flagged, and the card states it as a floor. */
+    const extreme = estimateLive(
+      {
+        completed: [
+          row({ session: 1, joined_at: now - 6 * 3600, closed_at: now - 1800 }),
+          row({ session: 2, joined_at: now - 6 * 3600, closed_at: now - 1700 }),
+        ],
+      },
+      now
+    );
+    expect(extreme.xbox.fable).toMatchObject({ est: 240, how: "done", capped: true });
+  });
+
   it("requires a two-device closure quorum newer than median counter-evidence", () => {
     const now = 3_000;
     const base = {

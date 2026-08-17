@@ -512,4 +512,40 @@ describe("retention and routing", () => {
     await expect(asset.text()).resolves.toBe("asset:/example.html");
     await waitOnExecutionContext(ctx);
   });
+
+  it("never reads exhibitor data on the live path and memoizes assets per isolate", async () => {
+    const reads = [];
+    const counting = () => {
+      const base = testEnv();
+      return {
+        ...base,
+        ASSETS: {
+          fetch(request) {
+            reads.push(new URL(request.url).pathname);
+            return base.ASSETS.fetch(request);
+          },
+        },
+      };
+    };
+    const live = () =>
+      new Request("https://hallgui.test/api/queue/live", {
+        headers: { "Sec-Fetch-Mode": "cors" },
+      });
+
+    const ctx = createExecutionContext();
+    /* Assertions are written to hold whether or not the module-level memo is
+       already warm from an earlier test in this file, so they do not depend on
+       execution order. */
+    await worker.fetch(live(), counting(), ctx);
+    const afterFirst = reads.length;
+    await worker.fetch(live(), counting(), ctx);
+    await waitOnExecutionContext(ctx);
+
+    /* The live read needs the show calendar only. Parsing exhibitors.json here
+       cost ~93 KB per poll for data this path never looks at. */
+    expect(reads).not.toContain("/data/exhibitors.json");
+    /* Whatever the first call had to load, the second loads nothing. */
+    expect(reads.slice(afterFirst)).toEqual([]);
+    expect(afterFirst).toBeLessThanOrEqual(1);
+  });
 });

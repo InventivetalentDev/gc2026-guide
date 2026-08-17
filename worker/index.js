@@ -96,12 +96,50 @@ async function assetJson(env, request, pathname) {
   return response.json();
 }
 
-export async function loadSiteData(env, request) {
-  const [exhibitors, event] = await Promise.all([
-    assetJson(env, request, "/data/exhibitors.json"),
-    assetJson(env, request, "/data/event.json"),
-  ]);
-  return { exhibitors, event, queues: buildQueueAllowlist(exhibitors) };
+/* Per-isolate memo of the deployed data. A Worker version always serves its own
+   assets, so these bytes cannot change under a live isolate — only a new deploy
+   replaces them, and that deploy starts new isolates. So there is no TTL to get
+   wrong here, and nothing to invalidate.
+
+   The promise is cached rather than the parsed value, so concurrent requests
+   share one asset read instead of racing; a rejection evicts itself, so a
+   failure during cold start does not poison the isolate for its whole life.
+   Callers treat the results as read-only — `queues` is now one shared Map. */
+const assetCache = new Map();
+
+function cachedAssetJson(env, request, pathname) {
+  const cached = assetCache.get(pathname);
+  if (cached) return cached;
+  const pending = assetJson(env, request, pathname).catch((error) => {
+    assetCache.delete(pathname);
+    throw error;
+  });
+  assetCache.set(pathname, pending);
+  return pending;
+}
+
+/* The live read needs the show calendar and nothing else. It used to load the
+   full site bundle: ~95 KB of JSON parsed and a 160-entry allowlist rebuilt on
+   every poll from every phone, before the edge-cache check had even run, for
+   exhibitor data that path never looks at. */
+export const loadEvent = (env, request) => cachedAssetJson(env, request, "/data/event.json");
+
+let siteData = null;
+
+export function loadSiteData(env, request) {
+  if (!siteData) {
+    siteData = (async () => {
+      const [exhibitors, event] = await Promise.all([
+        cachedAssetJson(env, request, "/data/exhibitors.json"),
+        loadEvent(env, request),
+      ]);
+      return { exhibitors, event, queues: buildQueueAllowlist(exhibitors) };
+    })().catch((error) => {
+      siteData = null;
+      throw error;
+    });
+  }
+  return siteData;
 }
 
 function requireQueue(body, queues) {
@@ -552,8 +590,7 @@ async function fetchHandler(request, env, ctx) {
     return handleReport(request, env, site, now);
   }
   if (url.pathname === "/api/queue/live") {
-    const site = await loadSiteData(env, request);
-    return handleLive(request, env, ctx, site.event, now);
+    return handleLive(request, env, ctx, await loadEvent(env, request), now);
   }
   throw new HttpError(404, "not_found");
 }

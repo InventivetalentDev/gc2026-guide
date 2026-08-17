@@ -141,6 +141,11 @@ window.GC_STRINGS.en = {
   "queue.live.flow": "Live: ~{n} min",
   "queue.live.done": "~{n} min for people just in",
   "queue.live.sofar": "{n}+ min so far",
+  /* At the estimator's ceiling the number is a floor, not a point estimate, so
+     this says "4 h+" the way the top report bucket says "2 h+". Only the
+     completed tier needs it: "sofar" already renders "{n}+", and a flow
+     projection past the ceiling is discarded rather than clamped. */
+  "queue.live.doneCapped": "{n} h+ for people just in",
   "queue.live.closed": "Queue closed",
   "queue.liveUnavailable": "Live queue unavailable",
   "queue.reports": "{n} report|{n} reports",

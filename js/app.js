@@ -1802,6 +1802,11 @@ function queueLiveMain(live) {
   const estimate = Math.max(0, Math.round(Number(live?.est) || 0));
   if (live?.closed) return t("queue.live.closed");
   if (live?.how === "flow") return t("queue.live.flow", { n: estimate });
+  /* The server clamps an extreme measured wait and says so, because at the
+     ceiling the figure is a floor: "4 h+", not a flat four hours. */
+  if (live?.how === "done" && live.capped) {
+    return t("queue.live.doneCapped", { n: Math.max(1, Math.round(estimate / 60)) });
+  }
   if (live?.how === "done") return t("queue.live.done", { n: estimate });
   if (live?.how === "sofar") return t("queue.live.sofar", { n: estimate });
   return "";
