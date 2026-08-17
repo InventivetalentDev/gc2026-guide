@@ -241,6 +241,37 @@ function standRecord(hallId, s) {
 
 /* ================= hall data ================= */
 
+/* Which patch of floor a stand stands on, as a comparable key.
+
+   Koelnmesse does not file the two levels corner-for-corner in the same
+   order. Gryphline's Hall 8.1 stands are the pair that showed it:
+   C-020 B-012 and its gallery agree byte for byte, while B-021 C-030 is
+   filed [90,10] [114,10] [114,40] [90,40] and B-021g C-030g is the same
+   rectangle written backwards, [90,40] [114,40] [114,10] [90,10]. So one
+   of Gryphline's two booths answered to a tap and the other returned an
+   empty "B-021g C-030g".
+
+   Comparing the literal coordinate string therefore matched only the
+   pairs that happened to agree — 65 of 134 across the show. This reduces
+   the corner ring to a canonical form instead: the smallest rotation of
+   the ring and of its reverse, which two polygons share exactly when
+   they are the same ring, whichever corner it starts from and whichever
+   way round it runs. */
+function footprint(poly) {
+  const ring = poly.map((p) => p.join());
+  /* defensive: this data leaves the ring open, but a closing vertex would
+     otherwise rotate into the middle and never match its reverse */
+  if (ring.length > 1 && ring[0] === ring[ring.length - 1]) ring.pop();
+  let best = null;
+  for (const dir of [ring, [...ring].reverse()]) {
+    for (let i = 0; i < dir.length; i++) {
+      const rot = dir.slice(i).concat(dir.slice(0, i)).join(" ");
+      if (best === null || rot < best) best = rot;
+    }
+  }
+  return best;
+}
+
 /* Koelnmesse files a stand's gallery level as a stand of its own, on
    exactly the same four corners: F-010 E-019 and F-010g E-019g are one
    place, one floor above the other. Drawn as two stands the empty upper
@@ -249,11 +280,12 @@ function standRecord(hallId, s) {
    the deep link to it was right all along.
 
    Same footprint means same place, so they become one stand: one shape,
-   every stand number, every name filed on either level. This joins exact
-   duplicates only — a sub-stand that sits *inside* a larger one
-   (E-071a within E-071, 30 of them in hall 10.1) has a footprint of its
-   own and stays separate, which is what the painting order below is for.
-   34 pairs across six halls; hall 10.2 alone had 15. */
+   every stand number, every name filed on either level. This joins stands
+   standing on the same corners only — a sub-stand that sits *inside* a
+   larger one (E-071a within E-071, 30 of them in hall 10.1) has a
+   footprint of its own and stays separate, which is what the painting
+   order below is for. 134 pairs across eleven halls; hall 10.1 alone
+   has 26. */
 function mergeLevels(stands) {
   /* Which number a visitor reads on the stand: the one the exhibitors
      were filed against, and failing that the plain ground-floor number
@@ -261,7 +293,7 @@ function mergeLevels(stands) {
   const rank = (s) => (s.names.length ? 2 : 0) + (/\d[a-z]/.test(s.nr) ? 0 : 1);
   const byFootprint = new Map();
   for (const s of stands) {
-    const key = s.poly.map((p) => p.join()).join(" ");
+    const key = footprint(s.poly);
     if (byFootprint.has(key)) byFootprint.get(key).push(s);
     else byFootprint.set(key, [s]);
   }

@@ -12,7 +12,8 @@
       "Tencent's Hall 8.1 stand has a programme after all: Honor of Kings and Arena of Valor with cosplayers and competitions, replacing the \"programme TBA\" placeholder.",
       "Added Seafarer: The Ship Sim and Worms W.M.D. to the Team17 × astragon booth, and Final Fantasy VII Remake to Square Enix.",
       "Fixed: ASUS also holds B040 next to its main Hall 8.1 stand — the map was calling that booth uncovered.",
-      "Fixed a dead link: the Indie Arena Booth's site is indiearenabooth.de, not indiearena.org, which now 404s. Every other outbound link in the guide was re-checked and resolves."
+      "Fixed a dead link: the Indie Arena Booth's site is indiearenabooth.de, not indiearena.org, which now 404s. Every other outbound link in the guide was re-checked and resolves.",
+      "Fixed on the map: booths with an upper floor were still being drawn twice in most cases, and the empty upper copy caught the tap. Gryphline was the clearest victim — one of its two Hall 8.1 blocks named Arknights: Endfield and the other answered \"B-021g C-030g\" with nothing linked. Koelnmesse files the two levels' corners in whatever order it likes, and only the 65 pairs that happened to match exactly were being merged. All 134 now merge, which removes 69 phantom stands across eleven halls — 15 in Hall 10.1 alone — and every affected booth is tappable again."
     ]
   },
   {
