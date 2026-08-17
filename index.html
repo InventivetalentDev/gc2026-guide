@@ -226,7 +226,14 @@
         <p data-i18n="planner.lede">Rough strategy based on expected crowd levels. High-demand booths (queue index 4–5) mean long waits — hit those first thing in the morning or accept the queue. Calm booths are good afternoon fillers.</p>
       </div>
 
-      <h3 class="section-title"><span class="section-num">01</span> <span data-i18n="planner.fiveDays">The five days</span></h3>
+      <!-- Filled by renderPlannerJump(): the planner runs five screens deep
+           on a phone, and a returning visitor is usually here for the plan or
+           the queue table, not the day guide the page opens on. Buttons, not
+           #id anchor links — the hash belongs to the view router (showView),
+           which would rewrite a fragment and route away from it. -->
+      <nav class="plan-jump" id="planner-jump" aria-label="Jump to a planner section" data-i18n-attr="aria-label:planner.jumpAria"></nav>
+
+      <h3 class="section-title" id="days-title" tabindex="-1"><span class="section-num">01</span> <span data-i18n="planner.fiveDays">The five days</span></h3>
       <div id="day-guide" class="day-board"></div>
 
       <section id="plan-section" aria-labelledby="plan-title">
@@ -243,6 +250,11 @@
         <div class="plan-days hidden" id="plan-day-filter" role="group" aria-label="Show one day's stops" data-i18n-attr="aria-label:plan.dayFilterAria"></div>
         <div id="plan-board" class="it-board"></div>
         <p class="empty hidden" id="plan-empty"></p>
+        <!-- The reverse of the toolbar's "Your plan →": the empty plan points
+             back at the grid it is filled from. Only shown for the
+             nothing-saved case — the other empty states are about data, not
+             about the visitor having skipped a step. -->
+        <button class="reset hidden" id="plan-browse" type="button" data-i18n="plan.browseCta">Browse exhibitors →</button>
         <p class="route-absent hidden" id="plan-absent"></p>
       </section>
 
@@ -258,7 +270,7 @@
         <p id="route-absent"></p><span id="route-count"></span>
       </div>
 
-      <h3 class="section-title"><span class="section-num">03</span> <span data-i18n="planner.queuePriority">Queue priority</span></h3>
+      <h3 class="section-title" id="priority-title" tabindex="-1"><span class="section-num">03</span> <span data-i18n="planner.queuePriority">Queue priority</span></h3>
       <p class="section-sub" data-i18n="planner.queueSub">Busiest booths first. If any of these matter to you, make one your first stop of the day.</p>
       <div class="priority-controls">
         <label class="toggle"><input type="checkbox" id="priority-saved-only"> <span data-i18n="toggle.savedOnly">Saved only</span> <span class="saved-count" id="priority-saved-count"></span></label>
@@ -269,12 +281,12 @@
       <p class="empty hidden" id="priority-empty"></p>
 
       <section id="wristband-section" class="hidden">
-        <h3 class="section-title"><span class="section-num">04</span> <span data-i18n="planner.wristband">18+ wristband</span></h3>
+        <h3 class="section-title" id="wristband-title" tabindex="-1"><span class="section-num">04</span> <span data-i18n="planner.wristband">18+ wristband</span></h3>
         <p class="section-sub" data-i18n="planner.wristbandSub">Booths with 18+ demos check ID and hand out a red wristband — get it on arrival, not at the front of the queue.</p>
         <div id="wristband-list" class="priority-table"></div>
       </section>
 
-      <h3 class="section-title"><span class="section-num">05</span> <span data-i18n="planner.crowdTips">General crowd tips</span></h3>
+      <h3 class="section-title" id="tips-title" tabindex="-1"><span class="section-num">05</span> <span data-i18n="planner.crowdTips">General crowd tips</span></h3>
       <ol class="tips" id="crowd-tips"></ol>
     </section>
 

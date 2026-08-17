@@ -1179,6 +1179,16 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 
 /* ============================================================
+   planner — section jump nav
+   ============================================================ */
+/* Sits between the lede and section 01, eating into the lede's 32px so the
+   row reads as part of the intro rather than a section of its own. */
+.plan-jump { display: flex; gap: 6px; flex-wrap: wrap; margin: -12px 0 0; }
+.plan-jump:empty { display: none; }
+.jump-chip .section-num { font-size: .6rem; }
+.jump-chip:hover .section-num { color: var(--signal); }
+
+/* ============================================================
    planner — day board
    ============================================================ */
 .day-board { border: var(--border); border-radius: var(--radius); overflow: hidden; }
@@ -1216,11 +1226,41 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .day-detail { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .day-hours { font-family: var(--font-mono); font-size: .74rem; color: var(--ink); font-variant-numeric: tabular-nums; }
 .day-note { color: var(--ink-mid); font-size: .85rem; }
+/* The plan's per-day count, worn only by the five-days board (the plan's own
+   day groups list their stops right below the header). Under the access
+   badge, spanning the rest of the row. A button through to that day's stops
+   in the plan, dressed like the .reset text-buttons; justify-self keeps the
+   hit area on the words rather than the whole grid track. */
+.day-planned {
+  grid-column: 2 / -1;
+  justify-self: start;
+  margin-top: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--signal);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
 /* ============================================================
    planner — your plan, shared shell (see the lens blocks below)
    ============================================================ */
-#plan-section { scroll-margin-top: 140px; }
+/* Every jump-nav target clears the sticky header — the plan's day groups
+   included, which the day board's counts jump to; the mobile block below
+   shrinks this once the header stops being sticky. */
+#plan-section,
+#plan-board .it-group,
+#view-planner .section-title { scroll-margin-top: 140px; }
+/* Centered in .empty's bottom padding, so message and action read as one
+   block; invisible whenever the message is. */
+#plan-browse { display: block; margin: -48px auto 60px; }
 .plan-controls {
   display: flex;
   align-items: center;
@@ -2170,8 +2210,10 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
      long scrolling list, so it scrolls away here instead */
   .site-header { position: static; }
   /* …and with nothing pinned on top, the sticky-header scroll offset would
-     just strand the route heading 140px down the screen */
-  #route-section { scroll-margin-top: 16px; }
+     just strand a jumped-to heading 140px down the screen */
+  #plan-section,
+  #plan-board .it-group,
+  #view-planner .section-title { scroll-margin-top: 16px; }
 
   /* The phone masthead. The control row dissolves and each button takes its
      own place in the grid's right column: share beside the wordmark, the
@@ -2205,6 +2247,9 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .day-row { grid-template-columns: 76px 1fr; row-gap: 8px; }
   .day-access { grid-column: 2; }
   .day-detail { grid-column: 1 / -1; }
+  /* full-width like the detail text above it — half-indented it reads as a
+     stray line rather than a fact of the day */
+  .day-planned { grid-column: 1 / -1; margin-top: 0; }
   .it-group-head { grid-template-columns: 76px 1fr; row-gap: 8px; }
   .it-item { grid-template-columns: minmax(110px, 1fr) minmax(0, 1.2fr) 20px; row-gap: 9px; }
   .it-days { grid-column: 1 / -1; justify-content: flex-start; }

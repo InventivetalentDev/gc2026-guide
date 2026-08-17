@@ -183,6 +183,9 @@ window.GC_STRINGS.de = {
   "planner.wristbandSub":
     "Bei Ständen mit Demos ab 18 wird dein Ausweis kontrolliert und du bekommst ein rotes Bändchen — hol es dir gleich bei der Ankunft, nicht erst vorne in der Schlange.",
   "planner.crowdTips": "Allgemeine Andrang-Tipps",
+  "planner.jumpAria": "Zu einem Abschnitt des Planers springen",
+  "planner.dayPlanned": "{n} Stopp in deinem Plan|{n} Stopps in deinem Plan",
+  "planner.dayPlannedAria": "Stopps für {day} in deinem Plan anzeigen",
 
   "plan.sub.day":
     "Gib jedem gemerkten Stand und Spiel einen Tag. Nicht zugeordnetes steht oben, bis du es einsortierst.",
@@ -208,6 +211,7 @@ window.GC_STRINGS.de = {
   "plan.placedSuffix": " · {n} zugeordnet",
   "plan.emptyNoSaved":
     "Noch nichts gemerkt — tippe bei einem Stand oder Spiel im Aussteller-Tab auf +.",
+  "plan.browseCta": "Zu den Ausstellern →",
   "plan.emptyStale":
     "Kein Eintrag aus deiner Liste steht noch in den aktuellen Daten — Aussteller können sich zwischen den Updates ändern.",
 
