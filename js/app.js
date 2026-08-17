@@ -2981,8 +2981,11 @@ const isTradeDay = (d) => d.trade === true;
 const isBusinessOpenDay = (d) => d?.business !== "closed";
 
 /* Shared by the day board (section 01) and the itinerary group headers, so
-   the two renderings of a day can never drift apart. */
-function dayHeaderInner(d) {
+   the two renderings of a day can never drift apart. The plan's headers pass
+   note:false — they repeat the advice paragraph a plan spanning five days
+   would otherwise carry five times, one scroll above where it already reads
+   in full. The facts you act on (day, access, hours) stay. */
+function dayHeaderInner(d, { note = true } = {}) {
   const [, month, day] = d.date.split("-");
   return `<span class="day-when">
       <span class="day-dow">${esc(shortDay(d.date))}</span>
@@ -2991,7 +2994,7 @@ function dayHeaderInner(d) {
     <span class="day-access ${isTradeDay(d) ? "trade" : "public"}">${esc(d.access)}</span>
     <span class="day-detail">
       ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
-      ${d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
+      ${note && d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
     </span>`;
 }
 
@@ -3169,7 +3172,7 @@ function renderItinerary() {
        answerable without reading every stop. */
     const shut = dayItems.filter(stopOnClosedDay).length;
     groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
-      <div class="it-group-head">${dayHeaderInner(d)}</div>
+      <div class="it-group-head" tabindex="-1">${dayHeaderInner(d, { note: false })}</div>
       ${
         shut
           ? `<p class="it-group-warn">${esc(
@@ -3228,11 +3231,43 @@ function renderDayBoard() {
   board.innerHTML = (state.event.days || [])
     .map((d) => {
       const n = counts.get(d.date) || 0;
+      const aria = t("planner.dayPlannedAria", { day: dayName(d.date) });
       return `<div class="day-row">${dayHeaderInner(d)}${
-        n ? `<span class="day-planned">${esc(t("planner.dayPlanned", { n }))}</span>` : ""
+        n
+          ? `<button class="day-planned" type="button" data-planned-day="${esc(d.date)}"
+              title="${esc(aria)}" aria-label="${esc(aria)}">${esc(
+              t("planner.dayPlanned", { n })
+            )}</button>`
+          : ""
       }</div>`;
     })
     .join("");
+  $$("#day-guide .day-planned").forEach((btn) =>
+    btn.addEventListener("click", () => gotoPlanDay(btn.dataset.plannedDay))
+  );
+}
+
+/* The count answers "which day is loaded"; this answers the tap that follows
+   — "with what?". Each lens keeps its own meaning: the day lens scrolls to
+   that day's group, the hall lens points its single-day filter at the day, so
+   mid-show the tap lands on "today's stops, in walking order". */
+function gotoPlanDay(date) {
+  if (state.planLens === "hall") {
+    if (state.planDay !== date) {
+      state.planDay = date;
+      /* Rebuilds the day board too, destroying the button just pressed —
+         focus moves to the filter chip now doing what the button asked. */
+      renderPlan();
+    }
+    $("#plan-section")?.scrollIntoView();
+    ($(`#plan-day-filter [data-plan-day="${CSS.escape(date)}"]`) || $("#plan-title"))?.focus({
+      preventScroll: true,
+    });
+    return;
+  }
+  const group = $(`#plan-board .it-group[data-it-date="${CSS.escape(date)}"]`);
+  (group || $("#plan-section"))?.scrollIntoView();
+  (group?.querySelector(".it-group-head") || $("#plan-title"))?.focus({ preventScroll: true });
 }
 
 /* Buttons rather than #id anchor links (see the note on #planner-jump in the

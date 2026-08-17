@@ -185,6 +185,7 @@ window.GC_STRINGS.de = {
   "planner.crowdTips": "Allgemeine Andrang-Tipps",
   "planner.jumpAria": "Zu einem Abschnitt des Planers springen",
   "planner.dayPlanned": "{n} Stopp in deinem Plan|{n} Stopps in deinem Plan",
+  "planner.dayPlannedAria": "Stopps für {day} in deinem Plan anzeigen",
 
   "plan.sub.day":
     "Gib jedem gemerkten Stand und Spiel einen Tag. Nicht zugeordnetes steht oben, bis du es einsortierst.",

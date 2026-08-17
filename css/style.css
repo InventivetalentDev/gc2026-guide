@@ -1228,24 +1228,35 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .day-note { color: var(--ink-mid); font-size: .85rem; }
 /* The plan's per-day count, worn only by the five-days board (the plan's own
    day groups list their stops right below the header). Under the access
-   badge, spanning the rest of the row. */
+   badge, spanning the rest of the row. A button through to that day's stops
+   in the plan, dressed like the .reset text-buttons; justify-self keeps the
+   hit area on the words rather than the whole grid track. */
 .day-planned {
   grid-column: 2 / -1;
+  justify-self: start;
   margin-top: 6px;
+  background: none;
+  border: none;
+  padding: 0;
   font-family: var(--font-mono);
   font-size: .66rem;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--signal);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* ============================================================
    planner — your plan, shared shell (see the lens blocks below)
    ============================================================ */
-/* Every jump-nav target clears the sticky header; the mobile block below
+/* Every jump-nav target clears the sticky header — the plan's day groups
+   included, which the day board's counts jump to; the mobile block below
    shrinks this once the header stops being sticky. */
 #plan-section,
+#plan-board .it-group,
 #view-planner .section-title { scroll-margin-top: 140px; }
 /* Centered in .empty's bottom padding, so message and action read as one
    block; invisible whenever the message is. */
@@ -2201,6 +2212,7 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   /* …and with nothing pinned on top, the sticky-header scroll offset would
      just strand a jumped-to heading 140px down the screen */
   #plan-section,
+  #plan-board .it-group,
   #view-planner .section-title { scroll-margin-top: 16px; }
 
   /* The phone masthead. The control row dissolves and each button takes its

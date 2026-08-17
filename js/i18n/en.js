@@ -197,6 +197,7 @@ window.GC_STRINGS.en = {
   "planner.crowdTips": "General crowd tips",
   "planner.jumpAria": "Jump to a planner section",
   "planner.dayPlanned": "{n} stop in your plan|{n} stops in your plan",
+  "planner.dayPlannedAria": "Show {day}'s stops in your plan",
 
   "plan.sub.day":
     "Give each saved booth and game a day. Unassigned items sit at the top until you place them.",
