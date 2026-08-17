@@ -42,9 +42,10 @@
       "https://www.gamescom.global/en/info/gamescom-cares",
       "https://insider-gaming.com/xbox-confirms-gamescom-2026-presence-and-playable-game-lineup/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
-      "https://www.drwindows.de/news/die-gamescom-2025-mein-persoenlicher-rueckblick"
+      "https://www.drwindows.de/news/die-gamescom-2025-mein-persoenlicher-rueckblick",
+      "https://businessmirror.com.ph/2026/08/15/xbox-to-feature-25-upcoming-games-at-gamescom-2026/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-17"
   },
   {
     "id": "nintendo",
@@ -109,9 +110,10 @@
     "tags": ["mobile", "platform"],
     "crowd": 2,
     "sources": [
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-17"
   },
   {
     "id": "capcom",
@@ -970,20 +972,21 @@
   {
     "id": "korea-pavilion",
     "name": "Korea Pavilion (KOCCA)",
-    "type": "indie",
-    "hall": "10.2",
-    "booth": null,
-    "locationConfirmed": false,
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "C050g/D052g",
+    "locationConfirmed": true,
+    "dirSlug": "korea_creative",
+    "country": "Korea, Republic of",
+    "access": "mixed",
     "officialUrl": "https://www.gamescom.global/en/exhibitor/korea-creative-content-agency",
-    "games": [
-      { "title": "Various Korean indie/mobile titles", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"] }
-    ],
-    "tags": ["indie", "discovery"],
-    "crowd": 2,
+    "games": [],
+    "tags": ["pavilion", "publishing", "business meetings"],
     "sources": [
-      "https://www.invenglobal.com/articles/24045/gamescom-2026-exhibitor-lineup-revealed-expected-to-be-largest-ever"
+      "https://www.invenglobal.com/articles/24205/13-korean-companies-to-participate-in-korea-pavilion-at-gamescom-2026",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-17"
   },
   {
     "id": "koei-tecmo",
@@ -1017,9 +1020,10 @@
     "tags": ["mobile", "indie"],
     "crowd": 2,
     "sources": [
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-17"
   },
   {
     "id": "aternos",
@@ -1455,6 +1459,23 @@
     "lastUpdated": "2026-08-13"
   },
   {
+    "id": "aula",
+    "name": "AULA",
+    "type": "hardware",
+    "hall": "10.1",
+    "booth": "E050",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/shenzhen-suoai-electronics-technology",
+    "games": [],
+    "tags": ["hardware", "peripherals"],
+    "crowd": 1,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/shenzhen-suoai-electronics-technology"
+    ],
+    "lastUpdated": "2026-08-17"
+  },
+  {
     "id": "pxn",
     "name": "PXN",
     "type": "hardware",
@@ -1578,9 +1599,10 @@
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
       "https://bricksfanz.com/lego-games-returning-for-gamescom-2026/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
     ],
-    "lastUpdated": "2026-08-14"
+    "lastUpdated": "2026-08-17"
   },
   {
     "id": "wizards-of-the-coast",
@@ -1655,17 +1677,19 @@
     "id": "logitech",
     "name": "Logitech G",
     "type": "hardware",
-    "hall": "8.1",
-    "booth": "A065",
+    "hall": "10.1",
+    "booth": "E074/F077",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/logitech-ireland-services-ltd",
     "games": [],
     "tags": ["hardware", "peripherals", "sim racing"],
     "crowd": 2,
     "sources": [
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/logitech-ireland-services-ltd",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-17"
   },
   {
     "id": "aoc-agon",
@@ -2059,7 +2083,7 @@
     "name": "Amazon Web Services",
     "type": "trade",
     "hall": "3.2",
-    "booth": "A051",
+    "booth": "B040g/C041g",
     "locationConfirmed": true,
     "dirSlug": "amazon_web",
     "country": "United States",
@@ -2071,7 +2095,7 @@
       "https://exhibitors.gamescom.global/en/exhibitor/amazon_web/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-15"
+    "lastUpdated": "2026-08-17"
   },
   {
     "id": "xsolla-biz",
@@ -2269,7 +2293,7 @@
     "name": "IGDA",
     "type": "trade",
     "hall": "3.2",
-    "booth": "C016/D017",
+    "booth": "C016/D017, C014/D015",
     "locationConfirmed": true,
     "dirSlug": "_igda",
     "country": "United States",
@@ -2282,7 +2306,7 @@
       "https://exhibitors.gamescom.global/en/exhibitor/igda_foundation/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-15"
+    "lastUpdated": "2026-08-17"
   },
   {
     "id": "wigi-biz",

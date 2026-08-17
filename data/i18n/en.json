@@ -161,6 +161,7 @@
     "world premiere": "world premiere",
     "analytics": "analytics",
     "association": "association",
+    "business meetings": "business meetings",
     "closed stand": "closed stand",
     "cloud gaming": "cloud gaming",
     "co-development": "co-development",
@@ -176,6 +177,7 @@
     "pitching": "pitching",
     "platform holder": "platform holder",
     "promotion": "promotion",
+    "publishing": "publishing",
     "security": "security",
     "services": "services",
     "studio": "studio",
@@ -618,12 +620,12 @@
       }
     },
     "korea-pavilion": {
-      "description": "Umbrella pavilion organized by the Korea Creative Content Agency, bundling small and mid-size Korean studios in the indie area (plus a B2B zone) — the best single stop for discovering Korean PC/mobile titles beyond Krafton and Pearl Abyss.",
-      "crowdNote": "Pavilion format spreads visitors across many small stands — walk-up friendly.",
-      "visitAdvice": "Browse any time of day; a good low-queue option even on the weekend.",
-      "games": {
-        "Various Korean indie/mobile titles": "Rotating multi-studio showcase; individual titles announced closer to the show."
-      }
+      "description": "The Korea Creative Content Agency's umbrella stand for 13 small and mid-size Korean studios this year — consolidated into a single business-hall booth rather than the separate B2B/B2C pavilions of past shows. Krafton and Pearl Abyss show their own games elsewhere on the consumer floor.",
+      "accessNote": "Hall 2.2 — an open demo counter with the one-on-one publisher, investor and distributor meetings booked behind it.",
+      "offers": [
+        "On-site demos of the 13 participating studios' PC, console and mobile titles",
+        "One-on-one meetings with international publishers, investors and distributors"
+      ]
     },
     "koei-tecmo": {
       "description": "A small Hall 10.2 stand, registered alongside Japanese partner Gentle Giants — the program is unannounced, and Koei Tecmo's main autumn stage is Tokyo Game Show. With Attack on Titan 3 due winter 2026, some presence for it is plausible but unconfirmed.",
@@ -863,9 +865,14 @@
       "visitAdvice": "For limited merch, go early on the first public day; otherwise any weekday afternoon."
     },
     "logitech": {
-      "description": "Listed under both Logitech and Logitech G, with a second, larger stand in Hall 10.1 at E074/F077: gaming mice, keyboards, headsets and sim-racing rigs with try-before-you-buy stations.",
+      "description": "Logitech G's own stand in Hall 10.1's hardware row: gaming mice, keyboards, headsets and sim-racing rigs with try-before-you-buy stations. A separate Logitech GmbH stand shares Hall 8.1's A065 with Acer and Philips monitors, but has no gamescom profile of its own.",
       "crowdNote": "Browse-through booth; only sim-racing rigs generate short waits.",
       "visitAdvice": "Any time works; sim rigs are quietest weekday mornings."
+    },
+    "aula": {
+      "description": "Mice, keyboards and other peripherals from the Chinese hardware brand, registered under its legal entity Shenzhen Suoai Electronics Technology — one of Hall 10.1's less obvious hardware-row stands.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
     },
     "aoc-agon": {
       "description": "AOC's gaming-monitor brand with its latest high-refresh OLED and Mini-LED monitors on demo stations.",

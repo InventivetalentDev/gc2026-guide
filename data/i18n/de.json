@@ -161,6 +161,7 @@
     "world premiere": "Weltpremiere",
     "analytics": "Datenanalyse",
     "association": "Verband",
+    "business meetings": "Geschäftstermine",
     "closed stand": "geschlossener Stand",
     "cloud gaming": "Cloud-Gaming",
     "co-development": "Co-Development",
@@ -176,6 +177,7 @@
     "pitching": "Pitching",
     "platform holder": "Plattformbetreiber",
     "promotion": "Werbung",
+    "publishing": "Publishing",
     "security": "Sicherheit",
     "services": "Dienstleistungen",
     "studio": "Studio",
@@ -618,12 +620,12 @@
       }
     },
     "korea-pavilion": {
-      "description": "Gemeinschaftspavillon der Korea Creative Content Agency, der kleine und mittlere koreanische Studios im Indie-Bereich bündelt (plus eine B2B-Zone) — die beste Anlaufstelle, um koreanische PC- und Mobile-Titel jenseits von Krafton und Pearl Abyss zu entdecken.",
-      "crowdNote": "Die vielen kleinen Stände verteilen die Besucher gut — du kannst meist ohne Warten vorbeischauen.",
-      "visitAdvice": "Zu jeder Tageszeit machbar; auch am Wochenende eine gute Option ohne lange Wartezeit.",
-      "games": {
-        "Various Korean indie/mobile titles": "Wechselnder Showcase mehrerer Studios; einzelne Titel werden näher an der Messe angekündigt."
-      }
+      "description": "Der Sammelstand der Korea Creative Content Agency für 13 kleine und mittlere koreanische Studios in diesem Jahr — zusammengefasst zu einem einzigen Stand in der Business-Halle statt der getrennten B2B-/B2C-Pavillons früherer Jahre. Krafton und Pearl Abyss zeigen ihre eigenen Spiele an anderer Stelle im Publikumsbereich.",
+      "accessNote": "Halle 2.2 — ein offener Demo-Tresen, dahinter finden die gebuchten Eins-zu-eins-Termine mit Publishern, Investoren und Vertrieben statt.",
+      "offers": [
+        "Vor-Ort-Demos der PC-, Konsolen- und Mobile-Titel der 13 teilnehmenden Studios",
+        "Eins-zu-eins-Termine mit internationalen Publishern, Investoren und Vertrieben"
+      ]
     },
     "koei-tecmo": {
       "description": "Ein kleiner Stand in Halle 10.2, gemeinsam mit dem japanischen Partner Gentle Giants registriert — das Programm ist nicht angekündigt, und Koei Tecmos große Herbstbühne ist die Tokyo Game Show. Da Attack on Titan 3 im Winter 2026 erscheint, ist eine Präsenz plausibel, aber unbestätigt.",
@@ -863,9 +865,14 @@
       "visitAdvice": "Für limitierten Merch solltest du am ersten Publikumstag früh hingehen; ansonsten passt jeder Nachmittag unter der Woche."
     },
     "logitech": {
-      "description": "Logitech ist sowohl unter Logitech als auch unter Logitech G gelistet und hat einen zweiten, größeren Stand bei E074/F077 in Halle 10.1. Dort gibt es Gaming-Mäuse, Tastaturen, Headsets und Simracing-Stationen zum Ausprobieren.",
+      "description": "Der eigene Stand von Logitech G in der Hardware-Reihe von Halle 10.1: Gaming-Mäuse, Tastaturen, Headsets und Simracing-Stationen zum Ausprobieren. Ein separater Stand von Logitech GmbH teilt sich A065 in Halle 8.1 mit Acer und Philips-Monitoren, hat aber kein eigenes gamescom-Profil.",
       "crowdNote": "An den meisten Stationen kannst du direkt loslegen; nur an den Simracing-Stationen gibt es kurze Wartezeiten.",
       "visitAdvice": "Jederzeit; an den Simulatoren ist es werktags vormittags am ruhigsten."
+    },
+    "aula": {
+      "description": "Mäuse, Tastaturen und weitere Peripherie der chinesischen Hardware-Marke, registriert unter ihrer juristischen Einheit Shenzhen Suoai Electronics Technology — einer der unauffälligeren Stände in der Hardware-Reihe von Halle 10.1.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Abstecher, wenn du ohnehin die Hardware-Reihe abklapperst."
     },
     "aoc-agon": {
       "description": "AOCs Gaming-Monitor-Marke mit den neuesten OLED- und Mini-LED-Monitoren mit hoher Bildwiederholrate an Demo-Stationen.",

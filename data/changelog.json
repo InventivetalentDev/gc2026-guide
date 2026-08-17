@@ -1,5 +1,17 @@
 [
   {
+    "date": "2026-08-17",
+    "revision": 28,
+    "changes": [
+      "Korea Pavilion (KOCCA) booth confirmed: Hall 2.2, C050g/D052g. This year it's one consolidated business-hall stand for 13 Korean studios (a trade badge gets you in) rather than the separate public/business pavilions of past shows — Krafton and Pearl Abyss still show their own games on the consumer floor.",
+      "Fixed: Logitech G's booth was pointing at the wrong stand (Hall 8.1, shared with Acer and Philips) — corrected to its own Hall 10.1 stand at E074/F077, which is what its official gamescom profile and the hall plan actually list.",
+      "Added AULA to Hall 10.1's hardware row (mice, keyboards; booth E050) — filed under its legal entity, Shenzhen Suoai Electronics Technology.",
+      "Fixed two business-hall booths the hall-plan cross-check flagged: AWS's trade card was on a stand that doesn't exist in Hall 3.2 (corrected to its actual gallery stand, B040g/C041g, shared with PlayEveryWare); IGDA holds two adjacent stands in Hall 3.2 and only one was listed (added C014/D015 alongside C016/D017).",
+      "Re-checked Google Play, LEGO and Bilibili's lineups, EA's slate beyond FC 27, and Xbox's remaining unannounced slots — still no specifics from any of them as of today.",
+      "Directory refresh: 1,659 registered exhibitors, no new share-token collisions."
+    ]
+  },
+  {
     "date": "2026-08-16",
     "revision": 27,
     "changes": [
