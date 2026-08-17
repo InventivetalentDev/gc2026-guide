@@ -127,10 +127,12 @@
   transform-origin: 0 0;
   display: block;
   -webkit-user-drag: none;
-  /* A door's label sits outside the hall it names, and "Hall 10.1" is
-     28 m of text against a hall 82 m deep — reserving room for it inside
-     the viewBox would shrink every hall to fit a word. #stage clips
-     instead, which is the visible edge of the map anyway. */
+  /* The viewBox reserves a line of type beyond each wall that carries a
+     door label, but only across it — a name centred on a doorway near a
+     corner still runs past the end, and hall 7's "Hall 6.1" sits 2 m
+     from one. Let it, rather than reserving half a hall's width for the
+     one label that needs it; #stage clips, which is the visible edge of
+     the map anyway. */
   overflow: visible;
 }
 .map-load {
@@ -194,14 +196,13 @@
   font-family: var(--font-mono); fill: var(--ink-mid);
   letter-spacing: .04em;
 }
-/* Written away from the hall, so the word starts at the doorway and runs
-   out into the margin rather than back across the booths. */
-#map .door-lbl.on-w { text-anchor: end; }
-#map .door-lbl.on-e { text-anchor: start; }
-/* Zoomed all the way out the brackets alone say "there are ways in and
-   out here"; at 4.2 m the words would be five pixels of grey. They arrive
-   with the mid-size booth names, one band in. */
-#map.z0 .door-lbl { display: none; }
+/* No zoom band hides these. They were held back to z1 while they were set
+   at 4.2 m, which zoomed all the way out is five pixels of grey — but
+   "which end is the Boulevard" is a question you ask *before* zooming in,
+   and answering it a band late is answering it late. Sized at the booth
+   names' own ceiling instead (DOOR_FS in js/map.js), so they are legible
+   wherever those are, and they sit outside the hall where there is
+   nothing for them to cover. */
 
 #map text {
   pointer-events: none; user-select: none; -webkit-user-select: none;
