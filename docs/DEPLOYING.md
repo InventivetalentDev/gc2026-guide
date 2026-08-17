@@ -1,16 +1,19 @@
 # Deploying
 
-The guide is hosted on **Cloudflare Workers** as an assets-only Worker: a
-directory of static files served from the edge, with no Worker script.
-`.github/workflows/cloudflare.yml` deploys every push to `main`;
-`wrangler.toml` holds the whole configuration.
+The guide is hosted on **Cloudflare Workers** as a hybrid Worker: the site is
+still a directory of static files served directly from the edge, while the
+selective `/api/*` route runs `worker/index.js` for live queues. D1 holds the
+short-lived reports. `.github/workflows/cloudflare.yml` verifies pull requests
+and deploys `main`; `wrangler.toml` holds the bindings and routing.
 
-The site still has no build step. `tools/build-site.sh` copies it into `dist/`,
+The client still has no compilation step. `tools/build-site.sh` copies it into `dist/`,
 which is the directory the Worker serves, because an asset directory has to hold
 the site and nothing else — aimed at the repo root, a deploy ships the docs and
 `wrangler dev` reloads forever on its own scratch files. The script classifies
 every top-level entry as site or not-site and fails if it meets one it does not
 recognise, so a new asset directory stops the deploy instead of 404ing quietly.
+`worker/`, tests and package metadata are explicitly classified as not-site and
+must never appear below `dist/`.
 
 It moved off GitHub Pages for one reason: Pages serves a repository at exactly
 one custom domain, and the guide needs four — `hallgui.de` and the three
@@ -71,10 +74,11 @@ redirect to `hallgui.de` (step 6). They are aliases, not origins.
    each hostname still draining, and for the six alias names in step 6.
 
 2. **Create an API token** — Cloudflare dashboard → My Profile → API Tokens →
-   *Create Token* → the **Edit Cloudflare Workers** template. It carries the
-   permissions a deploy needs: Workers Scripts (edit) to upload, Workers Routes
-   (edit) plus DNS (edit) to attach the custom domain, and Zone (read). Scope it
-   to the account and to the zones the guide will be served from.
+   *Create Token* → start from the **Edit Cloudflare Workers** template, then
+   add **D1 (edit)** so CI can apply tracked migrations before the Worker is
+   deployed. The rest is Workers Scripts (edit), Workers Routes (edit), DNS
+   (edit) and Zone (read). Scope it to the account and to the zones the guide
+   will be served from.
 
 3. **Add two repository secrets** (Settings → Secrets and variables → Actions):
 
@@ -83,8 +87,12 @@ redirect to `hallgui.de` (step 6). They are aliases, not origins.
    | `CLOUDFLARE_API_TOKEN` | the token from step 2 |
    | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → Account ID |
 
-4. **Push to `main`**, or run the workflow by hand from the Actions tab. The
-   first deploy creates the Worker and attaches `hallgui.de`.
+4. **Complete [Queue backend: first deployment](#queue-backend-first-deployment)**
+   first: create both D1 databases, replace and commit both draft UUIDs, apply
+   the migrations, verify staging, and set the production admin secret. Only
+   then push to `main` (or run the workflow by hand). The production workflow
+   can now migrate the real database before it creates or updates the Worker
+   and attaches `hallgui.de`.
 
 5. **Web Analytics** is enabled in the Cloudflare dashboard (Web Analytics →
    the `hallgui.de` site, automatic setup — repoint it there, it was set up
@@ -143,10 +151,85 @@ redirect to `hallgui.de` (step 6). They are aliases, not origins.
    is identical on every one of them, so it is copy-paste with the hostname
    changed.
 
+## Queue backend: first deployment
+
+Use Node 22 or newer. Production and staging must have separate D1 databases;
+the ordinary `gc2026-guide.<subdomain>.workers.dev` address belongs to the
+production Worker and is **not** a staging environment. `wrangler.toml` defines
+an explicit `staging` Worker with no custom-domain routes for this reason.
+
+1. Install the pinned development tools and authenticate:
+
+   ```sh
+   npm install
+   npx wrangler login
+   ```
+
+2. Create both databases in Western Europe. Wrangler prints each UUID. Replace
+   the draft production UUID in the top-level `QUEUE_DB` binding and the draft
+   staging UUID in `env.staging`'s `QUEUE_DB` binding:
+
+   ```sh
+   npx wrangler d1 create gc2026-queues --location weur
+   npx wrangler d1 create gc2026-queues-staging --location weur
+   ```
+
+   Do not point both environments at one UUID: a phone test that purges a queue
+   must not purge the live show. Commit the resolved binding ids once created.
+
+3. Apply the tracked migration to staging first and set its admin secret. The
+   secret prompt is interactive; never put the token in this repository or a
+   command argument.
+
+   ```sh
+   npx wrangler d1 migrations apply QUEUE_DB --remote --env staging
+   npm test
+   npx wrangler deploy --env staging
+   npx wrangler secret put ADMIN_TOKEN --env staging
+   ```
+
+4. Before the show window opens, run the full behavioral loop locally with the
+   time-controlled setup below and two independent browser profiles: join the
+   same queue, update people-ahead after the throttle window, enter, and confirm
+   the other profile sees the aggregate after the cache window. On the real
+   staging hostname, verify routing and environment isolation instead: static
+   pages answer 200, live/report endpoints return the intentional out-of-hours
+   403, and `/api/admin/` can authenticate, deny a planted UUID, purge an empty
+   queue, force/clear closure, and pause/resume writes. A deployed staging
+   Worker deliberately has no clock override.
+
+   During an actual Aug 26–30 access window, repeat the two-device live loop on
+   staging as a launch-day check. This is not a pre-show deployment gate: making
+   it one would be impossible while both client and Worker correctly enforce
+   the event calendar.
+
+5. Only after staging passes, migrate production and set its independent token:
+
+   ```sh
+   npx wrangler d1 migrations apply QUEUE_DB --remote
+   npm test
+   npx wrangler secret put ADMIN_TOKEN
+   ```
+
+   The GitHub token now also needs **D1 edit** permission. The workflow applies
+   pending production migrations before it deploys the matching Worker, then
+   performs the normal deploy. Keep migrations backward-compatible: rolling
+   back Worker code does not roll back a D1 schema.
+
+For local work before Aug 26, copy `.dev.vars.example` to `.dev.vars`, apply
+the migration with `--local`, stage the assets, run `npx wrangler dev`, and open
+`http://localhost:8787/?queue-dev=1`. The configured instant is the local
+clock's starting point and advances with real elapsed time, so the two-minute
+throttle can be checked normally. It is honored only when the separate
+`QUEUE_TEST_CLOCK_ENABLED=local-development-only` opt-in is also present; both
+values live in the ignored local Worker environment and neither belongs in
+deployed configuration. Production never accepts a browser-supplied clock.
+
 Deploying from a laptop works the same way and needs no secrets — `npx wrangler
 login` once, then:
 
 ```sh
+npx wrangler d1 migrations apply QUEUE_DB --remote
 tools/build-site.sh && npx wrangler deploy
 ```
 
@@ -161,6 +244,9 @@ files, so an edit shows up on reload instead of after another `build-site.sh`.
 curl -sI https://hallgui.de/          | head -1   # HTTP/2 200
 curl -sI https://hallgui.de/map.html  | head -1   # HTTP/2 200 — not a 307
 curl -s  https://hallgui.de/data/meta.json | head -c 120
+curl -sD - -o /dev/null https://hallgui.de/api/queue/live | sed -n '1p;/cache-control/ip'
+curl -sD - -o /dev/null https://hallgui.de/api/not-a-route | head -1  # 404, never index.html
+curl -sD - -o /dev/null https://hallgui.de/api/admin/ | sed -n '1p;/cache-control/ip'
 curl -sI https://gc26.de/             | head -2   # HTTP/2 301 → https://hallgui.de/
 ```
 
@@ -173,6 +259,15 @@ comments there spell out the mechanism.
 
 Then open the site, load a hall map, turn the network off and reload. If the
 guide and the map both still come up, the shell cached correctly.
+
+During show hours, also join a low-risk test queue, verify the POST response is
+`no-store`, and watch a second device receive it within the 60-second edge
+window. In DevTools → Application → Cache Storage, no `/api/` URL may appear.
+Visit `/api/admin/`, return to the guide, go offline and reload: the guide (not
+the admin shell) must still be the `./` navigation fallback. The live endpoint
+returns 403 outside an active show-hours window and 410 after the final window.
+During a scheduled window, either status indicates a clock/timezone
+configuration fault, not an empty-data state.
 
 ## Retiring the old hostnames
 
@@ -253,7 +348,8 @@ draining. Someone who accepted at v1 is sitting on `gamescom.guide` with a
 remembered "yes"; someone who dismissed at v2 is still where they were with a
 remembered "no". Both need telling once more, and only once.
 
-`sw.js` bumps alongside it — `v7` for the `gc26.guide` move, `v8` for this one.
+`sw.js` bumps alongside it — `v7` for the `gc26.guide` move, `v8` for this one;
+`v9` is the live-queue client plus its load-bearing API cache bypass.
 Without that, the old `app.js` is served stale-while-revalidate on the first
 load back, and an `app.js` that has never heard of the new address cannot offer
 the move it exists to offer. Whenever `MOVED_KEY` changes, `VERSION` changes
@@ -271,3 +367,40 @@ change stop turning up.
 the previous one, which is the fastest way out of a bad data push. Reverting the
 commit on `main` and letting the workflow run is the durable fix — do that too,
 or the next push carries the same broken file back to the edge.
+
+A Worker rollback does not undo a D1 migration or resurrect rows removed by a
+moderation action. Migrations therefore stay additive/backward-compatible, and
+the previous Worker must remain able to run against the new schema. If the API
+itself is the incident, pausing writes in `/api/admin/` keeps reads available
+while the code rollback propagates.
+
+## After the show
+
+The privacy promise requires deletion, but delete in a recoverable order:
+
+1. Let the final close + 30-minute window pass and verify the deployed API now
+   returns 410 for live reads and ordinary writes without querying D1. A valid
+   deferred `entered` outcome is the deliberate exception: it may still close
+   its existing, server-anchored session after a phone regains reception.
+2. Keep D1 for the 24-hour retention horizon after the final window so the
+   last legitimate deferred outcomes can land and the hourly cleanup can remove
+   their device-linked rows. Then export anything genuinely needed for an
+   aggregate, non-device-linked postmortem, and remove that temporary export
+   once the postmortem is done.
+3. Confirm no open session remains. Remove both D1 bindings, the cron trigger
+   and rate-limit bindings from `wrangler.toml`, remove the admin secret, and
+   deploy once more. Verify that ordinary requests and an old deferred
+   completion both receive 410; the Worker's missing-binding guard makes this
+   an intentional end-of-event response instead of a database error. CI detects
+   the removed production binding and skips its normal migration step for this
+   teardown deploy.
+4. Only after that unbound deploy is live, delete the staging and production
+   D1 databases from the Cloudflare dashboard or with `wrangler d1 delete`,
+   recording the exact names you confirmed. This is destructive and Time
+   Travel is not a substitute for the stated deletion. Keep the client date
+   gate and API 410 behavior so an old installed PWA fails honestly rather
+   than falling through to the SPA shell.
+
+Do not delete D1 first: an installed client still carrying the pre-close script
+would turn a missing binding into a 500, while the staged 410 gives it the
+intentional, truthful end-of-event response.

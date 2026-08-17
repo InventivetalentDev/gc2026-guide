@@ -1,9 +1,10 @@
 # Live queue times — crowd-sourced wait reports
 
-**Status: plan, revision 3 — session-based reporting settled in design
-discussion, phone-first moderation added, and the six open questions closed
-in review (see the end). Nothing is implemented yet; this is ready to
-build.**
+**Status: MVP implemented, revision 4 — 17 August 2026. The Worker, D1
+migration, client surfaces, offline completion flow, moderation page, tests,
+privacy copy and deployment runbook are in the repository. Phase 2 remains
+deliberately deferred; real staging/production databases and device checks are
+deployment work, not completed by this implementation.**
 
 ## Context
 
@@ -49,17 +50,16 @@ Two constraints shape everything below:
    Koelnmesse kills phones. A live feature degrades by nature when offline —
    the plan's job is to make it degrade honestly (age labels, "live
    unavailable") rather than silently show stale numbers as current.
-2. **The clock.** The show runs Aug 26–30; today is Aug 16. Whatever ships
+2. **The clock.** The show runs Aug 26–30; implementation started Aug 17. Whatever ships
    must be buildable in days and only has to survive five of them. The
    architecture below is tiered so the estimator can start simple and grow
    mid-show — the PWA's update path makes that a real option, not a wish.
 
 ## 1. Where the backend lives
 
-The site deploys as an **assets-only Cloudflare Worker** — `wrangler.toml`
-has no `main` script, just `[assets]`. Cloudflare's supported path for
-exactly this situation is to add a script to the same Worker and route
-selected paths to it:
+Before this MVP the site deployed as an **assets-only Cloudflare Worker** —
+`wrangler.toml` had no `main` script, just `[assets]`. The implementation adds
+a script to that same Worker and routes selected paths to it:
 
 ```toml
 main = "worker/index.js"
@@ -68,7 +68,7 @@ main = "worker/index.js"
 directory = "./dist"
 html_handling = "none"
 not_found_handling = "single-page-application"
-run_worker_first = ["/api/*"]
+run_worker_first = ["/api", "/api/*"]
 ```
 
 `run_worker_first` matters and is not optional decoration. With
@@ -76,15 +76,18 @@ run_worker_first = ["/api/*"]
 answered with `index.html` — without the explicit route list, whether an
 `/api/` request reaches the script depends on the browser's `Sec-Fetch-Mode`
 header. The array opts out of that inference: `/api/*` always runs the
-script, everything else keeps today's behaviour byte for byte. (Needs
-wrangler ≥ 4.20.0.)
+script, everything else keeps today's behaviour byte for byte. Asset routing
+needs Wrangler ≥ 4.20.0; the rate-limit bindings used by this MVP raise the
+effective floor to ≥ 4.36.0, and the repository pins 4.123.0.
 
-Same Worker means **same origin on every hostname** — hallgui.de, the three
-draining legacy domains, workers.dev — so no CORS, no per-environment API
-URL in the client, and `_headers` needs nothing (there is no CSP to extend;
-`/api/*` response headers are set by the script). `worker/` sits outside
-`dist/`, so `tools/build-site.sh` needs no change — wrangler picks `main` up
-from the repo root.
+Same Worker means **same origin on every production hostname** — hallgui.de,
+the three draining legacy domains and the production workers.dev address — so
+no CORS or per-host API URL in the client. Staging is a separate named Worker
+with its own D1 database and workers.dev hostname. `_headers` needs nothing
+(there is no CSP to extend; `/api/*` response headers are set by the script).
+`worker/` sits outside `dist/`; `tools/build-site.sh` was updated to classify
+the new Worker, tests and package metadata as non-site files so its deliberate
+top-level leakage check still passes.
 
 A separate Worker on an api. subdomain was considered and rejected: it buys
 independent deploys at the cost of CORS preflights on every report, a second
@@ -133,34 +136,19 @@ is, on debuggability during the five days that matter — with the proviso
 that the debugging interface has to fit in a pocket, which §6 takes
 seriously.
 
-```sql
-CREATE TABLE sessions (
-  id          INTEGER PRIMARY KEY,
-  exhibitor   TEXT    NOT NULL,  -- ex.id, validated against exhibitors.json
-  game        TEXT,              -- gameKey(title); NULL = booth-level queue
-  client      TEXT    NOT NULL,  -- anonymous per-device id (§6)
-  joined_at   INTEGER NOT NULL,  -- server clock, possibly back-dated by claim
-  claimed     INTEGER NOT NULL DEFAULT 0,  -- minutes of back-dating (audit)
-  outcome     TEXT,              -- NULL=open | entered | left | closed | abandoned
-  closed_at   INTEGER
-);
-CREATE TABLE updates (
-  session     INTEGER NOT NULL REFERENCES sessions(id),
-  ahead       INTEGER,           -- people-ahead bucket value, NULL = "still here" ping
-  reported_at INTEGER NOT NULL   -- server clock only
-);
-CREATE TABLE queue_meta (        -- mechanics: slow-changing, separately aggregated
-  exhibitor   TEXT    NOT NULL,
-  game        TEXT,
-  client      TEXT    NOT NULL,
-  qtype       TEXT    NOT NULL,  -- single | pairs | group | wave
-  batch       INTEGER,           -- rough batch/wave size bucket, NULL = unknown
-  reported_at INTEGER NOT NULL
-);
--- moderation (§6): denylist checked on every write; admin actions logged
-CREATE TABLE denylist  (client TEXT PRIMARY KEY, added_at INTEGER NOT NULL);
-CREATE TABLE admin_log (action TEXT NOT NULL, detail TEXT, at INTEGER NOT NULL);
-```
+The tracked implementation is in `worker/migrations/`. The initial schema and
+the transactional outcome-event trigger expand the early sketch
+with creation/update timestamps, an explicit `_booth` key (rather than SQL
+`NULL`), initial-update markers, closure reports, short-lived queue overrides,
+settings, denylist, audit and compact report-event tables. Those additions are
+required for retention, session-less closure reports and the moderation actions
+described later; those migrations are the authoritative schema.
+
+The main relationships are `sessions → updates` (with cascading deletion),
+one mechanics vote and one closure vote per device/queue, expiring moderator
+overrides per queue, and a small report-event stream for rate checks and the
+phone console. Partial and covering indexes enforce one open session per
+device/queue and keep every rolling-window query bounded.
 
 Every timestamp is stamped from the **server** clock; the client's opinion of
 the time is never trusted (a phone that just left airplane mode after two
@@ -175,10 +163,12 @@ lineup get *only* per-game trackers — no separate booth-level queue, settled
 in review: past shows haven't really had global entry queues in front of the
 per-station lines, and an extra "the booth itself" option on every Xbox
 report would be a chooser step paid for a queue that mostly doesn't exist.
-The 45 entertainment exhibitors with **no playable lineup** (the PlayStation
-experience, merch halls, signing lines) get a single tracker each — not an
-extra queue beside game queues but their only one, and some of those lines
-are among the longest at the show. Business (`trade`) exhibitors get none:
+The 41 active entertainment exhibitors with **no playable lineup** (merch
+halls, signing lines and similar experiences) get a single tracker each — not
+an extra queue beside game queues but their only one, and some of those lines
+are among the longest at the show. Four records currently tagged
+`not exhibiting` are excluded on both client and Worker, just like business
+(`trade`) exhibitors, which get none:
 appointments, not queues, and the app already excludes them from every queue
 surface. The worker validates ids against the deployed
 `data/exhibitors.json` through its own `ASSETS` binding — no build step, and
@@ -186,17 +176,17 @@ the allowlist can never drift from the data actually being served.
 
 ## 3. API
 
-**`POST /api/queue/report`** — one endpoint, a `kind` field, client id
-header on everything. Validation on every kind: known queue (§2), show-hours
+**`POST /api/queue/report`** — one endpoint, a `kind` field, strict UUIDv4 in
+`X-GC-Queue-Client` on everything. Validation on every kind: known queue (§2), show-hours
 gate (server time inside `event.days` open–close ±30 min, from the same
 ASSETS binding — kills the entire category of bored-at-home garbage), rate
 limits (§6). Kinds:
 
 | kind | payload | effect |
 |---|---|---|
-| `joined` | optional `claimed` bucket, optional `ahead` bucket | opens (or replaces) the session, anchor = now − claimed |
+| `joined` | optional `claimed` bucket, optional `ahead` bucket | opens (or replaces) the session, anchor = now − claimed; returns `serverAt` and `joinedAt` |
 | `update` | optional `ahead` bucket | "still in line", feeds elapsed + throughput |
-| `entered` | — | closes session → completed wait sample |
+| `entered` | optional reconnect-only `deferred: true`, server-issued `joinedAt`, `elapsed` seconds | closes session → completed wait sample; deferred time is matched to and checked against that exact anchor |
 | `left` | — | closes session, excluded from wait stats |
 | `closed` | — | "they shut the queue" — attaches to the queue, not the session |
 | `meta` | `qtype`, optional `batch` bucket | upserts this client's row in `queue_meta` |
@@ -217,11 +207,11 @@ everything else.
 { "at": 1756202400,
   "queues": {
     "xbox": {
-      "call-of-duty-modern-warfare-4":
+      "call of duty: modern warfare 4":
                              { "est": 90, "how": "done", "n": 6, "newest": 1756202100,
                                "qtype": "group", "batch": 10 },
       "fable":               { "closed": true, "n": 3, "newest": 1756201800 } },
-    "playstation": {
+    "cdpr": {
       "_booth":              { "est": 25, "how": "flow", "n": 4, "newest": 1756202220 } } } }
 
 (`_booth` appears only for lineup-less exhibitors — see §2.)
@@ -231,10 +221,10 @@ everything else.
 renders each differently, because they mean different things.
 
 **Read cost**: the response is held in the edge cache (`caches.default`) for
-**60 seconds** plus `Cache-Control: max-age=30` for the browser. D1 is
-touched about once a minute total — the entire audience stands in one city,
-one colo — regardless of how many phones poll. The account is on Workers
-Paid, so request volume from 2-minute polling is a non-issue (§5).
+**60 seconds** plus `Cache-Control: max-age=30` for the browser. D1 is touched
+at most about once a minute per active Cloudflare cache location and hostname,
+rather than once per polling phone. The account is on Workers Paid, so request
+volume from 2-minute polling is a non-issue (§5).
 
 ## 4. Estimation
 
@@ -370,7 +360,7 @@ After the show it goes quiet the same way.
 No accounts — the guide has none and show week is not the moment to add
 them. The defense is layered cheapness:
 
-- **Anonymous client id**: a random UUID minted into localStorage on first
+- **Random, pseudonymous client id**: a resettable UUID minted into localStorage on first
   report, sent with each one — the session key and throttle key. Trivially
   resettable, which is fine: it is a speed bump, not an identity.
 - **Throttles shaped like queueing, not like spam**: one open session per
@@ -397,10 +387,10 @@ The operator is at the show, phone-only — no laptop, no checkout, no SSH box
 with the repo on it. Anything that assumes `wrangler` mid-show is a plan
 that fails on day 1, so moderation is part of the *product*, not a runbook:
 
-- **The worker serves its own admin page** at `/api/admin/` — a single
-  phone-first HTML page rendered by the script, guarded by a bearer token
-  (`wrangler secret put ADMIN_TOKEN` once at deploy time, pasted into the
-  phone once, kept in that page's localStorage). Serving it from the worker
+- **The worker serves its own admin page** at `/api/admin/` — a public,
+  no-data login shell rendered by the script; its data and action endpoints
+  are guarded by a bearer token (`wrangler secret put ADMIN_TOKEN` once at
+  deploy time, pasted into the phone once, kept in that page's localStorage). Serving it from the worker
   rather than `dist/` keeps it off the public site, outside the service
   worker's caches, and means the page can never exist half-updated — it
   ships inside the same script that implements its actions.
@@ -410,14 +400,14 @@ that fails on day 1, so moderation is part of the *product*, not a runbook:
   at once, flip-flopping `ahead` values, `closed` reports contradicted by
   everyone else).
 - **What it does, as buttons**: delete a client's rows and deny-list the id
-  (a `denylist` table, checked on every write — one indexed lookup, cached
-  in the isolate for a minute); purge one queue's last N minutes (one bad
+  (a `denylist` table, checked immediately on every write); purge one queue's last N minutes (one bad
   actor cleaned without losing the day); clear or force a `closed` state;
   and a global **pause writes** switch (reads keep serving) as the break-
   glass control while thinking.
 - **Every admin action is logged** to an `admin_log` table — mostly so that
   day-3 Haylee can see what day-2 Haylee already tried.
-- Failed token attempts are rate-limited and never distinguish "wrong token"
+- Protected admin attempts are rate-limited with enough room for the phone
+  console's action-and-refresh workflow, and never distinguish "wrong token"
   from "no such route" beyond a plain 404.
 
 Two fallbacks exist without any of this and are worth knowing about, but
@@ -438,7 +428,7 @@ deleted after it), and that reporting is entirely optional. Worth saying
 plainly in the plan: a day of sessions from one client id *is* a sketch of
 that person's day at the show — the 24-hour prune and the resettable id are
 what keep that a sketch nobody retains. GDPR framing: legitimate interest,
-anonymous-by-design.
+privacy-minimised and pseudonymous by design.
 
 ## 7. Service worker and deploy mechanics
 
@@ -457,13 +447,16 @@ Two things will bite if not done deliberately:
    exactly the "must be believed rather than eventually refreshed" rule the
    VERSION comment sets.
 
-Deploy order: D1 database created and migrated first, `ADMIN_TOKEN` set via
-`wrangler secret put`; `wrangler.toml` gains `main` + `run_worker_first` +
-`[[d1_databases]]` + `[triggers]`; one normal deploy then carries site and
-API together. Rollback is one motion — removing
-`main` returns the Worker to assets-only. `workers_dev` stays true, which
-gives a staging URL where the full loop runs against real D1 before the
-domains see it.
+Deploy order: separate staging and production D1 databases are created and
+migrated first, and independent `ADMIN_TOKEN` secrets are set via
+`wrangler secret put`; `wrangler.toml` carries `main`, the `ASSETS` binding,
+selective `run_worker_first`, D1, cron and rate-limit bindings. The explicit
+`staging` environment has no custom-domain routes, so its workers.dev URL can
+verify real routing, isolation and moderation before production deploys; the
+time-controlled two-profile behavioral loop runs locally before Aug 26, and
+the real two-device staging loop runs once an event access window opens. The
+ordinary production workers.dev URL is not staging. The detailed safe order
+and teardown live in `docs/DEPLOYING.md`.
 
 ## 8. Phasing
 
@@ -476,7 +469,7 @@ cannot be phase 2); SW bypass; i18n; privacy page; changelog/meta bump.
 
 **Phase 2 (shippable mid-show — the PWA updates itself):** map popover
 chips; wave-aware range display from observed cycle times; estimator tuning
-informed by real day-1 data; deny list if needed.
+informed by real day-1 data; additional anomaly heuristics if needed.
 
 **After the show:** the endpoints return 410, the feature sleeps on its own
 show-days check, D1 is deleted per the privacy promise.
@@ -503,16 +496,17 @@ reasoning survives:
 6. **Wave ranges**: phase 2, built against observed cycle times rather than
    blind (§4, §8).
 
-## Files (when implemented)
+## Files (implemented)
 
 | file | change |
 |---|---|
 | `worker/index.js` | new — routing, validation, session logic, rate limits, estimator, cron prune |
 | `worker/admin.js` | new — phone-first admin page + actions, token guard, audit log |
-| `worker/schema.sql` | new — D1 migration |
+| `worker/core.js` | new — queue vocabulary, show-hour gate and pure estimator |
+| `worker/migrations/` | new — tracked D1 schema, outcome trigger, revision guard and rolling-window indexes |
 | `wrangler.toml` | `main`, `run_worker_first`, D1 binding, cron trigger |
-| `js/app.js` | report flow, session state + prompt bar, live chips, polling |
-| `js/marks.js` | (or app.js) localStorage session store alongside existing keys |
+| `js/app.js` | report dialog + prompt bar and live chips across cards/planner/route |
+| `js/queue.js` | local session/pending state, polling, freshness and API transport |
 | `index.html` | chip rows, disclosure, prompt bar, live chip slots |
 | `css/style.css` | chips, timer state, live chip tiers, prompt bar |
 | `js/i18n/en.js`, `de.js` | all new UI strings |
@@ -521,22 +515,24 @@ reasoning survives:
 | `README.md` | feature paragraph |
 | `data/changelog.json`, `data/meta.json` | revision entry |
 | `docs/DEPLOYING.md` | D1 setup, staging-first API deploy, teardown |
+| `package.json`, `vitest.config.mjs`, `test/` | pinned Worker tooling and estimator/API regressions |
+| `.github/workflows/cloudflare.yml` | Node 22 build/test/dry-run/migrate/deploy gate |
 | `js/map.js`, `map.html` | phase 2 — popover chip |
 
-## Verification (sketch, to be expanded at implementation)
+## Verification
 
-Local: `wrangler dev` serves assets + worker + local D1 together — the full
-loop (join → updates → entered → estimate → chip) runs on one laptop,
-including the SW bypass. A small script drives synthetic sessions against
-local D1 to check the estimator: a steady queue, a wave queue, a troll
-client, a rising-`ahead` correction, a forgotten session hitting expiry.
-Then on workers.dev against real D1: two devices see each other's sessions
-inside the cache window; throttled repeats reject; trade-id and
-out-of-hours reports 4xx; "I'm in!" fired offline lands after reconnect
-with its deferred duration; the reopen prompt resurfaces a 20-minute
-session; offline shows the honest fallback and the report control
-disappears. The admin surface is verified **on a phone, from scratch**:
-paste the token, find a planted troll client in the anomaly list, deny-list
-it, watch its rows vanish from the estimate within the cache window, pause
-and unpause writes — the whole loop the show floor will actually demand,
-on the device it will be demanded from.
+Implemented automated checks cover all 145 active queue identities and exact game
+keys, Berlin show-hour boundaries, estimator tiers/closure/mechanics, the
+joined → immediate first update flow and later throttle, strict UUIDs and rate
+limits, deferred completion validation/replay, retention, admin auth/actions,
+anomaly output, teardown behavior and API-vs-assets routing. The Node 22 Worker
+suite passes, both Wrangler production and staging dry-runs pass, the i18n
+checker reports parity, the static staging build excludes server files, and
+client syntax plus focused state-machine smokes pass.
+
+Still required before production: create the two real D1 databases, replace
+the draft UUIDs, set independent admin secrets, apply remote migrations, run
+the documented time-controlled two-profile behavior loop locally, and complete
+the pre-show staging routing/admin checks. Repeat the real two-device/cache loop
+on staging once an Aug 26–30 access window opens. Those external checks are
+intentionally not claimed by the repository implementation.
