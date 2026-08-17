@@ -1,4 +1,5 @@
 import { queueToken } from "./core.js";
+import { turnstileConfigured } from "./turnstile.js";
 import { readTextLimited } from "./http.js";
 
 const ADMIN_STORAGE_KEY = "gc2026.queue.admin.v1";
@@ -74,6 +75,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:45vh;overflow:auto;ba
 <section>
   <h2>Break glass</h2>
   <div class="row"><button data-simple="pause">Pause writes</button><button class="secondary" data-simple="resume">Resume writes</button></div>
+  <div class="row"><button class="secondary" data-simple="turnstile-off">Turnstile off</button><button class="secondary" data-simple="turnstile-on">Turnstile on</button></div>
 </section>
 <section>
   <h2>Client</h2>
@@ -137,6 +139,8 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:45vh;overflow:auto;ba
   document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>act(button.dataset.action)));
   document.querySelector('[data-simple="pause"]').addEventListener('click',()=>act('pause_writes',{paused:true}));
   document.querySelector('[data-simple="resume"]').addEventListener('click',()=>act('pause_writes',{paused:false}));
+  document.querySelector('[data-simple="turnstile-off"]').addEventListener('click',()=>act('require_turnstile',{required:false}));
+  document.querySelector('[data-simple="turnstile-on"]').addEventListener('click',()=>act('require_turnstile',{required:true}));
   if(token.value) load();
 })();
 </script>
@@ -279,9 +283,19 @@ export async function handleAdminData(env, now, live) {
        ORDER BY queues DESC, reports DESC, newest DESC LIMIT 50`
     ).bind(now - 15 * 60),
   ]);
+  const settings = new Map(results[4].results.map((row) => [row.key, row.value]));
   return json({
     at: now,
-    writesPaused: results[4].results.some((row) => row.key === "writes_paused" && row.value === "1"),
+    writesPaused: settings.get("writes_paused") === "1",
+    /* Both halves reported separately, because "off" and "impossible" are
+       different problems: enforcement can only bite once a secret is bound,
+       and a Worker deployed before the widget was provisioned accepts every
+       report. Saying so here is what stops that being a silent hole. */
+    turnstile: {
+      configured: turnstileConfigured(env),
+      required: settings.get("turnstile_required") !== "0",
+      enforcing: turnstileConfigured(env) && settings.get("turnstile_required") !== "0",
+    },
     live,
     hourly: results[0].results,
     topClients: results[1].results,
@@ -358,6 +372,22 @@ export async function handleAdminAction(request, env, now, queues) {
       logStatement(env.QUEUE_DB, body.action, { paused: body.paused }, now),
     ]);
     return json({ ok: true, paused: body.paused });
+  }
+
+  /* The escape hatch for the bot check itself. If Turnstile turns out to be
+     failing honest visitors on hall Wi-Fi, this takes enforcement off from a
+     phone in seconds; reports keep flowing and keep being logged, so the
+     damage of being wrong in either direction stays reversible. */
+  if (body.action === "require_turnstile") {
+    if (typeof body.required !== "boolean") return json({ error: "invalid_request" }, 400);
+    await env.QUEUE_DB.batch([
+      env.QUEUE_DB.prepare(
+        `INSERT INTO settings (key, value, updated_at) VALUES ('turnstile_required', ?, ?)
+         ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`
+      ).bind(body.required ? "1" : "0", now),
+      logStatement(env.QUEUE_DB, body.action, { required: body.required }, now),
+    ]);
+    return json({ ok: true, required: body.required });
   }
 
   if (!["purge_queue", "force_closure", "clear_closure", "auto_closure"].includes(body.action)) {

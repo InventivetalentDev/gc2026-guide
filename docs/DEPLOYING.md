@@ -188,6 +188,33 @@ an explicit `staging` Worker with no custom-domain routes for this reason.
    npx wrangler secret put ADMIN_TOKEN --env staging
    ```
 
+3b. Provision Turnstile. Both halves go together — a site key the client sends
+   and a secret the Worker verifies with — and until both exist the Worker
+   accepts reports unverified rather than rejecting everyone, which is what
+   makes deploying before this step safe.
+
+   In the Cloudflare dashboard, **Turnstile → Add widget**. Set the widget mode
+   to **Invisible**, and list every hostname the guide answers on in one widget
+   rather than making several: `hallgui.de`, `gamescom.guide`, `gc26.guide`,
+   `gc2026.inventivetalent.org`, both `workers.dev` names, and `localhost`.
+   Then:
+
+   ```sh
+   # the site key is public — paste it into TURNSTILE_SITEKEY in js/queue.js
+   npx wrangler secret put TURNSTILE_SECRET --env staging
+   npx wrangler secret put TURNSTILE_SECRET
+   ```
+
+   Commit the site key with the deploy that turns enforcement on, so client and
+   Worker cross over together. `/api/admin/data` reports `turnstile.configured`
+   and `turnstile.enforcing`; check both read `true` after the deploy, because
+   a missing secret is otherwise a silent hole rather than an error.
+
+   **If it goes wrong during the show**, the moderation page has *Turnstile
+   off*. That leaves reports flowing and still logged while you look into it —
+   the failure mode this guards against is honest visitors being refused on
+   hall Wi-Fi, and it is the one failure the show floor cannot wait out.
+
 4. Before the show window opens, run the full behavioral loop locally with the
    time-controlled setup below and two independent browser profiles: join the
    same queue, update people-ahead after the throttle window, enter, and confirm

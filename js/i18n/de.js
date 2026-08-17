@@ -237,6 +237,8 @@ window.GC_STRINGS.de = {
   "queue.errorDenied": "Wartemeldungen von diesem Gerät sind deaktiviert.",
   "queue.errorUnavailable": "Für diese Warteschlange sind keine Meldungen mehr möglich.",
   "queue.errorCompletionPending": "Die vorherige abgeschlossene Wartezeit wartet noch auf Synchronisierung.",
+  "queue.errorCheckFailed": "Die Meldung konnte nicht gesendet werden — die Spam-Prüfung ist fehlgeschlagen. Versuch es noch einmal.",
+  "queue.errorCheckUnavailable": "Die Spam-Prüfung ist gerade nicht erreichbar. Versuch es gleich noch einmal.",
   "queue.promptTitle": "Noch in der Schlange?",
   "queue.prompt": "Wartest du noch auf {queue}? {n} Min.",
 

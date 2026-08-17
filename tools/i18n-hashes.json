@@ -200,6 +200,8 @@
     "ui:queue.errorDenied": "jw1blf",
     "ui:queue.errorUnavailable": "1u6db46",
     "ui:queue.errorCompletionPending": "1ge5sow",
+    "ui:queue.errorCheckFailed": "9gq7dl",
+    "ui:queue.errorCheckUnavailable": "108ukxo",
     "ui:queue.promptTitle": "1d55ar",
     "ui:queue.prompt": "nwkd1z",
     "ui:mark.save": "lewgh4",

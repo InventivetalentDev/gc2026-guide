@@ -1,13 +1,15 @@
 # Live queue times — crowd-sourced wait reports
 
-**Status: MVP implemented and reviewed, revision 5 — 17 August 2026. The
+**Status: MVP implemented and reviewed, revision 6 — 17 August 2026. The
 Worker, D1 migration, client surfaces, offline completion flow, moderation
-page, tests, privacy copy and deployment runbook are in the repository. Review
-changed two rules this document had specified — the closure quorum and an
-estimate ceiling, both marked below where they apply — so read §4 as the
-current behaviour rather than the original proposal. Phase 2 remains
-deliberately deferred; real staging/production databases and on-device checks
-are deployment work, not completed by this implementation.**
+page, tests, privacy copy and deployment runbook are in the repository. Three
+things below were changed after review rather than as first written, and are
+marked where they apply: the closure quorum and the estimate ceiling (§4), and
+Turnstile, which §6 had deferred and now runs on every report. Reporting also
+moved off the exhibitor cards into its own tab (§5). Phase 2 remains
+deliberately deferred; real staging/production databases, the Turnstile widget
+itself, and on-device checks are deployment work, not completed by this
+implementation.**
 
 ## Context
 
@@ -435,12 +437,33 @@ them. The defense is layered cheapness:
   scripted floods.
 - **Everything in §3–4**: chip vocabularies, show-hours gate, id allowlist,
   server timestamps, medians over deduped sessions.
-- **Escalation path, not default**: if show week brings a real flood,
-  Turnstile on the write endpoint is the next dial — deliberately *not* in
-  the MVP, because it would be the site's first third-party script, traded
-  away for abuse that may never come. The manual fallback — identify the
-  client id, delete its rows, deny-list it — is real because the moderation
-  surface below makes it a button, not a laptop.
+- **Turnstile on every report — added after the MVP.** The plan held this back
+  as an escalation dial, on the grounds that it would be the site's first
+  third-party script traded against abuse that might never come. That call was
+  reversed deliberately: the check now runs on all six report kinds, invisibly,
+  before the queue is written.
+
+  What the original reasoning got right is still true, so the shape of it
+  answers each objection rather than ignoring it. **The script is fetched
+  lazily**, when a report first becomes likely, never at boot — the guide still
+  opens from the service-worker cache with no network at all, and a reader who
+  never reports never loads it. **A token is minted in advance and kept warm**,
+  so a report is still one round trip rather than two in a hall that barely has
+  one. **Nothing is enforced until a secret is bound**, so a deploy that
+  precedes provisioning accepts reports instead of refusing everyone. And
+  **enforcement has a kill switch on the moderation page**, because the real
+  risk here is not bots getting through, it is honest visitors on venue Wi-Fi
+  being turned away — and that is a five-day window with no time to redeploy.
+  A siteverify that times out answers 503, not 403: unreachable is not the
+  visitor's fault, and the client's existing retry path preserves a measured
+  completion rather than discarding it as invalid.
+
+  The privacy cost is real but small and is written down on the privacy page:
+  Cloudflare already delivers the whole site, so Turnstile adds a data path to
+  a processor that is already in the request, not a new organisation.
+- **The manual fallback** — identify the client id, delete its rows, deny-list
+  it — is real because the moderation surface below makes it a button, not a
+  laptop.
 
 ### Moderation from a phone
 
@@ -466,8 +489,9 @@ that fails on day 1, so moderation is part of the *product*, not a runbook:
 - **What it does, as buttons**: delete a client's rows and deny-list the id
   (a `denylist` table, checked immediately on every write); purge one queue's last N minutes (one bad
   actor cleaned without losing the day); clear or force a `closed` state;
-  and a global **pause writes** switch (reads keep serving) as the break-
-  glass control while thinking.
+  a global **pause writes** switch (reads keep serving) as the break-
+  glass control while thinking; and **Turnstile off/on**, which lifts the bot
+  check without a deploy when it is the thing doing the damage.
 - **Every admin action is logged** to an `admin_log` table — mostly so that
   day-3 Haylee can see what day-2 Haylee already tried.
 - Protected admin attempts are rate-limited with enough room for the phone

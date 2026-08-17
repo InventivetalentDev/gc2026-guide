@@ -268,6 +268,177 @@ describe("report lifecycle", () => {
   });
 });
 
+describe("turnstile", () => {
+  const now = at("2026-08-27T10:00:00+02:00");
+  /* A distinct client per assertion: `closed` is throttled to one report per
+     client and queue every 120 seconds, so reusing one would fail the second
+     call for a reason that has nothing to do with the bot check. */
+  const clients = [
+    "623e4567-e89b-42d3-a456-426614174001",
+    "623e4567-e89b-42d3-a456-426614174002",
+    "623e4567-e89b-42d3-a456-426614174003",
+    "623e4567-e89b-42d3-a456-426614174004",
+    "623e4567-e89b-42d3-a456-426614174005",
+    "623e4567-e89b-42d3-a456-426614174006",
+    "623e4567-e89b-42d3-a456-426614174007",
+    "623e4567-e89b-42d3-a456-426614174008",
+  ];
+  let next = 0;
+  const nextClient = () => clients[next++];
+
+  /* Stubs global fetch so no test reaches challenges.cloudflare.com, and
+     records what the Worker sent so the secret and token are asserted rather
+     than assumed. */
+  function withSiteverify(handler) {
+    const real = globalThis.fetch;
+    const calls = [];
+    globalThis.fetch = async (input, init) => {
+      const url = typeof input === "string" ? input : input.url;
+      if (!url.includes("challenges.cloudflare.com")) return real(input, init);
+      calls.push({ secret: init.body.get("secret"), token: init.body.get("response") });
+      return handler();
+    };
+    return { calls, restore: () => { globalThis.fetch = real; } };
+  }
+
+  const ok = () => Response.json({ success: true });
+  const bad = () => Response.json({ success: false, "error-codes": ["invalid-input-response"] });
+
+  const send = (env, token, client = nextClient()) =>
+    handleReport(
+      new Request("https://hallgui.test/api/queue/report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-GC-Queue-Client": client,
+          ...(token ? { "X-GC-Queue-Turnstile": token } : {}),
+        },
+        body: JSON.stringify({ ...queue, kind: "closed" }),
+      }),
+      env,
+      site,
+      now
+    );
+
+  const admin = (body, env) =>
+    handleAdminAction(
+      new Request("https://hallgui.test/api/admin/action", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+      env,
+      now,
+      site.queues
+    );
+
+  it("accepts reports unverified until a secret is bound", async () => {
+    const stub = withSiteverify(ok);
+    try {
+      /* A Worker deployed before the widget exists must not take reporting
+         down; the moderation page is what makes that state visible. */
+      const response = await send(testEnv(), "");
+      expect(response.status).toBe(200);
+      expect(stub.calls).toHaveLength(0);
+    } finally {
+      stub.restore();
+    }
+  });
+
+  it("rejects a missing token once configured, before spending a verification", async () => {
+    const stub = withSiteverify(ok);
+    try {
+      await expect(send(testEnv({ TURNSTILE_SECRET: "secret-value" }), "")).rejects.toMatchObject({
+        status: 403,
+        code: "turnstile_required",
+      });
+      expect(stub.calls).toHaveLength(0);
+    } finally {
+      stub.restore();
+    }
+  });
+
+  it("rejects a token siteverify refuses", async () => {
+    const stub = withSiteverify(bad);
+    try {
+      await expect(
+        send(testEnv({ TURNSTILE_SECRET: "secret-value" }), "bogus-token")
+      ).rejects.toMatchObject({ status: 403, code: "turnstile_failed" });
+      expect(stub.calls).toEqual([{ secret: "secret-value", token: "bogus-token" }]);
+    } finally {
+      stub.restore();
+    }
+  });
+
+  it("accepts a verified token and writes the report", async () => {
+    const stub = withSiteverify(ok);
+    const client = nextClient();
+    try {
+      const response = await send(testEnv({ TURNSTILE_SECRET: "secret-value" }), "good-token", client);
+      expect(response.status).toBe(200);
+      expect(stub.calls).toEqual([{ secret: "secret-value", token: "good-token" }]);
+      const row = await env.QUEUE_DB.prepare(
+        `SELECT client FROM closure_reports WHERE client = ?`
+      ).bind(client).first();
+      expect(row).toMatchObject({ client });
+    } finally {
+      stub.restore();
+    }
+  });
+
+  it("asks for a retry rather than blaming the visitor when siteverify is down", async () => {
+    const stub = withSiteverify(() => {
+      throw new Error("network down");
+    });
+    try {
+      /* 503, not 403: the client treats 5xx as retryable, so a measured
+         completion is preserved rather than discarded as invalid. */
+      await expect(
+        send(testEnv({ TURNSTILE_SECRET: "secret-value" }), "good-token")
+      ).rejects.toMatchObject({ status: 503, code: "turnstile_unavailable" });
+    } finally {
+      stub.restore();
+    }
+  });
+
+  it("lets the phone kill switch turn enforcement off without a deploy", async () => {
+    const env = testEnv({ TURNSTILE_SECRET: "secret-value" });
+    await admin({ action: "require_turnstile", required: false }, env);
+
+    const stub = withSiteverify(bad);
+    try {
+      /* Both a missing token and a failing one get through while it is off. */
+      expect((await send(env, "")).status).toBe(200);
+      expect((await send(env, "bogus-token")).status).toBe(200);
+    } finally {
+      stub.restore();
+    }
+
+    const off = await (await handleAdminData(env, now, {})).json();
+    expect(off.turnstile).toEqual({ configured: true, required: false, enforcing: false });
+
+    await admin({ action: "require_turnstile", required: true }, env);
+    const on = await (await handleAdminData(env, now, {})).json();
+    expect(on.turnstile).toMatchObject({ enforcing: true });
+    /* Unconfigured stays unenforced whatever the switch says. */
+    const bare = await (await handleAdminData(testEnv(), now, {})).json();
+    expect(bare.turnstile).toMatchObject({ configured: false, required: true, enforcing: false });
+  });
+
+  it("spends no verification on a paused service", async () => {
+    const env = testEnv({ TURNSTILE_SECRET: "secret-value" });
+    await admin({ action: "pause_writes", paused: true }, env);
+    const stub = withSiteverify(ok);
+    try {
+      await expect(send(env, "good-token")).rejects.toMatchObject({ code: "writes_paused" });
+      expect(stub.calls).toHaveLength(0);
+    } finally {
+      stub.restore();
+      await admin({ action: "pause_writes", paused: false }, env);
+    }
+  });
+});
+
 describe("retention and routing", () => {
   it("honors QUEUE_TEST_NOW only with the separate local-development opt-in", () => {
     const realNow = 123;

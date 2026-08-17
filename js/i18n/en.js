@@ -249,6 +249,8 @@ window.GC_STRINGS.en = {
   "queue.errorDenied": "Queue reports from this device are disabled.",
   "queue.errorUnavailable": "This queue is no longer available for reporting.",
   "queue.errorCompletionPending": "The previous completed wait is still waiting to sync.",
+  "queue.errorCheckFailed": "That report couldn't be sent — the spam check didn't pass. Try once more.",
+  "queue.errorCheckUnavailable": "The spam check is unreachable right now. Try again in a moment.",
   "queue.promptTitle": "Still queueing?",
   "queue.prompt": "Still queueing for {queue}? {n} min",
 

@@ -17,9 +17,13 @@ import {
   isAdminAuthorized,
 } from "./admin.js";
 import { readTextLimited } from "./http.js";
+import { turnstileConfigured, verifyTurnstile } from "./turnstile.js";
 
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CLIENT_HEADER = "X-GC-Queue-Client";
+/* A header, not a body field: it applies to every report kind uniformly and
+   keeps the token out of the 4 KB body budget the kinds share. */
+const TURNSTILE_HEADER = "X-GC-Queue-Turnstile";
 const MAX_DEFERRED_SECONDS = 16 * 60 * 60;
 const JSON_HEADERS = {
   "Content-Type": "application/json; charset=utf-8",
@@ -151,13 +155,46 @@ function requireQueue(body, queues) {
   return queue;
 }
 
+/* Returns the settings the caller still needs after the gate — the whole table
+   is a handful of rows, so reading it costs no more than the one key this used
+   to fetch, and saves a second round trip for the Turnstile switch. */
 async function enforceWritePolicy(env, client) {
-  const [pauseResult, denyResult] = await env.QUEUE_DB.batch([
-    env.QUEUE_DB.prepare(`SELECT value FROM settings WHERE key = 'writes_paused'`),
+  const [settingsResult, denyResult] = await env.QUEUE_DB.batch([
+    env.QUEUE_DB.prepare(`SELECT key, value FROM settings`),
     env.QUEUE_DB.prepare(`SELECT 1 AS denied FROM denylist WHERE client = ?`).bind(client),
   ]);
-  if (pauseResult.results[0]?.value === "1") throw new HttpError(403, "writes_paused");
+  const settings = new Map(settingsResult.results.map((row) => [row.key, row.value]));
+  if (settings.get("writes_paused") === "1") throw new HttpError(403, "writes_paused");
   if (denyResult.results.length) throw new HttpError(403, "client_denied");
+  return settings;
+}
+
+/* Verified last, after every cheap rejection: a paused service, a denied
+   client and a report for a queue that does not exist all cost nothing here,
+   and a siteverify subrequest is the most expensive thing on this path. */
+async function enforceTurnstile(request, env, settings) {
+  if (!turnstileConfigured(env)) return;
+  const required = settings.get("turnstile_required") !== "0";
+  const token = request.headers.get(TURNSTILE_HEADER) || "";
+  if (!token) {
+    if (!required) return;
+    throw new HttpError(403, "turnstile_required");
+  }
+  const result = await verifyTurnstile(env, token, request.headers.get("CF-Connecting-IP"));
+  if (result.ok) return;
+  if (!required) {
+    console.warn(
+      JSON.stringify({ message: "turnstile failed while enforcement is off", codes: result.codes })
+    );
+    return;
+  }
+  /* A challenge that could not be reached is not the visitor's doing. Ask for
+     a retry rather than accusing them, and let the client's backoff handle it
+     — the same treatment a 5xx gets. */
+  const unreachable = result.codes.some((code) => code === "timeout" || code === "unreachable" || code.startsWith("http-"));
+  throw new HttpError(unreachable ? 503 : 403, unreachable ? "turnstile_unavailable" : "turnstile_failed", {
+    ...(unreachable ? { retryAfter: 5 } : {}),
+  });
 }
 
 async function enforceIpLimit(request, env) {
@@ -425,7 +462,8 @@ export async function handleReport(request, env, site, now = nowSeconds()) {
     if (access.phase === "after") throw new HttpError(410, "event_ended");
     if (!access.allowed) throw new HttpError(403, "outside_show_hours");
   }
-  await enforceWritePolicy(env, client);
+  const settings = await enforceWritePolicy(env, client);
+  await enforceTurnstile(request, env, settings);
 
   switch (body.kind) {
     case "joined":

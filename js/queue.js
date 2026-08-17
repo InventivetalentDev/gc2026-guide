@@ -7,6 +7,32 @@
    as it did before. */
 
 const GCQueues = (() => {
+  /* Cloudflare Turnstile. The site key is public by design — it identifies the
+     widget, and the secret that verifies its tokens lives in a Worker secret.
+     Empty here means "not provisioned": the client then sends no token and the
+     Worker, which cannot verify without its secret either, accepts the report.
+     Both halves are turned on together, and docs/DEPLOYING.md says so.
+
+     One widget covers every hostname the guide answers on, staging and
+     localhost included, so there is one key rather than one per environment. */
+  const TURNSTILE_SITEKEY = "";
+  const TURNSTILE_SCRIPT = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+  const TURNSTILE_HEADER = "X-GC-Queue-Turnstile";
+  /* Tokens die at 300s. Retire ours early so a report never loses the race. */
+  const TURNSTILE_TOKEN_TTL = 240;
+  /* Four seconds, the same budget sw.js gives the network before it falls back
+     to cache, and for the same reason: past that, waiting is worse than going
+     without. Applied to the script load and to the challenge separately. */
+  const TURNSTILE_TIMEOUT_MS = 4000;
+  /* Total the visitor may ever wait on the bot check before their report is
+     sent regardless. Bounds the pathological case where a warm attempt and a
+     fresh one would otherwise queue up behind each other. */
+  const TURNSTILE_BUDGET_MS = 4000;
+  /* Once it has failed, stop trying for a while. Without this every single
+     report pays the full timeout again — measured at ~15s per report with the
+     script unreachable, which is the dead-spot case this has to survive. */
+  const TURNSTILE_COOLDOWN = 60;
+
   const STORAGE_KEY = "gc2026.queue.v1";
   const STORE_LOCK = "gc2026.queue.store.v1";
   const REPORT_LOCK = "gc2026.queue.report.v1";
@@ -466,12 +492,194 @@ const GCQueues = (() => {
       .sort((a, b) => a.joinedAt - b.joinedAt)[0] || null;
   }
 
+  /* ---------- Turnstile ----------
+
+     Every report carries a fresh single-use token, so the widget is executed
+     once per submission. Two things keep that from doubling the cost of a
+     report in a hall with bad reception: the script is fetched lazily, on the
+     first report rather than at boot (the guide opens from the service-worker
+     cache with no network at all, and must keep doing so), and a token is
+     minted ahead of time and kept warm, so the submission itself is still one
+     round trip. A failure here is never fatal on the client — it sends no
+     token and lets the Worker decide, which is what makes the server-side kill
+     switch able to rescue the whole feature without a redeploy. */
+  let turnstileScript = null;
+  let turnstileWidget = null;
+  let turnstilePending = null;
+  let turnstileWarm = null;
+  let turnstileBlockedUntil = 0;
+
+  const turnstileEnabled = () =>
+    TURNSTILE_SITEKEY.length > 0 && monotonicSeconds() >= turnstileBlockedUntil;
+
+  /* Anything that fails — script, render, challenge — puts the whole thing to
+     sleep briefly rather than leaving the next report to rediscover it. */
+  function turnstileFailed() {
+    turnstileBlockedUntil = monotonicSeconds() + TURNSTILE_COOLDOWN;
+    turnstileWarm = null;
+  }
+
+  function loadTurnstileScript() {
+    if (turnstileScript) return turnstileScript;
+    turnstileScript = new Promise((resolve, reject) => {
+      if (window.turnstile) return resolve(window.turnstile);
+      const script = document.createElement("script");
+      script.src = TURNSTILE_SCRIPT;
+      script.async = true;
+      script.defer = true;
+      const timer = window.setTimeout(() => reject(new Error("turnstile script timeout")), TURNSTILE_TIMEOUT_MS);
+      script.addEventListener("load", () => {
+        window.clearTimeout(timer);
+        window.turnstile ? resolve(window.turnstile) : reject(new Error("turnstile missing"));
+      });
+      script.addEventListener("error", () => {
+        window.clearTimeout(timer);
+        reject(new Error("turnstile script blocked"));
+      });
+      document.head.appendChild(script);
+    }).catch((error) => {
+      /* Let a later attempt try again — the first one may simply have been
+         made in a dead spot between two halls. */
+      turnstileScript = null;
+      throw error;
+    });
+    return turnstileScript;
+  }
+
+  function turnstileContainer() {
+    let host = document.getElementById("gc-turnstile");
+    if (!host) {
+      host = document.createElement("div");
+      host.id = "gc-turnstile";
+      /* Rendered off-screen rather than display:none — an invisible widget
+         still needs a box the API will accept. */
+      host.style.cssText = "position:absolute;width:0;height:0;overflow:hidden;left:-9999px;top:0";
+      document.body.appendChild(host);
+    }
+    return host;
+  }
+
+  /* The widget's callbacks are bound once, at render, and every later
+     execute() fires those same ones — so they cannot close over one attempt's
+     promise or the second token would resolve the first. They dispatch to
+     whichever attempt is currently outstanding instead. */
+  let turnstileAttempt = null;
+
+  const settleTurnstile = (key) => (value) => {
+    const attempt = turnstileAttempt;
+    turnstileAttempt = null;
+    if (!attempt) return;
+    window.clearTimeout(attempt.timer);
+    attempt[key](value);
+  };
+
+  async function mintTurnstileToken() {
+    const api = await loadTurnstileScript();
+    if (turnstileAttempt) throw new Error("turnstile busy");
+    return new Promise((resolve, reject) => {
+      turnstileAttempt = {
+        timer: window.setTimeout(() => {
+          turnstileAttempt = null;
+          reject(new Error("turnstile timeout"));
+        }, TURNSTILE_TIMEOUT_MS),
+        resolve: (token) =>
+          typeof token === "string" && token
+            ? resolve({ token, at: monotonicSeconds() })
+            : reject(new Error("turnstile empty token")),
+        reject: () => reject(new Error("turnstile failed")),
+      };
+      try {
+        if (turnstileWidget === null) {
+          turnstileWidget = api.render(turnstileContainer(), {
+            sitekey: TURNSTILE_SITEKEY,
+            /* No widget until one is genuinely needed, and no challenge until
+               we ask: `interaction-only` keeps it invisible for the ordinary
+               visitor, `execute` means the render call does not start one. */
+            appearance: "interaction-only",
+            execution: "execute",
+            callback: settleTurnstile("resolve"),
+            "error-callback": settleTurnstile("reject"),
+            "timeout-callback": settleTurnstile("reject"),
+            "expired-callback": settleTurnstile("reject"),
+          });
+          if (turnstileWidget === undefined || turnstileWidget === null) {
+            throw new Error("turnstile render failed");
+          }
+        } else {
+          api.reset(turnstileWidget);
+        }
+        api.execute(turnstileWidget);
+      } catch (error) {
+        const attempt = turnstileAttempt;
+        turnstileAttempt = null;
+        if (attempt) window.clearTimeout(attempt.timer);
+        /* A widget that will not render is not worth keeping a handle to. */
+        turnstileWidget = null;
+        reject(error);
+      }
+    });
+  }
+
+  /* Kept ready in the background so a report does not wait on it. Silent by
+     design: the visitor never asked for a bot check and cannot fix a failing
+     one, so it must never produce a message of its own. */
+  function warmTurnstile() {
+    if (!turnstileEnabled() || turnstilePending || navigator.onLine === false) return;
+    if (turnstileWarm && monotonicSeconds() - turnstileWarm.at < TURNSTILE_TOKEN_TTL) return;
+    turnstilePending = mintTurnstileToken()
+      .then((warm) => {
+        turnstileWarm = warm;
+      })
+      .catch(turnstileFailed)
+      .finally(() => {
+        turnstilePending = null;
+      });
+  }
+
+  const freshWarm = () =>
+    turnstileWarm && monotonicSeconds() - turnstileWarm.at < TURNSTILE_TOKEN_TTL ? turnstileWarm : null;
+
+  /* Never blocks a report for longer than the budget, and returns "" rather
+     than throwing: the Worker is what decides whether a tokenless report is
+     acceptable, and it has a switch for saying yes. Waiting here instead would
+     put the bot check in front of the one thing the app exists to do. */
+  async function turnstileToken() {
+    if (!turnstileEnabled()) return "";
+    const deadline = new Promise((resolve) => window.setTimeout(() => resolve(null), TURNSTILE_BUDGET_MS));
+
+    if (turnstilePending) await Promise.race([turnstilePending, deadline]);
+    const warm = freshWarm();
+    if (warm) {
+      /* Single-use: drop it before the request, so a retry cannot replay a
+         token the Worker has already spent. */
+      turnstileWarm = null;
+      warmTurnstile();
+      return warm.token;
+    }
+    if (!turnstileEnabled()) return "";
+
+    turnstileWarm = null;
+    const minted = await Promise.race([
+      mintTurnstileToken().catch(() => {
+        turnstileFailed();
+        return null;
+      }),
+      deadline,
+    ]);
+    return minted?.token || "";
+  }
+
   async function post(queueRef, body) {
     let response;
+    const token = await turnstileToken();
     try {
       response = await fetchWithDeadline(API_REPORT, {
         method: "POST",
-        headers: { "Content-Type": "application/json", [CLIENT_HEADER]: await clientId() },
+        headers: {
+          "Content-Type": "application/json",
+          [CLIENT_HEADER]: await clientId(),
+          ...(token ? { [TURNSTILE_HEADER]: token } : {}),
+        },
         body: JSON.stringify({ exhibitor: queueRef.exhibitor, game: queueRef.game, ...body }),
       });
     } catch (error) {
@@ -804,6 +1012,10 @@ const GCQueues = (() => {
     pendingCount: () => store.pending.filter((item) => !pendingExpired(item)).length,
     pendingFor,
     unavailable,
+    /* Called when a report becomes plausible — opening the queues view, or the
+       report dialog — so the third-party script is fetched then rather than at
+       boot, and a token is ready before the visitor taps anything. */
+    warm: warmTurnstile,
   };
 })();
 

@@ -127,6 +127,17 @@
     obvious abuse. The legal basis is Art. 6 (1) (f) GDPR — the legitimate interests in operating this
     optional fan service securely and helping visitors make time-sensitive choices. Fixed coarse
     buckets, short retention, no account and an easily reset id limit the impact.</p>
+    <p><strong>Bot check.</strong> Sending a report runs Cloudflare Turnstile, which checks that the
+    report comes from a real browser rather than a script. It is the only third-party component the
+    guide loads, and only on this path: the script is fetched from
+    <code>challenges.cloudflare.com</code> the first time you go to report something, never when you
+    are just reading. It usually completes without showing you anything or asking you to do anything.
+    Turnstile receives your IP address and technical signals about the browser, and returns a
+    single-use token that the backend verifies. Cloudflare states that Turnstile does not use this
+    data for advertising profiles. The same company already delivers this whole site (see
+    <em>Hosting and delivery</em>), so no new organisation gains access to your traffic. If you block
+    the script, reports may be refused; reading the guide, the live figures and everything else is
+    unaffected.</p>
 
     <h2>Hosting and delivery</h2>
     <p>The site runs on Cloudflare Workers and is delivered over Cloudflare's network (Cloudflare, Inc.,
@@ -264,6 +275,16 @@
     freiwilligen Fan-Dienst sicher zu betreiben und zeitkritische Entscheidungen auf der Messe zu
     erleichtern. Grobe feste Auswahlstufen, kurze Aufbewahrung, kein Konto und eine leicht
     zurücksetzbare ID begrenzen die Auswirkungen.</p>
+    <p><strong>Bot-Prüfung.</strong> Beim Senden einer Meldung läuft Cloudflare Turnstile und prüft,
+    ob die Meldung aus einem echten Browser kommt und nicht aus einem Skript. Es ist die einzige
+    Drittanbieter-Komponente, die der Guide lädt, und nur auf diesem Weg: Das Skript wird von
+    <code>challenges.cloudflare.com</code> geholt, sobald du das erste Mal etwas melden willst — beim
+    reinen Lesen nie. Meistens läuft es durch, ohne dass du etwas siehst oder tun musst. Turnstile
+    erhält deine IP-Adresse und technische Merkmale des Browsers und gibt ein einmal verwendbares
+    Token zurück, das das Backend prüft. Cloudflare gibt an, diese Daten nicht für Werbeprofile zu
+    nutzen. Dieselbe Firma liefert bereits die gesamte Website aus (siehe <em>Hosting und
+    Auslieferung</em>), es kommt also keine neue Organisation hinzu. Wer das Skript blockiert, kann
+    unter Umständen nichts melden; Lesen, Live-Zahlen und alles Übrige bleiben unberührt.</p>
 
     <h2>Hosting und Auslieferung</h2>
     <p>Die Website läuft auf Cloudflare Workers und wird über das Netz von Cloudflare, Inc., 101

@@ -4510,6 +4510,8 @@ let queueDialogInvoker = null;
 function openQueueDialog(queue, mode, invoker = null) {
   const dialog = $("#queue-dialog");
   if (!dialog || !queue) return;
+  /* The prompt bar reaches the dialog without passing the queues view. */
+  QUEUES?.warm?.();
   queueDialogInvoker = invoker;
   queueDialogState = {
     queue,
@@ -4542,6 +4544,12 @@ const QUEUE_ERROR_KEYS = {
   event_ended: "queue.errorHours",
   client_denied: "queue.errorDenied",
   unknown_queue: "queue.errorUnavailable",
+  /* The visitor did nothing wrong and can do nothing about it, so both of
+     these say "try again" rather than explaining a bot check they never asked
+     for. They differ only in whether retrying is likely to help. */
+  turnstile_required: "queue.errorCheckFailed",
+  turnstile_failed: "queue.errorCheckFailed",
+  turnstile_unavailable: "queue.errorCheckUnavailable",
 };
 
 const queueError = (error) => {
@@ -5039,7 +5047,15 @@ function showView(route, { push = true } = {}) {
   /* Unlike the other four, this view is a snapshot of live state rather than
      of the dataset: sessions opened and figures arrived while it was hidden,
      and flushViewRender() only ever fires once. */
-  if (name === "queues") renderQueues();
+  if (name === "queues") {
+    renderQueues();
+    /* Actually *opening* the tab is the signal that a report may follow, so
+       the bot-check script is fetched here and a token put on ice. Not in
+       renderQueues(): that also runs from the idle boot pass for every view,
+       which would load a third-party script on a visit that never reports —
+       exactly what lazy-loading it exists to avoid. */
+    if (QUEUES?.canReport()) QUEUES.warm();
+  }
   if (push) syncHash();
 }
 
