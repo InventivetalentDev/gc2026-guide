@@ -467,8 +467,11 @@ export async function readEstimatorInput(env, now) {
     env.QUEUE_DB.prepare(
       `SELECT exhibitor, game, client, reported_at FROM closure_reports WHERE reported_at >= ?`
     ).bind(now - 60 * 60),
+    /* `kind` rides along because the estimator weighs these differently: only a
+       new arrival rebuts a closure claim, while an update from someone already
+       in the line is what a closed queue legitimately looks like. */
     env.QUEUE_DB.prepare(
-      `SELECT exhibitor, game, client, at FROM report_events
+      `SELECT exhibitor, game, client, kind, at FROM report_events
        WHERE at >= ? AND kind IN ('joined', 'update', 'entered')`
     ).bind(now - 60 * 60),
     env.QUEUE_DB.prepare(

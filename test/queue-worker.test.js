@@ -471,32 +471,43 @@ describe("retention and routing", () => {
     });
   });
 
-  it("flags recent closure claims contradicted by other active clients", async () => {
+  it("reports closure claims with the rebuttal count the live rule uses", async () => {
     const now = 20_000;
-    const closingClient = "223e4567-e89b-42d3-a456-426614174000";
-    const counters = [
+    const closers = [
+      "223e4567-e89b-42d3-a456-426614174000",
+      "523e4567-e89b-42d3-a456-426614174000",
+    ];
+    const arrivals = [
       "323e4567-e89b-42d3-a456-426614174000",
       "423e4567-e89b-42d3-a456-426614174000",
     ];
     await env.QUEUE_DB.batch([
-      env.QUEUE_DB.prepare(
-        `INSERT INTO closure_reports (exhibitor, game, client, reported_at) VALUES (?, ?, ?, ?)`
-      ).bind(queue.exhibitor, queue.game, closingClient, now - 120),
-      ...counters.map((client, index) =>
+      ...closers.map((client) =>
         env.QUEUE_DB.prepare(
-          `INSERT INTO report_events (client, exhibitor, game, kind, ahead, at)
-           VALUES (?, ?, ?, 'update', 20, ?)`
-        ).bind(client, queue.exhibitor, queue.game, now - 60 + index)
+          `INSERT INTO closure_reports (exhibitor, game, client, reported_at) VALUES (?, ?, ?, ?)`
+        ).bind(queue.exhibitor, queue.game, client, now - 120)
       ),
+      /* An update from someone already in the line is not a rebuttal — a closed
+         queue still serves the people standing in it. */
+      env.QUEUE_DB.prepare(
+        `INSERT INTO report_events (client, exhibitor, game, kind, ahead, at)
+         VALUES (?, ?, ?, 'update', 20, ?)`
+      ).bind(arrivals[0], queue.exhibitor, queue.game, now - 60),
+      /* A new arrival after the claim is. One is not enough to overturn it. */
+      env.QUEUE_DB.prepare(
+        `INSERT INTO report_events (client, exhibitor, game, kind, ahead, at)
+         VALUES (?, ?, ?, 'joined', 20, ?)`
+      ).bind(arrivals[1], queue.exhibitor, queue.game, now - 30),
     ]);
     const response = await handleAdminData(testEnv(), now, {});
     const data = await response.json();
-    expect(data.closureContradictions).toHaveLength(1);
-    expect(data.closureContradictions[0]).toMatchObject({
+    expect(data.closureClaims).toHaveLength(1);
+    expect(data.closureClaims[0]).toMatchObject({
       exhibitor: queue.exhibitor,
       game: queue.game,
-      closure_clients: 1,
-      counter_clients: 2,
+      closure_clients: 2,
+      rebuttal_clients: 1,
+      would_close: 1,
     });
   });
 

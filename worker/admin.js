@@ -239,29 +239,39 @@ export async function handleAdminData(env, now, live) {
        GROUP BY exhibitor, game ORDER BY newest DESC LIMIT 150`
     ).bind(now, now, now - 4 * 60 * 60, now - 60 * 60),
     env.QUEUE_DB.prepare(
+      /* Mirrors the estimator's closure rule exactly (worker/core.js), so this
+         page never disagrees with the chip a visitor is looking at. Every recent
+         claim is listed with the rebutting joins counted the same way the rule
+         counts them — new arrivals only, after the newest claim, excluding the
+         claimants — and `would_close` states the verdict the rule reaches. A
+         claim showing would_close = 1 with a single rebuttal is the one worth a
+         moderator's eye: one more join and it flips on its own. */
       `WITH recent_closures AS (
          SELECT exhibitor, game, COUNT(DISTINCT client) AS closure_clients,
                 MAX(reported_at) AS newest_closure
          FROM closure_reports WHERE reported_at >= ? GROUP BY exhibitor, game
-       ), other_counters AS (
-         SELECT e.exhibitor, e.game, COUNT(DISTINCT e.client) AS counter_clients,
-                MAX(e.at) AS newest_counter
-         FROM report_events e
-         WHERE e.at >= ? AND e.kind IN ('joined', 'update', 'entered')
-           AND NOT EXISTS (
-             SELECT 1 FROM closure_reports c
-             WHERE c.exhibitor = e.exhibitor AND c.game = e.game
-               AND c.client = e.client AND c.reported_at >= ?
-           )
-         GROUP BY e.exhibitor, e.game
+       ), rebuttals AS (
+         SELECT c.exhibitor, c.game, COUNT(DISTINCT e.client) AS rebuttal_clients,
+                MAX(e.at) AS newest_rebuttal
+         FROM recent_closures c JOIN report_events e
+           ON e.exhibitor = c.exhibitor AND e.game = c.game
+          AND e.kind = 'joined' AND e.at > c.newest_closure
+          AND NOT EXISTS (
+            SELECT 1 FROM closure_reports x
+            WHERE x.exhibitor = e.exhibitor AND x.game = e.game
+              AND x.client = e.client AND x.reported_at >= ?
+          )
+         GROUP BY c.exhibitor, c.game
        )
-       SELECT c.exhibitor, c.game, c.closure_clients, o.counter_clients,
-              c.newest_closure, o.newest_counter
-       FROM recent_closures c JOIN other_counters o
-         ON o.exhibitor = c.exhibitor AND o.game = c.game
-       WHERE o.counter_clients >= 2 AND o.newest_counter > c.newest_closure
-       ORDER BY o.newest_counter DESC LIMIT 50`
-    ).bind(now - 60 * 60, now - 60 * 60, now - 60 * 60),
+       SELECT c.exhibitor, c.game, c.closure_clients, c.newest_closure,
+              COALESCE(r.rebuttal_clients, 0) AS rebuttal_clients,
+              r.newest_rebuttal,
+              CASE WHEN c.closure_clients >= 2 AND COALESCE(r.rebuttal_clients, 0) < 2
+                   THEN 1 ELSE 0 END AS would_close
+       FROM recent_closures c
+       LEFT JOIN rebuttals r ON r.exhibitor = c.exhibitor AND r.game = c.game
+       ORDER BY would_close DESC, c.newest_closure DESC LIMIT 50`
+    ).bind(now - 60 * 60, now - 60 * 60),
     env.QUEUE_DB.prepare(
       `SELECT client, COUNT(DISTINCT exhibitor || char(0) || game) AS queues,
               COUNT(*) AS reports, MAX(at) AS newest
@@ -279,7 +289,10 @@ export async function handleAdminData(env, now, live) {
     queueDiagnostics: queueDiagnostics(live, results[7].results, results[8].results),
     manyQueueClients: results[10].results,
     aheadAnomalies: results[6].results,
-    closureContradictions: results[9].results,
+    /* Every recent closure claim with the rule's verdict, not only the
+       contradicted ones — a claim that is about to close a busy queue is as
+       worth seeing as one already rebutted. */
+    closureClaims: results[9].results,
     overrides: results[5].results,
     adminLog: results[3].results,
   });

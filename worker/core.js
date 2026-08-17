@@ -301,15 +301,38 @@ export function estimateLive(input, now) {
       }
     }
     const closureVotes = [...closureByClient.values()];
-    const counterByClient = new Map();
+    const newestClosure = closureVotes.length
+      ? Math.max(...closureVotes.map((row) => Number(row.reported_at)))
+      : null;
+
+    /* Rebutting a closure claim takes two devices, the same quorum making it.
+       Only a *new arrival* counts, and only after the newest claim.
+
+       The rule this replaced compared the closure timestamps against the median
+       of every client's newest activity in the hour. That median is dragged
+       backwards by everyone who finished their session earlier in the window —
+       so on a busy queue with normal turnover, two devices could flip it to
+       "Queue closed", which is the highest-consequence thing this feature can
+       say: it tells people not to walk across two halls.
+
+       Kind matters, and conflating them is why the first attempt read false.
+       At gamescom a closed queue is closed *to new entrants* — the line already
+       standing there keeps being served — so `update` and `entered` from people
+       inside it are exactly what a genuine closure looks like, not evidence
+       against it. Someone newly joining is the observation that contradicts the
+       sign. A claimant's own activity never rebuts their own claim.
+
+       Residual exposure, accepted knowingly: on a queue quiet enough that two
+       people do not join within the hour, two coordinated devices can still
+       show it closed. Closure votes age out after an hour, the moderator has
+       Force open, and a quiet queue is the cheap walk to be wrong about. */
+    const rebuttals = new Set();
     for (const row of counters.get(key) || []) {
-      const previous = counterByClient.get(row.client);
-      if (!previous || Number(row.at) > Number(previous.at)) counterByClient.set(row.client, row);
+      if (row.kind !== "joined") continue;
+      if (closureByClient.has(row.client)) continue;
+      if (newestClosure !== null && Number(row.at) > newestClosure) rebuttals.add(row.client);
     }
-    const closureMedian = median(closureVotes.map((row) => Number(row.reported_at)));
-    const counterMedian = median([...counterByClient.values()].map((row) => Number(row.at)));
-    const automaticClosed =
-      closureVotes.length >= 2 && closureMedian !== null && (counterMedian === null || closureMedian > counterMedian);
+    const automaticClosed = closureVotes.length >= 2 && rebuttals.size < 2;
     const override = overrides.get(key);
     const overrideActive = override && Number(override.expires_at) > now;
     const closed = overrideActive ? Number(override.forced_closed) === 1 : automaticClosed;

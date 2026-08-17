@@ -192,7 +192,7 @@ describe("live estimator", () => {
     expect(extreme.xbox.fable).toMatchObject({ est: 240, how: "done", capped: true });
   });
 
-  it("requires a two-device closure quorum newer than median counter-evidence", () => {
+  it("closes on a two-device quorum unless two new arrivals rebut it", () => {
     const now = 3_000;
     const base = {
       completed: [row({ session: 1, joined_at: 1_000, closed_at: 2_200 })],
@@ -201,12 +201,38 @@ describe("live estimator", () => {
         row({ client: "b", reported_at: 2_900 }),
       ],
     };
+    const closed = (counters) => estimateLive({ ...base, counters }, now).xbox.fable;
+    const joinedAt = (client, at) => row({ client, kind: "joined", at });
+
+    /* Nobody arrived after the claim: the sign is believed. */
+    expect(closed([])).toMatchObject({ closed: true, n: 2 });
+    /* Arrivals *before* the newest claim say nothing about it. */
+    expect(closed([joinedAt("c", 2_700), joinedAt("d", 2_750)])).toMatchObject({ closed: true });
+    /* One arrival is one voice, and it took two to make the claim. */
+    expect(closed([joinedAt("c", 2_950)])).toMatchObject({ closed: true });
+    /* Two independent arrivals after the claim contradict it. */
+    expect(closed([joinedAt("c", 2_950), joinedAt("d", 2_960)])).toMatchObject({ how: "done" });
+    /* The same arrival twice is still one voice. */
+    expect(closed([joinedAt("c", 2_950), joinedAt("c", 2_970)])).toMatchObject({ closed: true });
+
+    /* A closed queue keeps serving the line already standing in it, so updates
+       and entries from people inside are what closure looks like — never
+       evidence against it. This is the case that made the old rule read false
+       on any busy queue with normal turnover. */
     expect(
-      estimateLive({ ...base, counters: [row({ client: "c", at: 2_700 })] }, now).xbox.fable
-    ).toMatchObject({ closed: true, n: 2 });
-    expect(
-      estimateLive({ ...base, counters: [row({ client: "c", at: 2_950 })] }, now).xbox.fable
-    ).toMatchObject({ how: "done" });
+      closed([
+        row({ client: "c", kind: "update", at: 2_950 }),
+        row({ client: "d", kind: "update", at: 2_960 }),
+        row({ client: "e", kind: "entered", at: 2_980 }),
+        row({ client: "f", kind: "entered", at: 2_990 }),
+      ])
+    ).toMatchObject({ closed: true });
+
+    /* A claimant cannot rebut their own claim. */
+    expect(closed([joinedAt("a", 2_950), joinedAt("b", 2_960)])).toMatchObject({ closed: true });
+    expect(closed([joinedAt("a", 2_950), joinedAt("c", 2_960)])).toMatchObject({ closed: true });
+
+    /* A moderator's Force open still overrides the crowd either way. */
     expect(
       estimateLive(
         {
@@ -216,6 +242,15 @@ describe("live estimator", () => {
         now
       ).xbox.fable
     ).toMatchObject({ how: "done" });
+    expect(
+      estimateLive(
+        {
+          completed: base.completed,
+          overrides: [row({ forced_closed: 1, expires_at: now + 60, updated_at: now })],
+        },
+        now
+      ).xbox.fable
+    ).toMatchObject({ closed: true });
   });
 
   it("uses mechanics majority, newest tie-break, and a median batch", () => {
