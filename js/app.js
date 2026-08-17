@@ -1788,6 +1788,33 @@ function hallLink(hall, booth, label) {
     aria-label="${esc(t("map.openAria", { where: whereLabel(hall, booth) }))}">${esc(label)}</a>`;
 }
 
+/* The Halls & areas list names a span where every other place names a hall:
+   one hall ("10.1"), a whole level whose halves it doesn't distinguish
+   ("5"), or a run of levels ("5–10"). The map draws one hall at a time, so
+   a span opens at the lowest hall inside it the snapshot can draw — "5–10"
+   lands in the first entertainment hall, "2–4" in the first business one,
+   and the map's own chip row, grouped by area, carries you along the rest.
+
+   Only whole levels widen like that. "5.1" is a hall the snapshot either
+   has or hasn't, and quietly landing on 5.2 instead would be a different
+   room — so it stays plain text, as does anything unparseable. */
+function areaMapHall(hall) {
+  const filed = String(hall ?? "").trim();
+  if (!filed) return "";
+  if (hasMap(filed)) return filed;
+  /* Either dash, and either side of it spaced or not: this is hand-filed
+     prose, and "2 – 4" means what "2–4" means. */
+  const ends = filed.split(/\s*[–—-]\s*/);
+  if (!ends.every((end) => /^\d+$/.test(end))) return "";
+  const from = Number(ends[0]);
+  const to = Number(ends[ends.length - 1]);
+  return (
+    [...state.mapHalls]
+      .filter((id) => Math.floor(hallRank(id)) >= from && Math.floor(hallRank(id)) <= to)
+      .sort((a, b) => hallRank(a) - hallRank(b))[0] || ""
+  );
+}
+
 /* The way to this card's other booth, notched into the corner of the plate
    that shows the current one. It sits *on* the plate rather than at the foot
    of the card because that is the corner your thumb is already near and the
@@ -3718,16 +3745,38 @@ function renderPlan() {
 
 function renderEvent() {
   const ev = state.event;
+  /* The hall column is a hall number like any other in the guide, so it is
+     also the way to that hall on the map — an anchor wearing the same plate,
+     not a second control. The label stays exactly as the data wrote it; the
+     accessible name carries the destination, because for a span like "5–10"
+     the hall you land in is not the number you tapped (see areaMapHall). */
   const areas = (ev.areas || [])
-    .map(
-      (a) => `<li>
-        <span class="area-hall${a.hall ? "" : " none"}">${a.hall ? esc(a.hall) : "—"}</span>
+    .map((a) => {
+      const to = areaMapHall(a.hall);
+      /* One hall, named and landed on: the plate can speak like every other
+         hall link in the guide. A span can't — the number you tapped is not
+         the hall that opens — so it says both, and says the tapped number
+         first, which is the one a voice command has to match. */
+      const itself = to === String(a.hall ?? "").trim();
+      const where = t("where.hall", { hall: to });
+      const spanned = t(/[–—-]/.test(String(a.hall)) ? "where.halls" : "where.hall", {
+        hall: a.hall,
+      });
+      const plate = to
+        ? `<a class="area-hall hall-link" href="${esc(mapLink(to))}"
+            title="${esc(itself ? t("map.openTitle") : t("map.openTitleWith", { what: where }))}"
+            aria-label="${esc(
+              itself ? t("map.openAria", { where }) : t("map.openAreaAria", { halls: spanned, where })
+            )}">${esc(a.hall)}</a>`
+        : `<span class="area-hall${a.hall ? "" : " none"}">${a.hall ? esc(a.hall) : "—"}</span>`;
+      return `<li>
+        ${plate}
         <span>
           <span class="area-name">${esc(a.name)}</span><br>
           <span class="area-desc">${esc(a.description)}</span>
         </span>
-      </li>`
-    )
+      </li>`;
+    })
     .join("");
 
   /* Entrances are the one piece of event info that is advice rather than

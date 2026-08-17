@@ -496,6 +496,20 @@ theatre. None of these change the architecture.
    amber plate and the "trade & media only" they always carried — the
    map they open says the same thing in a banner. Hall 1 and the outdoor
    F-areas are still undrawn, so those few chips stay plain text.
+4a. **The halls-and-areas list** in Event info is the one place the guide
+    names a *span* rather than a hall: "5–10" for the entertainment area,
+    "2–4" for the business one, "5" for a level whose halves it does not
+    separate. `areaMapHall()` resolves those to the lowest hall inside
+    the span the snapshot can draw — 5.2, 2.1 and 5.2 — so the plate
+    opens the near end of the area and the map's own area-grouped chip
+    row carries you along the rest. An exact hall (10.1, 10.2, 5.2)
+    links to itself; only whole levels widen, because "5.1" is a hall
+    the snapshot either has or hasn't and landing on 5.2 instead would
+    be a different room. Hall 1, 5.1, 11.1 and the four hall-less rows
+    stay plain text. The plate keeps the label the data filed, so the
+    accessible name carries both — "Halls 5–10 — open Hall 5.2 on the
+    hall map" — rather than letting the number you tapped and the hall
+    you land in disagree silently.
 5. **Cross-links out**: the sheet links to `./#exhibitors?ex=<id>`, and
    `focusExhibitor()` in `js/app.js` scrolls that card into view and
    flashes it, clearing any filter that would otherwise hide it.
@@ -586,7 +600,10 @@ Serve the repo root; clear `gc2026.saved.v1`.
     when the guide has no card for it. A business-hall directory chip
     links too, keeps its amber plate, and says "trade & media only" in
     its title and its accessible name; chips in hall 1 and the F-areas
-    are still not links. The `.ics` export still contains no markup.
+    are still not links. In Event info, the areas list opens the map at
+    the near end of a span — "5–10" at 5.2, "2–4" at 2.1 with the trade
+    banner up — an exact hall at itself, and 1 / 5.1 / 11.1 / "—" not at
+    all. The `.ics` export still contains no markup.
 12. **Offline** — airplane mode, reopen installed app → map, switch to a
     never-opened hall: renders from precache. Navigating straight to
     `map.html` offline serves the map, not the guide.
