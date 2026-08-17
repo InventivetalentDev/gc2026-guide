@@ -100,6 +100,7 @@ window.GC_STRINGS.de = {
 
   "hall.word": "Halle",
   "where.hall": "Halle {hall}",
+  "where.halls": "Hallen {hall}",
   "where.hallBooth": "Halle {hall}, Stand {booth}",
   "where.hallDotBooth": "Halle {hall} · {booth}",
   "kind.booth": "Stand",
@@ -145,6 +146,7 @@ window.GC_STRINGS.de = {
   "map.openTitle": "Auf dem Hallenplan öffnen",
   "map.openTitleWith": "{what} — auf dem Hallenplan öffnen",
   "map.openAria": "{where} — auf dem Hallenplan öffnen",
+  "map.openAreaAria": "{halls} — {where} auf dem Hallenplan öffnen",
 
   /* ---------- full official directory ---------- */
   "directory.title": "Komplettes Verzeichnis",
