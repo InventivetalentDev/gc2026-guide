@@ -1,10 +1,13 @@
 # Live queue times — crowd-sourced wait reports
 
-**Status: MVP implemented, revision 4 — 17 August 2026. The Worker, D1
-migration, client surfaces, offline completion flow, moderation page, tests,
-privacy copy and deployment runbook are in the repository. Phase 2 remains
-deliberately deferred; real staging/production databases and device checks are
-deployment work, not completed by this implementation.**
+**Status: MVP implemented and reviewed, revision 5 — 17 August 2026. The
+Worker, D1 migration, client surfaces, offline completion flow, moderation
+page, tests, privacy copy and deployment runbook are in the repository. Review
+changed two rules this document had specified — the closure quorum and an
+estimate ceiling, both marked below where they apply — so read §4 as the
+current behaviour rather than the original proposal. Phase 2 remains
+deliberately deferred; real staging/production databases and on-device checks
+are deployment work, not completed by this implementation.**
 
 ## Context
 
@@ -247,10 +250,36 @@ is honest about *what kind* of answer it is beats a confident blend:
   elapsed times. Not an estimate at all, a bound: "people in line have been
   waiting 30+ min". First minutes of the show, this is often all there is,
   and it is already worth showing.
-- **`closed`** overrides the number when ≥2 devices report it more recently
-  than the median counter-evidence — "they shut the queue" outranks any wait,
-  and at gamescom (capped queues, full-for-the-day boards) it is arguably the
-  single most valuable report in the system.
+- **`closed`** overrides the number when ≥2 devices report it and fewer than 2
+  *other* devices have newly joined since the most recent of those reports —
+  "they shut the queue" outranks any wait, and at gamescom (capped queues,
+  full-for-the-day boards) it is arguably the single most valuable report in
+  the system.
+
+  Revised after review; the rule this plan originally specified was wrong.
+  It compared the closure reports against the **median of every client's
+  newest activity** in the past hour, and that median sits well behind the
+  present on any queue with normal turnover — everyone who finished earlier in
+  the window drags it back — so two devices could close a busy queue. Rebutting
+  now takes the same quorum as claiming, and only a *new arrival* counts: a
+  gamescom queue closes to new entrants while the line already standing in it
+  keeps being served, so `update` and `entered` from inside the line are what a
+  real closure looks like, not evidence against it. A claimant cannot rebut
+  their own claim.
+
+  Known residual, accepted: on a queue quiet enough that two people do not join
+  within the hour, two coordinated devices can still show it closed. Votes age
+  out after an hour and the moderator has Force open, so the exposure is a
+  short-lived wrong answer about a queue that was not worth queueing for.
+- **A four-hour ceiling**, added after review. The per-pair filters bound the
+  fast end only, so one slow-but-legal speed sample — a single bucket step
+  across forty minutes is 0.25 people/min — divided into a long line projected
+  to ten hours, and the card would have printed it. The two cases differ and
+  are treated differently: a **derived** figure past the ceiling is discarded
+  in favour of a measured tier, because its divisor is what is at fault, while
+  a **measured** wait is clamped and flagged, reading as a floor ("4 h+", the
+  way the top report bucket says "2 h+"). The flag travels in the payload, so
+  the client never holds a second copy of the ceiling to drift out of step.
 - **Mechanics ride alongside, not inside**: `qtype`/`batch` come from
   `queue_meta` by majority vote across the whole show and render as a label —
   "moves in waves of ~50". For wave/group queues the honest display is a
@@ -397,8 +426,11 @@ that fails on day 1, so moderation is part of the *product*, not a runbook:
 - **What it shows**: report volume per queue and per hour; the estimator's
   current answer next to its inputs for any queue that looks wrong; top
   clients by report count; cheap anomaly lists (clients touching many queues
-  at once, flip-flopping `ahead` values, `closed` reports contradicted by
-  everyone else).
+  at once, flip-flopping `ahead` values). Closure claims get their own list,
+  every recent one with the rebutting arrivals counted exactly as §4's rule
+  counts them and the verdict that rule reaches — so a claim one arrival away
+  from closing a queue is as visible as one already overturned, and the page
+  can never disagree with the chip a visitor is reading.
 - **What it does, as buttons**: delete a client's rows and deny-list the id
   (a `denylist` table, checked immediately on every write); purge one queue's last N minutes (one bad
   actor cleaned without losing the day); clear or force a `closed` state;
