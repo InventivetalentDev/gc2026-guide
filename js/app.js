@@ -1490,16 +1490,26 @@ function bindSourcesDialog() {
 
 /* ---------- itinerary ---------- */
 
+/* Callers must have state.event loaded: the stored dates are checked against
+   the show schedule, and "no schedule" is not the same answer as "no such
+   day". Without that distinction a call made before data/event.json lands
+   reads every assignment as stale and drops the whole plan — and the next
+   assignment writes that emptied map back over the stored one, so the loss
+   is not just for the session. A missing schedule therefore keeps the
+   assignments as filed and lets the next load, which has the days, decide. */
 function loadItinerary() {
   const empty = { exhibitors: new Map(), games: new Map() };
   try {
     const raw = JSON.parse(localStorage.getItem(IT_KEY) || "{}");
-    const validDays = new Set((state.event?.days || []).map((d) => d.date));
+    const days = state.event?.days;
+    const validDays = days ? new Set(days.map((d) => d.date)) : null;
     const entries = (kind) => {
       const source =
         raw && raw[kind] && typeof raw[kind] === "object" && !Array.isArray(raw[kind]) ? raw[kind] : {};
       const saved = state.marks.saved[kind];
-      return Object.entries(source).filter(([key, date]) => saved.has(key) && validDays.has(date));
+      return Object.entries(source).filter(
+        ([key, date]) => saved.has(key) && (!validDays || validDays.has(date))
+      );
     };
     return {
       exhibitors: new Map(entries("exhibitors")),
@@ -4358,7 +4368,6 @@ async function main() {
      below share the wire with the core data instead of queueing behind it. */
   state.marks.saved = loadMarks("saved");
   state.marks.played = loadMarks("played");
-  state.itinerary = loadItinerary();
   Object.assign(state, loadPrefs());
   /* Rule 1: the pref gates discovery, not resolution. A trade booth already
      on the list resolves whether or not trade mode is on. */
@@ -4371,6 +4380,10 @@ async function main() {
     )} <code>python3 -m http.server</code></p>`;
     return;
   }
+  /* The marks and prefs above are read before the network, but the itinerary
+     waits for loadData: it is validated against the show days, which only
+     exist once data/event.json is in (see loadItinerary). */
+  state.itinerary = loadItinerary();
   /* After the itinerary, so a day assignment stored under the old key is
      still there to be carried across — and after loadData, which brings the
      cards those keys migrate onto. */
