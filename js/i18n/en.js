@@ -195,6 +195,8 @@ window.GC_STRINGS.en = {
   "planner.wristbandSub":
     "Booths with 18+ demos check ID and hand out a red wristband — get it on arrival, not at the front of the queue.",
   "planner.crowdTips": "General crowd tips",
+  "planner.jumpAria": "Jump to a planner section",
+  "planner.dayPlanned": "{n} stop in your plan|{n} stops in your plan",
 
   "plan.sub.day":
     "Give each saved booth and game a day. Unassigned items sit at the top until you place them.",
@@ -219,6 +221,7 @@ window.GC_STRINGS.en = {
   "plan.itemCount": "{n} item|{n} items",
   "plan.placedSuffix": " · {n} placed",
   "plan.emptyNoSaved": "Nothing saved yet — hit + on a booth or game on the Exhibitors tab.",
+  "plan.browseCta": "Browse exhibitors →",
   "plan.emptyStale":
     "Nothing you saved is in the current lineup anymore — exhibitors come and go between data updates.",
 

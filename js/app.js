@@ -3194,6 +3194,10 @@ function renderItinerary() {
     : savedCount()
       ? t("plan.emptyStale")
       : t("plan.emptyNoSaved");
+  $("#plan-browse")?.classList.toggle(
+    "hidden",
+    items.length > 0 || savedCount() > 0 || tradeDataPending()
+  );
   /* Absent stops render inline here ("Absent — no booth"); the footnote is the
      hall lens's way of saying the same thing. */
   $("#plan-absent").classList.add("hidden");
@@ -3204,15 +3208,75 @@ function renderItinerary() {
     : "";
 }
 
+/* How many of the plan's items sit on each day — the five-days board wears
+   these so it doubles as a glanceable summary of the plan once stops have
+   days. Counted from the same items the itinerary renders, so the board and
+   the plan can never disagree about what is placed where. */
+function plannedPerDay() {
+  const counts = new Map();
+  for (const item of itineraryItems()) {
+    const day = assignedDay(item.kind, item.key);
+    if (day) counts.set(day, (counts.get(day) || 0) + 1);
+  }
+  return counts;
+}
+
+function renderDayBoard() {
+  const board = $("#day-guide");
+  if (!board) return; // stale cached shell — see the note in renderPlan
+  const counts = plannedPerDay();
+  board.innerHTML = (state.event.days || [])
+    .map((d) => {
+      const n = counts.get(d.date) || 0;
+      return `<div class="day-row">${dayHeaderInner(d)}${
+        n ? `<span class="day-planned">${esc(t("planner.dayPlanned", { n }))}</span>` : ""
+      }</div>`;
+    })
+    .join("");
+}
+
+/* Buttons rather than #id anchor links (see the note on #planner-jump in the
+   markup); rebuilt with the section titles' own numbering, which stays fixed
+   even when the wristband section is absent, so the chips always agree with
+   the headings they lead to. */
+function renderPlannerJump() {
+  const nav = $("#planner-jump");
+  if (!nav) return; // stale cached shell — see the note in renderPlan
+  const sections = [
+    ["01", "days-title", t("planner.fiveDays")],
+    ["02", "plan-title", t("planner.yourPlan")],
+    ["03", "priority-title", t("planner.queuePriority")],
+    ["04", "wristband-title", t("planner.wristband")],
+    ["05", "tips-title", t("planner.crowdTips")],
+  ].filter(([, id]) => {
+    const target = document.getElementById(id);
+    /* The wristband section hides itself when no lineup is age-gated; a chip
+       leading into a hidden section would scroll to nothing. */
+    return target && !target.closest(".hidden, [hidden]");
+  });
+  nav.innerHTML = sections
+    .map(
+      ([num, id, label]) => `<button class="chip jump-chip" type="button" data-jump="${esc(id)}">
+        <span class="section-num">${esc(num)}</span> ${esc(label)}</button>`
+    )
+    .join("");
+  $$("#planner-jump .jump-chip").forEach((chip) =>
+    chip.addEventListener("click", () => {
+      const target = document.getElementById(chip.dataset.jump);
+      if (!target) return;
+      target.scrollIntoView();
+      target.focus({ preventScroll: true });
+    })
+  );
+}
+
 function renderPlanner() {
   const ev = state.event;
-  $("#day-guide").innerHTML = (ev.days || [])
-    .map((d) => `<div class="day-row">${dayHeaderInner(d)}</div>`)
-    .join("");
-
   renderPriority();
   renderWristband();
   renderPlan();
+  /* After renderWristband: the chips need to know whether section 04 exists. */
+  renderPlannerJump();
 
   $("#crowd-tips").innerHTML = (ev.crowdTips || []).map((t) => `<li>${esc(t)}</li>`).join("");
 }
@@ -3642,6 +3706,10 @@ function renderRoute() {
         : dayFilter
           ? t("route.emptyForDay", { day: dayName(dayFilter) })
           : t("route.emptyStale");
+  $("#plan-browse")?.classList.toggle(
+    "hidden",
+    stopCount > 0 || savedCount() > 0 || tradeDataPending()
+  );
   $("#plan-count").textContent =
     t("route.stops", { n: stopCount }) +
     " · " +
@@ -3714,6 +3782,11 @@ function renderPlan() {
      that still has the separate itinerary and route sections (see
      handleNavigation in sw.js). Bail out instead of letting a null lookup
      abort the whole boot. */
+  /* First, and before the stale-shell bail below: the day board's planned
+     counts ride with the plan — every path that can change an assignment or
+     the saved list already ends here — and the board itself exists on shells
+     old enough to lack #plan-board. */
+  renderDayBoard();
   const board = $("#plan-board");
   if (!board) return;
   const hall = state.planLens === "hall";
@@ -4201,6 +4274,14 @@ function bindControls() {
     showView("planner");
     $("#plan-section").scrollIntoView();
     $("#plan-title").focus({ preventScroll: true });
+  });
+  /* The reverse door: the plan's empty state back to the grid it is filled
+     from. Focus lands on the tab rather than the search box, which would pop
+     the keyboard over the grid the button promised to show. */
+  $("#plan-browse")?.addEventListener("click", () => {
+    showView("exhibitors");
+    window.scrollTo(0, 0);
+    $('.tab[data-view="exhibitors"]')?.focus({ preventScroll: true });
   });
   /* The lens chips are static markup, so a click never re-renders them out
      from under the pointer — only the board below swaps. */
