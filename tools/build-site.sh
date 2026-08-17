@@ -2,13 +2,13 @@
 # Stages the deployable site into dist/, which is what `wrangler deploy`
 # uploads. Run it from anywhere; it works on the repo root.
 #
-# The site itself still has no build step — dist/ is a copy, not a compile, and
+# The client still has no compilation step — dist/ is a copy, not a compile, and
 # `python3 -m http.server` in the repo root serves the real thing exactly as
 # before. It exists because a Worker's asset directory has to hold the site and
-# nothing else. Pointing wrangler at the repo root does technically work, since
-# .assetsignore keeps the docs out of the upload, but `wrangler dev` does not
-# apply that file to its file watcher: it writes .wrangler/ into the directory
-# it is watching, sees its own scratch files change, and reloads forever.
+# nothing else. Pointing Wrangler at the repo root would mix server code,
+# documentation and package metadata into the asset tree; it also makes local
+# development watch the same directory where Wrangler writes its own scratch
+# files.
 #
 # Every top-level entry has to be named in one of the two lists below. That is
 # the point of them: a new asset directory nobody added here fails the deploy
@@ -23,13 +23,18 @@ SITE="_headers css data fonts icons imprint.html index.html js manifest.de.webma
 # Repo furniture. CNAME used to sit here too — GitHub Pages' custom-domain
 # marker — until Pages went; Cloudflare takes its hostnames from the routes in
 # wrangler.toml instead.
-NOT_SITE=".git .github .gitignore .idea .wrangler README.md LICENSE dist docs tools wrangler.toml"
+NOT_SITE=".agents .codex .git .github .gitignore .idea .wrangler README.md LICENSE dist docs node_modules package-lock.json package.json test tools vitest.config.js vitest.config.mjs worker worker-configuration.d.ts wrangler.toml"
 
 unclassified=""
 for entry in $(ls -A); do
   case " $SITE $NOT_SITE " in
     *" $entry "*) ;;
-    *) unclassified="$unclassified $entry" ;;
+    *)
+      case "$entry" in
+        .dev.vars|.dev.vars.*|.env|.env.*) ;;
+        *) unclassified="$unclassified $entry" ;;
+      esac
+      ;;
   esac
 done
 

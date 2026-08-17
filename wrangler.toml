@@ -1,7 +1,8 @@
 # Cloudflare Workers deployment for the gamescom 2026 guide.
 #
-# The site is static, so this is an assets-only Worker: no `main` script, just a
-# directory of files served from Cloudflare's edge.
+# Static pages still come from the asset directory. The Worker script handles
+# only /api/* for live queue reports and delegates every other request to the
+# existing asset routing.
 #
 # That directory is dist/, staged from the repo root by tools/build-site.sh —
 # run it before deploying. The site still has no build step; dist/ is a copy
@@ -11,7 +12,9 @@
 # The full setup and domain-cutover runbook is in docs/DEPLOYING.md.
 
 name = "gc2026-guide"
-compatibility_date = "2026-08-14"
+main = "worker/index.js"
+compatibility_date = "2026-08-17"
+compatibility_flags = ["nodejs_compat"]
 
 # gc2026-guide.<subdomain>.workers.dev — the URL a deploy can be checked on
 # before any domain points at it, and the one that still answers if a custom
@@ -21,6 +24,8 @@ workers_dev = true
 
 [assets]
 directory = "./dist"
+binding = "ASSETS"
+run_worker_first = ["/api", "/api/*"]
 
 # Both handling options below are deliberate, and the defaults actively break
 # this app.
@@ -49,6 +54,38 @@ html_handling = "none"
 # exact file match is answered with index.html, so "/" serves the guide and an
 # unknown path renders the app rather than a bare 404.
 not_found_handling = "single-page-application"
+
+# Replace this draft ID with the UUID returned by
+# `npx wrangler d1 create gc2026-queues` before the first production deploy.
+[[d1_databases]]
+binding = "QUEUE_DB"
+database_name = "gc2026-queues"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "worker/migrations"
+
+[triggers]
+crons = ["0 * * * *"]
+
+[observability]
+enabled = true
+
+# The IP limiter is deliberately loose: venue Wi-Fi and mobile carrier NATs
+# put many legitimate visitors behind one address.
+[[ratelimits]]
+name = "IP_WRITE_LIMITER"
+namespace_id = "2026081701"
+
+[ratelimits.simple]
+limit = 20
+period = 60
+
+[[ratelimits]]
+name = "ADMIN_AUTH_LIMITER"
+namespace_id = "2026081702"
+
+[ratelimits.simple]
+limit = 60
+period = 60
 
 # The home address. Everything the guide says about itself — the canonical
 # links, the share links, content@hallgui.de — points here. It has no year in
@@ -95,3 +132,48 @@ custom_domain = true
 # hallguide.de is the one that matters most: it is how somebody who only heard
 # the name would spell it, which is the whole reason the dot can sit where it
 # does in hallgui.de.
+
+# Staging is a separate workers.dev deployment with isolated bindings. An
+# explicit empty route list prevents it from inheriting the production custom
+# domains above.
+[env.staging]
+name = "gc2026-guide-staging"
+workers_dev = true
+routes = []
+
+[env.staging.assets]
+directory = "./dist"
+binding = "ASSETS"
+html_handling = "none"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api", "/api/*"]
+
+# Replace this draft ID with the UUID returned by
+# `npx wrangler d1 create gc2026-queues-staging` before deploying staging.
+[[env.staging.d1_databases]]
+binding = "QUEUE_DB"
+database_name = "gc2026-queues-staging"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "worker/migrations"
+
+[env.staging.triggers]
+crons = ["0 * * * *"]
+
+[env.staging.observability]
+enabled = true
+
+[[env.staging.ratelimits]]
+name = "IP_WRITE_LIMITER"
+namespace_id = "2026081711"
+
+[env.staging.ratelimits.simple]
+limit = 20
+period = 60
+
+[[env.staging.ratelimits]]
+name = "ADMIN_AUTH_LIMITER"
+namespace_id = "2026081712"
+
+[env.staging.ratelimits.simple]
+limit = 60
+period = 60

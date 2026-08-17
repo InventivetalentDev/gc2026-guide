@@ -254,6 +254,19 @@ function mergeStrings(exhibitors, event, meta, strings) {
    still calls loadMarks/persistMarks/gameKey by their old names. */
 const { MARK_KEYS, PREFS_KEY, gameKey } = GCMarks;
 const IT_KEY = "gc2026.itinerary.v1";
+/* Live queue transport/session state lives in its own optional plain script.
+   The guard is intentional: a service-worker transition can briefly pair a
+   new app.js with the previous shell, which did not load js/queue.js. */
+const QUEUES = window.GCQueues || null;
+const QUEUE_CLAIMS = [0, 10, 20, 30, 45, 60, 90, 120];
+const QUEUE_AHEAD = [10, 20, 30, 50, 75, 100, 150, 200];
+const QUEUE_TYPES = ["single", "pairs", "group", "wave"];
+const QUEUE_BATCHES = [2, 5, 10, 20, 50, 100];
+
+let queueDialogState = null;
+let queuePromptKey = null;
+let queueSurfaceGate = "";
+const pendingQueueActions = new Set();
 
 const loadMarks = (mark) => GCMarks.readMarks(mark);
 const persistMarks = (mark) => GCMarks.writeMarks(mark, state.marks[mark]);
@@ -747,6 +760,7 @@ function buildMoveLink() {
    So the key carries the destination's generation rather than the notice's: one
    more nudge each time the address changes, then quiet again. */
 const MOVED_KEY = "gc2026.moved.v3";
+let moveNoticeOffered = false;
 
 function moveNoticeAnswered() {
   try {
@@ -766,7 +780,12 @@ function rememberMoveNotice() {
 }
 
 function offerMove() {
-  if (!onLegacyHost() || moveNoticeAnswered()) return;
+  if (!onLegacyHost() || moveNoticeAnswered() || moveNoticeOffered) return;
+  /* Queue sessions cannot cross origins: their server anchor and deferred
+     completion live under this hostname's localStorage. Postpone the move
+     until they have finished instead of stranding a measurement mid-show. */
+  if (QUEUES && (QUEUES.sessions().length || QUEUES.pendingCount())) return;
+  moveNoticeOffered = true;
   const move = buildMoveLink();
   showToast(
     move ? t("moved.withList") : t("moved.plain"),
@@ -1727,6 +1746,192 @@ function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
+/* ---------- live queues ----------
+
+   The transport module only exposes facts. These helpers turn those facts
+   into the four surfaces that use them: a full tracker on a game/booth, the
+   worst live queue beside a card's forecast, and compact planner figures. */
+
+const queueForGame = (ex, game) =>
+  QUEUES && game?.playable === true ? QUEUES.queue(ex.id, gameKey(game.title)) : null;
+const boothQueue = (ex) => QUEUES?.queue(ex.id, QUEUES.BOOTH) || null;
+
+function queueEx(queue) {
+  return queue && state.exhibitors.find((ex) => ex.id === queue.exhibitor);
+}
+
+function queueGame(queue) {
+  const ex = queueEx(queue);
+  return queue?.game === QUEUES?.BOOTH
+    ? null
+    : (ex?.games || []).find((game) => gameKey(game.title) === queue?.game) || null;
+}
+
+function queueName(queue) {
+  const ex = queueEx(queue);
+  const game = queueGame(queue);
+  return game ? t("queue.nameGame", { game: game.title, exhibitor: ex?.name || queue.exhibitor }) : ex?.name || queue?.exhibitor || "";
+}
+
+const queueAttrs = (queue) =>
+  `data-queue-exhibitor="${esc(queue.exhibitor)}" data-queue-game="${esc(queue.game)}"`;
+
+function queueAge(age) {
+  const minutes = Math.max(0, Math.floor(Number(age || 0) / 60));
+  return minutes < 1 ? t("queue.ageNow") : t("queue.ageMinutes", { n: minutes });
+}
+
+function queueMechanics(live) {
+  if (!live?.qtype || !QUEUE_TYPES.includes(live.qtype)) return "";
+  const batch = Number(live.batch);
+  /* The Worker reports the median of fixed input buckets. With an even vote
+     count that aggregate can sit between two chips (for example 75 from 50
+     and 100), and is still a valid mechanics measurement. */
+  if (
+    (live.qtype === "group" || live.qtype === "wave") &&
+    Number.isInteger(batch) &&
+    batch >= QUEUE_BATCHES[0] &&
+    batch <= QUEUE_BATCHES.at(-1)
+  ) {
+    return t(`queue.mechanics.${live.qtype}Batch`, { n: batch });
+  }
+  return t(`queue.mechanics.${live.qtype}`);
+}
+
+function queueLiveMain(live) {
+  const estimate = Math.max(0, Math.round(Number(live?.est) || 0));
+  if (live?.closed) return t("queue.live.closed");
+  if (live?.how === "flow") return t("queue.live.flow", { n: estimate });
+  if (live?.how === "done") return t("queue.live.done", { n: estimate });
+  if (live?.how === "sofar") return t("queue.live.sofar", { n: estimate });
+  return "";
+}
+
+function queueLiveMarkup(queue, { compact = false, unavailable = true } = {}) {
+  const live = QUEUES?.live(queue);
+  if (!live) {
+    return unavailable && QUEUES?.unavailable(queue)
+      ? `<span class="queue-live queue-live-unavailable">${esc(t("queue.liveUnavailable"))}</span>`
+      : "";
+  }
+  const main = queueLiveMain(live);
+  if (!main) return "";
+  const reports = t("queue.reports", { n: Number(live.n) || 0 });
+  const mechanics = queueMechanics(live);
+  const detail = `<span class="queue-live-detail${compact ? " sr-only" : ""}">
+    <span>${esc(reports)}</span><span aria-hidden="true">·</span>
+    <span data-live-age ${queueAttrs(queue)}>${esc(queueAge(live.age))}</span>${
+      mechanics ? `<span aria-hidden="true">·</span><span>${esc(mechanics)}</span>` : ""
+    }
+  </span>`;
+  return `<span class="queue-live${compact ? " queue-live-compact" : ""}" data-tier="${esc(live.how)}">
+    <span class="queue-live-main">${esc(main)}</span>${detail}
+  </span>`;
+}
+
+function queueElapsedMarkup(queue, session) {
+  const minutes = Math.max(0, Math.floor(QUEUES.elapsed(session) / 60));
+  return `<span class="queue-session-time" data-queue-elapsed ${queueAttrs(queue)}>${esc(
+    t("queue.elapsed", { n: minutes })
+  )}</span>`;
+}
+
+function queueTrackerInner(queue, { showLive = true } = {}) {
+  if (!QUEUES?.visible() || !queue) return "";
+  const active = QUEUES.session(queue);
+  const pending = QUEUES.pendingFor(queue);
+  const name = queueName(queue);
+  /* Booth queues are already the card's worst-queue summary. Their tracker
+     keeps the controls without repeating the same live figure, except for the
+     connection warning which has no summary equivalent. */
+  const live = showLive || QUEUES.unavailable(queue) ? queueLiveMarkup(queue) : "";
+  if (pending) {
+    return `${live}<span class="queue-session queue-session-pending">
+      <span class="queue-session-time">${esc(t("queue.pendingCompletion"))}</span>
+    </span>`;
+  }
+  if (active) {
+    const online = QUEUES.canReport();
+    return `${live}<span class="queue-session">
+      ${queueElapsedMarkup(queue, active)}
+      <span class="queue-session-actions">
+        ${
+          online
+            ? `<button class="queue-action" type="button" data-queue-action="update" ${queueAttrs(queue)}
+                aria-label="${esc(t("queue.action.updateAria", { queue: name }))}">${esc(t("queue.action.update"))}</button>`
+            : ""
+        }
+        <button class="queue-action queue-action-primary" type="button" data-queue-action="entered" ${queueAttrs(queue)}
+          aria-label="${esc(t("queue.action.enteredAria", { queue: name }))}">${esc(t("queue.action.entered"))}</button>
+        <button class="queue-action" type="button" data-queue-action="left" ${queueAttrs(queue)}
+          aria-label="${esc(t("queue.action.leftAria", { queue: name }))}">${esc(t("queue.action.left"))}</button>
+      </span>
+    </span>`;
+  }
+  if (!QUEUES.canReport()) return live;
+  return `${live}<span class="queue-start-actions">
+    <button class="queue-action queue-action-primary" type="button" data-queue-action="join" ${queueAttrs(queue)}
+      aria-label="${esc(t("queue.action.joinAria", { queue: name }))}">${esc(t("queue.action.join"))}</button>
+    <button class="queue-action" type="button" data-queue-action="closed" ${queueAttrs(queue)}
+      aria-label="${esc(t("queue.action.closedAria", { queue: name }))}">${esc(t("queue.action.closed"))}</button>
+  </span>`;
+}
+
+function queueTracker(queue, extraClass = "", { showLive = true } = {}) {
+  if (!QUEUES?.visible() || !queue) return "";
+  return `<span class="queue-tracker${extraClass ? ` ${extraClass}` : ""}" data-queue-surface="tracker" data-queue-show-live="${
+    showLive
+  }" tabindex="-1" ${queueAttrs(queue)}>${queueTrackerInner(queue, { showLive })}</span>`;
+}
+
+function queueSummaryInner(ex, compact = false) {
+  if (!QUEUES?.visible()) return "";
+  const worst = QUEUES?.worst(ex);
+  return worst ? queueLiveMarkup(worst.queue, { compact, unavailable: false }) : "";
+}
+
+function queueSummary(ex, { compact = false, kind = "summary" } = {}) {
+  if (!QUEUES?.visible() || !ex || ex.type === "trade" || isAbsent(ex)) return "";
+  return `<span class="queue-summary${compact ? " queue-summary-compact" : ""}" data-queue-surface="${esc(
+    kind
+  )}" data-queue-exhibitor="${esc(ex.id)}" data-queue-compact="${compact}">${queueSummaryInner(ex, compact)}</span>`;
+}
+
+function compareQueueEntries(a, b) {
+  if (a.live.closed !== b.live.closed) return a.live.closed ? -1 : 1;
+  return (Number(b.live.est) || 0) - (Number(a.live.est) || 0) ||
+    (Number(b.live.newest) || 0) - (Number(a.live.newest) || 0);
+}
+
+function itemQueueEntry(item) {
+  if (!QUEUES || !item) return null;
+  if (item.kind === "exhibitor") return QUEUES.worst(item.ex);
+  return item.at
+    .map((ex) => {
+      const queue = QUEUES.queue(ex.id, item.key);
+      return queue ? { queue, live: QUEUES.live(queue) } : null;
+    })
+    .filter((entry) => entry?.live)
+    .sort(compareQueueEntries)[0] || null;
+}
+
+function itemQueueInner(item) {
+  if (!QUEUES?.visible()) return "";
+  const entry = itemQueueEntry(item);
+  if (!entry) return "";
+  const at = item.kind === "game" && item.at.length > 1 ? queueEx(entry.queue)?.name : "";
+  return `${queueLiveMarkup(entry.queue, { compact: true, unavailable: false })}${
+    at ? `<span class="queue-live-at">${esc(t("queue.atExhibitor", { exhibitor: at }))}</span>` : ""
+  }`;
+}
+
+function itemQueueSummary(item) {
+  if (!QUEUES?.visible() || !item || (item.kind === "exhibitor" && (item.ex.type === "trade" || isAbsent(item.ex)))) return "";
+  return `<span class="queue-plan-live" data-queue-surface="item" data-queue-item-kind="${esc(
+    item.kind
+  )}" data-queue-item-key="${esc(item.key)}">${itemQueueInner(item)}</span>`;
+}
+
 function platformCode(raw) {
   const clean = String(raw).toLowerCase().replace(/\s*\([^)]*\)/g, "").trim();
   if (PLATFORM_CODES[clean]) return PLATFORM_CODES[clean];
@@ -1881,7 +2086,7 @@ const boothAgeStatus = (ex) =>
     ? "confirmed"
     : "expected";
 
-function gameRow(g) {
+function gameRow(ex, g) {
   const status = g.status || "expected";
   const plat = platformCodes(g.platforms);
   /* "confirmed" is the default state — labelling all 23 rows of a big booth
@@ -1904,6 +2109,7 @@ function gameRow(g) {
     ${markButton("played", "game", key, g.title)}
     ${markButton("saved", "game", key, g.title)}
     ${g.note ? `<span class="game-note">${esc(g.note)}</span>` : ""}
+    ${g.playable === true ? queueTracker(queueForGame(ex, g), "game-queue") : ""}
   </li>`;
 }
 
@@ -1959,7 +2165,16 @@ function card(ex) {
   const isOpen = state.expanded.has(ex.id);
   /* A saved game never hides behind "+ 12 more" — the whole point of saving it
      is not having to go looking for it again. */
-  const tail = isOpen ? [] : games.slice(4).filter((g) => isSaved("game", gameKey(g.title)));
+  const tail = isOpen
+    ? []
+    : games
+        .slice(4)
+        .filter(
+          (g) =>
+            isSaved("game", gameKey(g.title)) ||
+            Boolean(QUEUES?.session(queueForGame(ex, g))) ||
+            Boolean(QUEUES?.pendingFor(queueForGame(ex, g)))
+        );
   const shown = isOpen ? games : [...games.slice(0, 4), ...tail];
   const hidden = games.length - shown.length;
   const moreBtn =
@@ -1998,7 +2213,7 @@ function card(ex) {
                     : ""
                 }${hasAdult(ex) && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</span>
               </div>
-              <ul class="games">${shown.map(gameRow).join("")}</ul>
+              <ul class="games">${shown.map((game) => gameRow(ex, game)).join("")}</ul>
               ${moreBtn}
             </div>`
           : trade?.list || ""
@@ -2021,8 +2236,10 @@ function card(ex) {
           aria-label="${esc(t("card.queueAria", { n: crowd }))}"
           title="${esc(ex.crowdNote || "")}"><i></i><i></i><i></i><i></i><i></i></span>
         <span class="queue-val">${crowd ? `${crowd}/5` : "—"} ${esc(crowdLabel(crowd))}</span>
+        ${queueSummary(ex)}
       </div>`
       }
+      ${!isTrade ? queueTracker(boothQueue(ex), "booth-queue", { showLive: false }) : ""}
       ${
         ex.visitAdvice
           ? `<p class="advice"><span class="advice-label">${esc(t("card.planLabel"))}</span>${esc(
@@ -3104,6 +3321,7 @@ function itineraryItem(item) {
       <span class="it-name">${esc(item.name)}</span>
     </span>
     <span class="it-loc">${itineraryItemLocationHtml(item)}</span>
+    ${itemQueueSummary(item)}
     ${itineraryDayChips(item)}
     ${markButton("saved", item.kind, item.key, item.name)}
     ${
@@ -3283,6 +3501,7 @@ function renderPriority() {
             : esc(t("plate.tba"))
         }</span>
         <span class="priority-advice">${esc(e.visitAdvice || e.crowdNote || "")}</span>
+        ${queueSummary(e, { compact: true, kind: "priority" })}
         <span class="row-actions">
           ${markButton("played", "exhibitor", e.id, e.name)}
           ${markButton("saved", "exhibitor", e.id, e.name)}
@@ -3567,6 +3786,7 @@ function renderRoute() {
                 ? esc(t("plan.tradeBadge"))
                 : `${esc(t("route.queueShort", { n: crowd || "?" }))} · ${esc(crowdLabel(crowd))}`
             }</span>
+            ${queueSummary(ex, { compact: true, kind: "route" })}
             <span class="row-actions">
               ${markButton("played", "exhibitor", ex.id, ex.name)}
               ${markButton("saved", "exhibitor", ex.id, ex.name)}
@@ -3851,6 +4071,421 @@ function renderChangelog() {
       </div>`
     )
     .join("");
+}
+
+/* ---------- live queue interaction ---------- */
+
+function queueFromElement(el) {
+  return QUEUES?.queue(el?.dataset.queueExhibitor, el?.dataset.queueGame) || null;
+}
+
+function queueItem(kind, key) {
+  return itineraryItems().find((item) => item.kind === kind && item.key === key) || null;
+}
+
+function refreshQueueSurfaces() {
+  if (!QUEUES) return;
+  queueSurfaceGate = `${QUEUES.visible()}:${QUEUES.canReport()}`;
+  $$('[data-queue-surface]').forEach((surface) => {
+    const focused = surface.contains(document.activeElement) ? document.activeElement : null;
+    const action = focused?.dataset.queueAction;
+    let html = "";
+    if (surface.dataset.queueSurface === "tracker") {
+      html = queueTrackerInner(queueFromElement(surface), { showLive: surface.dataset.queueShowLive !== "false" });
+    } else if (surface.dataset.queueSurface === "item") {
+      html = itemQueueInner(queueItem(surface.dataset.queueItemKind, surface.dataset.queueItemKey));
+    } else {
+      const ex = state.exhibitors.find((entry) => entry.id === surface.dataset.queueExhibitor);
+      html = ex ? queueSummaryInner(ex, surface.dataset.queueCompact === "true") : "";
+    }
+    surface.innerHTML = html;
+    if (action) {
+      const queue = queueFromElement(focused);
+      const selector = queue
+        ? `[data-queue-action="${CSS.escape(action)}"][data-queue-exhibitor="${CSS.escape(
+            queue.exhibitor
+          )}"][data-queue-game="${CSS.escape(queue.game)}"]`
+        : `[data-queue-action="${CSS.escape(action)}"]`;
+      const replacement = surface.querySelector(selector);
+      if (replacement) replacement.focus({ preventScroll: true });
+      else if (surface.matches('[tabindex]')) surface.focus({ preventScroll: true });
+    }
+  });
+}
+
+function updateQueueTimes() {
+  if (!QUEUES) return;
+  $$('[data-queue-elapsed]').forEach((el) => {
+    const queue = queueFromElement(el);
+    const session = QUEUES.session(queue);
+    if (!session) return;
+    el.textContent = t("queue.elapsed", { n: Math.max(0, Math.floor(QUEUES.elapsed(session) / 60)) });
+  });
+  let freshnessExpired = false;
+  $$('[data-live-age]').forEach((el) => {
+    const live = QUEUES.live(queueFromElement(el));
+    if (live) el.textContent = queueAge(live.age);
+    else freshnessExpired = true;
+  });
+  /* Ticks normally touch text nodes only. Crossing a tier's freshness
+     boundary is the exception: replace the small queue surfaces so the old
+     number becomes unavailable even after polling stops at closing time. */
+  if (freshnessExpired) refreshQueueSurfaces();
+}
+
+function queueClaimLabel(value) {
+  return t(`queue.claim.${value}`);
+}
+
+function queueAheadLabel(value) {
+  return value === 200 ? t("queue.ahead.200") : t("queue.ahead.value", { n: value });
+}
+
+function queueDialogAhead() {
+  return `<div class="queue-dialog-step">
+    <p class="queue-dialog-question">${esc(t("queue.aheadQuestion"))}</p>
+    <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.aheadAria"))}">
+      ${QUEUE_AHEAD.map(
+        (value) => `<button class="queue-choice" type="button" data-queue-dialog-action="ahead" data-value="${value}">${esc(
+          queueAheadLabel(value)
+        )}</button>`
+      ).join("")}
+      <button class="queue-choice" type="button" data-queue-dialog-action="ahead-none">${esc(
+        t("queue.aheadSkip")
+      )}</button>
+    </div>
+  </div>`;
+}
+
+function queueDialogDetails() {
+  if (queueDialogState?.metaSaved) return "";
+  const selected = queueDialogState?.qtype || "";
+  const wantsBatch = selected === "group" || selected === "wave";
+  return `<details class="queue-details"${queueDialogState.detailsOpen ? " open" : ""}>
+    <summary>${esc(t("queue.details"))}</summary>
+    <p>${esc(t("queue.detailsHelp"))}</p>
+    <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.typeAria"))}">
+      ${QUEUE_TYPES.map(
+        (value) => `<button class="queue-choice${selected === value ? " active" : ""}" type="button"
+          data-queue-dialog-action="qtype" data-value="${value}" aria-pressed="${selected === value}">${esc(
+            t(`queue.type.${value}`)
+          )}</button>`
+      ).join("")}
+    </div>
+    ${
+      wantsBatch
+        ? `<p class="queue-dialog-question">${esc(t("queue.batchQuestion"))}</p>
+          <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.batchAria"))}">
+            ${QUEUE_BATCHES.map(
+              (value) => `<button class="queue-choice${queueDialogState.batch === value ? " active" : ""}" type="button"
+                data-queue-dialog-action="batch" data-value="${value}" aria-pressed="${
+                  queueDialogState.batch === value
+                }">~${value}</button>`
+            ).join("")}
+          </div>`
+        : ""
+    }
+    <button class="queue-meta-save" type="button" data-queue-dialog-action="meta" ${selected ? "" : "disabled"}>${esc(
+      t("queue.detailsSave")
+    )}</button>
+  </details>`;
+}
+
+function renderQueueDialog() {
+  const dialog = $("#queue-dialog");
+  if (!dialog || !queueDialogState) return;
+  $("#queue-dialog-subject").textContent = queueName(queueDialogState.queue);
+  const flow = $("#queue-dialog-flow");
+  if (queueDialogState.mode === "join") {
+    flow.innerHTML = `<div class="queue-dialog-step">
+      <p class="queue-dialog-question">${esc(t("queue.claimQuestion"))}</p>
+      <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.claimAria"))}">
+        ${QUEUE_CLAIMS.map(
+          (value) => `<button class="queue-choice" type="button" data-queue-dialog-action="claim" data-value="${value}">${esc(
+            queueClaimLabel(value)
+          )}</button>`
+        ).join("")}
+      </div>
+    </div>`;
+  } else if (queueDialogState.mode === "update") {
+    flow.innerHTML = queueDialogAhead();
+  } else {
+    flow.innerHTML = `${queueDialogState.aheadDone ? "" : queueDialogAhead()}${queueDialogDetails()}`;
+  }
+  flow.querySelectorAll("button").forEach((button) => {
+    button.disabled = button.disabled || queueDialogState.busy;
+  });
+  const details = flow.querySelector(".queue-details");
+  details?.addEventListener("toggle", () => {
+    if (queueDialogState) queueDialogState.detailsOpen = details.open;
+  });
+  $("#queue-dialog-status").textContent = queueDialogState.status || "";
+  $("#queue-dialog-done").hidden = queueDialogState.mode !== "details";
+}
+
+let queueDialogInvoker = null;
+
+function openQueueDialog(queue, mode, invoker = null) {
+  const dialog = $("#queue-dialog");
+  if (!dialog || !queue) return;
+  queueDialogInvoker = invoker;
+  queueDialogState = {
+    queue,
+    mode,
+    busy: false,
+    status: "",
+    aheadDone: false,
+    qtype: "",
+    batch: null,
+    detailsOpen: false,
+    metaSaved: false,
+  };
+  renderQueueDialog();
+  dialog.showModal();
+  requestAnimationFrame(() => dialog.querySelector(".queue-choice")?.focus());
+}
+
+const QUEUE_ERROR_KEYS = {
+  network_unavailable: "queue.offlineNotSent",
+  completion_pending: "queue.errorCompletionPending",
+  deferred_rejected: "queue.errorCompletionExpired",
+  update_too_soon: "queue.errorTooSoon",
+  update_conflict: "queue.errorTooSoon",
+  closure_too_soon: "queue.errorTooSoon",
+  meta_already_reported: "queue.errorMetaReported",
+  no_open_session: "queue.errorExpired",
+  session_already_closed: "queue.errorExpired",
+  writes_paused: "queue.errorPaused",
+  outside_show_hours: "queue.errorHours",
+  event_ended: "queue.errorHours",
+  client_denied: "queue.errorDenied",
+  unknown_queue: "queue.errorUnavailable",
+};
+
+const queueError = (error) => {
+  if (error?.queueOffline) return error.message;
+  if (error?.status === 429 || error?.code === "session_limit" || error?.code === "rate_limited") {
+    return t("queue.errorRate");
+  }
+  const key = QUEUE_ERROR_KEYS[error?.code];
+  return key ? t(key) : t("queue.error", { error: error?.message || t("queue.errorUnknown") });
+};
+
+function requireQueueDelivery(result) {
+  if (!result?.dropped) return result;
+  const error = new Error(t("queue.offlineNotSent"));
+  error.queueOffline = true;
+  throw error;
+}
+
+function focusQueueFallback(queue) {
+  const tracker = queue
+    ? $(`[data-queue-surface="tracker"][data-queue-exhibitor="${CSS.escape(
+        queue.exhibitor
+      )}"][data-queue-game="${CSS.escape(queue.game)}"]`)
+    : null;
+  if (tracker?.getClientRects().length) tracker.focus({ preventScroll: true });
+  else $('.tab[role="tab"][aria-selected="true"]')?.focus({ preventScroll: true });
+}
+
+async function submitQueueDialog(action, value) {
+  if (!queueDialogState || queueDialogState.busy) return;
+  if (action === "qtype") {
+    queueDialogState.qtype = value;
+    queueDialogState.batch = null;
+    renderQueueDialog();
+    $(`#queue-dialog-flow [data-queue-dialog-action="qtype"][data-value="${CSS.escape(value)}"]`)?.focus();
+    return;
+  }
+  if (action === "batch") {
+    queueDialogState.batch = Number(value);
+    renderQueueDialog();
+    $(`#queue-dialog-flow [data-queue-dialog-action="batch"][data-value="${CSS.escape(String(value))}"]`)?.focus();
+    return;
+  }
+
+  const stateAtSubmit = queueDialogState;
+  stateAtSubmit.busy = true;
+  stateAtSubmit.status = t("queue.sending");
+  renderQueueDialog();
+  let failed = false;
+  try {
+    if (action === "claim") {
+      requireQueueDelivery(await QUEUES.report(stateAtSubmit.queue, "joined", { claimed: Number(value) }));
+      stateAtSubmit.mode = "details";
+      stateAtSubmit.status = t("queue.joinedSuccess");
+    } else if (action === "ahead" || action === "ahead-none") {
+      const body = action === "ahead" ? { ahead: Number(value) } : {};
+      requireQueueDelivery(await QUEUES.report(stateAtSubmit.queue, "update", body));
+      if (stateAtSubmit.mode === "update") {
+        const dialog = $("#queue-dialog");
+        if (queueDialogState === stateAtSubmit && dialog.open) dialog.close();
+        showToast(t("queue.updatedSuccess"));
+        return;
+      }
+      stateAtSubmit.aheadDone = true;
+      stateAtSubmit.status = t("queue.updatedSuccess");
+    } else if (action === "meta") {
+      const body = { qtype: stateAtSubmit.qtype };
+      if (stateAtSubmit.batch) body.batch = stateAtSubmit.batch;
+      requireQueueDelivery(await QUEUES.report(stateAtSubmit.queue, "meta", body));
+      stateAtSubmit.metaSaved = true;
+      stateAtSubmit.status = t("queue.detailsSaved");
+    }
+  } catch (error) {
+    failed = true;
+    stateAtSubmit.status = queueError(error);
+  } finally {
+    if (queueDialogState === stateAtSubmit) {
+      stateAtSubmit.busy = false;
+      renderQueueDialog();
+      if ($("#queue-dialog").open) {
+        if (failed) {
+          $("#queue-dialog-flow button:not([disabled])")?.focus();
+        } else if (action === "claim") $("#queue-dialog-flow .queue-choice")?.focus();
+        else if (action === "ahead" || action === "ahead-none" || action === "meta") {
+          $("#queue-dialog-done")?.focus();
+        }
+      }
+    }
+  }
+}
+
+async function runQueueAction(queue, action, source = null) {
+  if (!queue) return;
+  const promptSource = Boolean(source?.closest("#queue-prompt"));
+  const actionGroup = action === "entered" || action === "left" ? "outcome" : action;
+  const pendingKey = `${QUEUES.queueKey(queue.exhibitor, queue.game)}:${actionGroup}`;
+  if (pendingQueueActions.has(pendingKey)) return;
+  if (action === "join" || action === "update") {
+    queuePromptKey = null;
+    renderQueuePrompt(false);
+    openQueueDialog(queue, action, source);
+    return;
+  }
+  pendingQueueActions.add(pendingKey);
+  if (source) {
+    source.disabled = true;
+    source.setAttribute("aria-busy", "true");
+  }
+  try {
+    const result = await QUEUES.report(queue, action);
+    queuePromptKey = null;
+    if (action === "entered" && result.queued) showToast(t("queue.enteredDeferred"));
+    else if (action === "left" && result.dropped) showToast(t("queue.leftOffline"));
+    else if (result.dropped) showToast(t("queue.offlineNotSent"));
+    else showToast(t(`queue.${action}Success`));
+    if (action === "closed") QUEUES.refresh({ force: true });
+  } catch (error) {
+    showToast(queueError(error));
+  } finally {
+    pendingQueueActions.delete(pendingKey);
+    if (source?.isConnected) {
+      source.disabled = false;
+      source.removeAttribute("aria-busy");
+    }
+    refreshQueueSurfaces();
+    renderQueuePrompt(true);
+    if (promptSource && $("#queue-prompt")?.hidden) {
+      requestAnimationFrame(() => focusQueueFallback(queue));
+    }
+  }
+}
+
+function renderQueuePrompt(allowNew) {
+  const prompt = $("#queue-prompt");
+  const announcement = $("#queue-prompt-announcement");
+  if (!prompt || !QUEUES?.visible()) {
+    if (prompt) prompt.hidden = true;
+    if (announcement) announcement.textContent = "";
+    document.body.classList.remove("queue-prompt-open");
+    return;
+  }
+  const previousKey = queuePromptKey;
+  let session = queuePromptKey
+    ? QUEUES.sessions().find((entry) => QUEUES.queueKey(entry.exhibitor, entry.game) === queuePromptKey)
+    : null;
+  if (!session && allowNew) {
+    session = QUEUES.promptCandidate();
+    queuePromptKey = session ? QUEUES.queueKey(session.exhibitor, session.game) : null;
+  }
+  const queue = session ? QUEUES.queue(session.exhibitor, session.game) : null;
+  if (!session || !queue) {
+    prompt.hidden = true;
+    if (announcement) announcement.textContent = "";
+    document.body.classList.remove("queue-prompt-open");
+    return;
+  }
+  const minutes = Math.max(0, Math.floor(QUEUES.elapsed(session) / 60));
+  const message = t("queue.prompt", { queue: queueName(queue), n: minutes });
+  $("#queue-prompt-text").textContent = message;
+  if (allowNew && queuePromptKey !== previousKey && announcement) {
+    announcement.textContent = `${t("queue.promptTitle")} ${message}`;
+  }
+  const update = $("#queue-prompt-update");
+  update.hidden = !QUEUES.canReport();
+  for (const [id, action] of [
+    ["#queue-prompt-update", "update"],
+    ["#queue-prompt-entered", "entered"],
+    ["#queue-prompt-left", "left"],
+  ]) {
+    const button = $(id);
+    button.dataset.queueExhibitor = queue.exhibitor;
+    button.dataset.queueGame = queue.game;
+    button.setAttribute("aria-label", t(`queue.action.${action}Aria`, { queue: queueName(queue) }));
+  }
+  prompt.hidden = false;
+  document.body.classList.add("queue-prompt-open");
+}
+
+function bindQueueControls() {
+  if (!QUEUES || !$("#queue-dialog")) return;
+  const dialog = $("#queue-dialog");
+  bindDialogDismiss(dialog, $("#close-queue"));
+  dialog.addEventListener("close", () => {
+    const invoker = queueDialogInvoker;
+    const queue = queueDialogState?.queue;
+    queueDialogState = null;
+    queueDialogInvoker = null;
+    if (invoker?.isConnected && !invoker.closest("[hidden]")) {
+      invoker.focus({ preventScroll: true });
+    }
+    else if (queue) focusQueueFallback(queue);
+  });
+  $("#queue-dialog-done").addEventListener("click", () => dialog.close());
+  $("#queue-dialog-flow").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-queue-dialog-action]");
+    if (button) submitQueueDialog(button.dataset.queueDialogAction, button.dataset.value);
+  });
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-queue-action]");
+    if (!button || button.closest("#queue-prompt")) return;
+    runQueueAction(queueFromElement(button), button.dataset.queueAction, button);
+  });
+  for (const [id, action] of [
+    ["#queue-prompt-update", "update"],
+    ["#queue-prompt-entered", "entered"],
+    ["#queue-prompt-left", "left"],
+  ]) {
+    $(id).addEventListener("click", (event) => runQueueAction(queueFromElement(event.currentTarget), action, event.currentTarget));
+  }
+  window.addEventListener("gcqueueschange", (event) => {
+    if (event.detail?.reason === "tick") {
+      if (`${QUEUES.visible()}:${QUEUES.canReport()}` !== queueSurfaceGate) refreshQueueSurfaces();
+      updateQueueTimes();
+      renderQueuePrompt(false);
+      offerMove();
+      return;
+    }
+    refreshQueueSurfaces();
+    updateQueueTimes();
+    renderQueuePrompt(["start", "focus", "storage"].includes(event.detail?.reason));
+    offerMove();
+    if (event.detail?.reason === "replay" && event.detail.rejected?.length) {
+      showToast(queueError(event.detail.rejected[0]));
+    }
+  });
+  renderQueuePrompt(true);
 }
 
 /* ---------- misc ---------- */
@@ -4183,6 +4818,7 @@ function bindControls() {
   bindShareDialog();
   bindSiteShare();
   bindSourcesDialog();
+  bindQueueControls();
   /* One delegated listener covers every +, ✓, day and sources button in every
      view, including the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
@@ -4322,6 +4958,7 @@ async function main() {
     )} <code>python3 -m http.server</code></p>`;
     return;
   }
+  QUEUES?.configure({ event: state.event, exhibitors: state.exhibitors });
   /* After the itinerary, so a day assignment stored under the old key is
      still there to be carried across — and after loadData, which brings the
      cards those keys migrate onto. */
@@ -4356,6 +4993,9 @@ async function main() {
   bootRender[first]();
   for (const view of VIEWS) if (view !== first) queueViewRender(view, bootRender[view]);
   showView(route, { push: false });
+  /* Live data is deliberately last and unawaited: the static guide has
+     already rendered, so a dead hall connection can never hold first paint. */
+  QUEUES?.start();
   if (!incoming) focusExhibitor(landing.params.get("ex"));
   if (offer) offerIncomingWhenReady(offer);
   /* Last, so an import prompt is the thing on screen when both apply — that one

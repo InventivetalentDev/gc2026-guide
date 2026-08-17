@@ -71,6 +71,23 @@
 <body>
   <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
 
+  <!-- Keep the active-queue reminder near the start of the DOM so keyboard
+       users do not have to traverse the whole guide to reach its actions.
+       The separate status node announces a newly shown reminder without
+       moving focus away from whatever the visitor is doing. -->
+  <p class="sr-only" id="queue-prompt-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
+  <aside class="queue-prompt" id="queue-prompt" role="region" aria-labelledby="queue-prompt-title" hidden>
+    <div class="queue-prompt-copy">
+      <span class="overline" id="queue-prompt-title" data-i18n="queue.promptTitle">Still queueing?</span>
+      <p id="queue-prompt-text"></p>
+    </div>
+    <div class="queue-prompt-actions">
+      <button class="queue-action" id="queue-prompt-update" type="button" data-i18n="queue.action.update">Still waiting</button>
+      <button class="queue-action queue-action-primary" id="queue-prompt-entered" type="button" data-i18n="queue.action.entered">I'm in!</button>
+      <button class="queue-action" id="queue-prompt-left" type="button" data-i18n="queue.action.left">I left</button>
+    </div>
+  </aside>
+
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand" href="#exhibitors">
@@ -303,11 +320,11 @@
       <div class="footer-col">
         <p class="footer-strong" data-i18n="footer.unofficial">Unofficial fan-made guide.</p>
         <p data-i18n="footer.notAffiliated">Not affiliated with gamescom, Koelnmesse or game (the German games industry association).</p>
-        <p data-i18n="footer.storage">Your saved list stays in this browser — no account, no server; nothing leaves the device unless you share a link yourself.</p>
+        <p data-i18n="footer.storage">Your saved list stays in this browser. Queue reports are optional; only the queue facts and a random device ID are sent to the live service.</p>
         <p data-i18n-html="footer.createdBy">Created by <a class="subtle-link" href="https://inventivetalent.org">inventivetalent</a> with Claude Code. <a class="subtle-link" href="https://github.com/InventivetalentDev/gc2026-guide">Open Source</a>.</p>
         <p data-i18n-html="footer.feedback">Something wrong, missing or out of date? Send corrections to <a class="subtle-link" href="mailto:content@hallgui.de?subject=gamescom%20guide%20feedback">content@hallgui.de</a>.</p>
-        <!-- The legal pages stay English (see docs/UPDATING.md), but the
-             links to them are labelled in German: "Impressum" is the word a
+        <!-- Imprint stays English while privacy follows the selected language.
+             The links themselves are localized: "Impressum" is the word a
              German visitor looks for, and § 5 DDG is about it being easy to
              find. A second switcher lives here as the findability backstop
              for anyone who scrolled past the header. -->
@@ -325,6 +342,22 @@
       </div>
     </div>
   </footer>
+
+  <dialog class="sheet queue-dialog" id="queue-dialog" aria-labelledby="queue-dialog-title" aria-describedby="queue-dialog-subject">
+    <div class="sheet-head">
+      <div>
+        <span class="overline" data-i18n="queue.dialogOverline">Live queue</span>
+        <h2 id="queue-dialog-title" data-i18n="queue.dialogTitle">Queue report</h2>
+      </div>
+      <button class="sheet-close" id="close-queue" type="button" aria-label="Close queue report" data-i18n-attr="aria-label:queue.closeAria">×</button>
+    </div>
+    <div class="sheet-body">
+      <p class="queue-dialog-subject" id="queue-dialog-subject"></p>
+      <div class="queue-dialog-flow" id="queue-dialog-flow"></div>
+      <p class="queue-dialog-status" id="queue-dialog-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <button class="queue-dialog-done" id="queue-dialog-done" type="button" data-i18n="queue.done">Done</button>
+    </div>
+  </dialog>
 
   <dialog class="sheet" id="share-dialog" aria-labelledby="share-dialog-title" aria-describedby="share-count">
     <div class="sheet-head">
@@ -432,6 +465,7 @@
   <script src="js/i18n/de.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/marks.js"></script>
+  <script src="js/queue.js"></script>
   <script src="js/app.js"></script>
   <script src="js/qr.js" defer></script>
   <script src="js/pwa.js" defer></script>

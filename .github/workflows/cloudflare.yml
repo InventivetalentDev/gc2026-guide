@@ -1,6 +1,7 @@
-name: Deploy to Cloudflare Workers
+name: Verify and deploy to Cloudflare Workers
 
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
@@ -9,32 +10,73 @@ permissions:
   contents: read
 
 concurrency:
-  group: cloudflare-workers
+  group: cloudflare-workers-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  verify-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # The same gate the Pages workflow has, widened to the hall plans and the
-      # manifest. A malformed JSON file does not fail loudly at runtime — it
-      # renders an empty guide — so it must not reach the edge.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install development tools
+        run: npm ci
+
+      # Malformed JSON renders an empty guide rather than a useful runtime
+      # error, so keep this cheap, explicit check alongside the behavioral
+      # suite. The i18n checker runs inside tools/build-site.sh via npm test.
       - name: Validate data files
         run: |
           for f in data/*.json data/hallplan/*.json manifest*.webmanifest; do
             python3 -m json.tool "$f" > /dev/null || exit 1
           done
 
-      # Copies the site into dist/, which is the Worker's asset directory.
-      - name: Stage the site
-        run: tools/build-site.sh
+      - name: Test Worker and stage site
+        run: npm test
 
-      # Both secrets are required; see docs/DEPLOYING.md for the token scopes.
-      - name: Deploy
+      - name: Assert server files are not public assets
+        run: |
+          test ! -e dist/worker
+          test ! -e dist/test
+          test ! -e dist/package.json
+
+      - name: Validate Worker bundle and bindings
+        run: |
+          npx wrangler deploy --dry-run
+          npx wrangler deploy --dry-run --env staging
+
+      - name: Detect production queue database binding
+        id: queue-db
+        run: |
+          if grep -q '^database_name = "gc2026-queues"$' wrangler.toml; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      # Production only, and deliberately before code: migrations must remain
+      # backward-compatible because a Worker rollback does not roll D1 back.
+      # The binding check lets the documented post-show teardown deploy the
+      # ended API after QUEUE_DB has intentionally been removed.
+      - name: Apply production D1 migrations
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && steps.queue-db.outputs.enabled == 'true'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.123.0"
+          command: d1 migrations apply QUEUE_DB --remote
+
+      - name: Deploy production Worker and assets
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.123.0"
           command: deploy

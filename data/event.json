@@ -1,6 +1,7 @@
 {
   "name": "gamescom 2026",
   "location": "Koelnmesse, Cologne",
+  "timeZone": "Europe/Berlin",
   "startDate": "2026-08-26",
   "endDate": "2026-08-30",
   "days": [
