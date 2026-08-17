@@ -90,7 +90,7 @@ This document is the playbook for refreshing the data — written so a scheduled
    - Fill in `hall`/`booth` and flip `locationConfirmed` to `true` when officially published.
    - Set `playable` when hands-on demos are confirmed.
    - Re-check show-floor age gates: set numeric game `age` and `ageStatus`, or booth-wide `ageRestricted`, only when a source supports the restriction.
-   - Re-evaluate `crowd`, `crowdNote` and `visitAdvice` when new info (booth size, lineup hype, ticket sellouts) changes the picture.
+   - Re-evaluate `crowd` when new info (booth size, lineup hype, ticket sellouts) changes the picture — and with it the `crowdNote` and `visitAdvice` **prose**, which lives in `data/i18n/en.json` and not in this file.
    - Add `officialUrl` for any exhibitor that gained a profile page, and drop it again if a page disappears.
    - Refresh each touched exhibitor's `lastUpdated` and append new `sources`.
 6. **Update `data/event.json`** if hours/tickets/areas/ONL details changed (e.g. days selling out — that raises crowd levels too). Each day's `business` field is
@@ -99,7 +99,7 @@ This document is the playbook for refreshing the data — written so a scheduled
    opening-hours table on
    <https://www.gamescom.global/en/info/trade-visitors>, which lists the business
    and entertainment areas in separate columns.
-7. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date), increment `revision`, adjust `note` if warranted.
+7. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date) and increment `revision` — those two fields are all it holds. The footer note is prose like any other sentence and lives at `meta.note` in `data/i18n/en.json`.
 8. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
    human-readable bullet per meaningful change — this renders on the site's Updates tab.
    Skip trivia; write for visitors ("Ubisoft booth confirmed: Hall 6 B010"), not diffs.

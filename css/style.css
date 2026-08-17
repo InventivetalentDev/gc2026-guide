@@ -1718,6 +1718,31 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   font-variant-numeric: tabular-nums;
 }
 .area-hall.none { color: var(--ink-dim); font-weight: 400; }
+/* A hall the map can draw makes its plate the link to it (renderEvent). It
+   stays a plate — same colour, same figures — and carries the quiet
+   underline every other hall link in the guide wears. Spelt out rather than
+   left to .hall-link because `.info-block a` above outranks that and would
+   repaint the number as body text.
+
+   The underline is the accent held back rather than .hall-link's --rule:
+   these rows are already in the accent, and a rule-grey line under an
+   orange number on a near-black ground is invisible. Browsers without
+   color-mix fall through to the signal underline .info-block a set — a
+   louder line, never a missing one. */
+a.area-hall {
+  /* A grid item is blockified, so without this the anchor spans its whole
+     column — the full row width once the list goes single-column on a
+     phone, where every tap in the empty half of that line would navigate.
+     The hit area stays the number. */
+  justify-self: start;
+  color: var(--signal);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--signal) 45%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+a.area-hall:hover,
+a.area-hall:focus-visible { text-decoration-color: currentColor; }
 .area-name { font-weight: 600; font-size: .92rem; }
 .area-desc { color: var(--ink-mid); font-size: .85rem; }
 

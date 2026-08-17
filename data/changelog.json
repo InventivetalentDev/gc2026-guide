@@ -1,13 +1,42 @@
 [
   {
     "date": "2026-08-17",
-    "revision": 27,
+    "revision": 29,
     "changes": [
       "New: crowd-sourced live queue reports. Join a playable game's line with one tap, keep the measured wait on your phone, add a rough people-ahead count when you can, and close the session when you get in or leave.",
       "Live chips now sit beside the guide's forecast without replacing it. They distinguish current queue flow, waits reported by people who just entered, and the minimum time people still in line have already waited — always with report count and age.",
       "Queue sessions keep running offline. If you get in with no reception, that measured completion waits on this device and is submitted on reconnect; stale crowd counts and closure reports are deliberately never replayed.",
       "A phone-first moderation page, random-device throttles, fixed report buckets and short report retention keep the five show days useful without adding accounts or collecting names or locations.",
       "The service worker now leaves every /api/ response to the network, so live data and the moderation page can never be mistaken for offline guide content."
+    ]
+  },
+  {
+    "date": "2026-08-17",
+    "revision": 28,
+    "changes": [
+      "Korea Pavilion (KOCCA) booth confirmed: Hall 2.2, C050g/D052g. This year it's one consolidated business-hall stand for 13 Korean studios (a trade badge gets you in) rather than the separate public/business pavilions of past shows — Krafton and Pearl Abyss still show their own games on the consumer floor.",
+      "Fixed: Logitech G's booth was pointing at the wrong stand (Hall 8.1, shared with Acer and Philips) — corrected to its own Hall 10.1 stand at E074/F077, which is what its official gamescom profile and the hall plan actually list.",
+      "Added AULA to Hall 10.1's hardware row (mice, keyboards; booth E050) — filed under its legal entity, Shenzhen Suoai Electronics Technology.",
+      "Fixed two business-hall booths the hall-plan cross-check flagged: AWS's trade card was on a stand that doesn't exist in Hall 3.2 (corrected to its actual gallery stand, B040g/C041g, shared with PlayEveryWare); IGDA holds two adjacent stands in Hall 3.2 and only one was listed (added C014/D015 alongside C016/D017).",
+      "Re-checked Google Play, LEGO and Bilibili's lineups, EA's slate beyond FC 27, and Xbox's remaining unannounced slots — still no specifics from any of them as of today.",
+      "Directory refresh: 1,659 registered exhibitors, no new share-token collisions."
+    ]
+  },
+  {
+    "date": "2026-08-16",
+    "revision": 27,
+    "changes": [
+      "Coverage pass over the entertainment halls: thirteen booths that were showing as uncovered on the map now have cards. Hall 6.1 gains 4Divinity (A030), Secret Mode (B040), Pawprint Interactive with Aniimo (C041) and Elementa Games (C021); Hall 7.1 gains 4Divinity's main stand (B021/C020), Huawei's AppGallery under Aspiegel (B031) and Webedia's FYNG City (B051/C050); Hall 8.1 gains MBC Game Studio (A011/B010), The District (B060), GIGABYTE/AORUS (C050) and Mattel (B020); Hall 9.1 gains JBL Quantum (B034/C035) and Rocket Beans TV (A046/B047).",
+      "New: The District, gamescom's first competitive-gaming area — about 2,000 m² at the back of Hall 8.1 plus roughly 1,000 m² outdoors in P8, headlined by SK Gaming. Maverick Games' CLUTCH gets its hands-on preview there, HP/HyperX shows Star Wars Galactic Racer, and Red Bull runs an EA Sports FC 27 tournament at its P8 booth.",
+      "New: 4Divinity brings six titles across Halls 6.1, 7.1 and 4.2 — The Defiant, Showa American Story, Guns of Eschaton, A Whisper of Fall: Jinyiwei, Genigods: Nezha and Sword Sage: Awakening.",
+      "New area on the Info tab: Outdoor Area P8, the reactivated open-air space behind Hall 8 — gamescom Beach, Asian Garden, Community Wall, CD Projekt Red's Apollo Tent and the outdoor half of The District.",
+      "Those small unnamed counters in Halls 6.1, 7.1, 8.1 and 9.1 are the official gamescom merchandise shops (Campus Sportswear / gamescomwear). They now have a card, and the map names them instead of calling them uncovered.",
+      "Aerosoft's five \"unannounced simulators\" now have names: Notruf 112 – Die Feuerwehr, Firefighters Code Red, Notaufnahme Simulator, Heavy Cargo: The Truck Simulator, Bergwerk: A Mining Sim, Forensics: Crime Scene Detective and Seaworks: Trap Season.",
+      "Tencent's Hall 8.1 stand has a programme after all: Honor of Kings and Arena of Valor with cosplayers and competitions, replacing the \"programme TBA\" placeholder.",
+      "Added Seafarer: The Ship Sim and Worms W.M.D. to the Team17 × astragon booth, and Final Fantasy VII Remake to Square Enix.",
+      "Fixed: ASUS also holds B040 next to its main Hall 8.1 stand — the map was calling that booth uncovered.",
+      "Fixed a dead link: the Indie Arena Booth's site is indiearenabooth.de, not indiearena.org, which now 404s. Every other outbound link in the guide was re-checked and resolves.",
+      "Fixed on the map: booths with an upper floor were still being drawn twice in most cases, and the empty upper copy caught the tap. Gryphline was the clearest victim — one of its two Hall 8.1 blocks named Arknights: Endfield and the other answered \"B-021g C-030g\" with nothing linked. Koelnmesse files the two levels' corners in whatever order it likes, and only the 65 pairs that happened to match exactly were being merged. All 134 now merge, which removes 69 phantom stands across eleven halls — 15 in Hall 10.1 alone — and every affected booth is tappable again."
     ]
   },
   {

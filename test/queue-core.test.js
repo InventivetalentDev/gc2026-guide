@@ -24,14 +24,56 @@ describe("queue vocabulary", () => {
     }
   });
 
-  it("derives all 145 active non-trade queues from the deployed data", () => {
+  /* Counts are derived, not written down. Hard-coded totals broke on the first
+     data revision that added a booth, which is a data change every week of the
+     run-up — and a failing count says nothing about whether the *rule* is
+     right. The expectations below restate the rule independently of the
+     implementation and assert the properties a data bump must never change. */
+  it("derives one queue per playable game, and one per lineup-less booth", () => {
+    const active = exhibitors.filter(
+      (exhibitor) => exhibitor.type !== "trade" && !(exhibitor.tags || []).includes("not exhibiting")
+    );
+    const playableOf = (exhibitor) => (exhibitor.games || []).filter((game) => game.playable === true);
+    const expectedGame = active.flatMap(playableOf).length;
+    const expectedBooth = active.filter((exhibitor) => playableOf(exhibitor).length === 0).length;
+
+    const values = [...buildQueueAllowlist(exhibitors).values()];
+    expect(values.filter(({ game }) => game !== BOOTH_QUEUE)).toHaveLength(expectedGame);
+    expect(values.filter(({ game }) => game === BOOTH_QUEUE)).toHaveLength(expectedBooth);
+    expect(values).toHaveLength(expectedGame + expectedBooth);
+    /* Every token is unique, so no report can ever be attributed to two queues. */
+    expect(new Set(values.map(({ exhibitor, game }) => queueToken(exhibitor, game))).size).toBe(values.length);
+    /* The dataset has to be able to fail these: it currently holds both. */
+    expect(expectedGame).toBeGreaterThan(0);
+    expect(expectedBooth).toBeGreaterThan(0);
+  });
+
+  it("excludes trade booths, absent exhibitors, and non-playable lineups", () => {
     const queues = buildQueueAllowlist(exhibitors);
-    const values = [...queues.values()];
-    expect(values).toHaveLength(145);
-    expect(values.filter(({ game }) => game === BOOTH_QUEUE)).toHaveLength(41);
-    expect(values.filter(({ game }) => game !== BOOTH_QUEUE)).toHaveLength(104);
-    expect(new Set(values.map(({ exhibitor, game }) => queueToken(exhibitor, game))).size).toBe(145);
-    expect(values.some(({ exhibitor }) => exhibitor === "playstation")).toBe(false);
+    const owners = new Set([...queues.values()].map(({ exhibitor }) => exhibitor));
+
+    /* Business booths run on appointments; the app excludes them everywhere. */
+    expect(exhibitors.some((exhibitor) => exhibitor.type === "trade")).toBe(true);
+    for (const exhibitor of exhibitors.filter((entry) => entry.type === "trade")) {
+      expect(owners.has(exhibitor.id)).toBe(false);
+    }
+    /* An exhibitor who pulled out keeps its card and loses its queue. */
+    expect(exhibitors.some((exhibitor) => (exhibitor.tags || []).includes("not exhibiting"))).toBe(true);
+    for (const exhibitor of exhibitors.filter((entry) => (entry.tags || []).includes("not exhibiting"))) {
+      expect(owners.has(exhibitor.id)).toBe(false);
+    }
+    /* A booth with a lineup gets per-game queues only — never a _booth queue
+       beside them — and an announced-but-not-playable title gets none. */
+    for (const exhibitor of exhibitors) {
+      const playable = (exhibitor.games || []).filter((game) => game.playable === true);
+      if (!playable.length) continue;
+      expect(queues.has(queueToken(exhibitor.id, BOOTH_QUEUE))).toBe(false);
+      for (const game of exhibitor.games || []) {
+        expect(queues.has(queueToken(exhibitor.id, normalizeGameKey(game.title)))).toBe(
+          game.playable === true
+        );
+      }
+    }
   });
 });
 

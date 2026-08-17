@@ -241,6 +241,37 @@ function standRecord(hallId, s) {
 
 /* ================= hall data ================= */
 
+/* Which patch of floor a stand stands on, as a comparable key.
+
+   Koelnmesse does not file the two levels corner-for-corner in the same
+   order. Gryphline's Hall 8.1 stands are the pair that showed it:
+   C-020 B-012 and its gallery agree byte for byte, while B-021 C-030 is
+   filed [90,10] [114,10] [114,40] [90,40] and B-021g C-030g is the same
+   rectangle written backwards, [90,40] [114,40] [114,10] [90,10]. So one
+   of Gryphline's two booths answered to a tap and the other returned an
+   empty "B-021g C-030g".
+
+   Comparing the literal coordinate string therefore matched only the
+   pairs that happened to agree — 65 of 134 across the show. This reduces
+   the corner ring to a canonical form instead: the smallest rotation of
+   the ring and of its reverse, which two polygons share exactly when
+   they are the same ring, whichever corner it starts from and whichever
+   way round it runs. */
+function footprint(poly) {
+  const ring = poly.map((p) => p.join());
+  /* defensive: this data leaves the ring open, but a closing vertex would
+     otherwise rotate into the middle and never match its reverse */
+  if (ring.length > 1 && ring[0] === ring[ring.length - 1]) ring.pop();
+  let best = null;
+  for (const dir of [ring, [...ring].reverse()]) {
+    for (let i = 0; i < dir.length; i++) {
+      const rot = dir.slice(i).concat(dir.slice(0, i)).join(" ");
+      if (best === null || rot < best) best = rot;
+    }
+  }
+  return best;
+}
+
 /* Koelnmesse files a stand's gallery level as a stand of its own, on
    exactly the same four corners: F-010 E-019 and F-010g E-019g are one
    place, one floor above the other. Drawn as two stands the empty upper
@@ -249,11 +280,12 @@ function standRecord(hallId, s) {
    the deep link to it was right all along.
 
    Same footprint means same place, so they become one stand: one shape,
-   every stand number, every name filed on either level. This joins exact
-   duplicates only — a sub-stand that sits *inside* a larger one
-   (E-071a within E-071, 30 of them in hall 10.1) has a footprint of its
-   own and stays separate, which is what the painting order below is for.
-   34 pairs across six halls; hall 10.2 alone had 15. */
+   every stand number, every name filed on either level. This joins stands
+   standing on the same corners only — a sub-stand that sits *inside* a
+   larger one (E-071a within E-071, 30 of them in hall 10.1) has a
+   footprint of its own and stays separate, which is what the painting
+   order below is for. 134 pairs across eleven halls; hall 10.1 alone
+   has 26. */
 function mergeLevels(stands) {
   /* Which number a visitor reads on the stand: the one the exhibitors
      were filed against, and failing that the plain ground-floor number
@@ -261,7 +293,7 @@ function mergeLevels(stands) {
   const rank = (s) => (s.names.length ? 2 : 0) + (/\d[a-z]/.test(s.nr) ? 0 : 1);
   const byFootprint = new Map();
   for (const s of stands) {
-    const key = s.poly.map((p) => p.join()).join(" ");
+    const key = footprint(s.poly);
     if (byFootprint.has(key)) byFootprint.get(key).push(s);
     else byFootprint.set(key, [s]);
   }
@@ -397,7 +429,15 @@ function edgeOf(key, W, H, m) {
 const EDGE_KEYS = ["n", "e", "s", "w"];
 
 const DOOR_DEPTH = 3.2;  /* how far a door's bracket stands off the wall */
-const DOOR_FS = 4.2;     /* door label size, metres — offered from z1 */
+/* Door label size, in metres like every other label here. 7 m is the
+   ceiling fitName() gives a booth name, which makes this exactly as big
+   as the largest name on the map — so if any label is legible at a given
+   zoom, this one is, and the doors can be named from the widest band
+   rather than waiting for you to zoom in on a hall you are trying to
+   find your way out of. */
+const DOOR_FS = 7;
+const LBL_OFF = DOOR_DEPTH + 1.8;    /* label baseline, metres out from the wall */
+const LBL_BAND = LBL_OFF + DOOR_FS;  /* room a labelled wall needs beyond itself */
 
 const hallOf = (to) => (to && to.startsWith("hall:") ? to.slice(5) : null);
 
@@ -430,9 +470,16 @@ function wallSegments(t0, t1, doors) {
   return out;
 }
 
-function renderOutline(svg, id, W, H, m) {
-  const doors = (state.outline.halls?.[id]?.doors || [])
+const doorsOf = (id) =>
+  (state.outline.halls?.[id]?.doors || [])
     .filter((d) => EDGE_KEYS.includes(d.edge) && d.span > 0);
+
+/* Which walls will carry a name, so renderHall can leave room for it
+   beyond them before it has drawn anything. */
+const labelledEdges = (doors) =>
+  new Set(doors.filter((d) => doorLabel(d.to)).map((d) => d.edge));
+
+function renderOutline(svg, id, W, H, m, doors) {
   const g = document.createElementNS(SVGNS, "g");
   g.setAttribute("class", "hall-outline");
   g.setAttribute("aria-hidden", "true");
@@ -499,22 +546,26 @@ function renderOutline(svg, id, W, H, m) {
   for (const { edge: key, text, ats } of groups.values()) {
     const edge = edgeOf(key, W, H, m);
     const [px, py] = edge.pt(ats.reduce((a, b) => a + b, 0) / ats.length);
-    const off = DOOR_DEPTH + 1.8;
     const el = document.createElementNS(SVGNS, "text");
-    /* The anchor is a class rather than the text-anchor attribute: the
-       map's own `#map text` rule sets it to middle, and a presentation
-       attribute loses to any stylesheet rule — which put "Boulevard"
-       straddling the doorway it names. */
     el.setAttribute("class", `door-lbl on-${key}`);
     el.setAttribute("font-size", DOOR_FS);
     if (key === "n" || key === "s") {
       el.setAttribute("x", px);
       /* glyphs sit above their baseline, so only the south wall's label
          has to be pushed down by a line to clear the wall */
-      el.setAttribute("y", py + edge.out[1] * off + (key === "s" ? DOOR_FS * 0.8 : 0));
+      el.setAttribute("y", py + edge.out[1] * LBL_OFF + (key === "s" ? DOOR_FS * 0.8 : 0));
     } else {
-      el.setAttribute("x", px + edge.out[0] * off);
-      el.setAttribute("y", py + DOOR_FS * 0.34);
+      /* Turned to run *along* an end wall rather than out from it. Set
+         across, "Boulevard" is 41 m of text against a hall 82 m deep —
+         it left the stage entirely at fit zoom, and the only way to make
+         room for the word would be to shrink the hall to a third of the
+         screen. Turned, it costs one line of depth instead. Reading
+         downward on the east wall and upward on the west is the usual
+         convention and keeps the glyphs on the outside in both cases. */
+      el.setAttribute(
+        "transform",
+        `translate(${px + edge.out[0] * LBL_OFF} ${py}) rotate(${key === "e" ? 90 : -90})`
+      );
     }
     el.textContent = text;
     g.appendChild(el);
@@ -530,14 +581,20 @@ function renderHall(id) {
   const [W, H] = hall.size;
 
   const m = marginOf(id);
-  /* The drawing is the booth box, plus the hall around it, plus GAP for
-     the outline's own stroke — so the picture starts outside the hall's
-     north-west corner rather than at the box's. view.ox/oy carry that
-     offset for everything that works in hall metres. */
-  view.ox = -(m.w + GAP);
-  view.oy = -(m.n + GAP);
-  const vw = W + m.w + m.e + GAP * 2;
-  const vh = H + m.n + m.s + GAP * 2;
+  const doors = doorsOf(id);
+  /* The drawing is the booth box, plus the hall around it, plus room
+     beyond each wall: GAP for the outline's own stroke, or a whole line
+     of type on a wall that is named — the labels are drawn outside, and
+     the stage clips whatever the viewBox does not reserve. So the
+     picture starts outside the hall's north-west corner rather than at
+     the box's, and view.ox/oy carry that offset for everything that
+     works in hall metres. */
+  const named = labelledEdges(doors);
+  const out = (k) => Math.max(GAP, named.has(k) ? LBL_BAND : 0);
+  view.ox = -(m.w + out("w"));
+  view.oy = -(m.n + out("n"));
+  const vw = W + m.w + m.e + out("w") + out("e");
+  const vh = H + m.n + m.s + out("n") + out("s");
 
   const svg = document.createElementNS(SVGNS, "svg");
   svg.setAttribute("id", "map");
@@ -662,7 +719,7 @@ function renderHall(id) {
      paint over the boundary it stops at, and a door's tap target has to
      sit above the stand behind it. Still under the label layer, which
      stays the topmost thing on the map. */
-  renderOutline(svg, id, W, H, m);
+  renderOutline(svg, id, W, H, m, doors);
   svg.appendChild(labels);
 
   $("#map")?.remove();

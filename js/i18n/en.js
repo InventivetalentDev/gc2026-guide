@@ -106,6 +106,8 @@ window.GC_STRINGS.en = {
 
   "hall.word": "Hall",
   "where.hall": "Hall {hall}",
+  /* A run of them — "Halls 5–10", the way the areas list files a whole area. */
+  "where.halls": "Halls {hall}",
   "where.hallBooth": "Hall {hall}, booth {booth}",
   "where.hallDotBooth": "Hall {hall} · {booth}",
   "kind.booth": "Booth",
@@ -238,6 +240,10 @@ window.GC_STRINGS.en = {
   "map.openTitle": "Open on the hall map",
   "map.openTitleWith": "{what} — open the hall map",
   "map.openAria": "{where} — open the hall map",
+  /* The areas list, where the plate names a span of halls and the map opens
+     one of them: both are spoken, so the link is still findable by the number
+     printed on it. */
+  "map.openAreaAria": "{halls} — open {where} on the hall map",
 
   /* ---------- full official directory ---------- */
   "directory.title": "Full directory",
