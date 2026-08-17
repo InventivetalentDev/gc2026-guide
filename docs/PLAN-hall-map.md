@@ -336,10 +336,16 @@ Consequences worth naming:
   second set of buttons. Its tap target is an invisible 18 px stroke over
   a 3 px one, and it is tested *above* the stand behind it.
 - **Labels are one per destination per wall, not one per door** — hall 7's
-  east end has three openings onto the same Boulevard — and they are
-  written outward into the margin, which is why `#map` is
-  `overflow: visible`: reserving hall-sized room inside the viewBox for
-  the word "Boulevard" would shrink every hall to fit a label.
+  east end has three openings onto the same Boulevard — and they are set
+  at the 7 m ceiling `fitName()` gives a booth name, so they are legible
+  wherever the largest name on the map is and no zoom band hides them.
+  Which end faces the Boulevard is a question you ask *before* zooming
+  in; answering it a band late is answering it late. The end walls'
+  labels are turned to run along them: set across, "Boulevard" is 41 m
+  of text against a hall 82 m deep, it left the stage entirely at fit
+  zoom, and the only way to make room for the word would be to shrink
+  the hall to a third of the screen. Turned, it costs one line of depth,
+  which the viewBox reserves beyond each wall that carries a name.
 
 Rejected: drawing the outline on the snapshot's `size` (it is the box
 around the booths, so it always touches them — this is the bug the margin
@@ -560,11 +566,13 @@ Serve the repo root; clear `gc2026.saved.v1`.
     the frame breaks at each door. In 7.1 the Boulevard is the east end
     (three openings, the third dimmed) and hall 8 is off the north wall;
     in 9.1 the Boulevard is the west end and hall 10 is off the south;
-    8.1's three Boulevard doors sit on three real aisles. Zoom one band
-    in and each wall names what is behind it, once, written outward.
-    Tapping the "Hall 7.1" door in 8.1 switches hall; tapping a stand
-    still opens that stand, and the deep-linked stand still lands dead
-    centre of the stage (the drawing gained a 4 m margin). Delete
+    8.1's three Boulevard doors sit on three real aisles. Every wall
+    names what is behind it at every zoom, once — reading down the east
+    wall, up the west, straight across the north and south, and never
+    over a booth name. Tapping the "Hall 7.1" door in 8.1 switches hall;
+    tapping a stand still opens that stand, and the deep-linked stand
+    still lands dead centre of the stage (the drawing starts outside the
+    hall now, not at the booth box). Delete
     `data/hallplan/outline.json` and the map falls back to the booth box,
     no doors, and drops "hall doors ours" from the credit line.
 10a. **Areas** — the hall row groups into Entertainment and Business
