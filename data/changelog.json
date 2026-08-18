@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-18",
+    "revision": 30,
+    "changes": [
+      "Hall 5.1 is on the map. Cosplay Village, the Artist Area and the ground-floor merchandise shops are drawn booth by booth like every other hall — 141 stands, which makes it the biggest entertainment hall after 10.1. The Cosplay Village row in Halls & areas opens it now instead of stopping at plain text, and so does the Merchandise Area row, which covers both of Hall 5's floors.",
+      "The hall plans were re-snapshotted from Koelnmesse while adding it: CD Projekt's booths in Halls 8.1 and 4.2 are now filed as CD PROJEKT RED, and Bonfire Studios joins the lineup on Gamer Network's Hall 2.2 stand."
+    ]
+  },
+  {
+    "date": "2026-08-18",
     "revision": 29,
     "changes": [
       "Ubisoft's Community Lounge lineup grows by one: Assassin's Creed Shadows joins the developer-talk schedule alongside Rainbow Six Siege, AC Black Flag Resynced, Anno 117 and The Division 2 — still no second playable demo station beyond Rayman Legends Retold.",

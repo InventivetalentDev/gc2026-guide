@@ -78,7 +78,7 @@ const SHELL = [
   "fonts/jetbrains-mono-latin.woff2",
 ];
 
-/* The hall plans are ~42 KB gzipped for all twelve levels — about one
+/* The hall plans are ~45 KB gzipped for all thirteen levels — about one
    font — so they are precached rather than fetched on demand. The point
    of the map is standing in a hall with no reception, and a hall you
    never happened to open before losing signal is exactly the one you
@@ -99,6 +99,7 @@ const DATA = [
      map that is wayfinding rather than booth-finding — exactly what you
      want in a hall with no signal. */
   "data/hallplan/outline.json",
+  "data/hallplan/hall-5.1.json",
   "data/hallplan/hall-5.2.json",
   "data/hallplan/hall-6.1.json",
   "data/hallplan/hall-7.1.json",

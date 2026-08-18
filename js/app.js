@@ -1796,8 +1796,8 @@ function hallLink(hall, booth, label) {
    lands in the first entertainment hall, "2–4" in the first business one,
    and the map's own chip row, grouped by area, carries you along the rest.
 
-   Only whole levels widen like that. "5.1" is a hall the snapshot either
-   has or hasn't, and quietly landing on 5.2 instead would be a different
+   Only whole levels widen like that. "11.1" is a hall the snapshot either
+   has or hasn't, and quietly landing on 10.2 instead would be a different
    room — so it stays plain text, as does anything unparseable. */
 function areaMapHall(hall) {
   const filed = String(hall ?? "").trim();

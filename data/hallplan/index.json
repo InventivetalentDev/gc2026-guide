@@ -1,5 +1,5 @@
 {
- "fetched": "2026-08-14",
+ "fetched": "2026-08-18",
  "source": "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
  "areas": {
   "entertainment": {
@@ -14,6 +14,16 @@
   }
  },
  "halls": [
+  {
+   "id": "5.1",
+   "file": "hall-5.1.json",
+   "area": "entertainment",
+   "size": [
+    179,
+    71
+   ],
+   "stands": 141
+  },
   {
    "id": "5.2",
    "file": "hall-5.2.json",
@@ -122,7 +132,7 @@
     179.5,
     83
    ],
-   "stands": 55
+   "stands": 56
   },
   {
    "id": "4.2",

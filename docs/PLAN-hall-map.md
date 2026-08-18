@@ -11,7 +11,7 @@ exhibitor names, all in metres) is exactly what an honest map needs.
 **Status: built and integrated.** `tools/fetch-hallplan.mjs` snapshots the
 geometry into `data/hallplan/`; `map.html` + `js/map.js` + `css/map.css`
 draw it; `js/marks.js` holds what the map and the guide must agree on;
-`sw.js` precaches both pages and all twelve hall levels; the guide links out
+`sw.js` precaches both pages and all thirteen hall levels; the guide links out
 from every place it names a hall — card plates, the plan board, queue
 priority, the wristband list and all 1,630 rows of the full directory —
 and the map links back to a card. A card may hold several stands and the
@@ -60,19 +60,20 @@ Measured, after trimming to what we render (see the tool):
 
 | hall level | area | stands | file (raw) | gzipped |
 |---|---|---|---|---|
-| 5.2 | entertainment | 90 | 11 KB | 3.2 KB |
-| 6.1 | entertainment | 35 | 5 KB | 1.4 KB |
-| 7.1 | entertainment | 23 | 3 KB | 1.1 KB |
-| 8.1 | entertainment | 35 | 5 KB | 1.5 KB |
+| 5.1 | entertainment | 141 | 15 KB | 3.3 KB |
+| 5.2 | entertainment | 90 | 11 KB | 3.1 KB |
+| 6.1 | entertainment | 35 | 4 KB | 1.3 KB |
+| 7.1 | entertainment | 23 | 3 KB | 1.0 KB |
+| 8.1 | entertainment | 35 | 4 KB | 1.5 KB |
 | 9.1 | entertainment | 21 | 3 KB | 0.9 KB |
-| 10.1 | entertainment | 191 | 25 KB | 7.0 KB |
-| 10.2 | entertainment | 95 | 24 KB | 8.2 KB |
-| 2.1 | business | 83 | 10 KB | 3.0 KB |
+| 10.1 | entertainment | 191 | 25 KB | 6.8 KB |
+| 10.2 | entertainment | 95 | 24 KB | 8.6 KB |
+| 2.1 | business | 83 | 10 KB | 2.9 KB |
 | 2.2 | business | 95 | 12 KB | 3.3 KB |
-| 3.2 | business | 102 | 16 KB | 5.3 KB |
-| 4.1 | business | 55 | 13 KB | 5.2 KB |
+| 3.2 | business | 102 | 16 KB | 5.6 KB |
+| 4.1 | business | 56 | 14 KB | 5.3 KB |
 | 4.2 | business | 31 | 5 KB | 1.5 KB |
-| **total** | | **856** | **132 KB** | **~42 KB** |
+| **total** | | **998** | **147 KB** | **~45 KB** |
 
 The whole show costs about one webfont. "Lazy-loading because it might be
 a lot of data" inverted into "lazy-load for first paint, precache the lot
@@ -206,9 +207,9 @@ The snapshot on disk is untouched, as ever.
 
 ### 5. Per-hall lazy files, precached for offline
 
-One JSON per hall level, fetched on first open (0.9–8.4 KB gz), prefetched
-for the rest on idle. Integration adds all twelve + `index.json` to the
-service worker's `DATA` list (`sw.js:44`) — 42 KB gz buys "the map works
+One JSON per hall level, fetched on first open (0.9–8.6 KB gz), prefetched
+for the rest on idle. Integration adds all thirteen + `index.json` to the
+service worker's `DATA` list (`sw.js:44`) — 45 KB gz buys "the map works
 in a dead-reception hall before you ever opened it", which is the whole
 point of the PWA. Runtime updates come free: the `/data/` path rule
 (`sw.js:194`) already serves them network-first with cache fallback.
@@ -507,14 +508,14 @@ an arrow-key pan would be theatre. None of these change the architecture.
     names a *span* rather than a hall: "5–10" for the entertainment area,
     "2–4" for the business one, "5" for a level whose halves it does not
     separate. `areaMapHall()` resolves those to the lowest hall inside
-    the span the snapshot can draw — 5.2, 2.1 and 5.2 — so the plate
+    the span the snapshot can draw — 5.1, 2.1 and 5.1 — so the plate
     opens the near end of the area and the map's own area-grouped chip
-    row carries you along the rest. An exact hall (10.1, 10.2, 5.2)
-    links to itself; only whole levels widen, because "5.1" is a hall
-    the snapshot either has or hasn't and landing on 5.2 instead would
-    be a different room. Hall 1, 5.1, 11.1 and the four hall-less rows
-    stay plain text. The plate keeps the label the data filed, so the
-    accessible name carries both — "Halls 5–10 — open Hall 5.2 on the
+    row carries you along the rest. An exact hall (10.1, 10.2, 5.1)
+    links to itself; only whole levels widen, because "11.1" is a hall
+    the snapshot either has or hasn't and landing on 10.2 instead would
+    be a different room. Hall 1, 11.1 and the four hall-less rows stay
+    plain text. The plate keeps the label the data filed, so the
+    accessible name carries both — "Halls 5–10 — open Hall 5.1 on the
     hall map" — rather than letting the number you tapped and the hall
     you land in disagree silently.
 5. **Cross-links out**: the sheet links to `./#exhibitors?ex=<id>`, and
@@ -627,8 +628,8 @@ Serve the repo root; clear `gc2026.saved.v1`.
     links too, keeps its amber plate, and says "trade & media only" in
     its title and its accessible name; chips in hall 1 and the F-areas
     are still not links. In Event info, the areas list opens the map at
-    the near end of a span — "5–10" at 5.2, "2–4" at 2.1 with the trade
-    banner up — an exact hall at itself, and 1 / 5.1 / 11.1 / "—" not at
+    the near end of a span — "5–10" at 5.1, "2–4" at 2.1 with the trade
+    banner up — an exact hall at itself, and 1 / 11.1 / "—" not at
     all. The `.ics` export still contains no markup.
 12. **Offline** — airplane mode, reopen installed app → map, switch to a
     never-opened hall: renders from precache. Navigating straight to
@@ -654,13 +655,18 @@ Serve the repo root; clear `gc2026.saved.v1`.
    cosmetic: whether an annexe should read as subordinate to its parent
    rather than as a peer. Decide after seeing them on site.
 3. **The other hall levels.** Mostly answered: the five business-area
-   levels are drawn (decision 5a), which leaves hall 1 (Event Arena,
-   20 stands and a single directory row — a venue, not a floor of
-   stands), hall 5.1 (Cosplay Village and the merch halls, 61 directory
-   stands — the strongest remaining candidate), and the outdoor F-areas
-   and P4, which have 11 directory stands between them. Each is a
-   `HALLS` entry in the tool plus a re-run, and each needs its own
-   orientation check, since the signs are a per-hall fact.
+   levels are drawn (decision 5a), and hall 5.1 with them — Cosplay
+   Village, the Artist Area and the ground-floor merch shops, 141
+   stands, the largest entertainment level after hall 10.1. Its signs
+   are as filed: both of hall 5's storeys carry the same `scalex`/
+   `scaley`, its stand rows run A→E the same way round as every other
+   hall's, and flipping it drops the two levels' structural-block
+   overlap from 0.46 to 0.30 — so no `SIGN_FIX` entry, unlike hall 2.1.
+   That leaves hall 1 (Event Arena, 20 stands and a single directory
+   row — a venue, not a floor of stands) and the outdoor F-areas and
+   P4, which have 11 directory stands between them. Each is a `HALLS`
+   entry in the tool plus a re-run, and each needs its own orientation
+   check, since the signs are a per-hall fact.
 4. ~~**Feeding confirmations back.**~~ Built: `unclaimedReport()` lists
    official stand names matching a guide exhibitor in that hall whose
    card has not claimed them. It found twelve stands across eight cards
