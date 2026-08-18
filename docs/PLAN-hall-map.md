@@ -656,9 +656,9 @@ Serve the repo root; clear `gc2026.saved.v1`.
     the chip that is now active. Save a booth in hall 7 and its plate
     carries ●1 inside the plate and a signal outline, live, without
     leaving the overview. Gate names sit clear of the halls at every
-    zoom — north above the plan, south below it, the rest set back over
-    the passages — and hall 9's and the Boulevard's, which stand ten
-    units apart, do not overlap. `#overview` is a working deep link, and
+    zoom — north above the plan, south below it, east and west set back
+    over the passages — and there are four of them, not the six the
+    source's artwork marks. `#overview` is a working deep link, and
     with `campus.json` 404ing the chip is absent and that link falls
     through to a hall rather than an empty stage.
 
@@ -699,7 +699,7 @@ Serve the repo root; clear `gc2026.saved.v1`.
    the page's `hallen` array to `data/hallplan/campus.json`, and the hall
    row's first chip draws it: every hall in its place, the Boulevard and
    the Piazza between them, every Durchgang and Passage, the Confex and
-   the Congress wings, the six gates — and a tap on a hall opens it. The
+   the Congress wings, the four gates — and a tap on a hall opens it. The
    halls the guide draws no level of (1 and 11) are on it dimmed, for
    orientation, and take no taps; each hall the guide *does* draw carries
    the count of your saved booths in it, the same ●n the chips use.
@@ -712,14 +712,27 @@ Serve the repo root; clear `gc2026.saved.v1`.
    not to scale" for exactly that reason.
 
    The gates came with it, and did not need the guess this entry feared.
-   The array itself carries two of them; the other four are dots on the
-   page's own site artwork, and once the artwork's frame is pinned to the
-   outlines' (it is theirs shifted 134 units) all six land where they
-   should — Eingang Nord in hall 8's own entrance hall, Eingang Halle 9 on
-   hall 9's east wall, Eingang Boulevard at the Boulevard's midpoint. A
-   dot is a coordinate, so we take the six points and none of the drawing.
-   That is a different question from which of hall 8's *openings* is
-   Eingang Nord, which is still a walk and still not on a hall wall.
+   They are dots on the site artwork the page lays over the outlines, and
+   once that artwork's frame is pinned to the outlines' (it is theirs
+   shifted 134 units) each lands where it should — Nord in hall 8's own
+   entrance hall, West between halls 2 and 4, Ost beside hall 10, Süd past
+   the corridor between halls 3 and 11. A dot is a coordinate, so we take
+   the points and none of the drawing.
+
+   Four of them, though the artwork marks six. That artwork is
+   Koelnmesse's *Verkehrsleitfaden* — the traffic guide for the grounds,
+   drawn once for every fair they host, with the Hohenzollernbrücke, the
+   streets and the car parks on it — so it marks every way onto the site
+   the buildings have, not the ones a given show opens. "Eingang Halle 9"
+   and "Eingang Boulevard" are in neither the gamescom-configured `hallen`
+   array nor anything gamescom publishes, and the guide's own entrances
+   section says four gates. Drawn beside the four in the same style they
+   would read as a fifth and sixth way in. Taking a coordinate is safe;
+   claiming a door is open is not, and `CAMPUS_ENTRANCES` in the tool is
+   where that line is drawn.
+
+   All of which is a different question from which of hall 8's *openings*
+   is Eingang Nord, which is still a walk and still not on a hall wall.
 7. **Which doors are actually there.** Halls 6 and 9 borrow hall 7's
    door spacing — hall 6 has no 2017 plan and hall 9's Boulevard side is
    not drawn in its own — and hall 8's Boulevard doors are placed from

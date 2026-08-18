@@ -175,11 +175,14 @@ const CAMPUS_NOTE =
   "orientation only; `area` is that hall's area, the same key as in " +
   "index.json. `place` is a name worth putting on the diagram, as an i18n key " +
   "the client resolves (map.place.*) — ours, because the source labels none " +
-  "of these. ENTRANCES: id and a point. Two of the six are in the `hallen` " +
-  "array; the others are dots on the page's site artwork, whose frame is this " +
-  "one shifted 134 units, and a dot is a coordinate — we take the six points " +
-  "and none of the drawing; the names are the client's, from map.gate.*. " +
-  "Re-running this tool rewrites the file; a " +
+  "of these. ENTRANCES: id and a point, one per gate. They are the dots on " +
+  "the site artwork the page lays over these outlines, whose frame is this " +
+  "one shifted 134 units — a dot is a coordinate, so we take the points and " +
+  "none of the drawing, and the names are the client's, from map.gate.*. " +
+  "Four of them, not the six the artwork marks: that artwork is Koelnmesse's " +
+  "traffic guide for the grounds and marks every way in the buildings have, " +
+  "while gamescom opens Nord, Ost, Sued and West. See CAMPUS_ENTRANCES in " +
+  "the tool. Re-running this tool rewrites the file; a " +
   "correction belongs in the tool, not here.";
 
 /* Codes are bare ("B1", "D67", "EINO") and the page labels none of them.
@@ -197,18 +200,29 @@ const CAMPUS_PLACES = {
   C5: "congress-north",
 };
 
-/* The site entrances, which the `hallen` array carries only two of. The
-   other four are drawn on the page's own site artwork, each as a dot with
-   a leader line to its name — and a dot is a coordinate, the same kind of
-   fact as a booth corner, so we take the six dots and none of the drawing.
-   Group id → our key; the name is the client's, from map.gate.*. */
+/* The four gates, from the site artwork the page lays over the outlines.
+   Each is a <g> holding a dot, a leader line and its name — and a dot is
+   a coordinate, the same kind of fact as a booth corner, so we take four
+   points and none of the drawing. Group id → our key; the name is the
+   client's, from map.gate.*.
+
+   The artwork names six, and the two left out are deliberate. It is
+   Koelnmesse's *Verkehrsleitfaden* — the traffic guide for the grounds,
+   drawn once for every fair they host, with the Hohenzollernbrücke, the
+   streets and the car parks on it — so it marks every way onto the site
+   the buildings have, not the ones a given show opens. "Eingang Halle 9"
+   sits at hall 9's south-east corner and "Eingang Boulevard" in the
+   middle of the Boulevard, neither is in the gamescom-configured `hallen`
+   array, and neither appears in anything gamescom publishes: their own
+   guidance, and ours in data/i18n, is four gates — Nord, Ost, Süd, West.
+   Drawn beside those four in the same style they would read as a fifth
+   and sixth way in. Taking a coordinate is safe; claiming a door is open
+   is not. */
 const CAMPUS_ENTRANCES = {
   EN: "entrance-north",
   EO: "entrance-east",
   ES: "entrance-south",
   EW: "entrance-west",
-  E9: "entrance-hall-9",
-  EB: "entrance-boulevard",
 };
 
 /* The artwork is laid over the same map as the outlines, so its frame is

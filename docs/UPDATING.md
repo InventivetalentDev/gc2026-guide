@@ -689,8 +689,12 @@ geometry is its `hall-<id>.json`, in true metres.
 
 Two tables in the tool are ours, and are the only editorial decisions here:
 `CAMPUS_PLACES` names the handful of features worth a name on a diagram
-(`B1` → `boulevard`), and `CAMPUS_ENTRANCES` maps the page's own entrance
-markers to our keys. Both are i18n keys, resolved client-side from
+(`B1` → `boulevard`), and `CAMPUS_ENTRANCES` picks the gates. It picks four
+of the six the source marks, and the comment above it says why: those
+markers come from Koelnmesse's traffic guide for the grounds, which is
+drawn once for every fair they host and names every way in the buildings
+have — gamescom opens Nord, Ost, Süd and West, and a fifth dot drawn in the
+same style would read as a fifth way in. Both are i18n keys, resolved client-side from
 `map.place.*` and `map.gate.*` in `js/i18n/<lang>.js` — a name added to
 either table needs a string in both languages and a `check-i18n --update`
 run. Everything else on the diagram is drawn as what its code says it is

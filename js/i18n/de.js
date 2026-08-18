@@ -447,9 +447,9 @@ window.GC_STRINGS.de = {
   /* ---------- die Geländeübersicht ----------
 
      "Übersicht" ist der Chip ganz links: ein Schritt zurück von einer
-     Halle auf das ganze Gelände. Die Eingangsnamen brechen in der Marge
-     auf zwei Zeilen um — deshalb bleiben sie zweiteilig ("Eingang /
-     Nord"). Piazza und Confex heißen auf dem offiziellen Plan auch auf
+     Halle auf das ganze Gelände. Die Namen der vier Eingänge brechen bei
+     Bedarf auf zwei Zeilen um — deshalb bleiben sie zweiteilig ("Eingang
+     / Nord"). Piazza und Confex heißen auf dem offiziellen Plan auch auf
      Deutsch so. */
   "map.overview": "Übersicht",
   "map.overviewAria": "Übersicht über das gesamte Gelände",
@@ -466,8 +466,6 @@ window.GC_STRINGS.de = {
   "map.gate.entrance-east": "Eingang Ost",
   "map.gate.entrance-south": "Eingang Süd",
   "map.gate.entrance-west": "Eingang West",
-  "map.gate.entrance-hall-9": "Eingang Halle 9",
-  "map.gate.entrance-boulevard": "Eingang Boulevard",
 
   /* ---------- business access & the business halls ----------
 

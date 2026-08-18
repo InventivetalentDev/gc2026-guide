@@ -1153,20 +1153,11 @@ function placeEl(name, poly) {
   return el;
 }
 
-/* Which way a gate's name is set. Four of the six name a compass point
-   and are placed on that edge whatever else is nearby — "Entrance South"
-   belongs below the plan, where someone arriving at it is standing. The
-   two that name a place instead go to whichever edge is nearest. */
-function gateEdge(id, x, y, W, H) {
-  const named = { north: "n", east: "e", south: "s", west: "w" }[id.replace("entrance-", "")];
-  if (named) return named;
-  return [
-    { edge: "w", d: x },
-    { edge: "e", d: W - x },
-    { edge: "n", d: y },
-    { edge: "s", d: H - y },
-  ].sort((a, b) => a.d - b.d)[0].edge;
-}
+/* Which way a gate's name is set: its own compass point, whatever else is
+   nearby — "Entrance South" belongs below the plan, where someone arriving
+   at it is standing. A gate the snapshot names some other way is not drawn
+   rather than guessed at; there are four, and the tool says why. */
+const gateEdge = (id) => ({ north: "n", east: "e", south: "s", west: "w" }[id.replace("entrance-", "")]);
 
 /* The gates, as a dot each and a name.
 
@@ -1178,10 +1169,10 @@ function gateEdge(id, x, y, W, H) {
    words. Set over the halls they need the halo the CSS gives them, and
    they land on the passages either way.
 
-   Two gates at the same end would set their names on top of each other —
-   hall 9's own door and the Boulevard's are ten units apart on the east
-   side — so names on one edge are pushed apart along it afterwards. The
-   leader, or the dot beside the name, still says which is which. */
+   One gate to an edge today, but two on one edge would set their names on
+   top of each other, so names sharing an edge are pushed apart along it
+   afterwards. The leader, or the dot beside the name, still says which is
+   which. */
 function gatesEl(gates, W, H) {
   const g = document.createElementNS(SVGNS, "g");
   g.setAttribute("class", "campus-gates");
@@ -1197,8 +1188,8 @@ function gatesEl(gates, W, H) {
     g.appendChild(dot);
 
     const name = placeLabel("gate", gate.id);
-    if (!name) continue;
-    const edge = gateEdge(gate.id, x, y, W, H);
+    const edge = gateEdge(gate.id);
+    if (!name || !edge) continue;
     const fit = fitPlace(name, GATE_RUN[edge], GATE_FS);
     const across = edge === "e" || edge === "w";
     placed.push({

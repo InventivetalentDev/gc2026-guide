@@ -460,10 +460,11 @@ window.GC_STRINGS.en = {
      "Overview" rather than "Site" or "All halls" because the chips beside
      it are halls, and this is the view of them.
 
-     map.place.* names a piece of ground between the halls, map.gate.* an
-     entrance — both keyed by what data/hallplan/campus.json calls it. The
-     gate names wrap to two lines in the margin, so they read as "Entrance
-     / North"; keep them two words for that reason. */
+     map.place.* names a piece of ground between the halls, map.gate.* one
+     of the four gates — both keyed by what data/hallplan/campus.json calls
+     it. A gate name is set in a strip of margin or over a passage, and
+     wraps to two lines to fit either, so it reads as "Entrance / North";
+     keep them two words for that reason. */
   "map.overview": "Overview",
   "map.overviewAria": "Overview of the whole site",
   "map.campusAria": "Diagram of the gamescom halls, the Boulevard between them and the entrances",
@@ -484,8 +485,6 @@ window.GC_STRINGS.en = {
   "map.gate.entrance-east": "Entrance East",
   "map.gate.entrance-south": "Entrance South",
   "map.gate.entrance-west": "Entrance West",
-  "map.gate.entrance-hall-9": "Entrance Hall 9",
-  "map.gate.entrance-boulevard": "Entrance Boulevard",
 
   /* ---------- the trade badge & the business halls ----------
 
