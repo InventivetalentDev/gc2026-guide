@@ -19,6 +19,15 @@ compatibility_date = "2026-08-14"
 # rather the guide answered on gc26.guide and nothing else.
 workers_dev = true
 
+# Where .github/workflows/cloudflare-preview.yml puts pull requests to be
+# looked at: `wrangler versions upload` gives a PR a version of this same
+# Worker at pr-<n>-gc2026-guide.<subdomain>.workers.dev, with production and
+# its hostnames untouched — a version is not a deployment, and an upload does
+# not apply triggers. Left unset this follows workers_dev, so it is pinned
+# true here: turning workers_dev off (above) should not quietly take the
+# preview system down with it.
+preview_urls = true
+
 [assets]
 directory = "./dist"
 
