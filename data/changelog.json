@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-18",
+    "revision": 31,
+    "changes": [
+      "The hall map has an overview now — the first chip in its hall row. It draws the whole site at once: every hall where it actually stands, the Boulevard and the passages between them, the four gates, and the number of your saved booths on each hall. Tap a hall to open its plan. It is a diagram rather than a plan — it comes from Koelnmesse's own campus outline, which puts each hall in the right place but does not draw it to scale.",
+      "Halls 1 and 11 are on the overview too, greyed out. The guide covers no booths in either, and they are drawn so the halls around them land in the right place."
+    ]
+  },
+  {
+    "date": "2026-08-18",
     "revision": 30,
     "changes": [
       "The map opens on the whole site if you ask it to. The hall row's first chip is a campus overview — every hall in its place, the Boulevard and the Piazza between them, the passages, the Confex and the Congress wings, and the four gamescom gates — for the question thirteen hall chips cannot answer: not \"take me to hall 7\" but \"where is hall 7\". Every hall the guide draws carries your saved-booth count on its plate and opens when you tap it; halls 1 and 11 are on it dimmed, for orientation. It is Koelnmesse's own campus outline, fitted to their artwork rather than measured, so the credit under it says not to scale.",
