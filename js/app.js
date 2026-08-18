@@ -252,8 +252,7 @@ function mergeStrings(exhibitors, event, meta, strings) {
 /* The storage shape and the saved-game rule live in js/marks.js, because
    the hall map reads and writes the same two lists. Everything below
    still calls loadMarks/persistMarks/gameKey by their old names. */
-const { MARK_KEYS, PREFS_KEY, gameKey } = GCMarks;
-const IT_KEY = "gc2026.itinerary.v1";
+const { MARK_KEYS, PREFS_KEY, IT_KEY, gameKey } = GCMarks;
 
 const loadMarks = (mark) => GCMarks.readMarks(mark);
 const persistMarks = (mark) => GCMarks.writeMarks(mark, state.marks[mark]);
@@ -1498,27 +1497,19 @@ function bindSourcesDialog() {
    is not just for the session. A missing schedule therefore keeps the
    assignments as filed and lets the next load, which has the days, decide. */
 function loadItinerary() {
-  const empty = { exhibitors: new Map(), games: new Map() };
-  try {
-    const raw = JSON.parse(localStorage.getItem(IT_KEY) || "{}");
-    const days = state.event?.days;
-    const validDays = days ? new Set(days.map((d) => d.date)) : null;
-    const entries = (kind) => {
-      const source =
-        raw && raw[kind] && typeof raw[kind] === "object" && !Array.isArray(raw[kind]) ? raw[kind] : {};
-      const saved = state.marks.saved[kind];
-      return Object.entries(source).filter(
-        ([key, date]) => saved.has(key) && (!validDays || validDays.has(date))
-      );
-    };
-    return {
-      exhibitors: new Map(entries("exhibitors")),
-      games: new Map(entries("games")),
-    };
-  } catch {
-    /* corrupt entry, or storage blocked entirely — assignments stay in-session */
-    return empty;
-  }
+  /* The parse and its guards live in js/marks.js since the map's sheet
+     started reading the same key; the schedule check stays here, where
+     data/event.json is. */
+  const raw = GCMarks.readItinerary();
+  const days = state.event?.days;
+  const validDays = days ? new Set(days.map((d) => d.date)) : null;
+  const keep = (kind) =>
+    new Map(
+      [...raw[kind]].filter(
+        ([key, date]) => state.marks.saved[kind].has(key) && (!validDays || validDays.has(date))
+      )
+    );
+  return { exhibitors: keep("exhibitors"), games: keep("games") };
 }
 
 function persistItinerary() {

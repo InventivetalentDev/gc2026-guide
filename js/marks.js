@@ -75,6 +75,32 @@ const GCMarks = (() => {
     }
   }
 
+  /* The plan's day assignments, read-only here like tradeMode: the guide
+     owns assigning a stop to a day, and the map only answers "which day did
+     I plan this for" on a stand's sheet. Keys match the marks — exhibitor
+     ids (dir: keys included) and gameKey()d titles — and the values are the
+     show days' ISO dates. Checking a date against the schedule stays the
+     guide's job, because it holds data/event.json and "no schedule loaded"
+     must not read as "no such day" (see loadItinerary in js/app.js); a date
+     shown raw on the map is still the date that was chosen. */
+  const IT_KEY = "gc2026.itinerary.v1";
+  function readItinerary() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(IT_KEY) || "{}");
+      const table = (kind) =>
+        raw && raw[kind] && typeof raw[kind] === "object" && !Array.isArray(raw[kind])
+          ? raw[kind]
+          : {};
+      return {
+        exhibitors: new Map(Object.entries(table("exhibitors"))),
+        games: new Map(Object.entries(table("games"))),
+      };
+    } catch {
+      /* corrupt entry, or storage blocked entirely (Safari private mode) */
+      return { exhibitors: new Map(), games: new Map() };
+    }
+  }
+
   /* Games are keyed by normalised title, not by booth: eight titles this
      year are shown at two booths at once (Alien: Isolation 2 sits at
      both Xbox and SEGA), and a mark applies to the game everywhere. */
@@ -134,5 +160,6 @@ const GCMarks = (() => {
   return {
     MARK_KEYS, PREFS_KEY, gameKey, readMarks, writeMarks, savedGames, hasSaved, boothCodes,
     DIR_PREFIX, dirKey, isDirKey, dirSlug, isBusinessHall, tradeMode, setTradeMode,
+    IT_KEY, readItinerary,
   };
 })();
