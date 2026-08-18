@@ -62,6 +62,7 @@ const PLAN_PAGE = "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hal
    Order is the order of the map's hall row: the entertainment halls a
    consumer ticket opens first, the trade-only business halls after. */
 const HALLS = {
+  "5.1": ["5", "1", "entertainment"],
   "5.2": ["5", "2", "entertainment"],
   "6.1": ["6", "1", "entertainment"],
   "7.1": ["7", "1", "entertainment"],
