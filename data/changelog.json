@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-18",
+    "revision": 31,
+    "changes": [
+      "The hall map has an overview now — the first chip in its hall row. It draws the whole site at once: every hall where it actually stands, the Boulevard and the passages between them, the four gates, and the number of your saved booths on each hall. Tap a hall to open its plan. It is a diagram rather than a plan — it comes from Koelnmesse's own campus outline, which puts each hall in the right place but does not draw it to scale.",
+      "Halls 1 and 11 are on the overview too, greyed out. The guide covers no booths in either, and they are drawn so the halls around them land in the right place."
+    ]
+  },
+  {
+    "date": "2026-08-18",
     "revision": 30,
     "changes": [
       "Hall 5.1 is on the map. Cosplay Village, the Artist Area and the ground-floor merchandise shops are drawn booth by booth like every other hall — 141 stands, which makes it the biggest entertainment hall after 10.1. The Cosplay Village row in Halls & areas opens it now instead of stopping at plain text, and so does the Merchandise Area row, which covers both of Hall 5's floors.",
