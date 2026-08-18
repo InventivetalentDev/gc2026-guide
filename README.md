@@ -14,7 +14,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Share the guide itself** — a Share button in the masthead opens a QR code big enough to hold up to the phone of whoever you are queueing with, plus the link to copy for posting it anywhere else
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them
-- **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up; tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. The entertainment halls and the trade-only business halls, each washed in the colour the official plan gives that area, with the business ones flagged as the door a consumer ticket does not open. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens it on that stand, and it works offline like everything else
+- **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up; tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. The entertainment halls and the trade-only business halls, each washed in the colour the official plan gives that area, with the business ones flagged as the door a consumer ticket does not open. Pick a day and that day's stops are pinned on the floor in your plan's own order — busiest first, played ones last — so "Thursday, hall 7.1" is a picture rather than a list. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens it on that stand, and it works offline like everything else
 - **Trade exhibitors**, behind one setting — "I have a trade badge", off by default, switchable from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters, curated cards for the platforms, services and national pavilions standing there, and the one thing that decides whether walking over is worth it — whether a booth is an open stand or a closed room you need an appointment for. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
 - **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the cyan one to turn it back. The square is the other booth's plate in miniature, and both colours are Koelnmesse's own — purple for the business halls, cyan for the entertainment ones — so a plate means the same thing here as it does on the official plan. The two booths stay separate stops in your plan, because they keep different hours
 - Event info: dates, hours, tickets, special areas with the way onto the map for the hall each stands in, Opening Night Live, and which of the four **entrances** to use — including what a trade badge changes about that and about when you get in
@@ -158,9 +158,12 @@ The day view is the itinerary: assign each stop a day, see that day's hours and 
 advice inline, export the assignments to a calendar file. The hall view is the walking
 route, and it reads the same assignments back: each stop carries tags for the days it
 is planned on, and once anything is placed, day chips filter the route down to a single
-day's stops in hall order. Assignments are kept separately under `gc2026.itinerary.v1`,
-follow the same booth and game keys, and stay on this device too; the arrangement you
-last picked is a view preference in `gc2026.prefs.v1`.
+day's stops in hall order. Filtered to a day, the hall view's map links hand that day
+to the hall map, which numbers the same stops on the floor in the same order — the
+numbers and the rows come from one comparator, so they can never disagree. Assignments
+are kept separately under `gc2026.itinerary.v1`, follow the same booth and game keys,
+and stay on this device too; the arrangement you last picked is a view preference in
+`gc2026.prefs.v1`.
 
 It is entirely local, so it needs no network: with the app running off the service
 worker cache in a dead-reception hall, the list still renders, both saved-only filters
@@ -229,8 +232,11 @@ The hall map is a second page (`map.html`, `js/map.js`, `css/map.css`) rather
 than a fifth tab: it wants the whole viewport, and a full-screen pan/pinch
 surface fights the app's own scrolling. `js/marks.js` holds the few rules both
 pages must agree on — the saved/played storage shape, the booth-code
-normalisation that decides which stand lights up, and the `dir:<slug>` identity
-a business-hall booth is saved under on either page.
+normalisation that decides which stand lights up, the `dir:<slug>` identity a
+business-hall booth is saved under on either page, and the plan's two rules:
+which day a stop is on, and which stop is number 1. Anything either page kept
+its own copy of would drift, and a map that numbered your Thursday differently
+from the list it read it off would be worse than no numbers at all.
 
 One rule runs through the trade feature and is worth stating once: **the "I
 have a trade badge" setting gates discovery, never resolution.** It decides

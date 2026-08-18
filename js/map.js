@@ -63,8 +63,13 @@ const state = {
   stands: [],           // render records for the current hall
   plates: [],           // render records for the overview's hall plates
   marks: { saved: null, played: null },
-  plan: { exhibitors: new Map(), games: new Map() },
+  itinerary: { exhibitors: new Map(), games: new Map() },
   sel: null,
+  /* the day the route overlay is showing: an ISO date, "none" for the stops
+     still waiting for a day, or null for "overlay off" */
+  day: null,
+  route: [],            // this hall's stops for that day, in plan order
+  labelsLayer: null,    // the drawn hall's label layer — the route line goes under it
 };
 
 /* ================= marks ================= */
@@ -72,9 +77,13 @@ const state = {
 function loadMarks() {
   state.marks.saved = GCMarks.readMarks("saved");
   state.marks.played = GCMarks.readMarks("played");
-  /* optional-chained for the same reason as the GCI18N shim above: a stale
-     cached js/marks.js without it must not stop the map booting */
-  state.plan = GCMarks.readItinerary?.() || state.plan;
+  /* The plan rides along with the marks rather than being loaded on its own:
+     every caller here is reacting to "the lists may have moved", and a day
+     assignment made in the guide is exactly that kind of move.
+
+     Optional-chained for the same reason as the GCI18N shim above: a stale
+     cached js/marks.js without the read must not stop the map booting. */
+  state.itinerary = GCMarks.readItinerary?.() || state.itinerary;
 }
 
 const exSaved = (ex) => GCMarks.hasSaved(state.marks.saved, ex);
@@ -92,10 +101,10 @@ const exPlayed = (ex) => {
    the same days. Sorted, because ISO dates sort into show order. */
 function plannedDays(ex) {
   const days = new Set();
-  const own = state.plan.exhibitors.get(ex.id);
+  const own = state.itinerary.exhibitors.get(ex.id);
   if (own) days.add(own);
   for (const g of GCMarks.savedGames(state.marks.saved, ex)) {
-    const day = state.plan.games.get(GCMarks.gameKey(g.title));
+    const day = state.itinerary.games.get(GCMarks.gameKey(g.title));
     if (day) days.add(day);
   }
   return [...days].sort();
@@ -737,7 +746,10 @@ function renderHall(id) {
        taps, and counting stands must not count it twice. */
     lg.setAttribute("class", `stand-labels ${cls}`);
     g.setAttribute("role", "button");
-    g.setAttribute("aria-label", t("map.standAria", { name: name || t("map.stand"), nr: s.nr }));
+    /* Kept as written, because the route overlay appends a stop number to it
+       and has to be able to take that number back off again. */
+    rec.aria = t("map.standAria", { name: name || t("map.stand"), nr: s.nr });
+    g.setAttribute("aria-label", rec.aria);
 
     rec.g = g;
     rec.lg = lg;
@@ -751,6 +763,7 @@ function renderHall(id) {
      stays the topmost thing on the map. */
   renderOutline(svg, id, W, H, m, doors);
   svg.appendChild(labels);
+  state.labelsLayer = labels;
 
   $("#map")?.remove();
   $("#load").hidden = true;
@@ -841,6 +854,10 @@ function refreshMarks() {
      the same one: everything that writes a mark ends up calling this. */
   if (onOverview()) {
     refreshCampus();
+    /* Before the chips, which read state.day: renderRoute is what drops a
+       day nobody planned, and what takes the hall-scoped bar off a screen
+       that is not a hall. */
+    renderRoute();
     renderChips();
     return;
   }
@@ -854,6 +871,10 @@ function refreshMarks() {
     }
     if (isSaved) saved += 1;
   }
+  /* The overlay is a reading of the saved list and the plan, so it is redrawn
+     wherever those are: this runs after every hall render, every mark change
+     and every storage event. */
+  renderRoute();
   const covered = state.stands.filter((r) => r.exs.length).length;
   $("#counts").textContent =
     t("map.counts", { n: state.stands.length, covered: covered || t("map.coveredNone") }) +
@@ -951,9 +972,45 @@ function hallSavedCount(id) {
   return n;
 }
 
+/* The same count with a day over it: how many of that day's stops stand in
+   this hall. With the overlay on, "which hall is today in" is the question
+   the row is being read for, and answering it with the whole saved list
+   would send you into halls you have nothing planned in.
+
+   Stops, not stands — the badge has to agree with the number the route bar
+   prints for the hall you are looking at, and a card holding two stands in
+   one hall is still one stop. */
+function hallStopCount(id) {
+  const planned = (ex) =>
+    GCMarks.hasSaved(state.marks.saved, ex) &&
+    GCMarks.stopDays(state.marks.saved, state.itinerary, ex).has(state.day);
+  const hall = state.halls.get(id);
+  if (!hall) {
+    return [...state.exhibitors, ...state.trade].filter(
+      (ex) => planned(ex) && standsOf(ex).some((s) => String(s.hall) === id)
+    ).length;
+  }
+  const stops = new Set();
+  for (const s of hall.stands)
+    for (const ex of standRecord(id, s).exs) if (planned(ex)) stops.add(ex);
+  return stops.size;
+}
+
+/* Is the day scoping what the row counts? Only while a hall is on screen.
+   The campus overview is the exception — it is a site diagram with no stands,
+   so it carries no route and counts the whole saved list (refreshCampus), and
+   a chip row disagreeing with the plates directly under it would be the worst
+   of both readings.
+
+   One predicate rather than two `state.day` tests, because the number and the
+   name read off it: a chip printing the saved count while announcing "5 stops
+   planned" is worse than either answer on its own. */
+const dayScoped = () => Boolean(state.day) && !onOverview();
+const hallCount = (id) => (dayScoped() ? hallStopCount(id) : hallSavedCount(id));
+
 /* Every chip's count in one string, for telling "these numbers moved"
    from "they did not" without rendering anything to find out. */
-const countsKey = () => state.index.halls.map((h) => hallSavedCount(h.id)).join(",");
+const countsKey = () => state.index.halls.map((h) => hallCount(h.id)).join(",");
 
 /* The row's first chip, and the only one that is not a hall: it steps back
    to the whole site. It leads rather than follows the halls because that is
@@ -992,7 +1049,7 @@ function renderChips() {
             area.trade ? ` <i class="hall-group-trade">${esc(t("map.tradeOnlyLabel"))}</i>` : ""
           }</span>`;
       }
-      const n = hallSavedCount(h.id);
+      const n = hallCount(h.id);
       /* Screen readers get no group heading — the row is one flat list to
          them — so each chip names its own area, and the trade-only ones
          say so before you are taken there. */
@@ -1000,7 +1057,7 @@ function renderChips() {
         t("where.hall", { hall: h.id }) +
         (area.label ? `, ${areaName(area)}` : "") +
         (area.trade ? t("map.tradeVisitorsOnly") : "") +
-        (n ? t("map.chipSavedAria", { n }) : "");
+        (n ? t(dayScoped() ? "map.chipPlannedAria" : "map.chipSavedAria", { n }) : "");
       return `${head}<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}" type="button"
         data-hall="${esc(h.id)}" style="--area:${esc(area.colour || "")}"
         aria-label="${esc(label)}">${esc(t("where.hall", { hall: h.id }))}${
@@ -1404,6 +1461,248 @@ async function showOverview() {
   history.replaceState(null, "", `#${OVERVIEW}`);
 }
 
+/* ================= the day route overlay =================
+
+   The plan board's day assignments, read back onto the floor. Pick a day and
+   every stop you placed on it that stands in this hall gets a numbered pin,
+   joined in order by a thin line.
+
+   Three things make it honest rather than decorative:
+
+   The order is the plan's own — busiest first, played stops sinking to the
+   end — and the comparator comes from js/marks.js, so pin 3 is the third row
+   of the list it was read from. Two views of one plan that disagreed about
+   which stop is first would be worse than one view.
+
+   The line is *not* a walking route and never claims to be. Nothing here
+   knows where the aisles run: the snapshot files stand blocks and stands, and
+   the doors are already our own reading. A shortest path drawn through
+   geometry we do not have would be a guess about the one thing on this page
+   a visitor would follow literally. So it is drawn thin and dashed, under the
+   labels, and the bar says what it is.
+
+   And a stop is a booth, not a stand. A card may hold several stands in one
+   hall; each of them carries the same number, because they are one stop you
+   walk to, and the line runs through the largest. */
+
+const PLAN_NONE = "none";  /* saved, but not yet placed on a day */
+const PIN_R = 4.2;         /* pin radius, in hall metres like every other mark here */
+
+/* Every day carrying at least one saved stop, plus whether anything is still
+   unplaced — the same set, from the same two stores, that the guide's plan
+   board offers as its day filter. Days sort by their ISO value, which is the
+   order the show runs in. */
+function planDays() {
+  const seen = new Set();
+  for (const ex of [...state.exhibitors, ...state.trade])
+    if (GCMarks.hasSaved(state.marks.saved, ex))
+      for (const day of GCMarks.stopDays(state.marks.saved, state.itinerary, ex)) seen.add(day);
+  return {
+    days: [...seen].filter((day) => day !== PLAN_NONE).sort(),
+    unplaced: seen.has(PLAN_NONE),
+  };
+}
+
+/* This hall's stops for the chosen day, numbered.
+
+   Built from the stands rather than from the exhibitor list, so a card
+   standing in two halls is a stop in both — the map already lights every
+   stand it holds, and the overlay has no business being narrower than the
+   colour it sits on top of. `recs` comes out largest-stand-first because
+   state.stands is in painting order. */
+function routeStops() {
+  if (!state.day) return [];
+  const stops = new Map();
+  for (const rec of state.stands) {
+    for (const ex of rec.exs) {
+      if (!stops.has(ex)) {
+        if (!GCMarks.hasSaved(state.marks.saved, ex)) continue;
+        if (!GCMarks.stopDays(state.marks.saved, state.itinerary, ex).has(state.day)) continue;
+        stops.set(ex, { ex, recs: [], played: exPlayed(ex) });
+      }
+      stops.get(ex).recs.push(rec);
+    }
+  }
+  const order = GCMarks.compareStops(exPlayed, GCI18N.lang);
+  return [...stops.values()]
+    .sort((a, b) => order(a.ex, b.ex))
+    .map((stop, i) => ({ ...stop, n: i + 1 }));
+}
+
+/* The chosen day lives in the address bar, not in prefs: it is a question
+   about one visit ("show me Thursday"), the guide's own day filter is not
+   persisted either, and putting it in the URL is what lets the plan board's
+   "Map →" hand a day over (see mapLink in js/app.js). replaceState, like
+   every other write this page makes, so it never stuffs the back stack. */
+function writeDayParam() {
+  const url = new URL(location.href);
+  if (state.day) url.searchParams.set("day", state.day);
+  else url.searchParams.delete("day");
+  if (url.href !== location.href) history.replaceState(null, "", url.href);
+}
+
+/* Tapping the lit chip turns the overlay off — one control, the same language
+   as the day chips in the guide, where the active chip unassigns. */
+function pickDay(day) {
+  state.day = state.day === day ? null : day;
+  writeDayParam();
+  /* refreshMarks rather than renderRoute alone: the hall row's badges count
+     the chosen day's stops while one is on (hallCount), so the whole reading
+     of the saved list moves with the chip, not just the pins. */
+  refreshMarks();
+  /* That render rebuilt the chip row, so the button that was just pressed is
+     a different element — put focus back on it, the way the guide's own day
+     filter does, or a keyboard user is dropped at the top of the page. */
+  document.querySelector(`#route-days [data-route-day="${CSS.escape(day)}"]`)?.focus();
+  /* an open sheet carries the stop number, which just changed */
+  if (state.sel) selectStand(state.sel);
+}
+
+function renderRouteBar(offered) {
+  const bar = $("#route");
+  /* An installed shell one version old has no route bar; the overlay simply
+     doesn't appear, which is the same deal every other progressive addition
+     to this page gets. */
+  if (!bar) return;
+  bar.hidden = !offered.days.length || onOverview();
+  if (bar.hidden) {
+    $("#route-days").innerHTML = "";
+    return; /* the status line is renderRoute's, hidden along with the bar */
+  }
+  /* Each chip says what tapping it does, not what it is — the lit one offers
+     to turn the overlay back off, which is the whole of this control. */
+  const chips = [
+    ...offered.days.map((day) => {
+      const name = GCI18N.dayName(day);
+      return [
+        day,
+        GCI18N.dayName(day, "short"),
+        t(state.day === day ? "map.routeDayOff" : "map.routeDayOn", { day: name }),
+      ];
+    }),
+    ...(offered.unplaced
+      ? [
+          [
+            PLAN_NONE,
+            t("plan.unassigned"),
+            t(state.day === PLAN_NONE ? "map.routeUnplacedOff" : "map.routeUnplacedOn"),
+          ],
+        ]
+      : []),
+  ];
+  $("#route-days").innerHTML = chips
+    .map(([day, label, title]) => {
+      const on = state.day === day;
+      return `<button class="day-chip${on ? " active" : ""}" type="button"
+        data-route-day="${esc(day)}" aria-pressed="${on}"
+        title="${esc(title)}" aria-label="${esc(title)}">${esc(label)}</button>`;
+    })
+    .join("");
+  for (const chip of document.querySelectorAll("#route-days .day-chip"))
+    chip.addEventListener("click", () => pickDay(chip.dataset.routeDay));
+}
+
+/* Wipe last render's verdicts before drawing this one: the overlay is rebuilt
+   whole rather than diffed, and a stand that has dropped off the route has to
+   lose its number in the accessible name as well as on screen. */
+function clearRoute(svg) {
+  svg?.querySelectorAll(".route-line, .route-pins").forEach((el) => el.remove());
+  for (const rec of state.stands) {
+    if (!rec.stop) continue;
+    rec.stop = null;
+    rec.g.classList.remove("stop");
+    rec.g.setAttribute("aria-label", rec.aria);
+  }
+}
+
+function renderRoute() {
+  const offered = planDays();
+  const live = new Set([...offered.days, ...(offered.unplaced ? [PLAN_NONE] : [])]);
+  /* A day whose last stop was unsaved — or a ?day= for a day nobody planned —
+     would strand the overlay on an empty hall with no lit chip to clear it. */
+  if (state.day && (!offered.days.length || !live.has(state.day))) {
+    state.day = null;
+    writeDayParam();
+  }
+  renderRouteBar(offered);
+
+  const svg = $("#map");
+  clearRoute(svg);
+  state.route = svg ? routeStops() : [];
+  const status = $("#route-status");
+  if (status)
+    status.innerHTML = !state.day
+      ? `<span class="map-route-hint">${esc(t("map.routeHint"))}</span>`
+      : state.route.length
+        ? `${esc(t("map.routeStops", { n: state.route.length }))} <span class="map-route-hint">${esc(
+            t("map.routeOrderNote")
+          )}</span>`
+        : `<span class="map-route-hint">${esc(t("map.routeNoneHere"))}</span>`;
+  if (!svg || !state.route.length) return;
+
+  /* Under the labels, so the line never crosses out a booth name; over the
+     stands, so it is not hidden by the ones it runs across. */
+  const line = document.createElementNS(SVGNS, "path");
+  line.setAttribute("class", "route-line");
+  line.setAttribute("aria-hidden", "true");
+  line.setAttribute(
+    "d",
+    "M" +
+      state.route
+        .map(({ recs }) => {
+          const box = bbox(recs[0].data.poly);
+          return `${box.cx} ${box.cy}`;
+        })
+        .join("L")
+  );
+  svg.insertBefore(line, state.labelsLayer);
+
+  /* Appended last, so the numbers sit above every name and every stand. The
+     layer is aria-hidden: the same numbers are already in each stand's own
+     accessible name, where they can be reached by the button that carries
+     them rather than as loose text in a graphic. */
+  const pins = document.createElementNS(SVGNS, "g");
+  pins.setAttribute("class", "route-pins");
+  pins.setAttribute("aria-hidden", "true");
+  const total = state.route.length;
+  /* Painted last stop first, so where two pins on neighbouring stands overlap
+     at fit zoom the *earlier* number stays on top. Nothing is ever dropped —
+     a hidden pin is a lost stop, unlike a hidden label — and zooming in
+     separates them; this only decides which one you can read before you do. */
+  for (const stop of [...state.route].reverse()) {
+    for (const rec of stop.recs) {
+      rec.stop = stop;
+      rec.g.classList.add("stop");
+      rec.g.setAttribute("aria-label", rec.aria + t("map.stopAria", { n: stop.n, total }));
+
+      const box = bbox(rec.data.poly);
+      /* Two digits need a wider disc, or "10" runs over its own edge. */
+      const r = PIN_R * (stop.n > 9 ? 1.18 : 1);
+      /* Pinned to the stand's north-west corner rather than its middle: the
+         middle is where its name is, and a route that covers the names it is
+         routing you between has cost more than it gave. A stand too small to
+         have a corner to spare simply wears the pin centred. */
+      const cx = box.x0 + Math.min(r * 0.6, box.w / 2);
+      const cy = box.y0 + Math.min(r * 0.6, box.h / 2);
+
+      const disc = document.createElementNS(SVGNS, "circle");
+      disc.setAttribute("class", `route-pin${stop.played ? " done" : ""}`);
+      disc.setAttribute("cx", cx);
+      disc.setAttribute("cy", cy);
+      disc.setAttribute("r", r);
+      const num = document.createElementNS(SVGNS, "text");
+      num.setAttribute("class", `route-pin-n${stop.played ? " done" : ""}`);
+      num.setAttribute("x", cx);
+      /* half a cap height below the centre — SVG text hangs off its baseline */
+      num.setAttribute("y", cy + r * 0.38);
+      num.setAttribute("font-size", r * 1.1);
+      num.textContent = stop.n;
+      pins.append(disc, num);
+    }
+  }
+  svg.appendChild(pins);
+}
+
 /* ================= pan / zoom ================= */
 
 /* ox/oy: the hall coordinate the drawing's top-left corner sits at —
@@ -1617,6 +1916,13 @@ function selectStand(rec, { zoom = false } = {}) {
     (s.a ? ` · ~${s.a} m²` : "");
 
   const badges = [];
+  /* First: on a numbered stand this is the thing you tapped to check. */
+  if (rec.stop)
+    badges.push(
+      `<span class="badge badge-stop">${esc(
+        t("map.stopBadge", { n: rec.stop.n, total: state.route.length })
+      )}</span>`
+    );
   if (rec.exs.some(exSaved))
     badges.push(`<span class="badge badge-saved">${esc(t("mark.saved"))}</span>`);
   /* The day this stop is planned for, read from the same itinerary the plan
@@ -1746,7 +2052,8 @@ document.addEventListener("keydown", (e) => {
 
 window.addEventListener("storage", (e) => {
   /* IT_KEY too: assign a day on the plan board and an open sheet's
-     "planned · Thu" follows without a reload, like the marks do. */
+     "planned · Thu" — and the route overlay's pins — follow without a
+     reload, like the marks do. */
   const keys = [...Object.values(GCMarks.MARK_KEYS), GCMarks.PREFS_KEY, GCMarks.IT_KEY];
   if (e.key !== null && !keys.includes(e.key)) return;
   /* The guide writes prefs on nearly every interaction, so this fires far
@@ -1899,6 +2206,11 @@ async function main() {
      lands, which is what the redraw in loadTrade() is for. */
   if (wantsTrade()) loadTrade();
 
+  /* A day handed over by the plan board's "Map →", or by a shared link.
+     Nothing is validated here: renderRoute drops a day nobody planned, which
+     is the same check a day losing its last stop has to pass anyway. */
+  state.day = new URLSearchParams(location.search).get("day") || null;
+
   /* deep link first, then the hall holding most of your saved stops,
      then the default */
   const [hallArg, code] = location.hash.slice(1).split("/");
@@ -1912,7 +2224,7 @@ async function main() {
   if (!start) {
     let best = 0;
     for (const h of index.halls) {
-      const n = hallSavedCount(h.id);
+      const n = hallCount(h.id);
       if (n > best) {
         best = n;
         start = h.id;

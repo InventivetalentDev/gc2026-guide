@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-18",
+    "revision": 32,
+    "changes": [
+      "New on the hall map: your plan, drawn on the floor. Pick a day in the new Plan row and that day's stops in the hall you're looking at get numbered pins — 1, 2, 3 — in exactly the order your plan board lists them: busiest queue first, anything you've already played last. The hall chips count that day's stops instead of your whole saved list while a day is on, so you can see at a glance which halls Thursday is actually in.",
+      "The line joining the pins is the order, not a walking route — nobody publishes where the aisles run, so drawing a path through them would be a guess. The numbers are the answer; the line just links them.",
+      "Filter your plan to one day in the By hall view and the “Map →” links now carry that day across, so the hall opens with the route already drawn. Tapping the lit day chip on the map turns it back off.",
+      "A booth with two stands in the same hall wears its number on both, and tapping a numbered stand says “Stop 2 of 5” in its details."
+    ]
+  },
+  {
+    "date": "2026-08-18",
     "revision": 31,
     "changes": [
       "The hall map has an overview now — the first chip in its hall row. It draws the whole site at once: every hall where it actually stands, the Boulevard and the passages between them, the four gates, and the number of your saved booths on each hall. Tap a hall to open its plan. It is a diagram rather than a plan — it comes from Koelnmesse's own campus outline, which puts each hall in the right place but does not draw it to scale.",

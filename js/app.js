@@ -249,9 +249,10 @@ function mergeStrings(exhibitors, event, meta, strings) {
    (Alien: Isolation 2 sits at both Xbox and SEGA), so a game mark applies at
    every booth showing the same title. */
 
-/* The storage shape and the saved-game rule live in js/marks.js, because
-   the hall map reads and writes the same two lists. Everything below
-   still calls loadMarks/persistMarks/gameKey by their old names. */
+/* The storage shapes, the saved-game rule and the plan's stop order live in
+   js/marks.js, because the hall map reads and writes the same two lists and
+   draws the same plan on the floor. Everything below still calls
+   loadMarks/persistMarks/gameKey by their old names. */
 const { MARK_KEYS, PREFS_KEY, IT_KEY, gameKey } = GCMarks;
 
 const loadMarks = (mark) => GCMarks.readMarks(mark);
@@ -1497,9 +1498,10 @@ function bindSourcesDialog() {
    is not just for the session. A missing schedule therefore keeps the
    assignments as filed and lets the next load, which has the days, decide. */
 function loadItinerary() {
-  /* The parse and its guards live in js/marks.js since the map's sheet
-     started reading the same key; the schedule check stays here, where
-     data/event.json is. */
+  /* The parse and the storage shape live in js/marks.js since the map's
+     sheet started reading the same key; what is validated on top of them is
+     the guide's alone, because it is the page holding data/event.json and
+     the map never writes an assignment, so it can never prune one. */
   const raw = GCMarks.readItinerary();
   const days = state.event?.days;
   const validDays = days ? new Set(days.map((d) => d.date)) : null;
@@ -1768,8 +1770,13 @@ const hallArea = (hall) => {
   return level >= 5 && level < 11 ? "entertainment" : "";
 };
 
-const mapLink = (hall, booth) =>
-  `map.html#${encodeURIComponent(hall)}` +
+/* `day` is the plan board's day filter riding along: the map draws that day's
+   stops as a numbered route, so a hall opened from a filtered plan opens with
+   the same day already on. Left off everywhere else — an unfiltered link must
+   not decide a day for the map. */
+const mapLink = (hall, booth, day) =>
+  `map.html${day && day !== "all" ? `?day=${encodeURIComponent(day)}` : ""}` +
+  `#${encodeURIComponent(hall)}` +
   (booth ? `/${encodeURIComponent([...GCMarks.boothCodes(booth)][0] || "")}` : "");
 
 /* Every other place a hall is named — the planner rows, the directory — is
@@ -1782,9 +1789,9 @@ const mapLink = (hall, booth) =>
 const whereLabel = (hall, booth) =>
   booth ? t("where.hallBooth", { hall, booth }) : t("where.hall", { hall });
 
-function hallLink(hall, booth, label) {
+function hallLink(hall, booth, label, day) {
   if (!hasMap(hall)) return esc(label);
-  return `<a class="hall-link" href="${esc(mapLink(hall, booth))}"
+  return `<a class="hall-link" href="${esc(mapLink(hall, booth, day))}"
     title="${esc(t("map.openTitle"))}"
     aria-label="${esc(t("map.openAria", { where: whereLabel(hall, booth) }))}">${esc(label)}</a>`;
 }
@@ -3581,15 +3588,9 @@ function downloadICS() {
 const isAbsent = (ex) => (ex.tags || []).includes("not exhibiting");
 const isOffsite = (ex) => (ex.tags || []).includes("offsite");
 
-/* Which days a stop is planned for: the booth's own assignment plus those of
-   the saved games shown there. "none" stands in for any saved element still
-   waiting for a day. */
-function stopDays(ex) {
-  const days = new Set();
-  if (isSaved("exhibitor", ex.id)) days.add(assignedDay("exhibitor", ex.id) || "none");
-  savedGames(ex).forEach((g) => days.add(assignedDay("game", gameKey(g.title)) || "none"));
-  return days;
-}
+/* Which days a stop is planned for. Shared with the map's route overlay, which
+   has to bucket the same booth onto the same day (js/marks.js). */
+const stopDays = (ex) => GCMarks.stopDays(state.marks.saved, state.itinerary, ex);
 
 function routeGroups() {
   const buckets = new Map();
@@ -3632,12 +3633,10 @@ function routeGroups() {
           : key === "tba"
             ? t("route.locationTba")
             : t("where.hall", { hall: key }),
-      /* Crowd-desc, then played stops sink to the end of their hall — same
-         stable two-pass sort as the priority table. */
-      items: buckets
-        .get(key)
-        .sort(byCrowdDesc)
-        .sort((a, b) => hasPlayed(a) - hasPlayed(b)),
+      /* Busiest first, played stops sinking to the end of their hall. The
+         comparator is shared with the map, which numbers the same stops on
+         the floor and must count them in this order (js/marks.js). */
+      items: buckets.get(key).sort(GCMarks.compareStops(hasPlayed, GCI18N.lang)),
     })),
     absent: absent.sort(byName),
     played,
@@ -3688,7 +3687,7 @@ function renderRoute() {
           const crowd = ex.crowd || 0;
           return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}">
             <span class="route-name">${esc(ex.name)}${dayFilter ? "" : routeDayTags(ex)}</span>
-            <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation)}${unconf}</span>
+            <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation, dayFilter)}${unconf}</span>
             <span class="route-crowd" data-level="${esc(inBusinessArea(ex) ? 0 : crowd)}">${
               inBusinessArea(ex)
                 ? esc(t("plan.tradeBadge"))
@@ -3706,7 +3705,7 @@ function renderRoute() {
       /* The header opens the whole hall — the overview you want before
          walking into it. Each stop's booth number below opens that stand. */
       const toMap = hasMap(group.key)
-        ? `<a class="route-hall-map" href="${esc(mapLink(group.key))}"
+        ? `<a class="route-hall-map" href="${esc(mapLink(group.key, null, dayFilter))}"
             aria-label="${esc(
               t("map.openAria", { where: t("where.hall", { hall: group.key }) })
             )}">${esc(t("map.cue"))}</a>`

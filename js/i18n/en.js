@@ -441,6 +441,23 @@ window.GC_STRINGS.en = {
   "map.counts": "{n} stands · {covered} in the guide",
   "map.countsSaved": " · {n} saved",
   "map.chipSavedAria": ", {n} saved",
+  /* ---- the day route overlay (see renderRoute in js/map.js) ----
+     The bar names what the numbers mean and stops short of claiming a walk:
+     the snapshot files stands, never aisles, so the line joining the pins is
+     the plan's order and nothing more. */
+  "map.routeAria": "Show one day's stops on this hall",
+  "map.routeKicker": "Plan",
+  "map.routeDayOn": "Show {day}'s stops on this hall",
+  "map.routeDayOff": "Hide {day}'s stops",
+  "map.routeUnplacedOn": "Show the stops without a day yet",
+  "map.routeUnplacedOff": "Hide the stops without a day yet",
+  "map.routeHint": "pick a day to number its stops",
+  "map.routeStops": "{n} stop here|{n} stops here",
+  "map.routeOrderNote": "· plan order, not a walking route",
+  "map.routeNoneHere": "nothing planned in this hall",
+  "map.chipPlannedAria": ", {n} stop planned|, {n} stops planned",
+  "map.stopBadge": "Stop {n} of {total}",
+  "map.stopAria": " — stop {n} of {total}",
   "map.outlines": "booth outlines",
   "map.officialHallPlan": "official hall plan",
   "map.checkedOn": "checked {date} · schematic, unofficial",

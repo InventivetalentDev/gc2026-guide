@@ -78,6 +78,36 @@
 }
 .map-halls .hall-chip { border-left: 3px solid var(--area, var(--rule)); }
 
+/* --- the plan's day chips ---
+   One row, the same .day-chip the guide uses for a day assignment, so
+   "Thursday" looks the same thing in both places. Hidden outright until
+   something has been placed on a day: an empty control on a page this
+   tight is worse than no control. */
+.map-route {
+  flex: none;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 7px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.map-route[hidden] { display: none; }
+.map-route-kicker {
+  flex: none;
+  font-family: var(--font-mono); font-size: .6rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+.map-route-days { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.map-route-days::-webkit-scrollbar { display: none; }
+.map-route-days .day-chip { flex: none; }
+/* Pushed to the far end on a wide bar, and allowed its own line on a narrow
+   one — it is a sentence, not a control, and it must never squeeze the
+   chips it describes. */
+.map-route-status {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: .66rem; line-height: 1.35;
+  color: var(--ink-mid);
+}
+.map-route-hint { color: var(--ink-dim); }
+
 /* --- area access note --- */
 .map-access {
   flex: none;
@@ -179,6 +209,10 @@
 #map .stand.official path { fill: #232327; }
 #map .stand.covered path { fill: #2e2e33; }
 #map .stand.saved path { fill: var(--signal); stroke: #ff6a3d; }
+/* A numbered stop. Set before the unconf and sel rules on purpose: an
+   unconfirmed booth keeps its amber dashes even when it is stop 3, because
+   the caveat about the data outranks the decoration on top of it. */
+#map .stand.stop path { stroke: var(--ink); stroke-width: 1.8; }
 #map .stand.played { opacity: .45; }
 #map .stand.unconf path { stroke: var(--warn); stroke-dasharray: 5 4; }
 #map .stand.sel path { stroke: var(--ink); stroke-width: 2; }
@@ -226,6 +260,36 @@
    names' own ceiling instead (DOOR_FS in js/map.js), so they are legible
    wherever those are, and they sit outside the hall where there is
    nothing for them to cover. */
+
+/* --- the day route overlay ---
+   The order of the stops, not the way between them: nothing on this page
+   knows where the aisles run (see the block comment above renderRoute in
+   js/map.js), so the line is drawn as a hint and the pins carry the
+   meaning. Both are in the SVG, so both pan and zoom with the hall; the
+   strokes are non-scaling so they stay hairlines at every zoom. */
+#map .route-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 5;
+  stroke-linecap: round; stroke-linejoin: round;
+  opacity: .38;
+  pointer-events: none;
+}
+#map .route-pins { pointer-events: none; }
+#map .route-pin {
+  fill: var(--ground);
+  stroke: var(--signal);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+#map .route-pin-n {
+  fill: var(--signal);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+/* Played, and dimmed the way the stand under it already is. */
+#map .route-pin.done, #map .route-pin-n.done { opacity: .55; }
 
 #map text {
   pointer-events: none; user-select: none; -webkit-user-select: none;
@@ -277,6 +341,10 @@
   background: var(--signal); border-color: var(--signal); color: var(--signal-ink);
 }
 .map-sheet-badges .badge-unconf { border-color: var(--warn); color: var(--warn); }
+/* The stop number, worn the way the pin on the floor wears it. */
+.map-sheet-badges .badge-stop {
+  border-color: var(--signal); color: var(--signal); background: var(--signal-wash);
+}
 .map-sheet-who {
   margin-top: 9px; font-size: .84rem; color: var(--ink-mid); line-height: 1.45;
 }
@@ -393,6 +461,6 @@
 #map .campus-gate-lbl.to-e { text-anchor: start; }
 
 @media (max-width: 400px) {
-  .map-bar, .map-halls { padding-left: 12px; padding-right: 12px; }
+  .map-bar, .map-halls, .map-route { padding-left: 12px; padding-right: 12px; }
   .map-note { padding-left: 12px; padding-right: 12px; }
 }

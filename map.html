@@ -61,6 +61,16 @@
 
 <nav class="map-halls" id="halls" aria-label="Halls" data-i18n-attr="aria-label:map.hallsAria"></nav>
 
+<!-- The plan's day assignments, read back onto the floor: pick a day and this
+     hall's stops for it are numbered in the order the plan board lists them.
+     Filled by js/map.js, and hidden outright until at least one stop has been
+     placed on a day in the guide. -->
+<div class="map-route" id="route" role="group" aria-label="Show one day's stops on this hall" data-i18n-attr="aria-label:map.routeAria" hidden>
+  <span class="map-route-kicker" aria-hidden="true" data-i18n="map.routeKicker">Plan</span>
+  <div class="map-route-days" id="route-days"></div>
+  <span class="map-route-status" id="route-status"></span>
+</div>
+
 <!-- Filled by js/map.js from the area the current hall belongs to, and
      only shown when that area is one a consumer ticket does not open. -->
 <p class="map-access" id="access" hidden></p>

@@ -14,10 +14,12 @@ draw it; `js/marks.js` holds what the map and the guide must agree on;
 `sw.js` precaches both pages and all thirteen hall levels; the guide links out
 from every place it names a hall — card plates, the plan board, queue
 priority, the wristband list and all 1,630 rows of the full directory —
-and the map links back to a card. A card may hold several stands and the
-map lights every one of them; a booth's gallery level, which Koelnmesse
-files as a second stand on the same outline, is drawn as the one booth it
-is. Each hall is framed in its area colour and its doors are drawn as
+and the map links back to a card. The plan board's day assignments come
+back the other way as a numbered route overlay — pick a day and this
+hall's stops for it are pinned in the plan's own order (decision 10). A
+card may hold several stands and the map lights every one of them; a
+booth's gallery level, which Koelnmesse files as a second stand on the
+same outline, is drawn as the one booth it is. Each hall is framed in its area colour and its doors are drawn as
 openings in that frame — both from `data/hallplan/outline.json`, which is
 ours rather than Koelnmesse's, because their data has no wall in it
 (decision 5b). This document records the discovery, the design decisions and
@@ -451,15 +453,56 @@ save-in-app stay in sync across tabs today. At integration the map page
 should reuse the app's mark helpers verbatim rather than keeping its
 replica (see steps).
 
+### 10. The day route is an order, not a walk
+
+The plan board can already place every saved stop on a day. Reading those
+assignments back onto the floor is what turns "Thursday: eight stops" into
+"Thursday in hall 7.1: these four, in this order" — and it is the one
+thing the plan board structurally cannot show, because a list has no
+geometry.
+
+Three decisions make it honest rather than decorative:
+
+**The order is the plan's, not a solver's.** The pins run in the same
+order the plan board's hall lens lists that hall's stops: busiest first,
+played stops sinking to the end. That comparator moved into
+`js/marks.js` (`compareStops`) alongside `boothCodes` and `stopDays`,
+for the same reason those are there — two views of one plan that
+disagreed about which stop is number 1 would be worse than one view. The
+guide's own route sort now reads through it too, so there is one
+definition and no second copy to drift.
+
+**The line joining the pins is not a path, and says so.** A shortest walk
+is exactly the thing this data cannot support: Koelnmesse files stand
+blocks and stands, never aisles, and the doors on the outline are already
+our own reading (decision 5b). A route line drawn confidently through
+geometry we do not have would be a guess about the one thing on this page
+a visitor would follow literally — so the line is thin, dashed, drawn
+*under* the labels, and the bar it belongs to says "plan order, not a
+walking route" in both languages.
+
+**A stop is a booth, not a stand.** Where a card holds several stands in
+one hall the map lights all of them already; each carries the same
+number, because it is one stop you walk to, and the line runs through the
+largest. The hall row's badge counts stops too while a day is on, so
+"which hall is Thursday in" is answered by the row you were already
+reading rather than by tapping through twelve halls.
+
+The chosen day rides in the address bar (`map.html?day=2026-08-27#7.1`)
+rather than in prefs: it is a question about one visit, the guide's own
+day filter is not persisted either, and a URL is what lets the plan
+board's "Map →" hand a day over. A `?day=` nobody planned is dropped on
+arrival, the same check a day that has just lost its last stop has to
+pass.
+
 ## Deliberately not built
 
-Route/day overlays (numbered stops for a selected day — though the sheet
-now *names* the day a stop is planned for, see "how it is wired" 8),
-search-on-map, played *toggling* from the map (it is shown, not editable —
-the guide owns that flow), and keyboard interaction beyond Escape, the
-zoom keys and the labelled stand buttons: a keyboard user gets the guide's
-list, which is better for that input anyway, and pretending otherwise with
-an arrow-key pan would be theatre. None of these change the architecture.
+Search-on-map, played *toggling* from the map (it is shown, not editable —
+the guide owns that flow), a *walking* route rather than a plan order
+(decision 10), and keyboard interaction beyond Escape, the zoom keys and
+the labelled stand buttons: a keyboard user gets the guide's list, which is
+better for that input anyway, and pretending otherwise with an arrow-key
+pan would be theatre. None of these change the architecture.
 
 ## How it is wired
 
@@ -470,9 +513,11 @@ an arrow-key pan would be theatre. None of these change the architecture.
    shared as-is: it null-checks everything it touches, so on the map it
    just registers the worker and drives the offline flag.
 2. **Shared rules** live in `js/marks.js` (`GCMarks`), loaded before both
-   apps: the storage keys and shape, `gameKey`, the booth-or-game
-   `hasSaved` predicate, and `boothCodes` — the booth-code normaliser
-   that decides which stand lights up. `js/app.js` calls it behind its
+   apps: the storage keys and shapes, `gameKey`, the booth-or-game
+   `hasSaved` predicate, `boothCodes` — the booth-code normaliser that
+   decides which stand lights up — and the plan's three facts,
+   `readItinerary` / `stopDays` / `compareStops`, which decide which day a
+   stop is on and which stop is number 1. `js/app.js` calls it behind its
    existing names. The one copy that cannot be shared is in
    `tools/fetch-hallplan.mjs` (Node, no DOM), and that file says so.
 3. **Service worker**: `map.html`, `js/map.js`, `js/marks.js` and
@@ -519,6 +564,12 @@ an arrow-key pan would be theatre. None of these change the architecture.
     accessible name carries both — "Halls 5–10 — open Hall 5.1 on the
     hall map" — rather than letting the number you tapped and the hall
     you land in disagree silently.
+4b. **The day hand-off**: `mapLink()` takes an optional day, and the plan
+    board's hall lens passes its active day filter into both the hall
+    header's "Map →" and each stop's booth number. So a plan filtered to
+    Thursday opens the map with Thursday's route already drawn; an
+    unfiltered link deliberately carries nothing, because it has no day
+    to have an opinion about.
 5. **Cross-links out**: the sheet links to `./#exhibitors?ex=<id>`, and
    `focusExhibitor()` in `js/app.js` scrolls that card into view and
    flashes it, clearing any filter that would otherwise hide it.
@@ -662,6 +713,20 @@ Serve the repo root; clear `gc2026.saved.v1`.
     source's artwork marks. `#overview` is a working deep link, and
     with `campus.json` 404ing the chip is absent and that link falls
     through to a hall rather than an empty stage.
+15. **Day route** — with nothing assigned, the plan bar is absent. Assign
+    four hall 7.1 stops to Thursday in the guide and mark one played: the
+    bar appears with a Thu chip, tapping it pins 1–4 in the plan board's
+    own row order with the played stop last, the hall chip's badge counts
+    stops instead of saves, and the sheet on a pinned stand reads "Stop 1
+    of 4". A card with two stands in the hall wears its number twice.
+    Tapping the lit chip clears the overlay and the `?day=` with it. The
+    plan board's "Map →" under a Thursday filter lands with the route
+    already on; `?day=1999-01-01` lands with it off. Switching to a hall
+    with nothing planned says so rather than showing an empty bar, and an
+    assignment made in another tab reaches an open map through `storage`.
+    On the overview the bar is absent — a site diagram has no
+    stands to pin — and the hall chips there count saves, the same
+    number the plates under them carry, rather than the day's stops.
 
 ## Open questions
 
@@ -748,6 +813,14 @@ Serve the repo root; clear `gc2026.saved.v1`.
    off the booths is in the same position: a stated allowance, because
    no source measures it. Settling either is a walk down the Boulevard
    with the map open, and the fix is a number in one file.
-6. **Day-route overlay.** Numbered stops from the plan board's day
-   assignments drawn on the hall — the natural second iteration once the
-   base map is in.
+6. ~~**Day-route overlay.**~~ Built — see decision 10. Two things are
+   left. One is a question only a walk answers: whether the straight line
+   between stops is read as an order (which is what it is, and what the
+   bar says) or as a path (which the data cannot support). If it reads as
+   a path on site, the fix is to drop the line and keep the pins — the
+   numbers carry the feature on their own. The other is cosmetic: a
+   twelve-stop day in hall 10.1 puts two pins on neighbouring small
+   stands close enough to overlap at fit zoom. Nothing is lost — unlike a
+   label, a pin is never dropped, the stand stays tappable and its sheet
+   still reads "Stop 9 of 12" — and the paint order puts the earlier stop
+   on top, which is the one you need first. Zooming in separates them.
