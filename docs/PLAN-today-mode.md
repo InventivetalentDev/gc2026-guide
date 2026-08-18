@@ -123,9 +123,16 @@ degrades instead of throwing.
 
 ## Verification
 
-Serve the site and drive it with the clock moved into the show week (Playwright's
-`page.clock.setFixedTime` is enough — nothing in the app reads the date except
-`showNow()` and the countdown):
+Serve the site and drive it with the clock moved into the show week —
+`tools/preview-today.mjs` is that, wrapped up, and it is also the only way to see
+the feature at all before Aug 26. Playwright's `page.clock.setFixedTime` is enough:
+nothing in the app reads the date except `showNow()` and the countdown, so faking
+the timers as well would only put the search debounce at risk.
+
+Moving the dates in `data/event.json` instead does **not** work as a shortcut —
+the day prose is keyed by ISO date in `data/i18n/{en,de}.json`, so the access
+pill, the hours and the day notes all go blank and `tools/check-i18n.mjs` fails
+with "show day … has no prose".
 
 1. **Off-show** — the tab is absent, a bare address lands on the exhibitor grid,
    and `#today` lands on the planner. The Exhibitors tab keeps the row's left

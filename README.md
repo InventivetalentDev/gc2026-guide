@@ -48,6 +48,21 @@ python3 -m http.server 8000
 
 (Opening `index.html` via `file://` won't work because the app fetches JSON.)
 
+One part of the guide can't be reached that way: the **Today** tab exists only on
+the five show days, so before Aug 26 there is nothing to click. `tools/preview-today.mjs`
+opens a browser with the clock moved into the show week and a demo plan seeded, which
+is the only way to see it without changing the machine's own date:
+
+```sh
+python3 -m http.server 8123          # in another shell
+node tools/preview-today.mjs                          # Wednesday, 11:00
+node tools/preview-today.mjs --day=2026-08-29 --time=19:45   # Saturday, business halls shut
+node tools/preview-today.mjs --empty --lang=de        # the empty state, in German
+```
+
+It needs Playwright (`npm i -g playwright && playwright install chromium`) and never
+ships — `tools/` stays in the repo, per the lists in `tools/build-site.sh`.
+
 ## Deploying
 
 Live on **Cloudflare Workers** as an assets-only Worker — static files served from
