@@ -452,12 +452,13 @@ replica (see steps).
 
 ## Deliberately not built
 
-Route/day overlays (numbered stops for a selected day), search-on-map,
-played *toggling* from the map (it is shown, not editable — the guide owns
-that flow), and keyboard interaction beyond Escape and the labelled stand
-buttons: a keyboard user gets the guide's list, which is better for that
-input anyway, and pretending otherwise with an arrow-key pan would be
-theatre. None of these change the architecture.
+Route/day overlays (numbered stops for a selected day — though the sheet
+now *names* the day a stop is planned for, see "how it is wired" 8),
+search-on-map, played *toggling* from the map (it is shown, not editable —
+the guide owns that flow), and keyboard interaction beyond Escape, the
+zoom keys and the labelled stand buttons: a keyboard user gets the guide's
+list, which is better for that input anyway, and pretending otherwise with
+an arrow-key pan would be theatre. None of these change the architecture.
 
 ## How it is wired
 
@@ -528,6 +529,23 @@ theatre. None of these change the architecture.
    against the committed snapshot. Booth numbers change far more often
    than Koelnmesse's layout does, and checking one should not mean
    fetching the other again.
+8. **View controls and the round trip.** Zoom buttons (+ / − / fit, with
+   the `+`/`-`/`0` keys behind them) stand in the stage's corner, under
+   the sheet in the stacking order so a phone's sheet wins the corner —
+   pinch and wheel already did the job, but neither is discoverable with
+   a mouse alone and neither offered the way back out to the whole hall.
+   The URL always names what is on screen: a chip or door tap
+   `replaceState`s `#hall`, closing the sheet drops the stand code, so
+   the copied link is never a place you already left. The ← goes
+   `history.back()` when the map was opened from the guide (same-origin
+   referrer), restoring the guide's scroll and filters instead of
+   reloading it from the top; direct arrivals keep the plain `./` link.
+   And the sheet names the day a stop is planned for, read from the same
+   `gc2026.itinerary.v1` the plan board writes — the key and its parse
+   moved to `js/marks.js` (`GCMarks.IT_KEY`, `readItinerary()`) the day
+   two pages started reading it, per that file's rule. The map shows
+   assignments and never edits them; a `storage` event keeps an open
+   sheet's day current, like the marks.
 
 ## Verification (manual test script)
 

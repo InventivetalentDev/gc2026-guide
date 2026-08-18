@@ -142,6 +142,29 @@
 }
 .map-load[hidden] { display: none; }
 
+/* --- zoom controls ---
+   Pinch and wheel already do the job, but neither is discoverable with a
+   mouse alone, and neither offers the way back out — the fit button is
+   "show me the whole hall again", which a deep zoom otherwise costs a
+   dozen wheel notches. Under the sheet in the stack (z-index 2 vs 3), so
+   an open sheet wins the corner on a phone rather than fighting for it. */
+.map-zoom {
+  position: absolute; right: 10px; bottom: 10px; z-index: 2;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.map-zoom-btn {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border: 1px solid var(--rule); border-radius: var(--radius-sm);
+  /* translucent over the hall, like a control floating on a map should
+     be — the booth underneath stays legible through it */
+  background: color-mix(in srgb, var(--ground-2) 88%, transparent);
+  color: var(--ink-mid);
+  font-family: var(--font-mono); font-size: 1.15rem; line-height: 1;
+  cursor: pointer;
+}
+.map-zoom-btn:hover { color: var(--ink); border-color: var(--ink-dim); }
+
 /* --- the hall itself --- */
 /* The structural blocks carry the area colour, washed down to a tint:
    enough to tell a business hall from an entertainment one at a glance,

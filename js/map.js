@@ -34,6 +34,7 @@ const GCI18N = window.GCI18N || {
 };
 const t = GCI18N.t;
 const formatDate = GCI18N.formatDate || ((date) => String(date));
+const dayName = GCI18N.dayName || ((date) => String(date));
 /* Country and product-group names arrive in English from the generated
    data/directory.json; their display names live in the locale overlay the
    guide loads. The map fetches that overlay only for these two maps — see
@@ -60,6 +61,7 @@ const state = {
   hall: null,           // current hall id
   stands: [],           // render records for the current hall
   marks: { saved: null, played: null },
+  plan: { exhibitors: new Map(), games: new Map() },
   sel: null,
 };
 
@@ -68,6 +70,9 @@ const state = {
 function loadMarks() {
   state.marks.saved = GCMarks.readMarks("saved");
   state.marks.played = GCMarks.readMarks("played");
+  /* optional-chained for the same reason as the GCI18N shim above: a stale
+     cached js/marks.js without it must not stop the map booting */
+  state.plan = GCMarks.readItinerary?.() || state.plan;
 }
 
 const exSaved = (ex) => GCMarks.hasSaved(state.marks.saved, ex);
@@ -78,6 +83,21 @@ const exPlayed = (ex) => {
   return state.marks.played.exhibitors.has(ex.id) ||
     (mine.length > 0 && mine.every((g) => state.marks.played.games.has(GCMarks.gameKey(g.title))));
 };
+
+/* Which show day(s) this exhibitor is planned for: their own assignment
+   plus those of any saved game standing here — the same union the plan
+   board's day lens files a stop under, so the sheet and the board name
+   the same days. Sorted, because ISO dates sort into show order. */
+function plannedDays(ex) {
+  const days = new Set();
+  const own = state.plan.exhibitors.get(ex.id);
+  if (own) days.add(own);
+  for (const g of GCMarks.savedGames(state.marks.saved, ex)) {
+    const day = state.plan.games.get(GCMarks.gameKey(g.title));
+    if (day) days.add(day);
+  }
+  return [...days].sort();
+}
 
 function toggleSaved(id) {
   loadMarks(); /* pick up another tab's changes before writing over them */
@@ -1018,7 +1038,7 @@ let lastTap = { t: 0, x: 0, y: 0 };
 stage.addEventListener("dragstart", (e) => e.preventDefault());
 
 stage.addEventListener("pointerdown", (e) => {
-  if (e.target.closest("#sheet")) return;
+  if (e.target.closest("#sheet, .map-zoom")) return;
   e.preventDefault();
   stage.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1104,6 +1124,24 @@ stage.addEventListener("wheel", (e) => {
   zoomAt(e.clientX - rect.left, e.clientY - rect.top, Math.pow(1.0015, -e.deltaY));
 }, { passive: false });
 
+/* The buttons beside the gestures: a mouse without a wheel gesture has no
+   discoverable way in, and nothing at all offered the way back out to the
+   whole hall short of a dozen wheel notches. Steps are centred on the
+   stage, like a double tap in the middle; 1.6 per press walks the three
+   zoom bands in about four presses. Optional-chained like the sheet's
+   buttons, so a stale cached shell without them still boots this script. */
+function zoomStep(factor) {
+  const r = stage.getBoundingClientRect();
+  zoomAt(r.width / 2, r.height / 2, factor);
+}
+function fitCurrent() {
+  const map = $("#map");
+  if (map) fitView(map, +map.getAttribute("width"), +map.getAttribute("height"));
+}
+$("#zoom-in")?.addEventListener("click", () => zoomStep(1.6));
+$("#zoom-out")?.addEventListener("click", () => zoomStep(1 / 1.6));
+$("#zoom-fit")?.addEventListener("click", fitCurrent);
+
 /* ================= selection & sheet ================= */
 
 function zoomToStand(rec) {
@@ -1130,6 +1168,9 @@ function selectStand(rec, { zoom = false } = {}) {
     sheet.addEventListener("transitionend", () => {
       if (!sheet.classList.contains("open")) sheet.hidden = true;
     }, { once: true });
+    /* The stand goes with its sheet: what stays in the bar is the hall,
+       which is what the screen now shows. */
+    if (state.hall) history.replaceState(null, "", `#${state.hall}`);
     return;
   }
   rec.g.classList.add("sel");
@@ -1146,6 +1187,15 @@ function selectStand(rec, { zoom = false } = {}) {
   const badges = [];
   if (rec.exs.some(exSaved))
     badges.push(`<span class="badge badge-saved">${esc(t("mark.saved"))}</span>`);
+  /* The day this stop is planned for, read from the same itinerary the plan
+     board writes — the map is where you stand when you wonder "was this a
+     Thursday thing?", and the answer should not cost a trip to the guide.
+     Weekday names come from the dates, like everywhere else (js/i18n.js). */
+  const days = [...new Set(rec.exs.flatMap(plannedDays))].sort();
+  if (days.length)
+    badges.push(`<span class="badge">${esc(
+      t("map.plannedFor", { days: days.map((d) => dayName(d, "short")).join(", ") })
+    )}</span>`);
   if (ex && ex.locationConfirmed === false)
     badges.push(`<span class="badge badge-unconf">${esc(t("map.unconfBadge"))}</span>`);
   if (rec.exs.length && rec.exs.every(exPlayed))
@@ -1253,10 +1303,19 @@ $("#sheet-close").addEventListener("click", () => selectStand(null));
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && state.sel) selectStand(null);
+  /* Browsing stands by keyboard is deliberately the guide's job (see
+     PLAN-hall-map.md, "deliberately not built") — but the zoom is a view
+     control, not stand browsing, and these are the keys every map answers
+     to. "=" is "+" unshifted on the common layouts. */
+  if (e.key === "+" || e.key === "=") zoomStep(1.6);
+  else if (e.key === "-" || e.key === "_") zoomStep(1 / 1.6);
+  else if (e.key === "0") fitCurrent();
 });
 
 window.addEventListener("storage", (e) => {
-  const keys = [...Object.values(GCMarks.MARK_KEYS), GCMarks.PREFS_KEY];
+  /* IT_KEY too: assign a day on the plan board and an open sheet's
+     "planned · Thu" follows without a reload, like the marks do. */
+  const keys = [...Object.values(GCMarks.MARK_KEYS), GCMarks.PREFS_KEY, GCMarks.IT_KEY];
   if (e.key !== null && !keys.includes(e.key)) return;
   /* The guide writes prefs on nearly every interaction, so this fires far
      more often than a mark change and can easily land before the hall index
@@ -1316,6 +1375,13 @@ async function showHall(id, { standCode = null } = {}) {
     if (!state.halls.has(id)) $("#load").hidden = false;
     await loadHall(id);
     renderHall(id);
+    /* The address bar always names the hall on screen. A chip or door tap
+       used to leave the previous stand's #hall/booth standing, so copying
+       the link — the whole reason the URL is the deep link — shared a place
+       you had already left. selectStand overwrites this with #hall/booth
+       when a stand was asked for; replaceState like there, because browsing
+       halls is one place in history, not a trail of them. */
+    history.replaceState(null, "", `#${id}`);
   }
   if (standCode) {
     const rec = state.stands.find((r) => r.codes.has(standCode));
@@ -1336,9 +1402,28 @@ window.addEventListener("hashchange", () => {
   if (hallExists(h)) showHall(h, { standCode: code ? code.toUpperCase() : null });
 });
 
-window.addEventListener("resize", () => {
-  const map = $("#map");
-  if (map) fitView(map, +map.getAttribute("width"), +map.getAttribute("height"));
+window.addEventListener("resize", fitCurrent);
+
+/* The ← is an <a href="./"> so it always works — middle-click, long-press,
+   copy the link. But followed as a link it reloads the guide from the top,
+   throwing away the scroll position and filters the visitor left behind to
+   check the map. When this page was actually opened *from* the guide, one
+   step back restores all of that (bfcache included), and it is always one
+   step: hall browsing here never pushes history, replaceState throughout.
+   Direct and external arrivals keep the plain link — there is nothing of
+   theirs behind them to go back to. */
+$(".map-back")?.addEventListener("click", (e) => {
+  let fromGuide = false;
+  try {
+    const ref = new URL(document.referrer);
+    fromGuide = ref.origin === location.origin && !ref.pathname.endsWith("/map.html");
+  } catch {
+    /* no referrer, or an unparseable one — a direct open */
+  }
+  if (fromGuide && history.length > 1) {
+    e.preventDefault();
+    history.back();
+  }
 });
 
 async function main() {

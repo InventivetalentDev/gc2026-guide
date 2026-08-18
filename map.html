@@ -67,6 +67,15 @@
 
 <div id="stage">
   <p class="map-load" id="load" data-i18n="map.loading">loading hall …</p>
+  <!-- Pinch and wheel do the same job, but neither is discoverable with a
+       mouse alone, and neither offers a way back to the whole hall once
+       zoomed in. Plain buttons, like every map people already know; the
+       open sheet slides over them, so a phone keeps the corner. -->
+  <div class="map-zoom">
+    <button class="map-zoom-btn" id="zoom-in" type="button" aria-label="Zoom in" data-i18n-attr="aria-label:map.zoomIn">+</button>
+    <button class="map-zoom-btn" id="zoom-out" type="button" aria-label="Zoom out" data-i18n-attr="aria-label:map.zoomOut">−</button>
+    <button class="map-zoom-btn" id="zoom-fit" type="button" aria-label="Show the whole hall" data-i18n-attr="aria-label:map.zoomFit"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+  </div>
   <section id="sheet" aria-labelledby="sheet-name" hidden>
     <button class="map-sheet-close" id="sheet-close" type="button" aria-label="Close stand details" data-i18n-attr="aria-label:map.closeSheetAria">×</button>
     <h2 id="sheet-name"></h2>

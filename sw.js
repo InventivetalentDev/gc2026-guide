@@ -34,8 +34,13 @@
    until some later load. The bump is what makes it the first one.
 
    So the rule is narrower than "bump on every deploy": bump when a shell file
-   has to be believed rather than merely eventually refreshed. */
-const VERSION = "v8";
+   has to be believed rather than merely eventually refreshed.
+
+   v9 is the map's zoom controls: buttons in map.html whose handlers live in
+   js/map.js. The markup arrives network-first while the old script rides
+   stale-while-revalidate, and buttons that do nothing are exactly the
+   dead-controls case this version number exists for. */
+const VERSION = "v9";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
