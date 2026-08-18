@@ -385,12 +385,13 @@
       }
     },
     "ubisoft": {
-      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Anno 117 and The Division 2.",
+      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 and The Division 2.",
       "crowdNote": "One playable title plus a lounge format — moderate queues, no giant new AAA hands-on this year.",
       "visitAdvice": "Rayman queues are manageable before noon on weekdays. Community Lounge sessions are schedule-based — check Ubisoft's channels for timings.",
       "games": {
         "Rayman Legends Retold": "Demo: opening level, a new dragon-ride sequence and a classic musical level.",
         "Assassin's Creed Black Flag Resynced": "Community Lounge showcase of the Black Flag remake.",
+        "Assassin's Creed Shadows": "Community Lounge developer talk, not a demo station.",
         "Anno 117: Pax Romana": "Community Lounge sessions.",
         "Rainbow Six Siege": "Community Lounge sessions rather than a demo queue.",
         "The Division 2": "Live-service community sessions."

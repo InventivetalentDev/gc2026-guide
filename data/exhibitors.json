@@ -223,6 +223,7 @@
     "games": [
       { "title": "Rayman Legends Retold", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"] },
       { "title": "Assassin's Creed Black Flag Resynced", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Assassin's Creed Shadows", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Anno 117: Pax Romana", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Rainbow Six Siege", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "The Division 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
@@ -234,7 +235,7 @@
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
-    "lastUpdated": "2026-08-14"
+    "lastUpdated": "2026-08-18"
   },
   {
     "id": "ea",
