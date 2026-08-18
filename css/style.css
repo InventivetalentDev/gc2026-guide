@@ -324,7 +324,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .field-sort { border-left: 1px solid var(--rule-soft); }
 .field-label { padding: 9px 16px 0; }
 
-#search, #sort {
+#search, #sort, #queues-search {
   background: none;
   border: none;
   color: var(--ink);
@@ -333,8 +333,8 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   padding: 2px 16px 11px;
   width: 100%;
 }
-#search::placeholder { color: var(--ink-dim); }
-#search:focus-visible, #sort:focus-visible { outline-offset: -2px; }
+#search::placeholder, #queues-search::placeholder { color: var(--ink-dim); }
+#search:focus-visible, #sort:focus-visible, #queues-search:focus-visible { outline-offset: -2px; }
 #sort { cursor: pointer; font-size: .88rem; padding-right: 16px; }
 #sort option { background: var(--ground-2); color: var(--ink); }
 
@@ -1159,15 +1159,23 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   text-transform: uppercase;
   color: var(--ink-dim);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
   white-space: nowrap;
   /* A 44px target without a 44px box: the row is already tight, so the reach
-     is bought with padding that does not push the meter around. */
-  padding: 12px 0;
-  margin: -12px 0;
+     is bought with padding that does not push the meter around. The rule below
+     is what that padding cannot be allowed to move — a border-bottom would sit
+     at the far edge of it, a dozen pixels under the text and into whatever
+     follows. text-decoration hugs the glyphs however tall the box is, which is
+     the same reason .subtle-link uses it. */
+  padding: 10px 0;
+  margin: -10px 0;
 }
 .queue-report-link:hover,
-.queue-report-link:focus-visible { color: var(--ink); border-bottom-color: var(--ink-dim); }
+.queue-report-link:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-dim);
+  text-underline-offset: 3px;
+}
 .queue-report-link-active { color: var(--signal); }
 .queue-live {
   display: flex;
@@ -1278,7 +1286,17 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   letter-spacing: .06em;
   color: var(--ink-mid);
 }
-.queues-field { max-width: 26rem; }
+/* The toolbar's search input is borderless because `.toolbar` draws the box
+   around it. Standing on its own here, the field has to draw its own, or the
+   input falls back to the browser's default chrome and looks like raw HTML
+   next to everything else. */
+.queues-field {
+  max-width: 26rem;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--ground-2);
+  margin-bottom: 10px;
+}
 .queues-list { display: flex; flex-direction: column; }
 
 /* A row is three parts that stack on a phone and spread on a wide screen:
@@ -1304,7 +1322,16 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   color: var(--ink-dim);
 }
 .queue-row-place { font-family: var(--font-mono); letter-spacing: .04em; }
-.queue-row-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.queue-row-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* Shorter than the shared 44px. These sit in a list where every row repeats
+   them, so full-height buttons make the list a wall; the dialog's chips and
+   the prompt bar keep the taller target, being one-off decisions. The 8px gap
+   above buys back the separation the height was providing. */
+.queue-row-actions .queue-action {
+  min-height: 34px;
+  padding: 5px 12px;
+  font-size: .74rem;
+}
 .queue-row-actions:empty { display: none; }
 .queue-live-none { font-size: .76rem; color: var(--ink-dim); }
 

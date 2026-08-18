@@ -4261,6 +4261,11 @@ function renderQueuesMine() {
   const rows = [...open, ...pending.filter((row) => !open.includes(row))];
   section.hidden = rows.length === 0;
   list.innerHTML = rows.map((entry) => queueRowMarkup(entry)).join("");
+  /* "Queues you are in" is absent whenever you are in none, which left the one
+     remaining section numbered 02 with no 01 above it. The numbers count what
+     is on screen, not what the markup happens to contain. */
+  const reportNum = $("#queues-report-title .section-num");
+  if (reportNum) reportNum.textContent = section.hidden ? "01" : "02";
 }
 
 function renderQueuesScope() {
