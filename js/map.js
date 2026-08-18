@@ -163,8 +163,12 @@ const offered = (ex) =>
 function redrawJoin() {
   buildJoin();
   /* The overview draws no stands, but it counts them: a hall's saved
-     total is read through the join, so it moves when the join does. */
-  if (onOverview()) return refreshCampus();
+     total is read through the join, so it moves when the join does — on
+     the chips as much as on the plates, which is refreshMarks' overview
+     branch rather than refreshCampus on its own. Trade rows landing on
+     an overview that was already up used to move the plates and leave
+     the chip row saying nothing at all about the business halls. */
+  if (onOverview()) return refreshMarks();
   if (!state.hall || !$("#map")) return;
   const code = state.sel ? [...state.sel.codes][0] : null;
   renderHall(state.hall);
@@ -946,6 +950,10 @@ function hallSavedCount(id) {
   for (const s of hall.stands) if (standRecord(id, s).exs.some(exSaved)) n += 1;
   return n;
 }
+
+/* Every chip's count in one string, for telling "these numbers moved"
+   from "they did not" without rendering anything to find out. */
+const countsKey = () => state.index.halls.map((h) => hallSavedCount(h.id)).join(",");
 
 /* The row's first chip, and the only one that is not a hall: it steps back
    to the whole site. It leads rather than follows the halls because that is
@@ -1924,8 +1932,25 @@ async function main() {
    parse on tap. */
 function prefetchRest() {
   loadCampus().catch(() => {});
-  const prefetch = () => {
-    for (const h of state.index.halls) loadHall(h.id).catch(() => {});
+  const prefetch = async () => {
+    const before = countsKey();
+    await Promise.all(state.index.halls.map((h) => loadHall(h.id).catch(() => {})));
+    /* And then say so. A hall's saved count is read from its own stands
+       once the plan is parsed and estimated from the guide's exhibitor
+       list until then, and the two disagree wherever one exhibitor holds
+       more than one stand in a hall: the estimate counts the exhibitor,
+       the truth counts the stands. Nothing else redraws those numbers,
+       so the estimate used to stand for the rest of the session — most
+       visibly on the overview, whose plates are the one screen whose
+       whole job is those counts. */
+    if (countsKey() === before) return;
+    if (onOverview()) refreshCampus();
+    /* The row is rebuilt seconds after the map settled, possibly under a
+       finger already scrolling it, so it is put back where it was. */
+    const row = $("#halls");
+    const at = row.scrollLeft;
+    renderChips();
+    row.scrollLeft = at;
   };
   "requestIdleCallback" in window
     ? requestIdleCallback(prefetch, { timeout: 4000 })
