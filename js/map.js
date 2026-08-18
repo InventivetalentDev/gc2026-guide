@@ -309,7 +309,7 @@ function footprint(poly) {
    standing on the same corners only — a sub-stand that sits *inside* a
    larger one (E-071a within E-071, 30 of them in hall 10.1) has a
    footprint of its own and stays separate, which is what the painting
-   order below is for. 134 pairs across eleven halls; hall 10.1 alone
+   order below is for. 138 pairs across twelve halls; hall 10.1 alone
    has 26. */
 function mergeLevels(stands) {
   /* Which number a visitor reads on the stand: the one the exhibitors
@@ -1004,7 +1004,7 @@ function renderChips() {
 
 /* ================= the campus overview =================
 
-   Twelve hall chips answer "take me to hall 7". They do not answer "where
+   Thirteen hall chips answer "take me to hall 7". They do not answer "where
    *is* hall 7", which is the question someone standing at a gate with a
    saved list actually has — and the doors on a hall's own outline answer
    it only one wall at a time. So the row's first chip is the whole site:
@@ -1783,7 +1783,7 @@ function renderSourceNote() {
   /* The doors are the one thing on this map that is not traceable to the
      official plan — it files no wall and no doorway — so the credit line
      stops short of claiming them. Per hall, not for the map as a whole:
-     five of the twelve have no doors filed yet, and a disclaimer about
+     seven of the thirteen have no doors filed yet, and a disclaimer about
      something that isn't on the screen is just a longer footer. */
   const ours = state.outline.halls?.[state.hall]?.doors?.length
     ? ` · ${esc(t("map.doorsApprox"))}`
@@ -1802,7 +1802,7 @@ async function showHall(id, { standCode = null } = {}) {
     state.sel = null;
     $("#sheet").classList.remove("open");
     renderChips();
-    /* Twelve halls no longer fit the row, so a hall opened from a deep
+    /* Thirteen halls no longer fit the row, so a hall opened from a deep
        link or a chip at the far end is scrolled to rather than left off
        screen. Only on a hall change: doing it from refreshMarks would
        yank the row back while someone is reading along it. */
