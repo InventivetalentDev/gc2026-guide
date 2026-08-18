@@ -472,6 +472,15 @@ that fails on day 1, so moderation is part of the *product*, not a runbook:
   counts them and the verdict that rule reaches — so a claim one arrival away
   from closing a queue is as visible as one already overturned, and the page
   can never disagree with the chip a visitor is reading.
+- **It names its own inputs.** The two ids the queue actions need — the
+  exhibitor id and the game key — are not values anybody carries in their head,
+  so the page offers every one currently in use as a tap target drawn from the
+  data it has just loaded, with the busiest devices likewise. Typing still
+  works, with autocomplete and a line under each field saying where the value
+  comes from (the `?ex=` in the guide's own link; the game title lowercased;
+  `_booth` for a booth with no lineup). Every action says what it destroys.
+  This is the difference between a console you can use in a crowded hall and
+  one you can only use with the repository open next to you.
 - **What it does, as buttons**: delete a client's rows and deny-list the id
   (a `denylist` table, checked immediately on every write); purge one queue's last N minutes (one bad
   actor cleaned without losing the day); clear or force a `closed` state;

@@ -62,28 +62,75 @@ input,button{font:inherit;min-height:44px;width:100%;padding:.65rem;border:2px s
 button{background:#f16b2b;color:#111;font-weight:800;border-color:#f16b2b}button.secondary{background:#222;color:#fff}
 pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:45vh;overflow:auto;background:#080808;padding:.75rem}
 #status{min-height:1.5em}.danger{border-color:#e34b4b}@media(max-width:36rem){.row{grid-template-columns:1fr}}
+.lede{color:#c9c4ba;margin:.4rem 0 1.2rem}
+.hint{color:#a29c92;font-size:.86rem;line-height:1.45;margin:.5rem 0 0}
+ul.hint{padding-left:1.1rem}ul.hint li{margin:.3rem 0}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85em;background:#000;padding:.1em .35em;border:1px solid #333}
+.pick-label{color:#a29c92;font-size:.86rem;margin:.9rem 0 .4rem}
+/* The two ids this page asks for are not things anyone carries in their head,
+   so the values already in the data are offered as targets. Wide, wrapping and
+   44px tall because this gets used one-handed in a crowded hall. */
+.picks{display:flex;flex-wrap:wrap;gap:.4rem;color:#a29c92;font-size:.86rem}
+button.pick{width:auto;min-height:44px;background:#222;color:#f5f2e9;border-color:#555;font-size:.82rem;
+  font-weight:600;padding:.4rem .7rem;text-align:left}
+button.pick:hover{border-color:#f16b2b}
+.summary{margin:.8rem 0;padding:.6rem .7rem;background:#000;border-left:3px solid #4c8c4a;font-size:.86rem;
+  overflow-wrap:anywhere}
+.summary.alarm{border-left-color:#e34b4b;color:#ffd7d0}
+details summary{cursor:pointer;padding:.5rem 0;font-weight:700}
 </style>
 </head>
 <body>
 <h1>Queue moderation</h1>
+<p class="lede">Live queue reports, and the controls for when they go wrong. Every
+action here is logged. Nothing on this page is translated or cached &mdash; it is
+operator-facing and always fetched fresh.</p>
+
 <section id="login">
   <label>Admin token <input id="token" type="password" autocomplete="current-password"></label>
   <button id="load">Save token &amp; load</button>
+  <p class="hint">Stored on this device only. Set with
+  <code>wrangler secret put ADMIN_TOKEN</code>.</p>
 </section>
 <p id="status" role="status" aria-live="polite"></p>
+
 <section>
   <h2>Break glass</h2>
+  <p class="hint">Pause stops every new report, show-wide, until you resume. Reading
+  the live figures keeps working; the numbers just stop moving. Use it to stop a
+  flood while you work out what to do about it.</p>
   <div class="row"><button data-simple="pause">Pause writes</button><button class="secondary" data-simple="resume">Resume writes</button></div>
 </section>
+
 <section>
   <h2>Client</h2>
-  <label>Client UUID <input id="client" autocomplete="off"></label>
+  <p class="hint">A client is one device. The id is random and resettable, so this
+  is a speed bump, not a ban.</p>
+  <p class="pick-label">Busiest devices, last 24h &mdash; tap to fill:</p>
+  <div id="pick-clients" class="picks">Load the data to list these.</div>
+  <label>Client UUID <input id="client" autocomplete="off" spellcheck="false" list="client-list"></label>
+  <datalist id="client-list"></datalist>
+  <p class="hint">Also the <code>client</code> field on any row of the raw data
+  below &mdash; the anomaly lists are the usual place to find a bad one.</p>
   <button class="danger" data-action="deny_client">Delete reports &amp; deny</button>
+  <p class="hint">Deletes every report this device has ever sent and refuses its
+  future ones. Not reversible.</p>
 </section>
+
 <section>
   <h2>Queue</h2>
-  <label>Exhibitor id <input id="exhibitor" autocomplete="off"></label>
-  <label>Game key or _booth <input id="game" autocomplete="off"></label>
+  <p class="pick-label">Queues reported in the last 24h &mdash; tap to fill:</p>
+  <div id="pick-queues" class="picks">Load the data to list these.</div>
+  <label>Exhibitor id <input id="exhibitor" autocomplete="off" spellcheck="false" list="exhibitor-list"></label>
+  <datalist id="exhibitor-list"></datalist>
+  <p class="hint">The id in the guide's own link to a booth's queues:
+  <code>hallgui.de/#queues?ex=<b>xbox</b></code>. Same value as <code>id</code> in
+  <code>data/exhibitors.json</code>.</p>
+  <label>Game key or _booth <input id="game" autocomplete="off" spellcheck="false" list="game-list"></label>
+  <datalist id="game-list"></datalist>
+  <p class="hint">The game's title lowercased with runs of spaces collapsed &mdash;
+  &ldquo;Forza Horizon 6&rdquo; is <code>forza horizon 6</code>. Exhibitors with no
+  playable lineup have one queue keyed <code>_booth</code> instead.</p>
   <label>Minutes to purge <input id="minutes" type="number" min="1" max="1440" value="60"></label>
   <div class="row">
     <button class="danger" data-action="purge_queue">Purge recent</button>
@@ -91,52 +138,162 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:45vh;overflow:auto;ba
     <button class="secondary" data-action="clear_closure">Force open 60m</button>
     <button class="secondary" data-action="auto_closure">Return to automatic</button>
   </div>
+  <ul class="hint">
+    <li><b>Purge recent</b> deletes this queue's sessions, closure votes, mechanics
+    and events from the last N minutes. Not reversible.</li>
+    <li><b>Force closed</b> shows &ldquo;Queue closed&rdquo; whatever the crowd says.</li>
+    <li><b>Force open</b> suppresses that and clears the closure votes behind it.</li>
+    <li><b>Return to automatic</b> drops the override and lets the two-device rule
+    decide again. The forced states expire on their own after an hour.</li>
+  </ul>
 </section>
-<section><h2>Current data</h2><button class="secondary" id="refresh">Refresh</button><pre id="data">Not loaded.</pre></section>
+
+<section>
+  <h2>Current data</h2>
+  <button class="secondary" id="refresh">Refresh</button>
+  <div id="summary" class="summary">Not loaded.</div>
+  <details><summary>Everything, as JSON</summary><pre id="data">Not loaded.</pre></details>
+  <p class="hint"><b>queueDiagnostics</b> pairs each queue's published answer with the
+  inputs behind it. <b>closureClaims</b> lists recent &ldquo;queue closed&rdquo;
+  reports with the arrivals rebutting them and whether the rule closes it
+  (<code>would_close</code>). <b>aheadAnomalies</b> and <b>manyQueueClients</b> are
+  the cheap tells for one device making things up.</p>
+</section>
 <script>
 (() => {
-  const key=${JSON.stringify(ADMIN_STORAGE_KEY)};
-  const token=document.querySelector('#token');
-  const status=document.querySelector('#status');
-  const output=document.querySelector('#data');
+  var key=${JSON.stringify(ADMIN_STORAGE_KEY)};
+  var token=document.querySelector('#token');
+  var status=document.querySelector('#status');
+  var output=document.querySelector('#data');
+  var summary=document.querySelector('#summary');
   token.value=localStorage.getItem(key)||'';
-  const headers=()=>({'Authorization':'Bearer '+token.value,'Content-Type':'application/json'});
-  const say=(message)=>{status.textContent=message};
-  async function request(url,options={}){
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),10000);
-    try{return await fetch(url,{...options,signal:controller.signal})}
+  var headers=function(){return {'Authorization':'Bearer '+token.value,'Content-Type':'application/json'}};
+  var say=function(message){status.textContent=message};
+
+  async function request(url,options){
+    options=options||{};
+    var controller=new AbortController();
+    var timer=setTimeout(function(){controller.abort()},10000);
+    try{return await fetch(url,Object.assign({},options,{signal:controller.signal}))}
     finally{clearTimeout(timer)}
   }
+
+  function fillOptions(id,values){
+    var list=document.querySelector(id);
+    list.innerHTML='';
+    values.forEach(function(value){
+      var option=document.createElement('option');
+      option.value=value;
+      list.appendChild(option);
+    });
+  }
+
+  /* The point of these: the two ids this page asks for are not things anybody
+     carries in their head, and the data already names every one in use. */
+  function renderPicks(node,rows,label,onPick,empty){
+    node.innerHTML='';
+    if(!rows.length){node.textContent=empty;return}
+    rows.forEach(function(row){
+      var button=document.createElement('button');
+      button.type='button';
+      button.className='pick';
+      button.textContent=label(row);
+      button.addEventListener('click',function(){onPick(row)});
+      node.appendChild(button);
+    });
+  }
+
+  function renderSummary(data){
+    var queues=(data.queueVolume||[]).length;
+    var clients=(data.topClients||[]).length;
+    var overrides=(data.overrides||[]).length;
+    var closing=(data.closureClaims||[]).filter(function(c){return c.would_close===1}).length;
+    var when=new Date((data.at||0)*1000).toLocaleTimeString();
+    var bits=[
+      (data.writesPaused?'WRITES PAUSED':'writes on'),
+      queues+' queues reported (24h)',
+      clients+' devices',
+      overrides+' override'+(overrides===1?'':'s')+' active',
+      closing+' closed by crowd',
+      'as of '+when
+    ];
+    summary.textContent=bits.join('  \u00b7  ');
+    summary.className='summary'+(data.writesPaused?' alarm':'');
+  }
+
+  function renderAll(data){
+    renderSummary(data);
+    output.textContent=JSON.stringify(data,null,2);
+    renderPicks(
+      document.querySelector('#pick-queues'),
+      (data.queueVolume||[]).slice(0,15),
+      function(row){return row.exhibitor+' / '+row.game+'  ('+row.reports+')'},
+      function(row){
+        document.querySelector('#exhibitor').value=row.exhibitor;
+        document.querySelector('#game').value=row.game;
+        say('Filled '+row.exhibitor+' / '+row.game+'.');
+      },
+      'No queue has been reported in the last 24 hours. Type the ids by hand.'
+    );
+    renderPicks(
+      document.querySelector('#pick-clients'),
+      (data.topClients||[]).slice(0,10),
+      function(row){return row.client.slice(0,8)+'\u2026  ('+row.reports+' in '+row.queues+')'},
+      function(row){
+        document.querySelector('#client').value=row.client;
+        say('Filled '+row.client+'.');
+      },
+      'No device has reported in the last 24 hours.'
+    );
+    fillOptions('#exhibitor-list',[...new Set((data.queueVolume||[]).map(function(r){return r.exhibitor}))]);
+    fillOptions('#game-list',[...new Set((data.queueVolume||[]).map(function(r){return r.game}))]);
+    fillOptions('#client-list',(data.topClients||[]).map(function(r){return r.client}));
+  }
+
   async function load(){
     localStorage.setItem(key,token.value);
-    say('Loading…');
+    say('Loading\u2026');
     try{
-      const response=await request('/api/admin/data',{headers:headers(),cache:'no-store'});
+      var response=await request('/api/admin/data',{headers:headers(),cache:'no-store'});
       if(!response.ok){say('Could not authenticate.');return}
-      output.textContent=JSON.stringify(await response.json(),null,2);say('Loaded.');
-    }catch{say('Network unavailable. Retry when connected.')}
+      renderAll(await response.json());
+      say('Loaded.');
+    }catch(e){say('Network unavailable. Retry when connected.')}
   }
-  async function act(action,extra={}){
-    say('Applying…');
-    const body={action,...extra};
+
+  async function act(action,extra){
+    say('Applying\u2026');
+    var body=Object.assign({action:action},extra||{});
     if(action==='deny_client') body.client=document.querySelector('#client').value.trim();
-    if(['purge_queue','force_closure','clear_closure','auto_closure'].includes(action)){
+    if(['purge_queue','force_closure','clear_closure','auto_closure'].indexOf(action)!==-1){
       body.exhibitor=document.querySelector('#exhibitor').value.trim();
       body.game=document.querySelector('#game').value.trim();
+      if(!body.exhibitor||!body.game){
+        say('Pick a queue first, or type both ids.');
+        return;
+      }
     }
     if(action==='purge_queue') body.minutes=Number(document.querySelector('#minutes').value);
     try{
-      const response=await request('/api/admin/action',{method:'POST',headers:headers(),body:JSON.stringify(body)});
-      if(!response.ok){say(response.status===404?'Could not authenticate.':'Action failed.');return}
+      var response=await request('/api/admin/action',{method:'POST',headers:headers(),body:JSON.stringify(body)});
+      if(!response.ok){
+        var reason=await response.json().catch(function(){return {}});
+        say(response.status===404
+          ? (reason.error==='unknown_queue'?'No such queue \u2014 check the two ids.':'Could not authenticate.')
+          : 'Action failed'+(reason.error?' ('+reason.error+').':'.'));
+        return;
+      }
       say('Applied.');await load();
-    }catch{say('Network unavailable. Action outcome unknown; refresh before retrying.')}
+    }catch(e){say('Network unavailable. Action outcome unknown; refresh before retrying.')}
   }
+
   document.querySelector('#load').addEventListener('click',load);
   document.querySelector('#refresh').addEventListener('click',load);
-  document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>act(button.dataset.action)));
-  document.querySelector('[data-simple="pause"]').addEventListener('click',()=>act('pause_writes',{paused:true}));
-  document.querySelector('[data-simple="resume"]').addEventListener('click',()=>act('pause_writes',{paused:false}));
+  document.querySelectorAll('[data-action]').forEach(function(button){
+    button.addEventListener('click',function(){act(button.dataset.action)});
+  });
+  document.querySelector('[data-simple="pause"]').addEventListener('click',function(){act('pause_writes',{paused:true})});
+  document.querySelector('[data-simple="resume"]').addEventListener('click',function(){act('pause_writes',{paused:false})});
   if(token.value) load();
 })();
 </script>
