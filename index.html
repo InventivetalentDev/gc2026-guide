@@ -71,6 +71,11 @@
 <body>
   <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
 
+  <!-- ?now= moved the clock (see the preview block in js/app.js). Hidden
+       unless it did, and first in the document so it is the first thing read
+       on a page that is claiming to be a day it is not. -->
+  <p class="preview-bar hidden" id="preview-bar" role="status"></p>
+
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand" href="#exhibitors">

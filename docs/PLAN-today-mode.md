@@ -123,11 +123,17 @@ degrades instead of throwing.
 
 ## Verification
 
-Serve the site and drive it with the clock moved into the show week —
-`tools/preview-today.mjs` is that, wrapped up, and it is also the only way to see
-the feature at all before Aug 26. Playwright's `page.clock.setFixedTime` is enough:
-nothing in the app reads the date except `showNow()` and the countdown, so faking
-the timers as well would only put the search debounce at risk.
+Serve the site and open it with `?now` (see the preview block in `js/app.js`),
+which is also the only way to see the feature at all before Aug 26:
+`?now`, `?now=14:30`, `?now=2026-08-29T19:45`. It is one parameter rather than a
+script because the machines that most need it — an IDE's own server, a phone on
+the LAN — are the ones least able to run one, and because the whole app reads the
+clock through a single `clockNow()`, so moving it is genuinely a one-line change.
+
+The parameter ships, ungated, which is only defensible because it announces
+itself: `renderPreviewBanner()` puts a bar across the top naming the moment being
+faked. Without that, `?now=2026-08-27` on the live site is pixel-for-pixel a guide
+claiming it is Thursday of the show.
 
 Moving the dates in `data/event.json` instead does **not** work as a shortcut —
 the day prose is keyed by ISO date in `data/i18n/{en,de}.json`, so the access

@@ -1575,6 +1575,40 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 
 /* ============================================================
+   preview bar — ?now= moved the clock
+   ============================================================ */
+/* Deliberately the loudest thing on the page and deliberately not --signal:
+   this is not the visitor's own emphasis, it is the page admitting it is
+   lying about the date. Warn ink on a warn wash, full bleed, above the
+   masthead. It scrolls away with the page, which is right — it is a
+   development affordance, not a standing alarm. */
+.preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  padding: 7px max(16px, env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--warn) 16%, var(--ground));
+  border-bottom: 1px solid color-mix(in srgb, var(--warn) 40%, var(--ground));
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--warn);
+}
+.preview-tag {
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.preview-when { color: var(--ink-mid); font-variant-numeric: tabular-nums; }
+.preview-exit {
+  margin-left: auto;
+  color: var(--warn);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.preview-exit:hover, .preview-exit:focus-visible { color: var(--ink); }
+
+/* ============================================================
    today
    ============================================================ */
 /* The show-day mode. It reuses the hall lens's board wholesale — same

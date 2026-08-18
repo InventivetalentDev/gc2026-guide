@@ -183,6 +183,10 @@ window.GC_STRINGS.en = {
   "directory.fallbackHint":
     "No card matches — but one booth in the full directory below does.|No card matches — but {n} booths in the full directory below do.",
 
+  "preview.tag": "Preview",
+  "preview.when": "the guide is running as if it were {day}, {date}, {time} in Cologne",
+  "preview.exit": "back to the real date",
+
   /* ---------- Today ----------
      The show-day mode: the walking route scoped to the day it is, with the
      played stops folded away. Live only on the five show days. */

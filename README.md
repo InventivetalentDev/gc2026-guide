@@ -49,19 +49,25 @@ python3 -m http.server 8000
 (Opening `index.html` via `file://` won't work because the app fetches JSON.)
 
 One part of the guide can't be reached that way: the **Today** tab exists only on
-the five show days, so before Aug 26 there is nothing to click. `tools/preview-today.mjs`
-opens a browser with the clock moved into the show week and a demo plan seeded, which
-is the only way to see it without changing the machine's own date:
+the five show days, so before Aug 26 there is nothing to click. `?now` moves the
+clock for one load, on whatever server you already have:
 
-```sh
-python3 -m http.server 8123          # in another shell
-node tools/preview-today.mjs                          # Wednesday, 11:00
-node tools/preview-today.mjs --day=2026-08-29 --time=19:45   # Saturday, business halls shut
-node tools/preview-today.mjs --empty --lang=de        # the empty state, in German
-```
+| URL | |
+|---|---|
+| `?now` | the show's first day, an hour after the doors open |
+| `?now=14:30` | same day, that time in Cologne |
+| `?now=2026-08-29` | that day, an hour after its doors |
+| `?now=2026-08-29T19:45` | that day, 15 minutes before closing |
 
-It needs Playwright (`npm i -g playwright && playwright install chromium`) and never
-ships — `tools/` stays in the repo, per the lists in `tools/build-site.sh`.
+It works anywhere the page does — a `file://`-adjacent IDE server, a phone on the
+LAN, the deployed site — and combines with the rest: `?now=2026-08-29#today`,
+`?now&lang=de`. Today only has stops if you gave some a day, so save a couple of
+booths in the planner first, or you'll get its empty state.
+
+A moved clock says so: a bar across the top of every page names the moment it is
+pretending to be, and links back out. It has to, because otherwise a screenshot of
+`?now=2026-08-27` is indistinguishable from the real Thursday. Like `?lang`, it wins
+for one load, is never stored, and never rides in a link the guide builds.
 
 ## Deploying
 

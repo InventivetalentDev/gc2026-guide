@@ -3909,6 +3909,51 @@ function renderPlan() {
    arrival. It follows that Today can only ever show stops that were given a
    day: the nudge under the list is what it owes someone who planned half. */
 
+/* ?now= moves the clock, so Today can be opened before Aug 26.
+
+   Today exists only during the show, which leaves it the one part of the guide
+   nobody can look at until the show starts — including whoever is building it.
+   The same shape as ?lang in js/i18n.js: it wins for this load, it is never
+   persisted, and it is never written into a link the app builds. It is not
+   host-gated either, because the machine that most needs it is a phone on the
+   LAN, and it changes nothing but what this one page believes the date to be.
+
+   What it accepts: ?now · ?now=14:30 · ?now=2026-08-29 · ?now=2026-08-29T19:45.
+   A missing date means the show's first day. A missing time means an hour
+   after that day's doors open, so the bare form shows the show running rather
+   than the quiet morning before it — Wednesday opens at 13:00, and "?now"
+   landing on a shut hall would be a poor first look at the feature. Anything
+   the pattern does not match is handed to Date, so a full ISO instant works.
+
+   The time is read as Cologne's, because that is the clock somebody typing
+   "19:45" is thinking in — and it is the assumption renderCountdown already
+   makes about the show week. */
+const PREVIEW_PARAM = new URLSearchParams(location.search).get("now");
+
+function previewInstant() {
+  if (PREVIEW_PARAM === null) return null;
+  const raw = PREVIEW_PARAM.trim();
+  const parts = /^(\d{4}-\d{2}-\d{2})?(?:[T ]?(\d{1,2}:\d{2}))?$/.exec(raw);
+  if (!parts) {
+    const loose = new Date(raw);
+    return Number.isNaN(loose.getTime()) ? null : loose;
+  }
+  const date = parts[1] || state.event?.days?.[0]?.date;
+  /* Before data/event.json lands there is no first day to fall back to, and a
+     guess would be worse than waiting for the render that follows it. */
+  if (!date) return null;
+  const at = new Date(`${date}T${(parts[2] || doorsPlusOne(date)).padStart(5, "0")}:00+02:00`);
+  /* An unreadable ?now is ignored rather than guessed at — the banner not
+     appearing is the signal that it was not understood. */
+  return Number.isNaN(at.getTime()) ? null : at;
+}
+
+/* Every read of "what time is it now" in the app goes through here, so the
+   countdown in the masthead and the Today header can never tell a visitor two
+   different things. (The .ics DTSTAMP deliberately does not: that field means
+   "when was this file written", which is the real now even in a preview.) */
+const clockNow = () => previewInstant() || new Date();
+
 /* The show happens in Cologne, and the phone in the visitor's pocket may not
    be on Cologne time — a tablet still set to Los Angeles calls Thursday
    evening Thursday morning and opens Today on the wrong day. The date and the
@@ -3917,7 +3962,7 @@ function renderPlan() {
 const SHOW_TZ = "Europe/Berlin";
 
 function showNow() {
-  const now = new Date();
+  const now = clockNow();
   try {
     const parts = {};
     for (const part of new Intl.DateTimeFormat("en-CA", {
@@ -3954,6 +3999,17 @@ const showDay = () => dayByDate(showNow().date);
 const clockMinutes = (hhmm) => {
   const [h, m] = String(hhmm || "").split(":").map(Number);
   return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : null;
+};
+
+const hhmm = (mins) =>
+  `${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`;
+
+/* The default time for a ?now that names only a day. Used before this file has
+   finished defining it, which is fine — nothing calls it until a render. */
+const doorsPlusOne = (date) => {
+  const open = clockMinutes(dayByDate(date)?.open);
+  /* A date outside the show has no doors to open; mid-morning will do. */
+  return open === null ? "11:00" : hhmm(open + 60);
 };
 
 /* Where the day stands: waiting for the doors, running, or over. Read off the
@@ -4022,6 +4078,30 @@ function renderTodayTab(day = showDay()) {
   if (tab) tab.hidden = !day;
 }
 
+/* A moved clock says so, out loud and on every screen.
+
+   Without this, hallgui.de/?now=2026-08-27 is pixel-for-pixel a guide claiming
+   it is Thursday of the show — and a screenshot of one is indistinguishable
+   from the real thing. The banner is what lets the parameter ship at all: it
+   makes the preview self-labelling, and gives it the way back out. */
+function renderPreviewBanner() {
+  const bar = $("#preview-bar");
+  if (!bar) return; // stale cached shell
+  const at = previewInstant();
+  bar.classList.toggle("hidden", !at);
+  if (!at) return;
+  const { date, minutes } = showNow();
+  /* The href is the bare path — a correct destination for a middle-click, and
+     for a load where the handler in bindControls never ran. The hash is added
+     back at click time, because it moves while the banner is up and this
+     markup is only rebuilt when Today re-renders. */
+  bar.innerHTML = `<span class="preview-tag">${esc(t("preview.tag"))}</span>
+    <span class="preview-when">${esc(
+      t("preview.when", { day: dayName(date), date: formatDate(date), time: hhmm(minutes) })
+    )}</span>
+    <a class="preview-exit" href="${esc(location.pathname)}">${esc(t("preview.exit"))}</a>`;
+}
+
 function renderToday() {
   const section = $("#view-today");
   /* Stale cached shell, or a boot that has not reached the data yet — the
@@ -4029,6 +4109,9 @@ function renderToday() {
   if (!section || !state.event) return;
   const d = showDay();
   renderTodayTab(d);
+  /* Before the early return: a ?now pointed outside the show week is exactly
+     when somebody most needs telling that the clock has been moved. */
+  renderPreviewBanner();
   if (!d) return;
 
   const { groups, done } = routeGroups({ day: d.date, hidePlayed: true });
@@ -4363,7 +4446,7 @@ window.gcToast = { show: showToast, hide: hideToast };
 
 function renderCountdown() {
   const start = new Date(state.event.startDate + "T10:00:00+02:00");
-  const now = new Date();
+  const now = clockNow();
   const days = Math.ceil((start - now) / 86400000);
   const el = $("#countdown");
   if (days >= 1) el.textContent = t("countdown.days", { n: days });
@@ -4611,6 +4694,13 @@ function bindControls() {
     window.scrollTo(0, 0);
     $('.tab[data-view="exhibitors"]')?.focus({ preventScroll: true });
   });
+  $("#preview-bar")?.addEventListener("click", (e) => {
+    if (!e.target.closest(".preview-exit")) return;
+    e.preventDefault();
+    /* Same view, real clock. Dropping the query is a navigation, so the app
+       reboots without ?now rather than trying to unwind it in place. */
+    location.assign(location.pathname + location.hash);
+  });
   /* Today's two doors, pointing at the two things that can be wrong with it:
      an empty day is fixed in the plan, an empty list on the exhibitor grid. */
   $("#today-plan")?.addEventListener("click", () => {
@@ -4818,8 +4908,11 @@ async function main() {
   renderCountdown();
   renderFreshness();
   /* Ahead of the landing render: Today's own render may be an idle slot away,
-     and the tab has to be on screen from the first paint of a show day. */
+     and both of these have to be on screen from the first paint — the tab on a
+     show day, and the banner whenever the clock has been moved, whatever view
+     the visitor happens to land on. */
   renderTodayTab();
+  renderPreviewBanner();
   renderMarkControls();
   renderFilters();
   /* Only the landing view renders before first paint; the rest go through

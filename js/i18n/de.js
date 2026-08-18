@@ -171,6 +171,10 @@ window.GC_STRINGS.de = {
   "directory.fallbackHint":
     "Oben gibt es keinen Treffer — aber einen Stand im Verzeichnis unten.|Oben gibt es keinen Treffer — aber {n} Stände im Verzeichnis unten.",
 
+  "preview.tag": "Vorschau",
+  "preview.when": "Der Guide läuft, als wäre es {day}, {date}, {time} in Köln",
+  "preview.exit": "zurück zum echten Datum",
+
   /* ---------- Today ----------
      Der Messetag-Modus: die Laufroute auf den heutigen Tag begrenzt, Gespieltes
      eingeklappt. Nur an den fünf Messetagen sichtbar. */
