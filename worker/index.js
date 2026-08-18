@@ -196,11 +196,23 @@ async function joined(env, client, queue, body, now) {
   const ahead = requireIntegerBucket(body.ahead, AHEAD_BUCKETS, "ahead", { optional: true });
   await enforceJoinLimit(env, client, now);
   const joinedAt = now - claimed * 60;
+  /* A device stands in one line at a time. Joining anywhere closes whatever
+     else was open for this client — as `left` for a different queue, because
+     that is what walking off to another line is, and as `abandoned` for a
+     re-join of the same one, which is a correction rather than a decision.
+
+     Enforced here rather than only in the UI, which merely asks first: two
+     tabs, a replayed request or a client that skips the prompt would otherwise
+     leave sessions dangling. They are not harmless when they do — an open
+     session counts toward its queue's "so far" bound for four hours, so one
+     forgotten line quietly inflates a number somebody else is reading. */
   const statements = [
     env.QUEUE_DB.prepare(
-      `UPDATE sessions SET outcome = 'abandoned', closed_at = ?, updated_at = ?
-       WHERE client = ? AND exhibitor = ? AND game = ? AND outcome IS NULL`
-    ).bind(now, now, client, queue.exhibitor, queue.game),
+      `UPDATE sessions
+          SET outcome = CASE WHEN exhibitor = ? AND game = ? THEN 'abandoned' ELSE 'left' END,
+              closed_at = ?, updated_at = ?
+        WHERE client = ? AND outcome IS NULL`
+    ).bind(queue.exhibitor, queue.game, now, now, client),
     env.QUEUE_DB.prepare(
       `INSERT INTO sessions
        (exhibitor, game, client, created_at, joined_at, updated_at, claimed)

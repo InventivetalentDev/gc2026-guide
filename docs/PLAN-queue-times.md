@@ -113,10 +113,14 @@ updates, and closed by an outcome. That gives the server:
   falls out naturally instead of being bolted on.
 
 Sessions live server-side keyed by `(client, queue)` — the open session for
-that pair, no session id on the wire. A `joined` report replaces any open
-session (you re-queued), an outcome closes it, and a session with no update
-for 4 hours expires as `abandoned` (forgotten phones must not become
+that pair, no session id on the wire. An outcome closes a session, and one with
+no update for 4 hours expires as `abandoned` (forgotten phones must not become
 99-minute "waits").
+
+**A device holds one open session in total** — revised after review; see §5.
+A `joined` report closes whatever else was open for that client: `abandoned`
+for the same queue, which is a re-queue rather than a move, and `left` for a
+different one, which is what walking off to another line is.
 
 Late starters are first-class: someone who discovers the tracker twenty
 minutes into the line opens their session with a claimed elapsed bucket
@@ -367,9 +371,15 @@ refocuses with a session past ~10 min, a quiet prompt bar surfaces it:
 "Still queueing for Fable? 23 min · [Still waiting] [I'm in!] [I left]".
 That reopen moment is when ground truth gets captured or lost — no
 notifications, no background anything, just meeting the visitor at the
-moment they already came back to their phone. One active session per queue,
-multiple parallel sessions allowed (you *will* stand in a merch line while a
-friend holds your spot elsewhere), each rendered on its own card.
+moment they already came back to their phone. **One line at a time**, revised after review: the
+original plan allowed parallel sessions on the theory that you might hold a
+place in two, but a single device cannot physically stand in two lines, and the
+sessions left behind were not harmless — an open one counts toward its queue's
+"so far" bound for four hours, so a line you wandered away from quietly
+inflates a number somebody else is reading. Joining now closes whatever else
+was open. The dialog says which line that is and how long you have been in it
+before it happens; the Worker enforces it either way, since two tabs or a
+replayed request would otherwise slip past a prompt.
 
 **Reporting "queue closed"** stays a session-less one-tap, now on the queue's
 row in the queues view — you see the sign, you report it, you walk away.

@@ -1320,6 +1320,10 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 .queue-row-place { font-family: var(--font-mono); letter-spacing: .04em; }
 .queue-row-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* The switch step's two buttons are sentences rather than chips, so they take
+   the full width and stack instead of sitting in a row and wrapping badly. */
+.queue-choice-wide { flex: 1 1 100%; text-align: left; }
+.queue-switch-held { margin: .3rem 0 .9rem; color: var(--ink-mid); font-size: .9rem; }
 /* Shorter than the shared 44px. These sit in a list where every row repeats
    them, so full-height buttons make the list a wall; the dialog's chips and
    the prompt bar keep the taller target, being one-off decisions. The 8px gap

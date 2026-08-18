@@ -174,6 +174,13 @@ window.GC_STRINGS.en = {
   "queue.dialogTitle": "Queue report",
   "queue.closeAria": "Close queue report",
   "queue.done": "Done",
+  /* Shown when a join would end a line this device is already standing in.
+     The Worker closes it either way, so the wording states a consequence
+     rather than offering a choice about whether it happens. */
+  "queue.switchQuestion": "You're already in a queue",
+  "queue.switchHeld": "{queue} — waiting {n} min. You can only track one line at a time.",
+  "queue.switchConfirm": "Leave it and start here",
+  "queue.switchCancel": "Keep waiting there",
   "queue.claimQuestion": "How long have you already been waiting?",
   "queue.claimAria": "Time already spent in this queue",
   "queue.claim.0": "Just joined",

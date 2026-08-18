@@ -4486,7 +4486,25 @@ function renderQueueDialog() {
   if (!dialog || !queueDialogState) return;
   $("#queue-dialog-subject").textContent = queueName(queueDialogState.queue);
   const flow = $("#queue-dialog-flow");
-  if (queueDialogState.mode === "join") {
+  if (queueDialogState.mode === "switch") {
+    const held = queueDialogState.held;
+    const heldQueue = held && QUEUES.queue(held.exhibitor, held.game);
+    const minutes = Math.max(0, Math.floor(QUEUES.elapsed(held) / 60));
+    flow.innerHTML = `<div class="queue-dialog-step">
+      <p class="queue-dialog-question">${esc(t("queue.switchQuestion"))}</p>
+      <p class="queue-switch-held">${esc(
+        t("queue.switchHeld", { queue: heldQueue ? queueName(heldQueue) : held.exhibitor, n: minutes })
+      )}</p>
+      <div class="queue-choice-row">
+        <button class="queue-choice queue-choice-wide" type="button" data-queue-dialog-action="switch">${esc(
+          t("queue.switchConfirm")
+        )}</button>
+        <button class="queue-choice queue-choice-wide" type="button" data-queue-dialog-action="cancel">${esc(
+          t("queue.switchCancel")
+        )}</button>
+      </div>
+    </div>`;
+  } else if (queueDialogState.mode === "join") {
     flow.innerHTML = `<div class="queue-dialog-step">
       <p class="queue-dialog-question">${esc(t("queue.claimQuestion"))}</p>
       <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.claimAria"))}">
@@ -4515,12 +4533,21 @@ function renderQueueDialog() {
 
 let queueDialogInvoker = null;
 
-function openQueueDialog(queue, mode, invoker = null) {
+function otherOpenSession(queue) {
+  if (!QUEUES || !queue) return null;
+  const here = QUEUES.queueKey(queue.exhibitor, queue.game);
+  return (
+    QUEUES.sessions().find((entry) => QUEUES.queueKey(entry.exhibitor, entry.game) !== here) || null
+  );
+}
+
+function openQueueDialog(queue, mode, invoker = null, held = null) {
   const dialog = $("#queue-dialog");
   if (!dialog || !queue) return;
   queueDialogInvoker = invoker;
   queueDialogState = {
     queue,
+    held,
     mode,
     busy: false,
     status: "",
@@ -4585,6 +4612,19 @@ async function submitQueueDialog(action, value) {
     queueDialogState.batch = null;
     renderQueueDialog();
     $(`#queue-dialog-flow [data-queue-dialog-action="qtype"][data-value="${CSS.escape(value)}"]`)?.focus();
+    return;
+  }
+  if (action === "cancel") {
+    $("#queue-dialog").close();
+    return;
+  }
+  if (action === "switch") {
+    /* Only the confirmation is local — the old session is closed by the join
+       itself, so nothing is lost if they abandon the flow here. */
+    queueDialogState.mode = "join";
+    queueDialogState.held = null;
+    renderQueueDialog();
+    $("#queue-dialog-flow .queue-choice")?.focus();
     return;
   }
   if (action === "batch") {
@@ -4653,7 +4693,11 @@ async function runQueueAction(queue, action, source = null) {
   if (action === "join" || action === "update") {
     queuePromptKey = null;
     renderQueuePrompt(false);
-    openQueueDialog(queue, action, source);
+    /* One line at a time. Joining closes whatever else is open — the Worker
+       does that regardless — so say which line is about to end rather than
+       ending it behind their back. */
+    const held = action === "join" ? otherOpenSession(queue) : null;
+    openQueueDialog(queue, held ? "switch" : action, source, held);
     return;
   }
   pendingQueueActions.add(pendingKey);

@@ -11,7 +11,7 @@ import worker, {
   runCleanup,
 } from "../worker/index.js";
 import { handleAdminAction, handleAdminData, isAdminAuthorized } from "../worker/admin.js";
-import { buildQueueAllowlist } from "../worker/core.js";
+import { buildQueueAllowlist, queueToken } from "../worker/core.js";
 
 const CLIENT = "123e4567-e89b-42d3-a456-426614174000";
 const queue = [...buildQueueAllowlist(exhibitors).values()][0];
@@ -83,6 +83,51 @@ describe("report lifecycle", () => {
       await env.QUEUE_DB.prepare(
         `SELECT COUNT(*) AS n FROM report_events WHERE client = ? AND kind = 'update'`
       ).bind(CLIENT).first("n")
+    ).toBe(1);
+  });
+
+  it("closes any other open session when a device joins a second queue", async () => {
+    const now = at("2026-08-28T10:00:00+02:00");
+    const client = "823e4567-e89b-42d3-a456-426614174000";
+    const all = [...buildQueueAllowlist(exhibitors).values()];
+    const first = all[0];
+    const second = all.find((q) => queueToken(q.exhibitor, q.game) !== queueToken(first.exhibitor, first.game));
+    const join = (q, when) =>
+      handleReport(
+        new Request("https://hallgui.test/api/queue/report", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-GC-Queue-Client": client },
+          body: JSON.stringify({ ...q, kind: "joined" }),
+        }),
+        testEnv(),
+        site,
+        when
+      );
+
+    await join(first, now);
+    await join(second, now + 60);
+    /* Re-joining the queue you are already in is a correction, not a move, so
+       it reads as abandoned rather than as walking away. */
+    await join(second, now + 120);
+
+    const rows = await env.QUEUE_DB.prepare(
+      `SELECT exhibitor, game, outcome FROM sessions WHERE client = ? ORDER BY id`
+    ).bind(client).all();
+    expect(rows.results).toEqual([
+      { exhibitor: first.exhibitor, game: first.game, outcome: "left" },
+      { exhibitor: second.exhibitor, game: second.game, outcome: "abandoned" },
+      { exhibitor: second.exhibitor, game: second.game, outcome: null },
+    ]);
+    expect(
+      await env.QUEUE_DB.prepare(
+        `SELECT COUNT(*) AS n FROM sessions WHERE client = ? AND outcome IS NULL`
+      ).bind(client).first("n")
+    ).toBe(1);
+    /* Walking off records an event; a same-queue correction does not. */
+    expect(
+      await env.QUEUE_DB.prepare(
+        `SELECT COUNT(*) AS n FROM report_events WHERE client = ? AND kind = 'left'`
+      ).bind(client).first("n")
     ).toBe(1);
   });
 

@@ -625,6 +625,12 @@ const GCQueues = (() => {
       const joinedAt = Number(payload.joinedAt);
       if (!Number.isFinite(joinedAt) || joinedAt <= 0) throw new Error("joined response missing joinedAt");
       await mutateStore((next) => {
+        /* The Worker closes every other open session for this device when a
+           join lands, so the local store follows it rather than keeping timers
+           running for lines this device is no longer standing in. */
+        for (const other of Object.keys(next.sessions)) {
+          if (other !== key) delete next.sessions[other];
+        }
         next.sessions[key] = {
           exhibitor: queueRef.exhibitor,
           game: queueRef.game,
