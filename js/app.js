@@ -4444,6 +4444,12 @@ function queueDialogAhead() {
   </div>`;
 }
 
+/* No save button of its own: "Done" at the foot of the dialog commits whatever
+   is picked here. It used to have one, and the two buttons read as a choice —
+   the instinct is to reach for the primary action at the bottom, which closed
+   the dialog and dropped the mechanics on the floor. Chips cannot submit on tap
+   the way the claim and ahead rows do, because `meta` is one report per device
+   and queue per day: the type and its batch size have to travel together. */
 function queueDialogDetails() {
   if (queueDialogState?.metaSaved) return "";
   const selected = queueDialogState?.qtype || "";
@@ -4472,9 +4478,6 @@ function queueDialogDetails() {
           </div>`
         : ""
     }
-    <button class="queue-meta-save" type="button" data-queue-dialog-action="meta" ${selected ? "" : "disabled"}>${esc(
-      t("queue.detailsSave")
-    )}</button>
   </details>`;
 }
 
@@ -4612,12 +4615,15 @@ async function submitQueueDialog(action, value) {
       }
       stateAtSubmit.aheadDone = true;
       stateAtSubmit.status = t("queue.updatedSuccess");
-    } else if (action === "meta") {
+    } else if (action === "done") {
       const body = { qtype: stateAtSubmit.qtype };
       if (stateAtSubmit.batch) body.batch = stateAtSubmit.batch;
       requireQueueDelivery(await QUEUES.report(stateAtSubmit.queue, "meta", body));
       stateAtSubmit.metaSaved = true;
-      stateAtSubmit.status = t("queue.detailsSaved");
+      const dialog = $("#queue-dialog");
+      if (queueDialogState === stateAtSubmit && dialog.open) dialog.close();
+      showToast(t("queue.detailsSaved"));
+      return;
     }
   } catch (error) {
     failed = true;
@@ -4757,7 +4763,12 @@ function bindQueueControls() {
     }
     else if (queue) focusQueueFallback(queue);
   });
-  $("#queue-dialog-done").addEventListener("click", () => dialog.close());
+  $("#queue-dialog-done").addEventListener("click", () => {
+    /* Only a round trip when there is something to send. With no mechanics
+       picked this stays the plain dismiss it has always been. */
+    if (queueDialogState?.qtype && !queueDialogState.metaSaved) submitQueueDialog("done");
+    else dialog.close();
+  });
   $("#queue-dialog-flow").addEventListener("click", (event) => {
     const button = event.target.closest("[data-queue-dialog-action]");
     if (button) submitQueueDialog(button.dataset.queueDialogAction, button.dataset.value);

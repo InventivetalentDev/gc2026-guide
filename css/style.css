@@ -1231,7 +1231,6 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 .queue-action,
 .queue-choice,
-.queue-meta-save,
 .queue-dialog-done {
   min-height: 44px;
   border: 1px solid var(--rule);
@@ -1246,7 +1245,6 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 .queue-action:hover,
 .queue-choice:hover,
-.queue-meta-save:hover,
 .queue-dialog-done:hover { color: var(--ink); border-color: var(--ink-dim); }
 .queue-action-primary,
 .queue-choice.active {
@@ -1255,8 +1253,7 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   color: var(--signal-ink);
 }
 .queue-action:disabled,
-.queue-choice:disabled,
-.queue-meta-save:disabled { opacity: .5; cursor: wait; }
+.queue-choice:disabled { opacity: .5; cursor: wait; }
 .queue-start-actions .queue-action,
 .queue-session-actions .queue-action { min-height: 44px; padding-block: 6px; }
 
@@ -2018,7 +2015,6 @@ a.area-hall:focus-visible { text-decoration-color: currentColor; }
 }
 .queue-details > p { margin: 9px 0; color: var(--ink-dim); font-size: .8rem; }
 .queue-details .queue-choice-row + .queue-dialog-question { margin-top: 12px; }
-.queue-meta-save { margin-top: 12px; }
 .queue-dialog-status {
   min-height: 1.5em;
   margin-top: 14px;
