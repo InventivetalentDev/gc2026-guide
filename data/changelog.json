@@ -3,23 +3,33 @@
     "date": "2026-08-18",
     "revision": 30,
     "changes": [
+      "The map opens on the whole site if you ask it to. The hall row's first chip is a campus overview — every hall in its place, the Boulevard and the Piazza between them, the passages, the Confex and the Congress wings, and the four gamescom gates — for the question thirteen hall chips cannot answer: not \"take me to hall 7\" but \"where is hall 7\". Every hall the guide draws carries your saved-booth count on its plate and opens when you tap it; halls 1 and 11 are on it dimmed, for orientation. It is Koelnmesse's own campus outline, fitted to their artwork rather than measured, so the credit under it says not to scale.",
+      "Zoom buttons on the map, beside the gestures: in, out, and one that fits the whole hall back on screen. Pinch and wheel are neither discoverable with a mouse nor a way back out once you are deep in a hall; + and − do the same from a keyboard. A stand's sheet also says which day you planned it for now, and follows along as you assign days on the plan board.",
+      "Two smaller things on the map: the ← goes back to where you actually came from rather than always to the exhibitor grid, and the address bar names the hall on screen instead of a stand you left three taps ago — so the link you copy is the place you are looking at.",
       "Hall 5.1 is on the map. Cosplay Village, the Artist Area and the ground-floor merchandise shops are drawn booth by booth like every other hall — 141 stands, which makes it the biggest entertainment hall after 10.1. The Cosplay Village row in Halls & areas opens it now instead of stopping at plain text, and so does the Merchandise Area row, which covers both of Hall 5's floors.",
-      "The hall plans were re-snapshotted from Koelnmesse while adding it: CD Projekt's booths in Halls 8.1 and 4.2 are now filed as CD PROJEKT RED, and Bonfire Studios joins the lineup on Gamer Network's Hall 2.2 stand."
+      "The hall plans were re-snapshotted from Koelnmesse while adding it: CD Projekt's booths in Halls 8.1 and 4.2 are now filed as CD PROJEKT RED, and Bonfire Studios joins the lineup on Gamer Network's Hall 2.2 stand.",
+      "Fixed on the map: the saved-booth counts on the hall chips and on the overview's plates could read low until you happened to tap through to another hall, and with a trade badge on, the business halls' counts were missing from the chip row altogether. Both settle on the real count now as the hall plans land."
     ]
   },
   {
     "date": "2026-08-18",
     "revision": 29,
     "changes": [
+      "The Visit planner gets a jump nav under its lede: the section runs five screens deep on a phone, and someone coming back is usually here for their plan or the queue table rather than the day guide the page opens on. The wristband row drops out of the nav when there's nothing in it.",
+      "The five-days board now wears each day's plan count — \"2 stops in your plan\" — so the board doubles as a summary of the plan once stops have days, and tapping a count goes to those stops: the day lens scrolls to that day's group, the hall lens points its single-day filter at the day, so mid-show the tap lands on today's stops in walking order. A plan with nothing saved in it yet gets a Browse exhibitors button back to the grid it is filled from.",
+      "The plan's day headers stop repeating that day's full advice paragraph, which a plan spanning five days carried five times over, one scroll below where it already reads in full. The facts you act on — day, access, hours, and the business-area warning — stay where they were.",
       "Ubisoft's Community Lounge lineup grows by one: Assassin's Creed Shadows joins the developer-talk schedule alongside Rainbow Six Siege, AC Black Flag Resynced, Anno 117 and The Division 2 — still no second playable demo station beyond Rayman Legends Retold.",
       "Directory refresh: 1,711 registered exhibitors (up from 1,659), no share-token collisions.",
-      "Re-checked Google Play, LEGO and Bilibili's lineups, EA's slate beyond FC 27, and Xbox's remaining unannounced slots — still no specifics; a Gamescom insider now claims Xbox has an unrevealed new-IP announcement planned for Opening Night Live, unconfirmed."
+      "Re-checked Google Play, LEGO and Bilibili's lineups, EA's slate beyond FC 27, and Xbox's remaining unannounced slots — still no specifics; a Gamescom insider now claims Xbox has an unrevealed new-IP announcement planned for Opening Night Live, unconfirmed.",
+      "Fixed, and it was the bad kind: day assignments disappeared on reload. The plan read your itinerary before the show schedule it validates against had loaded, so every assignment looked like it named a day that isn't in the show and was dropped — and the next assignment then wrote that emptied plan back over the stored one, for good. The read happens after the schedule is in hand now, and a schedule that hasn't loaded reads as \"not known yet\" rather than \"no such day\"."
     ]
   },
   {
     "date": "2026-08-17",
     "revision": 28,
     "changes": [
+      "Halls & areas on the Info tab opens the map now. Each row's hall plate is a link like every other hall number in the guide, and a row naming a span rather than one hall — \"5–10\" for the entertainment area, \"2–4\" for the business one — lands in the first hall of that span the map draws, with the map's own chip row to carry you along the rest. Rows filed against a single hall the snapshot doesn't have stay plain text rather than quietly opening the hall next door.",
+      "The map names a hall's doors from the widest zoom instead of one band in. \"Boulevard\", \"Hall 6.1\", \"Hall 11\" now sit outside the wall they open through at the size of the largest booth name on the map, because which end of a hall you leave by is a question you ask before zooming into anything — and it was being answered a zoom band late.",
       "Korea Pavilion (KOCCA) booth confirmed: Hall 2.2, C050g/D052g. This year it's one consolidated business-hall stand for 13 Korean studios (a trade badge gets you in) rather than the separate public/business pavilions of past shows — Krafton and Pearl Abyss still show their own games on the consumer floor.",
       "Fixed: Logitech G's booth was pointing at the wrong stand (Hall 8.1, shared with Acer and Philips) — corrected to its own Hall 10.1 stand at E074/F077, which is what its official gamescom profile and the hall plan actually list.",
       "Added AULA to Hall 10.1's hardware row (mice, keyboards; booth E050) — filed under its legal entity, Shenzhen Suoai Electronics Technology.",
