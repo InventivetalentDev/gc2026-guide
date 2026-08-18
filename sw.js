@@ -99,6 +99,10 @@ const DATA = [
      map that is wayfinding rather than booth-finding — exactly what you
      want in a hall with no signal. */
   "data/hallplan/outline.json",
+  /* The whole site in one diagram — 7 KB, and the view someone opens when
+     they have lost track of which hall they are in, which is exactly the
+     moment there is no signal. */
+  "data/hallplan/campus.json",
   "data/hallplan/hall-5.2.json",
   "data/hallplan/hall-6.1.json",
   "data/hallplan/hall-7.1.json",

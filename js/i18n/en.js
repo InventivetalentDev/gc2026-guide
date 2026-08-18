@@ -454,6 +454,39 @@ window.GC_STRINGS.en = {
      on the map is our own reading of where one is. */
   "map.doorsApprox": "hall doors ours, approximate",
 
+  /* ---------- the campus overview ----------
+
+     The row's first chip: one step back from a hall to the whole site.
+     "Overview" rather than "Site" or "All halls" because the chips beside
+     it are halls, and this is the view of them.
+
+     map.place.* names a piece of ground between the halls, map.gate.* an
+     entrance — both keyed by what data/hallplan/campus.json calls it. The
+     gate names wrap to two lines in the margin, so they read as "Entrance
+     / North"; keep them two words for that reason. */
+  "map.overview": "Overview",
+  "map.overviewAria": "Overview of the whole site",
+  "map.campusAria": "Diagram of the gamescom halls, the Boulevard between them and the entrances",
+  "map.campusCounts": "{n} halls · tap one to open it",
+  "map.campusLayout": "campus layout",
+  /* The halls on this diagram are fitted to their slots on Koelnmesse's
+     own artwork rather than drawn to scale, so it is right about where a
+     hall is and wrong about how big it is. Said out loud, next to the
+     credit, because the map's other view is true metres — and after
+     map.checkedOn, which already calls the drawing schematic. */
+  "map.campusNotToScale": "not to scale",
+  "map.place.boulevard": "Boulevard",
+  "map.place.piazza": "Piazza",
+  "map.place.confex": "Confex",
+  "map.place.congress-north": "Congress North",
+  "map.place.congress-east": "Congress East",
+  "map.gate.entrance-north": "Entrance North",
+  "map.gate.entrance-east": "Entrance East",
+  "map.gate.entrance-south": "Entrance South",
+  "map.gate.entrance-west": "Entrance West",
+  "map.gate.entrance-hall-9": "Entrance Hall 9",
+  "map.gate.entrance-boulevard": "Entrance Boulevard",
+
   /* ---------- the trade badge & the business halls ----------
 
      Off by default and gating what the guide *offers*, never what it

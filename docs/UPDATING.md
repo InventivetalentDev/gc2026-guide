@@ -543,7 +543,8 @@ node tools/make-screenshots.mjs
 ## Refreshing the hall plans
 
 `data/hallplan/*.json` holds the booth outlines the Hall map draws — one
-file per hall level, snapshotted from Koelnmesse's own hall-plan data:
+file per hall level, plus the campus layout behind the map's Overview chip
+(see below) — snapshotted from Koelnmesse's own hall-plan data:
 
 ```sh
 node tools/fetch-hallplan.mjs      # no dependencies; ~10s
@@ -661,6 +662,44 @@ the hall.** The doors came from the 2017 press hall plans, which draw the
 doorways directly and are read as fractions of each wall; the halls with no
 plan in that set borrow the spacing of the one next door. A number moved
 after actually standing in the doorway beats all of it.
+
+### The whole site in one picture — `data/hallplan/campus.json`
+
+The map's **Overview** chip draws every hall in its place with the Boulevard
+between them, and a tap on a hall opens it. That layout is snapshotted from
+the hall-plan *page* rather than the booth endpoint — the page carries a
+`hallen` array of campus outlines — so it has a switch of its own:
+
+```sh
+node tools/fetch-hallplan.mjs --campus   # the layout only, one request
+```
+
+A full run refreshes it too. It is separate because the two change for
+different reasons: booth geometry moves when an exhibitor does, the campus
+only when Koelnmesse rebuilds. Like the colour check, a page that no longer
+parses is a warning and not an error — a markup change at the source must not
+cost you a booth refresh, and the committed layout stays.
+
+**It is a diagram, not a plan.** Koelnmesse fits each hall to its slot on
+their own artwork rather than drawing it to scale, so neighbouring halls come
+out at different scales and no single number converts the file to metres. It
+is right about where a hall is and wrong about how big it is; the map says
+so in its credit line, and the file's `note` says it at length. A hall's real
+geometry is its `hall-<id>.json`, in true metres.
+
+Two tables in the tool are ours, and are the only editorial decisions here:
+`CAMPUS_PLACES` names the handful of features worth a name on a diagram
+(`B1` → `boulevard`), and `CAMPUS_ENTRANCES` maps the page's own entrance
+markers to our keys. Both are i18n keys, resolved client-side from
+`map.place.*` and `map.gate.*` in `js/i18n/<lang>.js` — a name added to
+either table needs a string in both languages and a `check-i18n --update`
+run. Everything else on the diagram is drawn as what its code says it is
+and carries no name.
+
+Adding a hall to `HALLS` puts it on the overview automatically: the tool
+records which levels the guide draws for each campus hall, and a plate with
+no level of ours is drawn dimmed and takes no taps. `campus.json` also has to
+stay named in `DATA` in `sw.js`, like every other file the map needs offline.
 
 ## Refreshing the webfonts
 

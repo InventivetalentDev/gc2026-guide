@@ -318,6 +318,80 @@
 .map-note .lang-switch-link { color: var(--ink-mid); font: inherit; }
 .map-note .lang-switch-link:hover { color: var(--ink); }
 
+/* --- the campus overview ---
+   One step back from a hall: the whole site, every hall in its place, and
+   a tap on one opens it. Drawn into the same #map element a hall is, so
+   it inherits the pan, the pinch and the zoom buttons; everything below
+   is what a site diagram needs that a hall plan does not.
+
+   Hall plates carry their area colour like the chips do, but stronger
+   than a hall's own outline uses it — here the colour *is* the content
+   ("which of these can I walk into"), where inside a hall it is only the
+   frame around booth state. See the campus block in js/map.js. */
+
+/* Not a hall, and the row's one chip that isn't: the area edge every hall
+   chip carries would claim it belongs to one. */
+.map-halls .campus-chip { border-left-color: var(--ink-dim); }
+
+/* The ground between the halls, in one wash each. The Boulevard and the
+   Piazza are the walkable spine and read lightest; the passages that join
+   the halls are the same idea one step quieter; the Confex and the
+   Congress wings are buildings we do not draw inside of; the outdoor
+   areas are neither, and are drawn as ground rather than as structure. */
+#map .campus-ground-concourse { fill: var(--ground-3); stroke: var(--rule); }
+#map .campus-ground-passage { fill: var(--ground-2); stroke: var(--rule-soft); }
+#map .campus-ground-building { fill: var(--ground-2); stroke: var(--rule); }
+#map .campus-ground-outdoor {
+  fill: none; stroke: var(--rule); stroke-dasharray: 6 5;
+}
+
+/* A hall. Filled by its area, or neutral for one the guide draws no level
+   of — hall 1 and hall 11 are on the diagram so the halls around them
+   land in the right place, and they take no taps. */
+#map .campus-hall path { fill: var(--ground-2); stroke: var(--rule); }
+#map .campus-hall.is-open path { cursor: pointer; }
+@supports (color: color-mix(in srgb, red 20%, blue)) {
+  #map .campus-hall.is-open path {
+    fill: color-mix(in srgb, var(--area, transparent) 30%, var(--ground-3));
+    stroke: color-mix(in srgb, var(--area, var(--rule)) 60%, var(--rule));
+  }
+}
+/* A hall holding something you saved. Same signal as a saved booth, and
+   the same promise: this is where your list is. */
+#map .campus-hall.saved path { stroke: var(--signal); stroke-width: 2; }
+#map .campus-hall-hit { fill: transparent; stroke: none; cursor: pointer; }
+
+#map .campus-num {
+  font-family: var(--font-poster); fill: var(--ink-dim); letter-spacing: .02em;
+}
+#map .campus-hall-lbl.is-open .campus-num { fill: var(--ink); }
+#map .campus-saved { font-family: var(--font-mono); fill: var(--signal); font-weight: 700; }
+
+/* The named ground — Boulevard, Piazza, Confex. Quiet on purpose: they
+   are what you cross to reach a hall, not what you came for. */
+#map .campus-place {
+  font-family: var(--font-mono); fill: var(--ink-dim);
+  letter-spacing: .08em; text-transform: uppercase;
+}
+
+/* The gates. North and south are named outside the site with a leader
+   back to the spot, the way a plan labels its edges; east and west are
+   named over it, which is what the halo below is for. See gatesEl in
+   js/map.js for why the sides differ. */
+#map .campus-gate-dot { fill: var(--ink); stroke: var(--ground); stroke-width: 1.5; }
+#map .campus-gate-line { fill: none; stroke: var(--ink-dim); stroke-width: 1; opacity: .5; }
+#map .campus-gate-lbl {
+  font-family: var(--font-display); font-weight: 600; fill: var(--ink-mid);
+  /* The east and west names are set back over the site rather than in a
+     margin (see gatesEl) — the halo is what lets them cross a hall edge
+     or a passage and stay a word rather than a texture. */
+  paint-order: stroke;
+  stroke: var(--ground); stroke-width: 2.6; stroke-linejoin: round;
+}
+/* which side of its dot the name reads from — see gatesEl */
+#map .campus-gate-lbl.to-w { text-anchor: end; }
+#map .campus-gate-lbl.to-e { text-anchor: start; }
+
 @media (max-width: 400px) {
   .map-bar, .map-halls { padding-left: 12px; padding-right: 12px; }
   .map-note { padding-left: 12px; padding-right: 12px; }
