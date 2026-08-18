@@ -476,8 +476,9 @@ an arrow-key pan would be theatre. None of these change the architecture.
    existing names. The one copy that cannot be shared is in
    `tools/fetch-hallplan.mjs` (Node, no DOM), and that file says so.
 3. **Service worker**: `map.html`, `js/map.js`, `js/marks.js` and
-   `css/map.css` are in `SHELL`; all eight `data/hallplan/*` files are in
-   `DATA`. `handleNavigation` picks its fallback with `pageKey()` — an
+   `css/map.css` are in `SHELL`; every `data/hallplan/*` file is in
+   `DATA` — the thirteen hall levels, the index, the outlines and the
+   campus layout. `handleNavigation` picks its fallback with `pageKey()` — an
    offline navigation to `/map.html` gets the cached map, not the guide,
    which is what every navigation used to fall back to.
 4. **Cross-links in**: `hallMarker()` renders the hall plate as an anchor
@@ -547,6 +548,18 @@ an arrow-key pan would be theatre. None of these change the architecture.
    two pages started reading it, per that file's rule. The map shows
    assignments and never edits them; a `storage` event keeps an open
    sheet's day current, like the marks.
+9. **The overview** (decision/open question 5) is the hall row's first
+   chip and renders into the same `#map` element a hall does — which is
+   what gives it the pan, the pinch, the zoom buttons and the fit button
+   without a second implementation. `state.hall` holds `"overview"` while
+   it is up, so the URL is `#overview`, `refreshMarks()` forks to
+   `refreshCampus()` (per-hall saved counts rather than per-stand marks),
+   and a hall plate's tap target is the door layer's trick again: an
+   invisible path over the label layer, handled by the same line that
+   handles a door. `data/hallplan/campus.json` is fetched once the first
+   hall is on screen, never before it, and the chip is offered only when
+   it lands — so an installed shell whose worker predates the file simply
+   does not show it, and no control on the page opens nothing.
 
 ## Verification (manual test script)
 
@@ -636,6 +649,19 @@ Serve the repo root; clear `gc2026.saved.v1`.
     `map.html` offline serves the map, not the guide.
 13. **Escaping** — official names render through `esc()`/`textContent`
     everywhere; no raw HTML from snapshot JSON reaches the DOM.
+14. **The overview** — the row's first chip draws the site: halls 2–11
+    each in place, the Boulevard down the middle with halls 6 and 7 west
+    of it and 9 and 10 east, hall 8 across the north end, the business
+    halls south behind the Piazza. Halls 1 and 11 are dimmed and take no
+    taps; every other plate opens its hall, and the plate you tapped is
+    the chip that is now active. Save a booth in hall 7 and its plate
+    carries ●1 inside the plate and a signal outline, live, without
+    leaving the overview. Gate names sit clear of the halls at every
+    zoom — north above the plan, south below it, east and west set back
+    over the passages — and there are four of them, not the six the
+    source's artwork marks. `#overview` is a working deep link, and
+    with `campus.json` 404ing the chip is absent and that link falls
+    through to a hall rather than an empty stage.
 
 ## Open questions
 
@@ -674,20 +700,45 @@ Serve the repo root; clear `gc2026.saved.v1`.
    suggestion list for the sourced editorial process and is never
    auto-applied — the match is loose on purpose, which is exactly why a
    human has to read it.
-5. **A campus overview.** The official page embeds hall-outline
-   coordinates for the whole campus (its `hallen` array) — a schematic
-   "which hall is where" entry screen is buildable from data if the
-   per-hall chips prove insufficient wayfinding. Half-spent already:
-   decision 5b reads that array for adjacency (which wall faces the
-   Boulevard, which passage joins which two halls) without drawing any
-   of it. What it is not good enough for is a map — the polygons are on
-   a 5-unit grid and two neighbouring halls come out at different
-   scales, so an overview built from them would be a diagram, not a
-   plan. It also carries the four site entrances (Nord, Ost, Süd, West,
-   plus "Eingang Halle 9"), which the doors deliberately stop short of:
-   those are labelled on the campus artwork, not against a hall wall,
-   and guessing which of hall 8's openings *is* Eingang Nord is a walk,
-   not a derivation.
+5. ~~**A campus overview.**~~ Built, and it is the diagram this entry
+   always said it would be. `tools/fetch-hallplan.mjs --campus` snapshots
+   the page's `hallen` array to `data/hallplan/campus.json`, and the hall
+   row's first chip draws it: every hall in its place, the Boulevard and
+   the Piazza between them, every Durchgang and Passage, the Confex and
+   the Congress wings, the four gates — and a tap on a hall opens it. The
+   halls the guide draws no level of (1 and 11) are on it dimmed, for
+   orientation, and take no taps; each hall the guide *does* draw carries
+   the count of your saved booths in it, the same ●n the chips use.
+
+   What it is still not is a plan: the rings are on a 5-unit grid and each
+   hall is fitted to its slot rather than drawn to scale (hall 6 comes out
+   at ~1.5 m per unit across and ~1.4 down, hall 4 at ~1.6 and ~2.1), so
+   nothing on it measures anything. It is right about where a hall is and
+   wrong about how big it is, and the credit line under it says "diagram,
+   not to scale" for exactly that reason.
+
+   The gates came with it, and did not need the guess this entry feared.
+   They are dots on the site artwork the page lays over the outlines, and
+   once that artwork's frame is pinned to the outlines' (it is theirs
+   shifted 134 units) each lands where it should — Nord in hall 8's own
+   entrance hall, West between halls 2 and 4, Ost beside hall 10, Süd past
+   the corridor between halls 3 and 11. A dot is a coordinate, so we take
+   the points and none of the drawing.
+
+   Four of them, though the artwork marks six. That artwork is
+   Koelnmesse's *Verkehrsleitfaden* — the traffic guide for the grounds,
+   drawn once for every fair they host, with the Hohenzollernbrücke, the
+   streets and the car parks on it — so it marks every way onto the site
+   the buildings have, not the ones a given show opens. "Eingang Halle 9"
+   and "Eingang Boulevard" are in neither the gamescom-configured `hallen`
+   array nor anything gamescom publishes, and the guide's own entrances
+   section says four gates. Drawn beside the four in the same style they
+   would read as a fifth and sixth way in. Taking a coordinate is safe;
+   claiming a door is open is not, and `CAMPUS_ENTRANCES` in the tool is
+   where that line is drawn.
+
+   All of which is a different question from which of hall 8's *openings*
+   is Eingang Nord, which is still a walk and still not on a hall wall.
 7. **Which doors are actually there.** Halls 6 and 9 borrow hall 7's
    door spacing — hall 6 has no 2017 plan and hall 9's Boulevard side is
    not drawn in its own — and hall 8's Boulevard doors are placed from

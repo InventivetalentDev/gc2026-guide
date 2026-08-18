@@ -444,6 +444,29 @@ window.GC_STRINGS.de = {
   "map.door.entrance-east": "Eingang Ost",
   "map.doorsApprox": "Hallentüren von uns, ungefähr",
 
+  /* ---------- die Geländeübersicht ----------
+
+     "Übersicht" ist der Chip ganz links: ein Schritt zurück von einer
+     Halle auf das ganze Gelände. Die Namen der vier Eingänge brechen bei
+     Bedarf auf zwei Zeilen um — deshalb bleiben sie zweiteilig ("Eingang
+     / Nord"). Piazza und Confex heißen auf dem offiziellen Plan auch auf
+     Deutsch so. */
+  "map.overview": "Übersicht",
+  "map.overviewAria": "Übersicht über das gesamte Gelände",
+  "map.campusAria": "Schema der gamescom-Hallen, des Boulevards dazwischen und der Eingänge",
+  "map.campusCounts": "{n} Hallen · zum Öffnen antippen",
+  "map.campusLayout": "Geländeplan",
+  "map.campusNotToScale": "nicht maßstabsgetreu",
+  "map.place.boulevard": "Boulevard",
+  "map.place.piazza": "Piazza",
+  "map.place.confex": "Confex",
+  "map.place.congress-north": "Congress Nord",
+  "map.place.congress-east": "Congress Ost",
+  "map.gate.entrance-north": "Eingang Nord",
+  "map.gate.entrance-east": "Eingang Ost",
+  "map.gate.entrance-south": "Eingang Süd",
+  "map.gate.entrance-west": "Eingang West",
+
   /* ---------- business access & the business halls ----------
 
      "Fachbesucher" is the word the German trade press and gamescom itself
