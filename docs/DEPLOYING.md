@@ -3,7 +3,10 @@
 The guide is hosted on **Cloudflare Workers** as an assets-only Worker: a
 directory of static files served from the edge, with no Worker script.
 `.github/workflows/cloudflare.yml` deploys every push to `main`;
-`wrangler.toml` holds the whole configuration.
+`wrangler.toml` holds the whole configuration. `cloudflare-preview.yml`
+uploads every pull request from a branch in this repository as a preview
+version of the same Worker — see *PR previews* below, including why forks are
+deliberately left out.
 
 The site still has no build step. `tools/build-site.sh` copies it into `dist/`,
 which is the directory the Worker serves, because an asset directory has to hold
@@ -154,6 +157,52 @@ tools/build-site.sh && npx wrangler deploy
 rules as production, which is the way to check the routing itself. For ordinary
 work keep using `python3 -m http.server` in the repo root: it serves the real
 files, so an edit shows up on reload instead of after another `build-site.sh`.
+
+## PR previews
+
+`.github/workflows/cloudflare-preview.yml` uploads every pull request from a
+branch in this repository as a **version** of the production Worker — Workers'
+own preview system, not a second Worker — and comments two URLs on the PR:
+
+- `pr-<n>-gc2026-guide.<subdomain>.workers.dev` — the PR's alias, following
+  its newest push, so the link in the comment stays good for the life of the
+  review;
+- `<version>-gc2026-guide.<subdomain>.workers.dev` — that one push, frozen.
+
+A version is not a deployment. Nothing any real hostname serves changes until
+the merge lands on `main` and `cloudflare.yml` deploys it — `versions upload`
+does not even apply triggers, so the custom domains in `wrangler.toml` cannot
+move from a preview. It runs on the same two repository secrets as the deploy
+and needs no further token scope. `preview_urls = true` in `wrangler.toml` is
+what keeps the URLs answering: left unset it follows `workers_dev`, and it is
+pinned so that turning `workers_dev` off one day does not quietly take the
+preview system down with it.
+
+**Fork PRs deliberately get no preview.** GitHub already withholds the
+repository secrets from fork-triggered runs; the workflow's same-repository
+guard turns that into an honest skip instead of a red failure. The reason to
+keep it that way is not the secrets, though: a preview publishes a PR's HTML
+and JavaScript, live and public, on a `workers.dev` URL carrying this
+project's name. Granting that automatically to anyone with a fork is free
+hosting for phishing pages. To preview a fork PR, read the diff first, then
+run exactly what the workflow runs, from a laptop:
+
+```sh
+git fetch origin pull/<n>/head && git checkout FETCH_HEAD
+tools/build-site.sh && npx wrangler versions upload --preview-alias pr-<n>
+```
+
+Two behaviours to know before trusting a preview:
+
+- The alias URL is one origin across a PR's pushes, so `sw.js` behaves there
+  as it does in production: the first load after a push can serve the push
+  before, stale-while-revalidate. Reload once more, or use the per-push URL —
+  a fresh origin every time, so always clean.
+- Preview URLs are public to anyone who has the link, and old ones keep
+  answering: versions cannot be unpublished, and only the 1000 newest aliases
+  are kept. Nothing secret ships in this repo, so today that costs nothing; if
+  that ever changes, Cloudflare Access can put a login in front of the
+  `workers.dev` preview URLs.
 
 ## Verifying a deploy
 
