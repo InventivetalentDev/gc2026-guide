@@ -54,7 +54,10 @@ Live on **Cloudflare Workers** as an assets-only Worker — static files served 
 the edge, no Worker script. `.github/workflows/cloudflare.yml` deploys every push to
 `main`; `wrangler.toml` is the whole configuration. There is still no build step:
 `tools/build-site.sh` copies the site into `dist/` for upload, because a Worker's
-asset directory has to hold the site and nothing else.
+asset directory has to hold the site and nothing else. Pull requests from branches
+in this repo each get a preview — a version of the same Worker on its own
+`workers.dev` URL, commented on the PR, deployed nowhere; forks deliberately do not
+([`docs/DEPLOYING.md`](docs/DEPLOYING.md), *PR previews*).
 
 It runs there rather than on GitHub Pages because Pages gives a repository one custom
 domain and the guide answers on four: **`hallgui.de`**, plus `gamescom.guide`,

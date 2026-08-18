@@ -1,0 +1,107 @@
+name: Deploy PR previews to Cloudflare
+
+# Uploads each pull request as a *version* of the production Worker — Workers'
+# own preview system, not a second Worker — and comments the preview URLs on
+# the PR. A version is not a deployment: nothing any real hostname serves
+# changes until the merge lands on main and cloudflare.yml deploys it, and
+# `versions upload` does not apply triggers, so the custom domains in
+# wrangler.toml cannot move from here.
+#
+# The same-repository check on the job is the guard. A PR is arbitrary HTML
+# and JavaScript, and a preview publishes it, live and public, on a
+# *.workers.dev URL carrying this project's name — granting that automatically
+# to any fork is free hosting for phishing pages. GitHub already withholds the
+# secrets from fork-triggered pull_request runs; the `if` turns what would be
+# a confusing red failure into an honest skip. To preview a fork PR after
+# reading its diff, run the same upload from a laptop — docs/DEPLOYING.md,
+# "PR previews".
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write # the preview-URL comment below
+
+# One run per PR, newest push wins. Deliberately not the production group from
+# cloudflare.yml: a preview must never queue behind a production deploy, and
+# must never cancel one.
+concurrency:
+  group: cloudflare-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The same gate the production deploy runs. It matters more here, not
+      # less: a malformed JSON file renders an empty guide rather than an
+      # error page, so a preview of it would look "deployed" and review-ready.
+      - name: Validate data files
+        run: |
+          for f in data/*.json data/hallplan/*.json manifest*.webmanifest; do
+            python3 -m json.tool "$f" > /dev/null || exit 1
+          done
+
+      - name: Stage the site
+        run: tools/build-site.sh
+
+      # Same two secrets as cloudflare.yml; a version upload needs no scopes
+      # beyond them. --preview-alias keeps pr-<n>-gc2026-guide.<subdomain>
+      # .workers.dev pointed at this PR's newest push, so the URL in the
+      # comment survives every push; the version's own one-off URL rides
+      # along in the output as well.
+      - name: Upload the preview version
+        id: upload
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: versions upload --preview-alias pr-${{ github.event.pull_request.number }} --message "PR #${{ github.event.pull_request.number }} @ ${{ github.event.pull_request.head.sha }}"
+
+      # One comment per PR, edited in place on every push; the marker is how
+      # later runs find it again. The URLs are read out of wrangler's own
+      # output because half of each — the account subdomain — is not knowable
+      # here. The alias URL starts with pr-<n>-, the versioned URL with the
+      # first eight hex characters of the version id; finding neither means
+      # previews are off (preview_urls in wrangler.toml) and the run should
+      # say so rather than comment nothing.
+      - name: Comment the preview URLs on the PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPLOAD_OUTPUT: ${{ steps.upload.outputs.command-output }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          urls=$(grep -oE 'https://[A-Za-z0-9.-]+\.workers\.dev' <<<"$UPLOAD_OUTPUT" | sort -u || true)
+          alias_url=$(grep -m1 "^https://pr-$PR-" <<<"$urls" || true)
+          version_url=$(grep -m1 -E '^https://[0-9a-f]{8}-' <<<"$urls" || true)
+
+          if [ -z "$alias_url$version_url" ]; then
+            echo "No preview URL in wrangler's output. Is preview_urls still true in wrangler.toml?" >&2
+            printf '%s\n' "$UPLOAD_OUTPUT" >&2
+            exit 1
+          fi
+
+          links=""
+          [ -n "$alias_url" ] && links="- $alias_url — this PR, updating in place on every push"$'\n'
+          [ -n "$version_url" ] && links="$links- $version_url — this push only"
+
+          marker="<!-- cloudflare-preview-comment -->"
+          body=$(printf '%s\n\n%s\n\n%s\n\n%s' \
+            "$marker" \
+            "**Preview** of $SHA, uploaded as a version of the production Worker — deployed nowhere. hallgui.de does not change until this merges." \
+            "$links" \
+            "The PR link is one origin across pushes, so the service worker updates there the way it does in production: the first load after a push can serve the one before. Reload once more, or use the per-push link, which is a fresh origin every time.")
+
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)
+          if [ -n "$existing" ]; then
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -f body="$body" > /dev/null
+          else
+            gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" -f body="$body" > /dev/null
+          fi
