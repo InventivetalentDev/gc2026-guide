@@ -27,6 +27,7 @@ window.GC_STRINGS.en = {
   "tab.planner": "Visit planner",
   "tab.event": "Event info",
   "tab.updates": "Updates",
+  "tab.today": "Today",
 
   /* ---------- toolbar & filters ---------- */
   "field.search": "Search",
@@ -181,6 +182,30 @@ window.GC_STRINGS.en = {
   "directory.businessArea": "Business area — trade & media only",
   "directory.fallbackHint":
     "No card matches — but one booth in the full directory below does.|No card matches — but {n} booths in the full directory below do.",
+
+  /* ---------- Today ----------
+     The show-day mode: the walking route scoped to the day it is, with the
+     played stops folded away. Live only on the five show days. */
+  "today.spanHm": "{h}h {m}m",
+  "today.spanH": "{h}h",
+  "today.spanM": "{m}m",
+  "today.beforeOpen": "Doors at {at} · {span} to go",
+  "today.openNow": "Open now · closes {at} · {span} left",
+  "today.closedNext": "Closed for today · {day} opens {at}",
+  "today.closedLast": "That was gamescom 2026 — see you next year.",
+  "today.left": "{n} stop left today|{n} stops left today",
+  "today.leftNone": "Nothing left today",
+  "today.doneSuffix": " · {n} done",
+  "today.meterAria": "{done} of {total} of today's stops done",
+  "today.firstLabel": "Go here first",
+  "today.doneFold": "Done · {n}",
+  "today.allDone": "Everything you planned for {day} is done — nice work.",
+  "today.nothingToday": "Nothing planned for {day} yet.",
+  "today.emptyNoSaved":
+    "Nothing saved yet — hit + on a booth or game on the Exhibitors tab, then give it a day.",
+  "today.unplaced":
+    "{n} saved item still has no day, so it will not appear here.|{n} saved items still have no day, so they will not appear here.",
+  "today.openPlan": "Open your plan →",
 
   /* ---------- planner ---------- */
   "planner.title": "When to visit what",

@@ -39,8 +39,15 @@
    v9 is the map's zoom controls: buttons in map.html whose handlers live in
    js/map.js. The markup arrives network-first while the old script rides
    stale-while-revalidate, and buttons that do nothing are exactly the
-   dead-controls case this version number exists for. */
-const VERSION = "v9";
+   dead-controls case this version number exists for.
+
+   v10 is Today: a fifth tab and a fifth <section> in index.html, both driven
+   entirely by js/app.js. Mismatched, the halves fail in both directions — an
+   old script leaves the new tab hidden for a load, and a new script can route
+   to a #view-today the old shell does not have. The second one is guarded in
+   showView, but a mode that only exists for five days should not spend one of
+   them waiting for a revalidation. */
+const VERSION = "v10";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;

@@ -105,6 +105,10 @@
     </div>
     <nav class="tabs-outer" aria-label="Sections" data-i18n-attr="aria-label:nav.sections">
       <div class="wrap tabs" role="tablist">
+        <!-- Unnumbered and hidden by default: Today is not part of the standing
+             01-04 sequence, it is the mode that exists only on the five show
+             days. js/app.js unhides it (renderTodayTab) when it is one. -->
+        <button class="tab" role="tab" aria-selected="false" data-view="today" hidden><span class="tab-index tab-live">●</span> <span data-i18n="tab.today">Today</span></button>
         <button class="tab active" role="tab" aria-selected="true" data-view="exhibitors"><span class="tab-index">01</span> <span data-i18n="tab.exhibitors">Exhibitors</span></button>
         <button class="tab" role="tab" aria-selected="false" data-view="planner"><span class="tab-index">02</span> <span data-i18n="tab.planner">Visit planner</span></button>
         <button class="tab" role="tab" aria-selected="false" data-view="event"><span class="tab-index">03</span> <span data-i18n="tab.event">Event info</span></button>
@@ -114,6 +118,26 @@
   </header>
 
   <main class="wrap" id="main">
+    <!-- ============ Today view ============
+         The walking route scoped to the day it actually is, played stops
+         folded away. Everything in it is rendered by js/app.js (renderToday)
+         from the same saved / played / day-assignment keys the planner reads —
+         Today stores nothing of its own. -->
+    <section id="view-today" class="view">
+      <h2 class="sr-only" data-i18n="tab.today">Today</h2>
+      <div id="today-head"></div>
+      <!-- Above the body, not after it: when the day is finished the body is
+           just the Done fold, and "everything is done" is the answer to what
+           the list would have said, so it belongs where the list was. -->
+      <p class="empty hidden" id="today-empty"></p>
+      <div id="today-body"></div>
+      <p class="today-unplaced hidden" id="today-unplaced"></p>
+      <div class="today-actions">
+        <button class="reset hidden" id="today-plan" type="button" data-i18n="today.openPlan">Open your plan →</button>
+        <button class="reset hidden" id="today-browse" type="button" data-i18n="plan.browseCta">Browse exhibitors →</button>
+      </div>
+    </section>
+
     <!-- ============ Exhibitors view ============ -->
     <section id="view-exhibitors" class="view active">
       <h2 class="sr-only" data-i18n="tab.exhibitors">Exhibitors</h2>

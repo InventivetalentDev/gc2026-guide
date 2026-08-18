@@ -27,6 +27,7 @@ window.GC_STRINGS.de = {
   "tab.planner": "Besuchsplaner",
   "tab.event": "Event-Infos",
   "tab.updates": "Updates",
+  "tab.today": "Heute",
 
   /* ---------- toolbar & filters ---------- */
   "field.search": "Suche",
@@ -169,6 +170,30 @@ window.GC_STRINGS.de = {
   "directory.businessArea": "Business-Bereich — nur für Fach- und Medienbesucher",
   "directory.fallbackHint":
     "Oben gibt es keinen Treffer — aber einen Stand im Verzeichnis unten.|Oben gibt es keinen Treffer — aber {n} Stände im Verzeichnis unten.",
+
+  /* ---------- Today ----------
+     Der Messetag-Modus: die Laufroute auf den heutigen Tag begrenzt, Gespieltes
+     eingeklappt. Nur an den fünf Messetagen sichtbar. */
+  "today.spanHm": "{h} Std. {m} Min.",
+  "today.spanH": "{h} Std.",
+  "today.spanM": "{m} Min.",
+  "today.beforeOpen": "Einlass um {at} · noch {span}",
+  "today.openNow": "Jetzt geöffnet · schließt {at} · noch {span}",
+  "today.closedNext": "Heute geschlossen · {day} ab {at}",
+  "today.closedLast": "Das war die gamescom 2026 — bis nächstes Jahr.",
+  "today.left": "Noch {n} Station heute|Noch {n} Stationen heute",
+  "today.leftNone": "Heute nichts mehr offen",
+  "today.doneSuffix": " · {n} erledigt",
+  "today.meterAria": "{done} von {total} heutigen Stationen erledigt",
+  "today.firstLabel": "Zuerst hierhin",
+  "today.doneFold": "Erledigt · {n}",
+  "today.allDone": "Alles, was du für {day} geplant hast, ist erledigt — stark.",
+  "today.nothingToday": "Für {day} ist noch nichts geplant.",
+  "today.emptyNoSaved":
+    "Noch nichts gespeichert — tippe + bei einem Stand oder Spiel im Tab Aussteller und gib ihm dann einen Tag.",
+  "today.unplaced":
+    "{n} gespeicherter Eintrag hat noch keinen Tag und taucht hier deshalb nicht auf.|{n} gespeicherte Einträge haben noch keinen Tag und tauchen hier deshalb nicht auf.",
+  "today.openPlan": "Zu deinem Plan →",
 
   /* ---------- planner ---------- */
   "planner.title": "Wann du was besuchst",

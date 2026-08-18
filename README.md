@@ -218,6 +218,37 @@ one step. Somebody who accepted an earlier notice gets asked once more, because 
 they accepted then was an address that has since moved on. See
 [`docs/DEPLOYING.md`](docs/DEPLOYING.md).
 
+### Today
+
+On the five show days a fifth tab appears at the front of the row, and the guide
+stops being a pre-show tool. **Today** is the walking route scoped to the day it
+actually is: your stops for today in hall order, the ones you have ticked `✓`
+folded away at the bottom, and a header that says whether the halls are open,
+what time they close and how long that leaves. When more than one stop is left it
+names the one with the worst queue, because that is the decision the morning
+actually turns on.
+
+It is a lens, not a fourth list. Today reads the saved list, the played marks and
+the day assignments and stores nothing of its own, which has one consequence
+worth stating: a stop with no day can never appear on it. The count under the
+list says how many are in that position and leads to the planner, where they get
+one. Opening the guide mid-show lands on Today whenever the day has stops on it —
+an empty Today would be a worse front door than the exhibitor grid, so it only
+leads when it has something to lead with.
+
+Which day it is gets read in the show's own timezone rather than the device's, so
+a phone still set to another continent does not open Wednesday's plan on Thursday
+morning. The hours come from `open`/`close` in `data/event.json`, the same two
+fields the calendar export writes, so a schedule change stays a data edit. The
+clock is refreshed whenever the tab is opened or the app comes back to the
+foreground — a phone that spent an hour in a pocket must not come back saying
+"closes in 3h".
+
+Off-show none of it exists: the tab is gone, and `#today` lands on the planner
+rather than on a page explaining that gamescom is not running. That is also why
+there is no launcher shortcut for it — the manifest is a fixed, year-round
+artifact, and launchers truncate the list it already has.
+
 ## Architecture
 
 All content lives in `data/` as JSON; the app (`index.html`, `js/app.js`, `css/`) is a thin renderer. **Updating the guide never requires code changes — only edit the JSON files.** `js/pwa.js` (install, update and offline state) and `sw.js` (caching) are separate from the renderer and untouched by data work.

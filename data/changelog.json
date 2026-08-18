@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-18",
+    "revision": 30,
+    "changes": [
+      "New: a Today tab. It shows up on its own during the show — Aug 26–30 — and it is the guide reduced to one question: what is still on for today, and where do you walk next. Your stops for the day, in hall order, with the ones you have already ticked ✓ folded away at the bottom.",
+      "The top of it is a clock: today's access, its hours, and whether the halls are open right now, closing in three hours, or done for the day. Under that, how much of today you have got through — and, when there is a choice to make, which of the remaining stops has the worst queue.",
+      "It reads your existing plan and nothing else, so only stops you gave a day appear on it. Anything still without one is counted underneath with a way through to the planner.",
+      "Open the guide during the show and it starts on Today whenever the day has something on it. The rest of the year the tab is not there at all."
+    ]
+  },
+  {
+    "date": "2026-08-18",
     "revision": 29,
     "changes": [
       "Ubisoft's Community Lounge lineup grows by one: Assassin's Creed Shadows joins the developer-talk schedule alongside Rainbow Six Siege, AC Black Flag Resynced, Anno 117 and The Division 2 — still no second playable demo station beyond Rayman Legends Retold.",
