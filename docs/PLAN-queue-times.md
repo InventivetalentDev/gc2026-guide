@@ -1,13 +1,13 @@
 # Live queue times — crowd-sourced wait reports
 
-**Status: MVP implemented and reviewed, revision 5 — 17 August 2026. The
+**Status: MVP implemented and reviewed, revision 6 — 17 August 2026. The
 Worker, D1 migration, client surfaces, offline completion flow, moderation
-page, tests, privacy copy and deployment runbook are in the repository. Review
-changed two rules this document had specified — the closure quorum and an
-estimate ceiling, both marked below where they apply — so read §4 as the
-current behaviour rather than the original proposal. Phase 2 remains
-deliberately deferred; real staging/production databases and on-device checks
-are deployment work, not completed by this implementation.**
+page, tests, privacy copy and deployment runbook are in the repository. Two
+things below were changed after review rather than as first written, and are
+marked where they apply: the closure quorum and the estimate ceiling (§4).
+Reporting also moved off the exhibitor cards into its own tab (§5). Phase 2
+remains deliberately deferred; real staging/production databases and on-device
+checks are deployment work, not completed by this implementation.**
 
 ## Context
 
@@ -441,6 +441,15 @@ them. The defense is layered cheapness:
   away for abuse that may never come. The manual fallback — identify the
   client id, delete its rows, deny-list it — is real because the moderation
   surface below makes it a button, not a laptop.
+
+  It is written, if it turns out to be needed: branch
+  `claude/queue-turnstile-bot-check` carries an invisible Turnstile on all six
+  report kinds — lazily loaded, inert until a secret is bound, with a kill
+  switch on the moderation page and a bounded token wait so a blocked script
+  costs a report ~2s rather than hanging it. Held off this branch on the same
+  reasoning as above. It will need rebasing onto whatever lands here first,
+  and its one unverified piece is the widget's own happy path, which needs the
+  staging pass in docs/DEPLOYING.md.
 
 ### Moderation from a phone
 
