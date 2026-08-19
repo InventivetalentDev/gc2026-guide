@@ -1,5 +1,15 @@
 [
   {
+    "date": "2026-08-19",
+    "revision": 32,
+    "changes": [
+      "Amazon Web Services' business booth was filed at the wrong stand — Hall 3.2, B040g/C041g, which the official hall plan doesn't actually attribute to anyone. AWS's real stand, per both the exhibitor directory and the hall plan, is A051 next door; the card now points there.",
+      "Four dead official-profile links removed: Nintendo, Tencent — Worlds of Play, Eclipse Glow Games and MBC Game Studio all now 404 on gamescom's own site. Their sources and show-floor details are unaffected — only the outbound link is gone.",
+      "Directory refresh: 1,723 registered exhibitors (up from 1,711), no share-token collisions.",
+      "Re-checked LEGO, Bilibili and Google Play's lineups, EA's slate beyond FC 27, and Xbox's unannounced slots — still no specifics. The Xbox surprise-reveal rumor for Opening Night Live is still just that, insiders disagreeing even on whether it's a new IP or an existing one — nothing confirmed."
+    ]
+  },
+  {
     "date": "2026-08-18",
     "revision": 31,
     "changes": [
