@@ -9,11 +9,12 @@ version of the same Worker — see *PR previews* below, including why forks are
 deliberately left out.
 
 The site still has no build step. `tools/build-site.sh` copies it into `dist/`,
-which is the directory the Worker serves, because an asset directory has to hold
-the site and nothing else — aimed at the repo root, a deploy ships the docs and
-`wrangler dev` reloads forever on its own scratch files. The script classifies
-every top-level entry as site or not-site and fails if it meets one it does not
-recognise, so a new asset directory stops the deploy instead of 404ing quietly.
+which is the directory the Worker serves. An asset directory has to hold the
+site and nothing else: aimed at the repo root, a deploy would ship the docs and
+`wrangler dev` would reload forever on its own scratch files. The script
+classifies every top-level entry as site or not-site and fails if it meets one
+it does not recognise, so a new asset directory stops the deploy instead of
+404ing quietly.
 
 It moved off GitHub Pages for one reason: Pages serves a repository at exactly
 one custom domain, and the guide needs four — `hallgui.de` and the three
@@ -38,29 +39,29 @@ and to paying exhibitors; Koelnmesse's own conditions of participation put
 domain registrations outside even that sublicence, requiring a separate written
 agreement with game. The association has had operators of unofficial gamescom
 information sites — the same shape as this one — warned off carrying the name in
-their domains, at a reported €100,000 Streitwert. Being probably-fine is not
-worth establishing during the show itself.
+their domains, at a reported €100,000 Streitwert. Proving that this one is
+probably fine is not worth doing during the show itself.
 
 **`gc26.guide` chose to go.** Nothing was wrong with it. It is an abbreviation
 with a year in it: fine to type, useless to say across a queue, and due for
-replacement again next August. The cost of moving was only ever going to rise —
-it was a day and a half old, and the printed QR codes had not been made yet, so
-the moment to fix it was before anything set.
+replacement again next August. The cost of moving was only going to rise. It was
+a day and a half old and the printed QR codes had not been made yet, so the
+moment to fix it was before anything set.
 
 **`hallgui.de` is the one that stays.** It names what the guide is built around,
 the hall map. It reads as "hallguide" once the dot stops being punctuation. And
 it has no year in it, so this is the last time.
 
-The trade-off is that a domain hack is cleverer written than spoken, which is
-why `hallguide.de` — the spelling somebody who only *heard* the name would
-reach for — is owned and redirected rather than left for a squatter. Owning
-both is what lets the name be said out loud without a spelling lesson.
+The trade-off is that a domain hack reads better than it speaks. That is why
+`hallguide.de` — the spelling somebody who only *heard* the name would reach for
+— is owned and redirected rather than left for a squatter. Owning both is what
+lets the name be said out loud without a spelling lesson.
 
-What none of this changed is the guide calling the show by its name: the title,
-the home-screen label, the copy throughout. That is referential use, it is what
+None of this changed the guide calling the show by its name — in the title, the
+home-screen label and the copy throughout. That is referential use; it is what
 the imprint's non-affiliation notice exists to support, and it is not the part
-that draws letters. The domain was the exposed part, and it is the only part
-that ever moved.
+that draws letters. The domain was the exposed part, and the only part that
+moved.
 
 `hallguide.de`, `gc26.de`, `gc2026.de`, `gc27.de`, `gcgui.de` and `gcguide.de`
 redirect to `hallgui.de` (step 6). They are aliases, not origins.
@@ -142,9 +143,8 @@ redirect to `hallgui.de` (step 6). They are aliases, not origins.
    without being sent to the server, so `gc26.de/#s?t=…` still arrives whole.
 
    To repoint the whole set — next August, say — edit each zone's rule. Six
-   zones is a tedious afternoon rather than a hard one, and the target string
-   is identical on every one of them, so it is copy-paste with the hostname
-   changed.
+   zones is tedious rather than hard: the target string is identical on every
+   one of them, so it is copy-paste with the hostname changed.
 
 Deploying from a laptop works the same way and needs no secrets — `npx wrangler
 login` once, then:

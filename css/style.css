@@ -702,9 +702,9 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 .block-head .badge-age { margin-left: 9px; }
 .exh-id h3 .badge-age { margin-left: 6px; vertical-align: .2em; }
 
-/* The one hand-applied element in the layout, and deliberately the only one:
-   once per card it reads as a stamp, but repeated down every game row the
-   tilts land at different x positions and read as jitter. */
+/* The one hand-applied element in the layout, and deliberately the only one.
+   Once per card it reads as a stamp; repeated down every game row, the tilts
+   land at different x positions and read as jitter. */
 .stamp {
   display: inline-block;
   margin-left: 9px;
@@ -2223,8 +2223,8 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 
      The install prompt is the exception. It is the only one of the three
      wide enough ("App installieren") to squeeze the wordmark out of its own
-     row if it sat in that column, so it keeps a full-width line under the
-     dates, where its width costs nothing. */
+     row, so it keeps a full-width line under the dates, where its width
+     costs nothing. */
   .header-inner {
     align-items: center;
     column-gap: 8px;

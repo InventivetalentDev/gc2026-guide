@@ -14,9 +14,9 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Share the guide itself** — a Share button in the masthead opens a QR code big enough to hold up to the phone of whoever you are queueing with, plus the link to copy for posting it anywhere else
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them
-- **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up; tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. The entertainment halls and the trade-only business halls, each washed in the colour the official plan gives that area, with the business ones flagged as the door a consumer ticket does not open. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens it on that stand, and it works offline like everything else
-- **Trade exhibitors**, behind one setting — "I have a trade badge", off by default, switchable from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters, curated cards for the platforms, services and national pavilions standing there, and the one thing that decides whether walking over is worth it — whether a booth is an open stand or a closed room you need an appointment for. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
-- **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the cyan one to turn it back. The square is the other booth's plate in miniature, and both colours are Koelnmesse's own — purple for the business halls, cyan for the entertainment ones — so a plate means the same thing here as it does on the official plan. The two booths stay separate stops in your plan, because they keep different hours
+- **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up. Tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. Entertainment halls and trade-only business halls are each washed in the colour the official plan gives that area, and the business ones are flagged as the door a consumer ticket does not open. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens the map on that stand. It works offline like everything else
+- **Trade exhibitors**, behind one setting — "I have a trade badge", off by default. Switch it from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters and curated cards for the platforms, services and national pavilions standing there. Each booth says whether it is an open stand or a closed room you need an appointment for — the one thing that decides whether walking over is worth it. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
+- **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the cyan one to turn it back. The square is the other booth's plate in miniature, in Koelnmesse's own colours — purple for the business halls, cyan for the entertainment ones — so a plate means the same thing here as on the official plan. The two booths stay separate stops in your plan, because they keep different hours
 - Event info: dates, hours, tickets, special areas with the way onto the map for the hall each stands in, Opening Night Live, and which of the four **entrances** to use — including what a trade badge changes about that and about when you get in
 - **Installable and offline-capable** — add it to your home screen and the whole guide
   stays readable in a hall with no reception
@@ -25,9 +25,9 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 
 The guide is a PWA. Chrome, Edge and Samsung Internet offer an **Install app** button
 in the masthead; iOS Safari gets the same button pointing at *Share → Add to Home
-Screen*. Installed or not, `sw.js` caches the shell and the data on first visit, which
-is the point of the whole thing: Koelnmesse's halls eat mobile reception, and the
-guide is most needed exactly where the network is worst.
+Screen*. Installed or not, `sw.js` caches the shell and the data on first visit. That
+is the point of the whole thing: mobile reception inside Koelnmesse's halls is poor,
+and the guide is most needed exactly where the network is worst.
 
 Freshness is not traded away for it. Exhibitor data is served network-first and only
 falls back to the last good copy when the network fails — the masthead says
@@ -80,8 +80,8 @@ they cost nothing in extra origins — `hallguide.de` most importantly, because 
 somebody who only *heard* the name would spell it, and owning both means it does not
 matter which side of the `de` they put the dot on.
 
-Throughout all of it the guide still calls the show by its name, which is ordinary
-referential use and was never the part anyone objects to. Only the domain moved.
+Throughout all of it the guide still calls the show by its name. That is ordinary
+referential use and was never the part anyone objects to; only the domain moved.
 
 Any static host works, but two routing options are not optional if you move it
 elsewhere: `/map.html` must be served without a redirect, and `/` must serve

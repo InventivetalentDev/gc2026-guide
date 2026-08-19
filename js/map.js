@@ -273,19 +273,17 @@ function standRecord(hallId, s) {
 /* Which patch of floor a stand stands on, as a comparable key.
 
    Koelnmesse does not file the two levels corner-for-corner in the same
-   order. Gryphline's Hall 8.1 stands are the pair that showed it:
-   C-020 B-012 and its gallery agree byte for byte, while B-021 C-030 is
-   filed [90,10] [114,10] [114,40] [90,40] and B-021g C-030g is the same
-   rectangle written backwards, [90,40] [114,40] [114,10] [90,10]. So one
-   of Gryphline's two booths answered to a tap and the other returned an
-   empty "B-021g C-030g".
+   order. Gryphline's Hall 8.1 stands showed it: C-020 B-012 and its gallery
+   agree byte for byte, while B-021 C-030 is filed [90,10] [114,10] [114,40]
+   [90,40] and B-021g C-030g is the same rectangle written backwards,
+   [90,40] [114,40] [114,10] [90,10]. So one of Gryphline's two booths
+   answered to a tap and the other returned an empty "B-021g C-030g".
 
-   Comparing the literal coordinate string therefore matched only the
-   pairs that happened to agree — 65 of 134 across the show. This reduces
-   the corner ring to a canonical form instead: the smallest rotation of
-   the ring and of its reverse, which two polygons share exactly when
-   they are the same ring, whichever corner it starts from and whichever
-   way round it runs. */
+   Comparing the literal coordinate string matched only the pairs that
+   happened to agree — 65 of 134 across the show. This reduces the corner
+   ring to a canonical form instead: the smallest rotation of the ring and
+   of its reverse, which two polygons share exactly when they are the same
+   ring, whichever corner it starts from and whichever way round it runs. */
 function footprint(poly) {
   const ring = poly.map((p) => p.join());
   /* defensive: this data leaves the ring open, but a closing vertex would
@@ -303,18 +301,17 @@ function footprint(poly) {
 
 /* Koelnmesse files a stand's gallery level as a stand of its own, on
    exactly the same four corners: F-010 E-019 and F-010g E-019g are one
-   place, one floor above the other. Drawn as two stands the empty upper
-   one lands on top and swallows every tap, which is why tapping the
-   Indie Arena Booth answered "no exhibitor filed for this stand" while
-   the deep link to it was right all along.
+   place, one floor above the other. Drawn as two stands, the empty upper
+   one lands on top and swallows every tap — which is why tapping the Indie
+   Arena Booth answered "no exhibitor filed for this stand" while the deep
+   link to it was right all along.
 
    Same footprint means same place, so they become one stand: one shape,
-   every stand number, every name filed on either level. This joins stands
-   standing on the same corners only — a sub-stand that sits *inside* a
-   larger one (E-071a within E-071, 30 of them in hall 10.1) has a
-   footprint of its own and stays separate, which is what the painting
-   order below is for. 138 pairs across twelve halls; hall 10.1 alone
-   has 26. */
+   every stand number, every name filed on either level. This joins only
+   stands on the same corners — a sub-stand that sits *inside* a larger one
+   (E-071a within E-071, 30 of them in hall 10.1) has a footprint of its own
+   and stays separate, which is what the painting order below is for. 138
+   pairs across twelve halls; hall 10.1 alone has 26. */
 function mergeLevels(stands) {
   /* Which number a visitor reads on the stand: the one the exhibitors
      were filed against, and failing that the plain ground-floor number
@@ -366,14 +363,13 @@ function bbox(poly) {
   return { x0, y0, x1, y1, w: x1 - x0, h: y1 - y0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
 }
 
-/* Set a name as large as the booth allows, by trying every way of
-   breaking it across one, two or three lines and keeping whichever fits
-   biggest. Breaking by character count instead — balance the halves,
-   done — reads fine on a square booth and fails on a narrow one: MOZA
-   Racing's stand is 4 m wide, so "MOZA Racing" on one line fitted at
-   0.6 m and got dropped as unreadable, where "MOZA / Racing" fits at
-   1.2 m. Names are short, so trying all the breaks is a handful of
-   candidates per booth. */
+/* Set a name as large as the booth allows, by trying every way of breaking
+   it across one, two or three lines and keeping whichever fits biggest.
+   Breaking by character count instead — balance the halves, done — reads
+   fine on a square booth and fails on a narrow one: MOZA Racing's stand is
+   4 m wide, so "MOZA Racing" on one line fitted at 0.6 m and got dropped as
+   unreadable, where "MOZA / Racing" fits at 1.2 m. Names are short, so
+   trying every break is a handful of candidates per booth. */
 function fitName(name, box, area) {
   const spaces = [];
   for (let i = 0; i < name.length; i++) if (name[i] === " ") spaces.push(i);
@@ -408,22 +404,21 @@ function fitName(name, box, area) {
 
    The size in the snapshot is no help on its own: it is the tight box
    around those contents, so an outline drawn on it touches the outermost
-   booth on all four sides by construction — which is exactly how this
-   started, and it looked shrink-wrapped. The hall around that box comes
-   from data/hallplan/outline.json instead: a margin per side, and the
-   doorways. Both are ours; see the note in that file for where each
-   number came from and how sure it is.
+   booth on all four sides — which is how this started, and it looked
+   shrink-wrapped. The hall around that box comes from
+   data/hallplan/outline.json instead: a margin per side, and the doorways.
+   Both are ours; see the note in that file for where each number came from
+   and how sure it is.
 
-   The outline carries the hall's area colour — the same colour as the
-   chip you tapped to get here, and the only other place on the map it
-   appears, so booth state stays the loud channel. The doors matter more
-   than they look: the halls connect to each other and to the Boulevard
-   at a handful of points, and knowing which end of hall 7 faces the
-   Boulevard is the difference between a 30 m walk and a 200 m one. A
-   door that leads into another hall we draw is a tap that goes there —
-   the hall row does the same job for a keyboard or a screen reader,
-   which is why this whole layer is aria-hidden rather than pretending
-   to be a second set of buttons. */
+   The outline carries the hall's area colour — the same colour as the chip
+   you tapped to get here, and the only other place on the map it appears,
+   so booth state stays the loud channel. The doors matter more than they
+   look: the halls connect to each other and to the Boulevard at a handful
+   of points, and knowing which end of hall 7 faces the Boulevard is the
+   difference between a 30 m walk and a 200 m one. A door leading into
+   another hall we draw is a tap that goes there. The hall row does the same
+   job for a keyboard or a screen reader, which is why this whole layer is
+   aria-hidden rather than pretending to be a second set of buttons. */
 
 /* Metres of clear space left outside the hall in the viewBox. The
    outline stroke is centred on the wall and the door brackets stand off
@@ -459,11 +454,11 @@ const EDGE_KEYS = ["n", "e", "s", "w"];
 
 const DOOR_DEPTH = 3.2;  /* how far a door's bracket stands off the wall */
 /* Door label size, in metres like every other label here. 7 m is the
-   ceiling fitName() gives a booth name, which makes this exactly as big
-   as the largest name on the map — so if any label is legible at a given
-   zoom, this one is, and the doors can be named from the widest band
-   rather than waiting for you to zoom in on a hall you are trying to
-   find your way out of. */
+   ceiling fitName() gives a booth name, so this is exactly as big as the
+   largest name on the map: if any label is legible at a given zoom, this
+   one is. The doors can then be named from the widest band, rather than
+   waiting for you to zoom in on a hall you are trying to find your way
+   out of. */
 const DOOR_FS = 7;
 const LBL_OFF = DOOR_DEPTH + 1.8;    /* label baseline, metres out from the wall */
 const LBL_BAND = LBL_OFF + DOOR_FS;  /* room a labelled wall needs beyond itself */
@@ -585,12 +580,12 @@ function renderOutline(svg, id, W, H, m, doors) {
       el.setAttribute("y", py + edge.out[1] * LBL_OFF + (key === "s" ? DOOR_FS * 0.8 : 0));
     } else {
       /* Turned to run *along* an end wall rather than out from it. Set
-         across, "Boulevard" is 41 m of text against a hall 82 m deep —
-         it left the stage entirely at fit zoom, and the only way to make
-         room for the word would be to shrink the hall to a third of the
-         screen. Turned, it costs one line of depth instead. Reading
-         downward on the east wall and upward on the west is the usual
-         convention and keeps the glyphs on the outside in both cases. */
+         across, "Boulevard" is 41 m of text against a hall 82 m deep — it
+         left the stage entirely at fit zoom, and the only way to make room
+         would be to shrink the hall to a third of the screen. Turned, it
+         costs one line of depth instead. Reading downward on the east wall
+         and upward on the west is the usual convention and keeps the glyphs
+         on the outside in both cases. */
       el.setAttribute(
         "transform",
         `translate(${px + edge.out[0] * LBL_OFF} ${py}) rotate(${key === "e" ? 90 : -90})`
@@ -1014,22 +1009,22 @@ function renderChips() {
 
    Thirteen hall chips answer "take me to hall 7". They do not answer "where
    *is* hall 7", which is the question someone standing at a gate with a
-   saved list actually has — and the doors on a hall's own outline answer
-   it only one wall at a time. So the row's first chip is the whole site:
-   every hall in its place, the Boulevard between them, the gates, and the
-   count of your saved booths on each hall. Tapping one opens it.
+   saved list actually has — and the doors on a hall's own outline answer it
+   only one wall at a time. So the row's first chip is the whole site: every
+   hall in its place, the Boulevard between them, the gates, and the count
+   of your saved booths on each hall. Tapping one opens it.
 
-   Drawn from data/hallplan/campus.json, which is Koelnmesse's own campus
-   outline. It is a diagram and not a plan — its halls are fitted to their
-   slots rather than drawn to scale, and the file's note says so at
-   length — so nothing here measures anything. What it is right about is
-   which hall is where, which is the whole job.
+   Drawn from data/hallplan/campus.json, Koelnmesse's own campus outline. It
+   is a diagram, not a plan — its halls are fitted to their slots rather
+   than drawn to scale, and the file's note says so at length — so nothing
+   here measures anything. What it is right about is which hall is where,
+   which is the whole job.
 
-   It renders into the same #map element a hall does, which is what gives
-   it the pan, the pinch, the zoom buttons and the fit button for free.
-   Like the hall's own door layer, the picture is aria-hidden: the chip
-   row above it is already the accessible list of halls, and a second one
-   made of SVG plates would only be the same halls said twice. */
+   It renders into the same #map element a hall does, which gives it the
+   pan, the pinch, the zoom buttons and the fit button for free. Like the
+   hall's own door layer, the picture is aria-hidden: the chip row above it
+   is already the accessible list of halls, and a second one made of SVG
+   plates would only be the same halls said twice. */
 
 const OVERVIEW = "overview";
 const onOverview = () => state.hall === OVERVIEW;
@@ -1171,16 +1166,16 @@ const gateEdge = (id) => ({ north: "n", east: "e", south: "s", west: "w" }[id.re
 
    North and south are named outside the drawing with a leader back to the
    dot, the way a plan labels its edges. East and west are named inside it,
-   reading back over the site from the dot — they sit at the widest points
-   of a picture that is always fitted to the width of the screen, so a
-   margin out there would cost every hall a third of its size for two
-   words. Set over the halls they need the halo the CSS gives them, and
-   they land on the passages either way.
+   reading back over the site from the dot: they sit at the widest points of
+   a picture that is always fitted to the width of the screen, so a margin
+   out there would cost every hall a third of its size for two words. Set
+   over the halls, they need the halo the CSS gives them, and they land on
+   the passages either way.
 
-   One gate to an edge today, but two on one edge would set their names on
-   top of each other, so names sharing an edge are pushed apart along it
-   afterwards. The leader, or the dot beside the name, still says which is
-   which. */
+   There is one gate to an edge today, but two on one edge would set their
+   names on top of each other, so names sharing an edge are pushed apart
+   along it afterwards. The leader, or the dot beside the name, still says
+   which is which. */
 function gatesEl(gates, W, H) {
   const g = document.createElementNS(SVGNS, "g");
   g.setAttribute("class", "campus-gates");
@@ -1855,11 +1850,11 @@ window.addEventListener("resize", fitCurrent);
 /* The ← is an <a href="./"> so it always works — middle-click, long-press,
    copy the link. But followed as a link it reloads the guide from the top,
    throwing away the scroll position and filters the visitor left behind to
-   check the map. When this page was actually opened *from* the guide, one
-   step back restores all of that (bfcache included), and it is always one
-   step: hall browsing here never pushes history, replaceState throughout.
-   Direct and external arrivals keep the plain link — there is nothing of
-   theirs behind them to go back to. */
+   check the map. When this page was opened *from* the guide, one step back
+   restores all of that (bfcache included), and it is always one step: hall
+   browsing here never pushes history, replaceState throughout. Direct and
+   external arrivals keep the plain link — there is nothing of theirs behind
+   them to go back to. */
 $(".map-back")?.addEventListener("click", (e) => {
   let fromGuide = false;
   try {

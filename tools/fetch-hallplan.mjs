@@ -629,11 +629,11 @@ const nameKey = (s) =>
    so the map called a plainly-Ubisoft stand "not covered by the guide"
    while the big one across the aisle was fine.
 
-   Nothing here joins anything. The comparison is deliberately loose —
-   trusted, it would sooner or later put one company's name on another
-   company's booth, which is the one thing this guide must not do. It
-   prints candidates; a human decides, and the fix is a booth number in
-   exhibitors.json, where the comma separates stands. A card's name is
+   Nothing here joins anything. The comparison is deliberately loose, and
+   trusting it would eventually put one company's name on another company's
+   booth — the one thing this guide must not do. It prints candidates; a
+   human decides, and the fix is a booth number in exhibitors.json, where
+   the comma separates stands. A card's name is
    read up to its first "/" or "(" so "SEGA / Atlus" and "Plaion (Deep
    Silver)" still recognise "SEGA Europe" and "PLAION GmbH". */
 function unclaimedReport(halls, exhibitors) {

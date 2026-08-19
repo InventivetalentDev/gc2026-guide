@@ -75,16 +75,16 @@ Measured, after trimming to what we render (see the tool):
 | 4.2 | business | 31 | 5 KB | 1.5 KB |
 | **total** | | **998** | **147 KB** | **~45 KB** |
 
-The whole show costs about one webfont. "Lazy-loading because it might be
-a lot of data" inverted into "lazy-load for first paint, precache the lot
-for offline".
+The whole show costs about one webfont. So the plan changed from
+"lazy-load because it might be a lot of data" to "lazy-load for first
+paint, precache the lot for offline".
 
 ## Design decisions
 
 ### 1. Own SVG rendering — no Leaflet, no tiles, no libraries
 
 The official map uses Leaflet with `L.CRS.Simple`. At our scale that
-machinery is dead weight: the biggest hall level is 191 polygons, and a
+machinery buys nothing: the biggest hall level is 191 polygons, and a
 few hundred SVG paths is nothing for a phone. The prototype's whole
 renderer + pan/zoom is ~350 lines of dependency-free JS, in keeping with
 the repo's grain (self-hosted fonts, hand-rolled QR, no build step).
@@ -284,7 +284,7 @@ against the boundary, and 6–7 m elsewhere, where the outermost thing is a
 full-depth block that needs a perimeter aisle behind it. One number to
 change if a walk says otherwise.
 
-**Which end faces the Boulevard?** That one is worth more than it looks:
+**Which end faces the Boulevard?** This matters more than it looks:
 halls 6, 7 and 9 all open onto the same concourse, and knowing whether it
 is behind you or 200 m the other way is most of what a hall map is for.
 The current plan page exposes nothing directly — no door, no entrance
@@ -307,9 +307,9 @@ moved, so those are read off the pixels as fractions of each wall and
 laid onto ours. It settles what the geometry could not — hall 7 does have
 three doors onto the Boulevard, at 19/48/79 % of its east wall, and its
 passage to hall 6 is at the south-west corner rather than the aisle we
-had snapped it to. Where the two sources meet they agree, which is the
-reassuring part: hall 9's passage to hall 10, hall 10.1's to halls 4, 5,
-9 and 11, all land where the campus polygons put them.
+had snapped it to. Where the two sources meet they agree: hall 9's passage to hall 10, and
+hall 10.1's to halls 4, 5, 9 and 11, all land where the campus polygons
+put them.
 
 Three caveats are in the data as `approx`, because that set is artwork
 too and it shows: hall 8's east-wall doors there are the hall-7 template
@@ -320,7 +320,7 @@ that way, and hall 6 has no plan in the set at all. Those borrow hall 7's
 spacing — same 82 m depth, same building module — and are drawn held
 back.
 
-Consequences worth naming:
+Consequences:
 
 - **The doors are ours, and the credit line says so.** `booth outlines:
   official hall plan · … · hall doors ours, approximate`. Everything else
