@@ -240,10 +240,14 @@ whole point of the `hreflang` set.
 
 All three of `gamescom.guide`, `gc26.guide` and `gc2026.inventivetalent.org` are
 served by the Worker off this same deploy, so none can drift behind. None is a
-redirect, and that is the point: the service worker, the saved list, the
-itinerary and the played marks are all per-origin, so a redirect would strand
-every plan built on them. They serve the guide, show the move notice once, and
-come off when the people on them have had a fair chance to answer it.
+redirect at the edge, and that is the point: the service worker, the saved list,
+the itinerary and the played marks are all per-origin, so a blanket redirect
+would strand every plan built on them. They serve the guide, show the move
+notice once, and come off when the people on them have had a fair chance to
+answer it.
+
+The one visit that is redirected is the one with nothing to strand — see *The
+first-arrival redirect* below.
 
 Retire them in this order:
 
@@ -269,6 +273,52 @@ gone with no way to reach the people holding them.
 
 Anyone who reinstalls from `hallgui.de` without accepting the notice starts with
 an empty list, because it is a different origin. That is what the notice is for.
+
+### The first-arrival redirect
+
+People keep typing the old addresses and keep following old links, and a
+first-time arrival on one has no plan on it, no history with it and no reason to
+be there. There is nothing to weigh for that visit, so it does not get a notice:
+the inline block in the head of `index.html` and `map.html` replaces the URL with
+the same path on `hallgui.de` before anything paints.
+
+It is in the page, not in a Worker route or a Redirect Rule, because the
+question it has to answer — *has this browser got anything on this hostname?* —
+is one only the browser can answer. Four things stop it, and each of them is a
+way of saying somebody chose to be here:
+
+| Stops on | Why |
+|---|---|
+| anything in `localStorage` | a saved booth, a chosen language, a dismissed move notice, the installed marker below. They get `offerMove()` instead, which carries the plan across |
+| `display-mode: standalone` or `minimal-ui` | the installed app is running it. Its address bar does not update, so a redirect would leave the app on another origin with no sign of what happened and no way back |
+| `navigator.onLine === false` | `hallgui.de` has no service worker and no cache on that device yet, so a redirect with no network is a redirect to an error page — and a Koelnmesse hall is where that is likeliest |
+| `localStorage` throwing | Safari private mode, or cookies blocked. Unreadable is not empty, and staying is the reversible half |
+
+Path, query and hash all ride along, so an old `#s?t=…` share link arrives as a
+share link and `?lang=de` arrives in German. It uses `replace()` rather than
+`assign()`, so Back leaves for wherever the visitor came from instead of
+returning to a URL that redirects again.
+
+`js/pwa.js` writes `gc2026.installed.v1` on a standalone launch and on
+`appinstalled`. That is the "installed app" signal the first row above then
+enforces on its own: without it, somebody who installed the app and never saved
+anything is indistinguishable from a first arrival, since the move notice
+records an answer only when it is answered and an ignored toast leaves no trace.
+`navigator.getInstalledRelatedApps()` is the API that names it directly and is
+deliberately unused — Chromium-only, asynchronous (so it cannot gate something
+that must happen before the first paint), and it reads the manifest link that
+`map.html` deliberately does not have. iOS home-screen apps keep a storage
+container of their own, so nothing there is visible to Safari on the same origin
+and no API offers the install either; a tab there is judged on its own storage.
+
+The host list is spelled out in three places — `js/app.js` (`LEGACY_HOSTS`) and
+the head of each page — because nothing loaded as a file runs early enough to
+share it, the same trade the language stamp makes with `SUPPORTED` in
+`js/i18n.js`. All three come out together at the end of this section.
+
+No `sw.js` bump goes with this. The block is inline in the two HTML files, which
+are served network-first, so it lands on the first online load; nothing in it
+needs a script that rides stale-while-revalidate to agree with it.
 
 **Share list** is the way across, but only because `buildShareLink()` makes it
 one: on any draining hostname it builds the link against `hallgui.de` instead
@@ -321,8 +371,10 @@ load back, and an `app.js` that has never heard of the new address cannot offer
 the move it exists to offer. Whenever `MOVED_KEY` changes, `VERSION` changes
 with it.
 
-`LEGACY_HOSTS`, `SHARE_ORIGIN`, `offerMove()`, `buildMoveLink()` and
-`gc2026.moved.v3` all come out once every old hostname is finally retired. The
+`LEGACY_HOSTS`, `SHARE_ORIGIN`, `offerMove()`, `buildMoveLink()`,
+`gc2026.moved.v3`, both copies of the first-arrival redirect and the
+`gc2026.installed.v1` marker that feeds it all come out once every old hostname
+is finally retired. The
 `t`/`d`/`p`/`q`/`m` params stay — they are the share dialog's own format now —
 and only the v1 `l=` decode path goes, once links made before the format
 change stop turning up.

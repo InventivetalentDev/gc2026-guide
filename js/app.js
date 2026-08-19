@@ -610,7 +610,12 @@ function encodeEntries() {
 
    All three stay on this list because people are standing on them, and a saved
    list cannot cross an origin by itself. Only these are rewritten; hallgui.de
-   and localhost share themselves. */
+   and localhost share themselves.
+
+   The head of index.html and map.html carries the same three names, for the
+   redirect that runs before this file is fetched. A copy rather than an import
+   because nothing loaded as a file can run that early — the same trade the
+   language stamp makes with SUPPORTED in js/i18n.js. */
 const LEGACY_HOSTS = ["gc2026.inventivetalent.org", "gamescom.guide", "gc26.guide"];
 const SHARE_ORIGIN = "https://hallgui.de";
 
@@ -735,6 +740,12 @@ function buildMoveLink() {
    not have the page pulled out from under them, and everything the guide holds
    is per-origin: accepting is what carries it (buildMoveLink above), ignoring
    leaves it here.
+
+   By the time this runs, the only people it can reach are the ones that
+   argument is about. The head of index.html has already sent on anyone whose
+   localStorage was completely empty — nothing per-origin to strand, so nothing
+   to weigh — which leaves this notice to everybody who has something here,
+   installed the app, or was asked once already and stayed.
 
    The key carries the destination's generation rather than the notice's, and
    this is the third. Answering does not settle anyone permanently — it moves

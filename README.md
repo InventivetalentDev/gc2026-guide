@@ -66,6 +66,12 @@ take to drain. All three are bookmarked or installed on somebody's phone, and a 
 list is per-origin — so they keep serving the guide rather than a redirect until the
 people standing on them have been offered the move.
 
+Arriving on one of them for the first time is the exception. Nothing in `localStorage`,
+no installed app and a working connection together mean there is nothing on that
+hostname to strand, so the head of each page sends that visit straight to `hallgui.de`
+— path, query and hash intact — before anything paints. Everyone else stays and is
+offered the move instead.
+
 The address moved twice, for different reasons. `gamescom.guide` had to go: the name is
 a registered mark of game — Verband der deutschen Games-Branche e.V., who license it to
 exhibitors and have had unofficial sites warned off carrying it in a domain. `gc26.guide`

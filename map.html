@@ -4,6 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#09090a">
+<!-- The old addresses, for anyone who has nothing on them yet — the long
+     version of this note is on the same block in index.html. It earns its
+     place here twice over: a #hall/stand link is the most-shared thing the
+     guide produces, plenty were shared from the hostnames now draining, and
+     this page has no move notice of its own to fall back on. -->
+<script>
+  (function () {
+    try {
+      var home = "https://hallgui.de";
+      var legacy = ["gc2026.inventivetalent.org", "gamescom.guide", "gc26.guide"];
+      if (legacy.indexOf(location.host) === -1 || location.origin === home) return;
+      if (navigator.onLine === false) return;
+      var displayed = function (mode) {
+        return window.matchMedia("(display-mode: " + mode + ")").matches;
+      };
+      if (displayed("standalone") || displayed("minimal-ui") || navigator.standalone === true) return;
+      if (localStorage.length !== 0) return;
+      location.replace(home + location.pathname + location.search + location.hash);
+    } catch (e) {
+      /* storage unreadable, or no matchMedia: stay put */
+    }
+  })();
+</script>
 <title data-i18n="map.docTitle">Hall map · gamescom 2026 guide</title>
 <meta name="description" content="Booth-level hall maps for gamescom 2026, with your saved booths marked. Works offline." data-i18n-attr="content:map.metaDescription">
 <!-- Language before first paint — see the same block in index.html. The map
