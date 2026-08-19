@@ -39,8 +39,17 @@
    v9 is the map's zoom controls — buttons in map.html whose handlers live in
    js/map.js. The markup arrives network-first while the old script rides
    stale-while-revalidate, and buttons that do nothing are exactly the
-   dead-controls case this version number exists for. */
-const VERSION = "v9";
+   dead-controls case this version number exists for.
+
+   v10 is the language switch becoming a link. It is a <a href="?lang=de"> in
+   index.html now, so that a crawler has a route to the German guide at all,
+   and it needs both of the files that ride stale-while-revalidate beside it:
+   js/i18n.js to point it at the view you are on and to take the click, and
+   css/style.css to drop the underline an <a> brings with it. Held back, the
+   old pair renders the control as underlined prose and sends a click to
+   ?lang=de instead of remembering the choice — a control that looks wrong and
+   half-works, which is the case this number exists for. */
+const VERSION = "v10";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;

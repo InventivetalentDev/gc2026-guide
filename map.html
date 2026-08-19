@@ -36,8 +36,61 @@
     }
   })();
 </script>
-<!-- see index.html — canonical is absolute so it also points the old domains here -->
+<!-- see index.html — canonical is absolute so it also points the old domains
+     here, and is rewritten to the German variant below when ?lang=de is on
+     the URL. -->
 <link rel="canonical" href="https://hallgui.de/map.html">
+
+<!-- The crawler's only route to the German map: the language is resolved from
+     navigator.languages, and a crawler brings no German preference. Same shape
+     as index.html, and kept in step with sitemap.xml. -->
+<link rel="alternate" hreflang="en" href="https://hallgui.de/map.html">
+<link rel="alternate" hreflang="de" href="https://hallgui.de/map.html?lang=de">
+<link rel="alternate" hreflang="x-default" href="https://hallgui.de/map.html">
+
+<!-- Link previews. A #hall/stand link to this page is the single most shared
+     thing the guide produces — "we are at 8.1 B031" with the map behind it —
+     and every unfurler that renders it is a server that never runs a script,
+     so the English text is static rather than data-i18n. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="gamescom 2026 guide">
+<!-- Same two strings as <title> and the description above, so they carry the
+     same keys: static English for the unfurlers, German for anything that does
+     render the page. -->
+<meta property="og:title" content="Hall map · gamescom 2026 guide" data-i18n-attr="content:map.docTitle">
+<meta property="og:description" content="Booth-level hall maps for gamescom 2026, with your saved booths marked. Works offline." data-i18n-attr="content:map.metaDescription">
+<meta property="og:url" content="https://hallgui.de/map.html">
+<meta property="og:image" content="https://hallgui.de/icons/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The gamescom 2026 guide, showing exhibitor cards with hall and booth numbers.">
+<meta property="og:locale" content="en_GB">
+<meta property="og:locale:alternate" content="de_DE">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- The German stamp over those English defaults — see the longer note on the
+     same block in index.html for why canonical follows the URL while og:locale
+     follows what is on screen. No manifest to swap here. -->
+<script>
+  (function () {
+    try {
+      var alt = document.querySelector('link[rel="alternate"][hreflang="de"]').href;
+      var set = function (selector, value) {
+        document.querySelector(selector).setAttribute("content", value);
+      };
+      if (new URLSearchParams(location.search).get("lang") === "de") {
+        document.querySelector('link[rel="canonical"]').href = alt;
+        set('meta[property="og:url"]', alt);
+      }
+      if (document.documentElement.lang === "de") {
+        set('meta[property="og:locale"]', "de_DE");
+        set('meta[property="og:locale:alternate"]', "en_GB");
+      }
+    } catch (e) {
+      /* The English defaults above are already complete and correct. */
+    }
+  })();
+</script>
 
 <!-- No manifest link: the map is inside the guide's scope ("./"), so an
      install from here is the same installed app. -->
@@ -95,7 +148,7 @@
 <footer class="map-note">
   <span id="counts"></span>
   <span id="srcnote"></span>
-  <span><a href="imprint.html" data-i18n="footer.imprint">Imprint</a> · <a href="privacy.html" data-i18n="footer.privacy">Privacy</a> · <button class="lang-switch-link" data-lang-switch type="button" hidden></button></span>
+  <span><a href="imprint.html" data-i18n="footer.imprint">Imprint</a> · <a href="privacy.html" data-i18n="footer.privacy">Privacy</a> · <a class="lang-switch-link" data-lang-switch href="?lang=de" lang="de" hreflang="de">Deutsch</a></span>
 </footer>
 
 <script src="js/i18n/en.js"></script>

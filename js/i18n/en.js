@@ -16,6 +16,11 @@ window.GC_STRINGS = window.GC_STRINGS || {};
 
 window.GC_STRINGS.en = {
   /* ---------- document & navigation ---------- */
+  /* The tab label, the bookmark, and the blue line of a search result — one
+     string doing three jobs, which is why it names what the guide is for
+     rather than only what it is called. map.html has had its own since it
+     was written; this is index.html's. */
+  "doc.title": "gamescom 2026 Guide — exhibitors, games & hall plan",
   "meta.description":
     "Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning.",
   "nav.skip": "Skip to content",
