@@ -388,11 +388,23 @@ into the entertainment halls at 09:00 every day, which belongs in `hours` and th
 day `note` rather than in these two fields — and both of those are prose, so they
 live in `data/i18n/en.json`.
 
+`name`, `location`, `startDate`, `endDate` and the first and last entries in
+`days` are also copied by hand into the JSON-LD in `index.html`, which is what
+tells a search engine this site is a listing for a dated event. They are the
+only fields in this file with a second copy anywhere, so `tools/check-seo.mjs`
+compares the two on every build and fails the deploy if they have parted. If a
+build stops with `JSON-LD Event startDate is …`, the fix is to correct the
+block in `index.html` — the data file is the source, not the markup.
+
 ### `data/meta.json`
 
 ```jsonc
 { "lastUpdated": "2026-08-06", "revision": 1 }
 ```
+
+`lastUpdated` is also the `<lastmod>` on every URL in the generated
+`sitemap.xml`, so bumping it on a refresh is what tells search engines the
+exhibitor data moved and is worth re-crawling.
 
 ### `data/i18n/en.json` and `data/i18n/de.json`
 

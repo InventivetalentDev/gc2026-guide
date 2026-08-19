@@ -1,0 +1,24 @@
+# Crawl directives for the gamescom 2026 guide.
+#
+# Everything is open. The two pages that should stay out of an index say so
+# themselves, with <meta name="robots" content="noindex"> in imprint.html and
+# privacy.html, and a Disallow would actively defeat that: a page a crawler is
+# forbidden to fetch is a page whose noindex is never read, and the bare URL
+# can still be listed.
+#
+# ?lang=en is likewise left crawlable rather than blocked. It is a duplicate of
+# the unsuffixed address, and the canonical link in the page is what says so —
+# which again only works if the page can be fetched.
+
+User-agent: *
+Allow: /
+
+# Written by tools/make-sitemap.mjs at deploy time. It carries the hreflang
+# pairs, which together with the <link rel="alternate"> set in index.html and
+# map.html are the only machine-readable statement that /?lang=de is the German
+# edition of / rather than a separate page.
+#
+# Absolute, and pointed at hallgui.de even when this file is served on one of
+# the hostnames draining behind it (wrangler.toml): that is the address every
+# canonical on the site already names.
+Sitemap: https://hallgui.de/sitemap.xml

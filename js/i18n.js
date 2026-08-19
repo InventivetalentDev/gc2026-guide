@@ -172,19 +172,63 @@
 
   /* Every element carrying data-lang-switch becomes the toggle, labelled
      with the other language's own name. Built from SUPPORTED so a third
-     language later means a small cycle, not a redesign. */
+     language later means a small cycle, not a redesign.
+
+     The markup ships them as links to ?lang=<other> rather than buttons,
+     because that address is the only route to the German guide for anyone
+     who does not arrive asking for German — a crawler above all. Here they
+     get the live one: same view, same hash, the other language. The click
+     is still taken, so switching goes through setLang and is remembered
+     rather than riding the URL. */
   function wireSwitchers(root) {
     const next = SUPPORTED[(SUPPORTED.indexOf(lang) + 1) % SUPPORTED.length];
-    root.querySelectorAll("[data-lang-switch]").forEach((btn) => {
-      btn.textContent = NAMES[next] || next;
-      btn.setAttribute("lang", next);
+    const hrefForNext = () => {
+      const url = new URL(location.href);
+      url.searchParams.set("lang", next);
+      return url.href;
+    };
+    const switchers = Array.from(root.querySelectorAll("[data-lang-switch]"));
+    switchers.forEach((el) => {
+      el.textContent = NAMES[next] || next;
+      el.setAttribute("lang", next);
       /* The accessible name is in the target language — it addresses the
          person who wants to switch to it. */
-      btn.setAttribute("aria-label", SWITCH_LABELS[next] || `Switch to ${next}`);
-      btn.setAttribute("title", SWITCH_LABELS[next] || "");
-      btn.hidden = false;
-      btn.addEventListener("click", () => setLang(next));
+      el.setAttribute("aria-label", SWITCH_LABELS[next] || `Switch to ${next}`);
+      el.setAttribute("title", SWITCH_LABELS[next] || "");
+      if (el.tagName === "A") {
+        el.setAttribute("hreflang", next);
+        el.href = hrefForNext();
+      }
+      el.hidden = false;
+      el.addEventListener("click", (event) => {
+        /* A middle click or ⌘-click is asking for a second tab, and the href
+           is a working address for exactly that. Only the plain click is
+           ours. */
+        if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        setLang(next);
+      });
     });
+    /* Every view change writes a hash, and the href has to follow it or a
+       middle click would open the other language at whichever view happened
+       to be open when the page loaded.
+
+       Not on hashchange: the app writes its hash with history.replaceState
+       throughout — syncHash in app.js, and every navigation in map.js, which
+       says out loud that it does so precisely because replaceState fires no
+       event. So the href is refreshed the moment before it can be used
+       instead. pointerdown precedes every click, middle click and context
+       menu; focus precedes activating it from the keyboard. Between them
+       there is no way to reach the address before it has been brought up to
+       date. */
+    const links = switchers.filter((el) => el.tagName === "A");
+    if (links.length) {
+      const refresh = () => links.forEach((el) => { el.href = hrefForNext(); });
+      links.forEach((el) => {
+        el.addEventListener("pointerdown", refresh);
+        el.addEventListener("focus", refresh);
+      });
+    }
   }
 
   window.GCI18N = { lang, t, apply, setLang, dayName, formatDate };

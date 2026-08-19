@@ -211,6 +211,8 @@ curl -sI https://hallgui.de/          | head -1   # HTTP/2 200
 curl -sI https://hallgui.de/map.html  | head -1   # HTTP/2 200 — not a 307
 curl -s  https://hallgui.de/data/meta.json | head -c 120
 curl -sI https://gc26.de/             | head -2   # HTTP/2 301 → https://hallgui.de/
+curl -s  https://hallgui.de/sitemap.xml | head -4 # generated at build, not committed
+curl -s  https://hallgui.de/robots.txt  | tail -1 # Sitemap: https://hallgui.de/sitemap.xml
 ```
 
 The second one is the check that matters. `/map.html` must answer **200**, not a
@@ -222,6 +224,17 @@ comments there spell out the mechanism.
 
 Then open the site, load a hall map, turn the network off and reload. If the
 guide and the map both still come up, the shell cached correctly.
+
+The last two lines are worth a look because `sitemap.xml` is the one file in
+`dist/` with no counterpart in the repo — `tools/build-site.sh` generates it,
+so a deploy made any other way is a deploy without one. It should list four
+URLs: the guide and the map, each in both languages.
+
+Nothing here indexes on its own. After a deploy that changed any of it, the
+sitemap wants submitting once in Google Search Console (Indexing → Sitemaps),
+and `?lang=de` is worth a spot-check through the URL Inspection tool — the
+question being whether the rendered page comes back in German, which is the
+whole point of the `hreflang` set.
 
 ## Retiring the old hostnames
 

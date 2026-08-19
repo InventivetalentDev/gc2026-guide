@@ -260,6 +260,17 @@ switcher sits in the header and the footer. There are no `/de/` URLs: one
 deploy, one service-worker scope, and a share link means the same thing
 whoever opens it.
 
+That last-resort browser detection is also why `?lang=de` has to be a real
+address rather than an implementation detail. A crawler arrives with no German
+preference and nothing stored, so left to itself it would see the English
+guide on every visit and never learn the German one exists. `?lang=de` is the
+one address that pins the language for anyone, so both switchers are `<a>`
+elements pointing at it — `js/i18n.js` relabels them, keeps them on the view
+you are reading, and takes the click so a real visitor still gets the choice
+remembered rather than stuck in the URL. The `<link rel="alternate" hreflang>`
+set in `index.html` and `map.html` says the two are editions of each other,
+and `sitemap.xml` repeats the pairing.
+
 Data and language are stored separately. The base files above hold ids, halls,
 booth numbers and flags; the prose lives in `data/i18n/en.json` and
 `data/i18n/de.json`, keyed by exhibitor id, game title, show date and area
@@ -278,6 +289,36 @@ interpolation and plurals, and a `data-i18n` pass over the static markup.
 `tools/check-i18n.mjs` enforces key, plural and placeholder parity, checks the
 prose still points at data that exists, and flags English that changed after
 its translation — `tools/build-site.sh` runs it before every deploy.
+
+### Search and link previews
+
+Everything below the masthead is rendered from JSON after boot, so the first
+look any machine gets at this site is a header, a footer and no subject. Four
+things put that right, and all four are checked by `tools/check-seo.mjs`
+before a deploy — every one of them is hand-written about data that moves,
+none of it shows on screen, and a mistake in any of it looks exactly like a
+working site until it is somebody else's search result.
+
+- **Canonical.** Four hostnames serve this file (see `wrangler.toml`), and the
+  canonical is what stops them competing as four copies. On `?lang=de` it
+  points at itself instead — a language edition that canonicals to the English
+  page is one that gets dropped.
+- **`hreflang`.** The German guide's only route in; see above.
+- **JSON-LD.** An `Event` and a `WebSite`, so a crawler learns this is a
+  listing for a five-day show in Cologne without running a script. Ticket
+  prices are deliberately left out: the official shop is the only place that
+  should be quoting those in a search result. The dates, name and venue are
+  checked against `data/event.json` on every build.
+- **Open Graph.** The guide is passed around in queues and Discord servers far
+  more than it is searched for, and every unfurler that renders those links is
+  a server that never runs a line of the page — so the preview text is static
+  English in the markup rather than `data-i18n`, and `icons/og-cover.png`
+  (`tools/make-screenshots.mjs`) is the card image.
+
+`robots.txt` is a plain allow-all pointing at the sitemap. `sitemap.xml` is
+generated into `dist/` at deploy time by `tools/make-sitemap.mjs`, which reads
+its URLs back out of the staged pages' own `hreflang` links rather than
+keeping a second list to fall out of step.
 
 See [`docs/UPDATING.md`](docs/UPDATING.md) for the data schema and the periodic-refresh playbook (designed to be run by a scheduled Claude Code routine).
 

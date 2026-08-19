@@ -2042,6 +2042,10 @@ a.area-hall:focus-visible { text-decoration-color: currentColor; }
   text-transform: uppercase;
   cursor: pointer;
   transition: border-color .12s, color .12s;
+  /* .lang-switch is an <a> (index.html) so that the German guide has an
+     address a crawler can follow; the underline that comes with that would
+     read as prose in a row of stamped controls. */
+  text-decoration: none;
 }
 .lang-switch:hover,
 .header-share:hover { border-color: var(--ink-mid); color: var(--ink); }
