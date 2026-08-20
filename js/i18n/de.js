@@ -198,6 +198,7 @@ window.GC_STRINGS.de = {
   "plan.lensHall": "Nach Halle",
   "plan.dayFilterAria": "Stopps eines einzelnen Tages zeigen",
   "plan.unassigned": "Ohne Tag",
+  "plan.dayMapAria": "{day} auf dem Hallenplan zeigen",
   "plan.savedHere": "Hier gemerkt",
   "plan.absentStop": "Nicht da — kein Stand",
   "plan.offsite": "Außerhalb des Messegeländes",

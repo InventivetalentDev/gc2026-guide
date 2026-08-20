@@ -214,6 +214,7 @@ window.GC_STRINGS.en = {
   "plan.lensHall": "By hall",
   "plan.dayFilterAria": "Show one day's stops",
   "plan.unassigned": "Unassigned",
+  "plan.dayMapAria": "Show {day} on the hall map",
   "plan.savedHere": "Saved here",
   "plan.absentStop": "Absent — no booth",
   "plan.offsite": "Offsite",

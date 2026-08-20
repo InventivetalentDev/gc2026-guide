@@ -222,9 +222,56 @@ body {
 }
 
 /* ---- tabs: signage strip, not browser chrome ---- */
-.tabs-outer { border-top: 1px solid var(--rule-soft); }
+/* position: relative for the scroll cue below, which cannot live inside .tabs:
+   that element is the scroll port (an absolute child would scroll away with the
+   tabs) and it is the role="tablist", whose children are supposed to be tabs. */
+.tabs-outer { border-top: 1px solid var(--rule-soft); position: relative; }
 .tabs { display: flex; overflow-x: auto; scrollbar-width: none; padding: 0 24px; }
 .tabs::-webkit-scrollbar { display: none; }
+
+/* The row scrolls, and hiding its scrollbar (above) took away the only sign
+   that it does. Four labels measure ~534px against a 320–430px phone, and the
+   cut lands cleanly between two tabs, so the row reads as ending at "03 Event
+   info" — leaving "04 Updates" reachable only by a swipe nobody is invited to
+   make.
+
+   So the cut is made deliberate: a plate at whichever edge still has tabs past
+   it, carrying a chevron, scrolling the row when tapped. A plate rather than a
+   fade because a fade is a gradient, and this design does not have any — the
+   hard edge and the hairline are the same vocabulary as the hall plates.
+
+   Hidden from assistive tech (app.js sets aria-hidden and tabindex="-1"): a
+   keyboard user reaches all four tabs by tabbing, and the browser scrolls each
+   into view on focus, so the cue would be two extra stops in the middle of the
+   nav offering something already had. It is a pointer affordance for a pointer
+   problem.
+
+   Shown only when there is something past the edge; app.js toggles .on. */
+.tabs-cue {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 38px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  /* --ground, the page's own colour, so the plate reads as the row being cut
+     off rather than as a control sitting on top of it. */
+  background: var(--ground);
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.tabs-cue.on { display: flex; }
+.tabs-cue:hover { color: var(--ink); }
+/* The hairline is the cut: it stands between the plate and the tab it covers,
+   so the row is visibly continuing rather than ending. */
+.tabs-cue-end { right: 0; border-left: 1px solid var(--rule-soft); }
+.tabs-cue-start { left: 0; border-right: 1px solid var(--rule-soft); }
 
 .tab {
   background: none;
@@ -1254,10 +1301,22 @@ a.dir-stand:focus-visible b { color: var(--signal); }
    ============================================================ */
 /* Every jump-nav target clears the sticky header — the plan's day groups
    included, which the day board's counts jump to; the mobile block below
-   shrinks this once the header stops being sticky. */
+   shrinks this once the header stops being sticky.
+
+   --header-h is the masthead's measured height, published by app.js
+   (trackHeaderHeight) because the masthead has no fixed one: the install
+   button, the offline notice and the longer German strings each change it.
+   The fallback is what a stock English desktop masthead measures, for the
+   moment before the script runs. The 12px on top is breathing room — a
+   heading flush against the header's edge reads as clipped even when it is
+   whole.
+
+   #trade is not a jump-nav target but is scrolled to the same way: the toast
+   that turns trade mode on offers to show you the section it just filled. */
 #plan-section,
 #plan-board .it-group,
-#view-planner .section-title { scroll-margin-top: 140px; }
+#view-planner .section-title,
+#trade { scroll-margin-top: calc(var(--header-h, 161px) + 12px); }
 /* Centered in .empty's bottom padding, so message and action read as one
    block; invisible whenever the message is. */
 #plan-browse { display: block; margin: -48px auto 60px; }
@@ -1329,13 +1388,19 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .it-group + .it-group { border-top: 1px solid var(--rule); }
 .it-group-head {
   display: grid;
-  grid-template-columns: 92px 130px 1fr;
+  /* the fourth column is the day's "Map →", which only the plan's own day
+     groups carry — the five-days board renders the same header without it
+     and simply leaves the column empty */
+  grid-template-columns: 92px 130px 1fr auto;
   gap: 0 18px;
   align-items: baseline;
   padding: 11px 18px;
   background: var(--ground-3);
   border-bottom: 1px solid var(--rule);
 }
+/* Placed rather than flowed, so the phone layout below can fold the hours
+   onto their own line underneath without the chip following them down. */
+.day-map { grid-row: 1; grid-column: -2 / -1; justify-self: end; align-self: center; }
 .it-group-head.unassigned { display: block; }
 .it-group-title {
   font-family: var(--font-mono);
@@ -1703,8 +1768,9 @@ a.area-hall {
   /* A grid item is blockified, so without this the anchor spans its whole
      column — the full row width once the list goes single-column on a
      phone, where every tap in the empty half of that line would navigate.
-     The hit area stays the number. */
+     The hit area stays the number, padded out below. */
   justify-self: start;
+  position: relative;
   color: var(--signal);
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, var(--signal) 45%, transparent);
@@ -1713,6 +1779,17 @@ a.area-hall {
 }
 a.area-hall:hover,
 a.area-hall:focus-visible { text-decoration-color: currentColor; }
+/* Hall "5" sets eight pixels wide, which is a plate to read and not a plate
+   to hit — a fingertip covers three times that. The number keeps its size and
+   its place in the column (moving it would break the plates' alignment down
+   the list, which is half of what makes them scannable); an invisible box
+   around it takes the tap, at 24×24 for the narrowest of them.
+
+   Only these plates, and only because they are plates. A hall number inside a
+   planner row is a phrase in a line of text, where the line's own height is
+   the constraint and a padded-out box would start swallowing the taps meant
+   for the row it sits in. */
+a.area-hall::after { content: ""; position: absolute; inset: -6px -8px; }
 .area-name { font-weight: 600; font-size: .92rem; }
 .area-desc { color: var(--ink-mid); font-size: .85rem; }
 
@@ -2257,11 +2334,12 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   /* the full masthead is ~290px on a phone — far too much to pin above a
      long scrolling list, so it scrolls away here instead */
   .site-header { position: static; }
-  /* …and with nothing pinned on top, the sticky-header scroll offset would
-     just strand a jumped-to heading 140px down the screen */
+  /* …and with nothing pinned on top, the measured header offset above would
+     just strand a jumped-to heading a masthead's height down the screen */
   #plan-section,
   #plan-board .it-group,
-  #view-planner .section-title { scroll-margin-top: 16px; }
+  #view-planner .section-title,
+  #trade { scroll-margin-top: 16px; }
 
   /* The phone masthead. The control row dissolves and each button takes its
      own place in the grid's right column: share beside the wordmark, the
@@ -2298,7 +2376,10 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   /* full-width like the detail text above it — half-indented it reads as a
      stray line rather than a fact of the day */
   .day-planned { grid-column: 1 / -1; margin-top: 0; }
-  .it-group-head { grid-template-columns: 76px 1fr; row-gap: 8px; }
+  .it-group-head { grid-template-columns: 76px 1fr auto; row-gap: 8px; }
+  /* Day, access and the map chip share the top line; the hours take the
+     whole of the next one rather than the 76px column they would flow into. */
+  .it-group-head .day-detail { grid-column: 1 / -1; }
   /* Same fold as the tablet block above, one notch narrower in column one. */
   .it-item { grid-template-columns: minmax(96px, 1fr) auto auto 20px; row-gap: 9px; }
   .toolbar-row .row-label { flex-basis: 100%; }
