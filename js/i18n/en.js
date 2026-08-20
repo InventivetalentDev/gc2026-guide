@@ -449,6 +449,7 @@ window.GC_STRINGS.en = {
   "map.zoomIn": "Zoom in",
   "map.zoomOut": "Zoom out",
   "map.zoomFit": "Show the whole hall",
+  "map.rotate": "Rotate hall clockwise",
   "map.counts": "{n} stands · {covered} in the guide",
   "map.countsSaved": " · {n} saved",
   "map.countsPlanned": " · {n} planned",

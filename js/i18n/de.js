@@ -440,6 +440,7 @@ window.GC_STRINGS.de = {
   "map.zoomIn": "Hineinzoomen",
   "map.zoomOut": "Herauszoomen",
   "map.zoomFit": "Ganze Halle zeigen",
+  "map.rotate": "Halle im Uhrzeigersinn drehen",
   "map.counts": "{n} Stände · {covered} im Guide",
   "map.countsSaved": " · {n} gemerkt",
   "map.countsPlanned": " · {n} geplant",

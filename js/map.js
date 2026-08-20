@@ -58,6 +58,7 @@ const state = {
   exhibitors: [],       // data/exhibitors.json
   trade: [],            // business-hall rows from data/directory.json, once loaded
   halls: new Map(),     // hall id -> hall json
+  rot: false,           // page-lifetime view; never a stored hall fact
   byStand: new Map(),   // "hall:CODE" -> [exhibitor, …]
   hall: null,           // current hall id, or OVERVIEW
   stands: [],           // render records for the current hall
@@ -370,6 +371,59 @@ async function loadHall(id) {
 
 const polyPath = (poly) => "M" + poly.map((p) => p[0] + " " + p[1]).join("L") + "Z";
 
+/* Decimal metre coordinates such as 1.3 otherwise come back from four
+   turns as 1.3000000000000114. Snapping subtraction noise below a
+   nanometre keeps a round trip exact without moving any filed point. */
+const rotatePoint = ([x, y], H) => [Math.round((H - y) * 1e9) / 1e9, x];
+
+/* The renderer must receive a new hall all at once. Rotating the cached
+   polygons in place would make the next turn start from the last view,
+   and booth identity reads from that unrotated cache too. */
+function rotateHallGeometry(hall) {
+  const [W, H] = hall.size;
+  return {
+    ...hall,
+    size: [H, W],
+    blocks: hall.blocks.map((poly) => poly.map((point) => rotatePoint(point, H))),
+    stands: hall.stands.map((stand) => ({
+      ...stand,
+      poly: stand.poly.map((point) => rotatePoint(point, H)),
+    })),
+  };
+}
+
+const rotateMargin = (m) => ({ n: m.w, e: m.n, s: m.e, w: m.s });
+
+/* `at` is the doorway's centre, so a reversed wall subtracts the centre
+   from the unrotated hall height. The span does not enter that subtraction.
+
+     n -> e, at unchanged
+     e -> s, at becomes H - at
+     s -> w, at unchanged
+     w -> n, at becomes H - at
+
+   This table is derived against edgeOf(): each new wall puts the door at
+   the rotated image of its old centre. H is the unrotated hall height. */
+function rotateDoors(doors, H) {
+  const edge = { n: "e", e: "s", s: "w", w: "n" };
+  return doors.map((door) => ({
+    ...door,
+    edge: edge[door.edge],
+    at: door.edge === "e" || door.edge === "w" ? rotatePoint([0, door.at], H)[0] : door.at,
+  }));
+}
+
+/* Trade changes rebuild the hall and mark refreshes redraw its route from
+   the same numbers. Keep one turned copy per loaded hall instead of doing
+   the polygon work again on either path. */
+const rotatedHalls = new Map();
+function hallGeometry(id) {
+  const hall = state.halls.get(id);
+  if (!state.rot || !hall) return hall;
+  if (!rotatedHalls.has(id)) rotatedHalls.set(id, rotateHallGeometry(hall));
+  return rotatedHalls.get(id);
+}
+
 function bbox(poly) {
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const [x, y] of poly) {
@@ -453,7 +507,8 @@ const NO_MARGIN = { n: 0, e: 0, s: 0, w: 0 };
    file at all falls back to the box itself. */
 function marginOf(id) {
   const file = state.outline;
-  return { ...NO_MARGIN, ...(file.margin || {}), ...(file.halls?.[id]?.margin || {}) };
+  const margin = { ...NO_MARGIN, ...(file.margin || {}), ...(file.halls?.[id]?.margin || {}) };
+  return state.rot ? rotateMargin(margin) : margin;
 }
 
 /* One wall: where it runs, which way is out of the hall, and the span of
@@ -525,9 +580,14 @@ function wallSegments(t0, t1, doors) {
   return out;
 }
 
-const doorsOf = (id) =>
-  (state.outline.halls?.[id]?.doors || [])
+const doorsOf = (id) => {
+  const doors = (state.outline.halls?.[id]?.doors || [])
     .filter((d) => EDGE_KEYS.includes(d.edge) && d.span > 0);
+  if (!state.rot) return doors;
+  /* East and west reverse against the old height. hallGeometry() has
+     already swapped that dimension, so this one read stays on the source. */
+  return rotateDoors(doors, state.halls.get(id).size[1]);
+};
 
 /* Which walls will carry a name, so renderHall can leave room for it
    beyond them before it has drawn anything. */
@@ -632,7 +692,7 @@ function renderOutline(svg, id, W, H, m, doors) {
 /* ================= hall rendering ================= */
 
 function renderHall(id) {
-  const hall = state.halls.get(id);
+  const hall = hallGeometry(id);
   const [W, H] = hall.size;
 
   const m = marginOf(id);
@@ -1977,7 +2037,7 @@ function renderRoute() {
         )}</span>`
       : `<span class="map-route-hint">${esc(t("map.routeNoneHere"))}</span>`;
   renderRouteStatus(here + legButtons(legs));
-  const hall = svg && state.halls.get(state.hall);
+  const hall = svg && hallGeometry(state.hall);
   if (!hall) return;
   const [W, H] = hall.size;
   const m = marginOf(state.hall);
@@ -2327,6 +2387,43 @@ function fitCurrent() {
 $("#zoom-in")?.addEventListener("click", () => zoomStep(1.6));
 $("#zoom-out")?.addEventListener("click", () => zoomStep(1 / 1.6));
 $("#zoom-fit")?.addEventListener("click", fitCurrent);
+
+/* map.html is network-first while this script and its stylesheet can arrive
+   from different cached revisions. Add the control here so old script never
+   leaves dead markup, then keep it only when the new CSS has given it the
+   same 40 px shape as its neighbours. The check runs before a paint. */
+{
+  const controls = $(".map-zoom");
+  if (controls) {
+    const button = document.createElement("button");
+    button.className = "map-rotate-btn";
+    button.type = "button";
+    button.setAttribute("aria-label", t("map.rotate"));
+    button.setAttribute("aria-pressed", String(state.rot));
+    button.innerHTML =
+      '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" ' +
+      'fill="none" stroke="currentColor" stroke-width="1.6">' +
+      '<path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2v4h-4"/></svg>';
+    controls.appendChild(button);
+    if (getComputedStyle(button).width !== "40px") {
+      button.remove();
+    } else {
+      button.addEventListener("click", () => {
+        state.rot = !state.rot;
+        button.setAttribute("aria-pressed", String(state.rot));
+        if (!state.rot) rotatedHalls.clear();
+        /* The campus overview has its own coordinate file. The turn remains
+           pressed for the next hall, but that separate drawing stays put. */
+        if (onOverview() || !state.hall || !state.halls.has(state.hall) || !$("#map")) return;
+        const code = state.sel ? [...state.sel.codes][0] : null;
+        renderHall(state.hall);
+        if (!code) return;
+        const rec = state.stands.find((stand) => stand.codes.has(code));
+        if (rec) selectStand(rec);
+      });
+    }
+  }
+}
 
 /* ================= selection & sheet ================= */
 

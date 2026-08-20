@@ -153,6 +153,35 @@ table beside `CAMPUS`, one entry, `"2.1": { dy: 1 }`. It is a documented
 guess until someone walks hall 2 with the map open, and it is one sign
 to undo.
 
+### 3a. A manual quarter turn rotates the geometry, not the drawing
+
+A wide hall fitted to a portrait screen leaves most of the screen empty, so
+the map offers one clockwise quarter turn beside the zoom controls. It turns
+the hall's coordinates before layout rather than rotating the finished SVG.
+A finished-SVG turn would leave every booth and door name sideways;
+counter-rotating those labels would then make `fitName()` size them against
+the wrong width. With geometry first, labels, walls, route pins and leg
+pointers all receive ordinary hall coordinates and need no rotation case of
+their own.
+
+For a hall `W` metres wide and `H` metres high, `(x, y)` becomes
+`(H - y, x)` and the size becomes `[H, W]`. Margins stay attached to their
+physical walls: west becomes north, north becomes east, east becomes south,
+and south becomes west. Door centres use the same wall mapping:
+
+| old wall | new wall | new door `at` | margin after the turn |
+|---|---|---|---|
+| north | east | unchanged | new east = old north |
+| east | south | `H - at` | new south = old east |
+| south | west | unchanged | new west = old south |
+| west | north | `H - at` | new north = old west |
+
+`at` is the centre of the opening and `H` is the unrotated height, so its
+span is never part of the reversal. The cached snapshot stays unrotated;
+only a page-lifetime copy is turned. The control is manual, off by default,
+and not stored or put in the URL. Nobody has yet judged the result on a real
+portrait phone, so the map does not guess when a visitor wants it.
+
 ### 4. The join is client-side, at load — geometry files stay editorial-free
 
 Stands and guide exhibitors meet by `hall` + normalised booth code
