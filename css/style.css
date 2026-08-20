@@ -223,8 +223,24 @@ body {
 
 /* ---- tabs: signage strip, not browser chrome ---- */
 .tabs-outer { border-top: 1px solid var(--rule-soft); }
-.tabs { display: flex; overflow-x: auto; scrollbar-width: none; padding: 0 24px; }
-.tabs::-webkit-scrollbar { display: none; }
+/* The row wraps rather than scrolls, at every width. Four tabs measure ~534px
+   and no phone is that wide, so this used to be a scrolling row — and a row
+   that scrolls with no edge cut to show it looks like a row that ends, which
+   left "04 Updates" off the right of every phone: a quarter of the guide
+   reachable only by a swipe nobody was invited to make.
+
+   Not keyed to the phone breakpoint, because the width the labels need is not
+   only the viewport's business. German sets the same four labels wider, and a
+   visitor reading at 150% carries every one of them up with the text — the
+   German row at 700px and a 24px root font is 758px, well clear of any phone
+   and still wider than its screen. Whether it fits is the actual question, so
+   wrap is the actual answer, and it costs nothing on the widths where the row
+   fits in one line anyway.
+
+   overflow-x survives as a backstop rather than a feature: nothing can
+   overflow a row that wraps, unless one label alone is wider than the screen,
+   and clipping that is better than pushing the whole page sideways. */
+.tabs { display: flex; flex-wrap: wrap; overflow-x: hidden; padding: 0 24px; }
 
 .tab {
   background: none;
@@ -2282,21 +2298,17 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 
 @media (max-width: 620px) {
   .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
-  /* Four tabs measure ~534px and no phone is that wide, so the row used to
-     scroll — and a row that scrolls with no edge cut to show it looks like a
-     row that ends. "04 Updates" sat off the right of every phone, which is a
-     quarter of the guide reachable only by a swipe nobody was invited to
-     make. It wraps to two lines instead: all four labels on screen, nothing
-     to discover, no scroll affordance to design. The extra line costs the
-     phone nothing, because the masthead is not sticky here — it scrolls away
-     with the rest of the header the moment the list moves.
+  .tabs { padding: 0 16px; }
+  /* The row wraps everywhere (see .tabs above); this is what it wraps *into*
+     on a phone, where it always wraps and the shape is worth deciding. Each
+     tab takes half the row rather than its natural width, so the two lines
+     stack into a grid rather than ragging. The flush-left padding the base
+     rule gives only the first tab is given to all four, or the second column
+     would sit 20px right of where the first one starts and the grid would
+     read as an accident.
 
-     Each tab takes half the row rather than its natural width, so the two
-     lines stack into a grid rather than ragging. The flush-left padding the
-     base rule gives only the first tab is given to all four here, or the
-     second column would sit 20px right of where the first one starts and the
-     grid would read as an accident. */
-  .tabs { padding: 0 16px; flex-wrap: wrap; overflow-x: hidden; }
+     The second line costs the phone nothing: the masthead is not sticky here,
+     so it scrolls away with the rest of the header the moment the list moves. */
   .tab { flex: 1 0 45%; padding-left: 0; padding-right: 12px; }
   .toast { left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); }
   /* the full masthead is ~290px on a phone — far too much to pin above a
