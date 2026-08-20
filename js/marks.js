@@ -1,12 +1,14 @@
 /* gamescom 2026 guide — the few things the guide and the hall map must
    agree on, byte for byte.
 
-   Two pages now read and write the same saved/played lists and answer
-   the same question about the same booth. Anything they each kept their
-   own copy of would drift silently: a different `gameKey` normalisation
-   would strand game marks made on the other page, and a different booth
-   code normalisation would light up the wrong stand. So the storage
-   shape, the "is this saved" predicate and the booth-code normaliser
+   Two pages now read and write the same saved/played lists, answer the
+   same question about the same booth, and number the same stops. Anything
+   they each kept their own copy of would drift silently: a different
+   `gameKey` normalisation would strand game marks made on the other page,
+   a different booth code normalisation would light up the wrong stand,
+   and a different stop order would print numbers on the map that do not
+   match the list they came from. So the storage shapes, the "is this
+   saved" predicate, the booth-code normaliser and the plan's stop order
    live here, and nothing else does — this is not a utility drawer.
 
    Loaded as a plain script before js/app.js and js/map.js (no build
@@ -75,32 +77,6 @@ const GCMarks = (() => {
     }
   }
 
-  /* The plan's day assignments, read-only here like tradeMode: the guide
-     owns assigning a stop to a day, and the map only answers "which day did
-     I plan this for" on a stand's sheet. Keys match the marks — exhibitor
-     ids (dir: keys included) and gameKey()d titles — and the values are the
-     show days' ISO dates. Checking a date against the schedule stays the
-     guide's job, because it holds data/event.json and "no schedule loaded"
-     must not read as "no such day" (see loadItinerary in js/app.js); a date
-     shown raw on the map is still the date that was chosen. */
-  const IT_KEY = "gc2026.itinerary.v1";
-  function readItinerary() {
-    try {
-      const raw = JSON.parse(localStorage.getItem(IT_KEY) || "{}");
-      const table = (kind) =>
-        raw && raw[kind] && typeof raw[kind] === "object" && !Array.isArray(raw[kind])
-          ? raw[kind]
-          : {};
-      return {
-        exhibitors: new Map(Object.entries(table("exhibitors"))),
-        games: new Map(Object.entries(table("games"))),
-      };
-    } catch {
-      /* corrupt entry, or storage blocked entirely (Safari private mode) */
-      return { exhibitors: new Map(), games: new Map() };
-    }
-  }
-
   /* Games are keyed by normalised title, not by booth: eight titles this
      year are shown at two booths at once (Alien: Isolation 2 sits at
      both Xbox and SEGA), and a mark applies to the game everywhere. */
@@ -139,6 +115,62 @@ const GCMarks = (() => {
   const hasSaved = (marks, ex) =>
     marks.exhibitors.has(ex.id) || savedGames(marks, ex).length > 0;
 
+  /* ---- the plan: which day a stop is on, and which stop comes first ----
+
+     The guide's plan board writes the day assignments; the map's route
+     overlay reads them back and numbers the stands from them. Both pages
+     therefore have to answer two questions the same way — "which day is
+     this stop on" and "which stop is number 1" — or the numbers drawn on
+     the floor stop matching the list they were read from, which is the
+     same class of silent drift boothCodes() is here to prevent.
+
+     The storage shape mirrors the marks above: item key -> ISO day date,
+     one day per item, keys matching the marks — exhibitor ids (dir: keys
+     included) and gameKey()d titles. Read-only here, like tradeMode: the
+     guide owns assigning a stop to a day, and validates on top of this (an
+     assignment is only live while its item is still saved and its date is
+     still a show day), because it is the page holding data/event.json and
+     "no schedule loaded" must not read as "no such day" — see loadItinerary
+     in js/app.js. A date shown raw on the map is still the date that was
+     chosen. The raw read is what both pages share. */
+  const IT_KEY = "gc2026.itinerary.v1";
+
+  function readItinerary() {
+    const pick = (raw, kind) => {
+      const src = raw && typeof raw[kind] === "object" && !Array.isArray(raw[kind]) ? raw[kind] : {};
+      return new Map(Object.entries(src).filter(([, date]) => typeof date === "string"));
+    };
+    try {
+      const raw = JSON.parse(localStorage.getItem(IT_KEY) || "{}");
+      return { exhibitors: pick(raw, "exhibitors"), games: pick(raw, "games") };
+    } catch {
+      /* corrupt entry, or storage blocked entirely (Safari private mode) */
+      return { exhibitors: new Map(), games: new Map() };
+    }
+  }
+
+  /* Which days a booth is planned for: its own assignment plus those of the
+     saved games shown there — the publisher is how you get to the game, so a
+     game placed on Friday puts its booth on Friday. "none" stands in for any
+     saved element still waiting for a day, so a stop is never dayless. */
+  function stopDays(saved, itinerary, ex) {
+    const days = new Set();
+    if (saved.exhibitors.has(ex.id)) days.add(itinerary.exhibitors.get(ex.id) || "none");
+    for (const g of savedGames(saved, ex))
+      days.add(itinerary.games.get(gameKey(g.title)) || "none");
+    return days;
+  }
+
+  /* The order stops are visited in, within one hall: busiest first, and
+     anything already played sinks to the end. `played` and `lang` are passed
+     in rather than reached for — each page already has its own copy of the
+     played rule and of the active locale, and this file deliberately knows
+     about neither. */
+  const compareStops = (played, lang) => (a, b) =>
+    (played(a) ? 1 : 0) - (played(b) ? 1 : 0) ||
+    (b.crowd || 0) - (a.crowd || 0) ||
+    String(a.name).localeCompare(String(b.name), lang);
+
   /* Booth codes, from either side, reduced to a comparable set:
      the guide writes "A061/C060", Koelnmesse files "A-061 C-060", and
      both mean the same two stands.
@@ -160,6 +192,6 @@ const GCMarks = (() => {
   return {
     MARK_KEYS, PREFS_KEY, gameKey, readMarks, writeMarks, savedGames, hasSaved, boothCodes,
     DIR_PREFIX, dirKey, isDirKey, dirSlug, isBusinessHall, tradeMode, setTradeMode,
-    IT_KEY, readItinerary,
+    IT_KEY, readItinerary, stopDays, compareStops,
   };
 })();

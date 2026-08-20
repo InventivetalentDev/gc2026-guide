@@ -1,5 +1,15 @@
 [
   {
+    "date": "2026-08-20",
+    "revision": 33,
+    "changes": [
+      "New on the hall map: your plan, drawn on the floor. Pick a day in the new Plan row and that day's stops in the hall you're looking at get numbered pins — 1, 2, 3 — in exactly the order your plan board lists them: busiest queue first, anything you've already played last. The hall chips count that day's stops instead of your whole saved list while a day is on, so you can see at a glance which halls Thursday is actually in.",
+      "The line joining the pins is the order, not a walking route — nobody publishes where the aisles run, so drawing a path through them would be a guess. The numbers are the answer; the line just links them.",
+      "Filter your plan to one day in the By hall view and the “Map →” links now carry that day across, so the hall opens with the route already drawn. Tapping the lit day chip on the map turns it back off.",
+      "A booth with two stands in the same hall wears its number on both, and tapping a numbered stand says “Stop 2 of 5” in its details."
+    ]
+  },
+  {
     "date": "2026-08-19",
     "revision": 32,
     "changes": [
