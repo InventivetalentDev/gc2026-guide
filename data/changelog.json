@@ -1,6 +1,17 @@
 [
   {
     "date": "2026-08-20",
+    "revision": 35,
+    "changes": [
+      "The hall map's day route no longer stops at the wall. Pick a day and the hall you are looking at now says which halls come before and after it in your plan — as buttons at the end of the plan bar, so the next one is a tap away — and where we know a doorway that starts the way there, the route line runs out to it and an arrow points through it. Hall 7 to hall 9 comes out as hall 7's Boulevard doors; two halls joined by a passage come out as that passage.",
+      "The arrow marks whichever opening is nearest the stop you are leaving from — hall 7's east wall has three onto the same Boulevard — and it names the hall it leads to, unless the wall beside it already does. Seven of the thirteen halls have no doorways recorded yet: those name the leg in the bar and draw nothing on the floor, rather than pointing at a wall we have not opened.",
+      "A hall with nothing planned in it still gets both legs, so walking into hall 8 on a day planned for halls 7 and 9 tells you which way is which instead of just “nothing planned in this hall”.",
+      "The campus overview answers the same question one step back: with a day picked, every hall that day touches is lit and numbered in order along one line, and the counts on the plates — and on the hall chips above them — switch from what you have saved to what you have planned for that day. Both storeys of hall 10 are one hall out there, with one number and the stops from both.",
+      "As on the hall itself, none of this is a walking route: nothing in the data knows where the aisles run. The numbers are your plan's own order, and the line joining them says so."
+    ]
+  },
+  {
+    "date": "2026-08-20",
     "revision": 34,
     "changes": [
       "Your plan is yours to order. Every stop in the By day and By hall views now has ▲▼ buttons that move it up or down its group, and from the first move the plan keeps the order you left it in — for that day, for that hall, and for the numbered pins the hall map draws from it. Until you move anything it still sorts itself busiest-queue-first with played stops last, which is what the new “Reset order” button hands it back to (with an Undo, in case that was a mistake).",

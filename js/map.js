@@ -481,6 +481,19 @@ const DOOR_FS = 7;
 const LBL_OFF = DOOR_DEPTH + 1.8;    /* label baseline, metres out from the wall */
 const LBL_BAND = LBL_OFF + DOOR_FS;  /* room a labelled wall needs beyond itself */
 
+/* A leg pointer's name — the hall a planned day leaves for — is set one line
+   further out again, in the same margin. It belongs to the day route rather
+   than to the building, but renderHall has to reserve room for it before any
+   day has been picked, so the band is declared up here with the door's.
+
+   Smaller than DOOR_FS on purpose: the door names where this opening goes,
+   which is true whatever is on screen; the leg names where *your* plan goes
+   through it, which is true only while a day is lit. The second should not
+   shout over the first. */
+const LEG_FS = 5;
+const LEG_OFF = LBL_BAND + 1.6;   /* leg name baseline, metres out from the wall */
+const LEG_BAND = LEG_OFF + LEG_FS;
+
 const hallOf = (to) => (to && to.startsWith("hall:") ? to.slice(5) : null);
 
 /* "Boulevard" for the concourse, "Hall 6.1" for a passage. An unknown
@@ -625,14 +638,24 @@ function renderHall(id) {
   const m = marginOf(id);
   const doors = doorsOf(id);
   /* The drawing is the booth box, plus the hall around it, plus room
-     beyond each wall: GAP for the outline's own stroke, or a whole line
-     of type on a wall that is named — the labels are drawn outside, and
-     the stage clips whatever the viewBox does not reserve. So the
-     picture starts outside the hall's north-west corner rather than at
-     the box's, and view.ox/oy carry that offset for everything that
-     works in hall metres. */
+     beyond each wall: GAP for the outline's own stroke, a whole line of
+     type on a wall that is named, and a second line on a wall with a
+     doorway in it, where the day route may put the hall it leaves for.
+     The labels are drawn outside, and the stage clips whatever the
+     viewBox does not reserve. So the picture starts outside the hall's
+     north-west corner rather than at the box's, and view.ox/oy carry
+     that offset for everything that works in hall metres.
+
+     The second line is reserved whether or not a day is lit, and even on
+     a wall no plan will ever point through. The overlay comes and goes
+     with a chip tap, long after this is decided; growing the picture
+     under someone who has zoomed into a booth would cost more than the
+     6 m of margin does, and a name pushed inside instead lands on the
+     stands the map is for. */
   const named = labelledEdges(doors);
-  const out = (k) => Math.max(GAP, named.has(k) ? LBL_BAND : 0);
+  const doored = new Set(doors.map((d) => d.edge));
+  const out = (k) =>
+    Math.max(GAP, doored.has(k) ? LEG_BAND : named.has(k) ? LBL_BAND : 0);
   view.ox = -(m.w + out("w"));
   view.oy = -(m.n + out("n"));
   const vw = W + m.w + m.e + out("w") + out("e");
@@ -857,11 +880,11 @@ function refreshMarks() {
      per hall, which moves for the same reasons and is refreshed here for
      the same one: everything that writes a mark ends up calling this. */
   if (onOverview()) {
-    refreshCampus();
-    /* Before the chips, which read state.day: renderRoute is what drops a
-       day nobody planned, and what takes the hall-scoped bar off a screen
-       that is not a hall. */
+    /* First, and not only before the chips: renderRoute is what drops a day
+       nobody planned, and both the plates under it and the chips above it now
+       count that day's stops rather than the whole saved list. */
     renderRoute();
+    refreshCampus();
     renderChips();
     return;
   }
@@ -1000,16 +1023,16 @@ function hallStopCount(id) {
   return stops.size;
 }
 
-/* Is the day scoping what the row counts? Only while a hall is on screen.
-   The campus overview is the exception — it is a site diagram with no stands,
-   so it carries no route and counts the whole saved list (refreshCampus), and
-   a chip row disagreeing with the plates directly under it would be the worst
-   of both readings.
+/* Is the day scoping what the row counts? Whenever a day is picked — on a
+   hall, where the row says which halls that day is in, and on the overview,
+   where the plates directly under the row say the same thing and the two
+   disagreeing would be the worst of both readings. (The overview used to be
+   the exception, back when it carried no route of its own to agree with.)
 
-   One predicate rather than two `state.day` tests, because the number and the
-   name read off it: a chip printing the saved count while announcing "5 stops
-   planned" is worse than either answer on its own. */
-const dayScoped = () => Boolean(state.day) && !onOverview();
+   One predicate rather than several `state.day` tests, because the number and
+   the name read off it: a chip printing the saved count while announcing "5
+   stops planned" is worse than either answer on its own. */
+const dayScoped = () => Boolean(state.day);
 const hallCount = (id) => (dayScoped() ? hallStopCount(id) : hallSavedCount(id));
 
 /* Every chip's count in one string, for telling "these numbers moved"
@@ -1406,6 +1429,11 @@ function renderCampus(campus) {
     );
     lg.appendChild(saved);
     labels.appendChild(lg);
+    /* cx/cy is the area centroid, not the box centre: hall 8 is an L and the
+       middle of the box around it lands beside the building, which is where a
+       line drawn between plates would kink. x0/y0 is the corner a leg number
+       sits in, the same corner a stop pin takes on its stand. */
+    const [cx, cy] = centroid(f.poly);
     state.plates.push({
       id: f.id,
       levels: f.levels || [],
@@ -1413,6 +1441,10 @@ function renderCampus(campus) {
       g,
       lg,
       num,
+      cx,
+      cy,
+      x0: box.x0,
+      y0: box.y0,
       mid: box.cy + fs * 0.36,
       up: box.cy + fs * 0.36 - badgeFs * 0.6,
       saved: saved.firstChild,
@@ -1431,13 +1463,15 @@ function renderCampus(campus) {
   fitView(svg, vw, vh);
 }
 
-/* The overview's half of refreshMarks: how many of your saved booths
-   stand in each hall, counted over every level of it the guide draws. */
+/* The overview's half of refreshMarks: how many of your saved booths stand in
+   each hall, counted over every level of it the guide draws — or how many of
+   the chosen day's stops do, while the route is on. Through hallCount, so a
+   plate and the chip for the same hall are never two answers. */
 function refreshCampus() {
   let total = 0;
   let open = 0;
   for (const plate of state.plates) {
-    const n = plate.levels.reduce((sum, id) => sum + hallSavedCount(id), 0);
+    const n = plate.levels.reduce((sum, id) => sum + hallCount(id), 0);
     total += n;
     if (plate.open) open += 1;
     plate.saved.textContent = n ? `●${n}` : "";
@@ -1445,7 +1479,8 @@ function refreshCampus() {
     for (const el of [plate.g, plate.lg]) el.classList.toggle("saved", n > 0);
   }
   $("#counts").textContent =
-    t("map.campusCounts", { n: open }) + (total ? t("map.countsSaved", { n: total }) : "");
+    t("map.campusCounts", { n: open }) +
+    (total ? t(dayScoped() ? "map.countsPlanned" : "map.countsSaved", { n: total }) : "");
 }
 
 async function showOverview() {
@@ -1535,6 +1570,158 @@ function routeStops() {
     .map((stop, i) => ({ ...stop, n: i + 1 }));
 }
 
+/* ---- the halls either side of this one ----
+
+   A day almost never fits in one hall. The pins above number the stops
+   standing in the hall on screen and stop at its walls, which leaves the
+   question the walls actually raise — "and then where?" — answered nowhere.
+
+   "Then" is the plan board's own hall order, which is ascending hall number:
+   the groups its hall lens lists, in the order it lists them. That is no more
+   a solved walking route than the line between the pins is; it is the order
+   the arranged list reads in, put on the floor. */
+
+/* "10.2" and "10.1" are both hall 10. A passage lands you in the building and
+   the storey is an escalator inside it, which nothing in the data files. */
+const hallBase = (id) => String(id).split(".")[0];
+
+/* The day's halls, in that order, with the count each carries. Counted with
+   hallStopCount, so a leg agrees with the chip for the same hall in the row
+   above rather than offering a second number for the same question. */
+function dayHalls() {
+  if (!state.day || !state.index) return [];
+  return state.index.halls
+    .map((h) => ({ id: h.id, n: hallStopCount(h.id) }))
+    .filter((h) => h.n > 0)
+    .sort((a, b) => parseFloat(a.id) - parseFloat(b.id));
+}
+
+/* Where the hall on screen sits in that order.
+
+   Measured by hall number rather than by position in the list, so a hall with
+   nothing planned in it still gets the two legs it stands between: someone
+   who walked into 8.1 on a day planned for 7.1 and 9.1 is exactly the person
+   who needs to be told which way is which. */
+function dayLegs(halls) {
+  const here = parseFloat(state.hall);
+  if (!halls.length || Number.isNaN(here)) return { prev: null, next: null };
+  const before = halls.filter((h) => h.id !== state.hall && parseFloat(h.id) < here);
+  const after = halls.filter((h) => h.id !== state.hall && parseFloat(h.id) > here);
+  return { prev: before[before.length - 1] || null, next: after[0] || null };
+}
+
+/* ---- and the way out toward them ----
+
+   Which building a door lands you in, as a graph node. Anything that is not a
+   hall — the Boulevard, a gate — is a place in its own right, because it is
+   how two halls that share no wall are joined. */
+const doorNode = (to) => {
+  const hall = hallOf(to);
+  return hall ? `hall:${hallBase(hall)}` : String(to || "") || null;
+};
+
+/* Every door in data/hallplan/outline.json as one undirected graph. Built per
+   call: it is seven halls and two dozen doors, and a cached copy would be one
+   more thing to invalidate when the file behind it is swapped by an update. */
+function doorGraph() {
+  const graph = new Map();
+  const join = (a, b) => {
+    if (!graph.has(a)) graph.set(a, new Set());
+    graph.get(a).add(b);
+  };
+  for (const [level, hall] of Object.entries(state.outline.halls || {})) {
+    const from = `hall:${hallBase(level)}`;
+    for (const door of hall.doors || []) {
+      const to = doorNode(door.to);
+      if (!to || to === from) continue;
+      join(from, to);
+      join(to, from);
+    }
+  }
+  return graph;
+}
+
+/* The doors on *this* hall's wall that start the way to another hall.
+
+   A breadth-first walk of the graph above, seeded with the openings this
+   storey actually files, so the answer is always a door you could walk to
+   from where you are standing — 10.2 files its own, and a first step borrowed
+   from 10.1 would point at a wall this floor has no opening in. Two halls
+   joined by a passage come out as that passage; hall 7 to hall 9 comes out as
+   hall 7's Boulevard doors, because the Boulevard is what the file says joins
+   them.
+
+   It counts doorways, not metres. There is no distance in this data and this
+   is not a shortest walk — it is the first step of one, which is the whole of
+   what it claims: leave by here.
+
+   null when nothing filed reaches that hall. Seven of the thirteen levels
+   have no doors at all, and an arrow at a wall we have never opened would be
+   an invention of exactly the kind decision 5b exists to avoid; the leg is
+   still named in the bar, where it costs no geometry to say. */
+function exitToward(level, target) {
+  const from = `hall:${hallBase(level)}`;
+  const goal = `hall:${hallBase(target)}`;
+  if (from === goal) return null;
+  const seeds = new Map();
+  for (const door of doorsOf(level)) {
+    const node = doorNode(door.to);
+    if (!node || node === from) continue;
+    if (!seeds.has(node)) seeds.set(node, []);
+    seeds.get(node).push(door);
+  }
+  if (seeds.has(goal)) return seeds.get(goal);
+  const graph = doorGraph();
+  const seen = new Set([from, ...seeds.keys()]);
+  /* Each frontier entry remembers the door it set out from, which is the
+     answer being looked for — the rest of the path is hall 9's business. */
+  let frontier = [...seeds.keys()].map((node) => [node, node]);
+  while (frontier.length) {
+    const next = [];
+    for (const [node, seed] of frontier)
+      for (const step of graph.get(node) || []) {
+        if (step === goal) return seeds.get(seed);
+        if (seen.has(step)) continue;
+        seen.add(step);
+        next.push([step, seed]);
+      }
+    frontier = next;
+  }
+  return null;
+}
+
+/* A door's mouth: the middle of the opening as drawn, which is the filed
+   centre clamped to the wall it is filed on (renderOutline clamps the same
+   way, and a door filed past the corner would otherwise be pointed at from
+   outside the hall). */
+function doorMouth(door, W, H, m) {
+  const edge = edgeOf(door.edge, W, H, m);
+  const a = Math.max(edge.t0, door.at - door.span / 2);
+  const b = Math.min(edge.t1, door.at + door.span / 2);
+  return { edge, at: (a + b) / 2 };
+}
+
+/* Two halls that share a passage put the leg's name on the wall twice: the
+   door is already labelled "Hall 6.1" out in the margin, and a chip inside
+   saying the same thing is the map repeating itself. The arrow alone is the
+   whole addition there — which way, through this one. */
+const legNamed = (mouth, label) => doorLabel(mouth.door.to) === label;
+
+/* Of the doors that start the way there, the one nearest the stop you are
+   leaving from. Hall 7's east wall has three openings onto the same
+   Boulevard; which of them is closest to stop 3 is a fact about geometry we
+   have, unlike anything beyond the wall. */
+function nearestMouth(doors, [x, y], W, H, m) {
+  let best = null;
+  for (const door of doors) {
+    const mouth = doorMouth(door, W, H, m);
+    const [mx, my] = mouth.edge.pt(mouth.at);
+    const d = Math.hypot(mx - x, my - y);
+    if (!best || d < best.d) best = { ...mouth, door, d };
+  }
+  return best;
+}
+
 /* The chosen day lives in the address bar, not in prefs: it is a question
    about one visit ("show me Thursday"), the guide's own day filter is not
    persisted either, and putting it in the URL is what lets the plan board's
@@ -1570,7 +1757,7 @@ function renderRouteBar(offered) {
      doesn't appear, which is the same deal every other progressive addition
      to this page gets. */
   if (!bar) return;
-  bar.hidden = !offered.days.length || onOverview();
+  bar.hidden = !offered.days.length;
   if (bar.hidden) {
     $("#route-days").innerHTML = "";
     return; /* the status line is renderRoute's, hidden along with the bar */
@@ -1608,17 +1795,157 @@ function renderRouteBar(offered) {
     chip.addEventListener("click", () => pickDay(chip.dataset.routeDay));
 }
 
+/* The legs, as two buttons beside the status line.
+
+   The map answers "which way out" with an arrow at a door, and can only
+   answer it where the outline files one — seven of the thirteen levels file
+   none. This says the same thing in words, for those halls and for a screen
+   reader, and it is a real control: the hall it names is one tap away, which
+   is what you wanted the moment you read it.
+
+   Rendered even when the pointer beside it could not be drawn, and never
+   instead of one: two halves of one answer, not a fallback. */
+function legButtons(legs) {
+  return [
+    [legs.prev, "map.legPrev", "map.legPrevAria"],
+    [legs.next, "map.legNext", "map.legNextAria"],
+  ]
+    .filter(([leg]) => leg)
+    .map(([leg, key, ariaKey]) => {
+      const aria = t(ariaKey, { hall: leg.id, n: leg.n });
+      return `<button class="map-route-leg" type="button" data-leg-hall="${esc(leg.id)}"
+        title="${esc(aria)}" aria-label="${esc(aria)}">${esc(
+        t(key, { hall: leg.id, n: leg.n })
+      )}</button>`;
+    })
+    .join("");
+}
+
+/* The bar's sentence and its two leg buttons, written together because the
+   buttons are the end of the sentence — "3 stops here, then hall 9.1". */
+function renderRouteStatus(html) {
+  const status = $("#route-status");
+  if (!status) return;
+  status.innerHTML = html;
+  for (const btn of status.querySelectorAll(".map-route-leg"))
+    btn.addEventListener("click", () => showHall(btn.dataset.legHall));
+}
+
 /* Wipe last render's verdicts before drawing this one: the overlay is rebuilt
    whole rather than diffed, and a stand that has dropped off the route has to
    lose its number in the accessible name as well as on screen. */
 function clearRoute(svg) {
-  svg?.querySelectorAll(".route-line, .route-pins").forEach((el) => el.remove());
+  svg?.querySelectorAll(".route-line, .route-pins, .route-legs").forEach((el) => el.remove());
   for (const rec of state.stands) {
     if (!rec.stop) continue;
     rec.stop = null;
     rec.g.classList.remove("stop");
     rec.g.setAttribute("aria-label", rec.aria);
   }
+  for (const plate of state.plates) {
+    if (!plate.leg) continue;
+    plate.leg = null;
+    plate.g.classList.remove("leg");
+    plate.lg.classList.remove("leg");
+  }
+}
+
+/* Where the route line meets a stop: the middle of its largest stand, which
+   is the one the pins are drawn from. */
+const stopPoint = (stop) => {
+  const box = bbox(stop.recs[0].data.poly);
+  return [box.cx, box.cy];
+};
+
+const PTR = 5.4;  /* leg arrowhead, in hall metres like every other mark here */
+
+/* One leg pointer: an arrowhead through the doorway, and the hall it leads to
+   named out in the margin beyond it.
+
+   The name is set the way a door's own name is — same margin, same rotation
+   on an end wall, one line further out (LEG_OFF) so the two never collide
+   however the doors on that wall are grouped. Outside is the only place on
+   this map with nothing to cover: inside, a name at a doorway lands on the
+   outermost stand row, which is the row the map exists to show. The room for
+   it is reserved when the hall is drawn, because this layer cannot grow the
+   picture it is drawn on (see renderHall).
+
+   aria-hidden, like the door layer under it and the pins over it: the two
+   buttons in the bar are the same two legs, already named, already tappable,
+   and by something that takes focus. */
+function legPointer({ leg, mouth, inbound }) {
+  const g = document.createElementNS(SVGNS, "g");
+  g.setAttribute("class", `route-leg-mark${inbound ? " in" : ""}`);
+
+  const { edge, at, door } = mouth;
+  const key = door.edge;
+  const [ox, oy] = edge.out;
+  const [mx, my] = edge.pt(at);
+  const dir = inbound ? -1 : 1;
+  /* The tip sits level with the outer edge of the door's own bracket, so the
+     two read as one mark rather than as an arrow standing beside a doorway.
+     An arrival is the same triangle turned around through it. */
+  const tx = mx + ox * DOOR_DEPTH * dir;
+  const ty = my + oy * DOOR_DEPTH * dir;
+  const bx = tx - ox * PTR * dir;
+  const by = ty - oy * PTR * dir;
+  const [px, py] = [-oy, ox]; /* along the wall */
+  const w = PTR * 0.44;
+  const head = document.createElementNS(SVGNS, "path");
+  head.setAttribute("class", "route-leg-head");
+  head.setAttribute("d", `M${tx} ${ty}L${bx + px * w} ${by + py * w}L${bx - px * w} ${by - py * w}Z`);
+  g.appendChild(head);
+
+  const label = t("where.hall", { hall: leg.id });
+  /* Nothing more to say: the wall's own label is this hall, the arrow says
+     which way through it, and the door under both is already a tap that goes
+     there (renderOutline). */
+  if (legNamed(mouth, label)) return g;
+
+  const el = document.createElementNS(SVGNS, "text");
+  el.setAttribute("class", `route-leg-lbl on-${key}`);
+  el.setAttribute("font-size", LEG_FS);
+  if (key === "n" || key === "s") {
+    el.setAttribute("x", mx);
+    /* glyphs sit above their baseline, so only a name below the wall has to
+       be pushed down by a line to clear it — the door labels' own rule */
+    el.setAttribute("y", my + oy * LEG_OFF + (key === "s" ? LEG_FS * 0.8 : 0));
+  } else {
+    /* Turned to run along an end wall, reading downward on the east and
+       upward on the west, for the reason the door labels are: set across, a
+       hall name is 25 m of type against a hall 82 m deep. */
+    el.setAttribute(
+      "transform",
+      `translate(${mx + ox * LEG_OFF} ${my}) rotate(${key === "e" ? 90 : -90})`
+    );
+  }
+  el.textContent = label;
+  g.appendChild(el);
+
+  /* Tappable like the door under it, and for the same reason: it is pointing
+     at a hall, and what you do with a hall you are being pointed at is go
+     there. Its own hit rect rather than the door's, because a Boulevard door
+     leads to the Boulevard and this leads to hall 9.1.
+
+     It runs from the wall out to the end of the name, and never a metre
+     inside it: everything in there is a stand, and a control that swallowed
+     taps meant for one would have taken more than it gave. */
+  const reach = Math.max((label.length * LEG_FS * 0.62) / 2, w) + 1.5;
+  const corner = (t0, depth) => {
+    const [x, y] = edge.pt(t0);
+    return [x + ox * depth, y + oy * depth];
+  };
+  const [x1, y1] = corner(at - reach, 0);
+  const [x2, y2] = corner(at + reach, LEG_BAND);
+  const hit = document.createElementNS(SVGNS, "rect");
+  hit.setAttribute("class", "route-leg-hit");
+  hit.setAttribute("x", Math.min(x1, x2));
+  hit.setAttribute("y", Math.min(y1, y2));
+  hit.setAttribute("width", Math.abs(x2 - x1));
+  hit.setAttribute("height", Math.abs(y2 - y1));
+  hit.dataset.hall = leg.id;
+  g.appendChild(hit);
+  return g;
 }
 
 function renderRoute() {
@@ -1634,39 +1961,67 @@ function renderRoute() {
 
   const svg = $("#map");
   clearRoute(svg);
+  const halls = dayHalls();
+  if (onOverview()) {
+    state.route = [];
+    renderCampusRoute(svg, halls);
+    return;
+  }
   state.route = svg ? routeStops() : [];
-  const status = $("#route-status");
-  if (status)
-    status.innerHTML = !state.day
-      ? `<span class="map-route-hint">${esc(t("map.routeHint"))}</span>`
-      : state.route.length
-        ? `${esc(t("map.routeStops", { n: state.route.length }))} <span class="map-route-hint">${esc(
-            t("map.routeOrderNote")
-          )}</span>`
-        : `<span class="map-route-hint">${esc(t("map.routeNoneHere"))}</span>`;
-  if (!svg || !state.route.length) return;
+  const legs = dayLegs(halls);
+  const here = !state.day
+    ? `<span class="map-route-hint">${esc(t("map.routeHint"))}</span>`
+    : state.route.length
+      ? `${esc(t("map.routeStops", { n: state.route.length }))} <span class="map-route-hint">${esc(
+          t("map.routeOrderNote")
+        )}</span>`
+      : `<span class="map-route-hint">${esc(t("map.routeNoneHere"))}</span>`;
+  renderRouteStatus(here + legButtons(legs));
+  const hall = svg && state.halls.get(state.hall);
+  if (!hall) return;
+  const [W, H] = hall.size;
+  const m = marginOf(state.hall);
+
+  /* Where the plan comes in and where it goes out. Drawn even when this hall
+     holds none of the day's stops: which way out is the last useful thing a
+     hall you have nothing planned in can tell you. */
+  const pointers = [];
+  for (const [leg, inbound, stop] of [
+    [legs.prev, true, state.route[0]],
+    [legs.next, false, state.route[state.route.length - 1]],
+  ]) {
+    if (!leg) continue;
+    const doors = exitToward(state.hall, leg.id);
+    if (!doors?.length) continue;
+    const anchor = stop ? stopPoint(stop) : null;
+    const mouth = nearestMouth(doors, anchor || [W / 2, H / 2], W, H, m);
+    if (mouth) pointers.push({ leg, inbound, mouth, anchor });
+  }
+  if (!state.route.length && !pointers.length) return;
 
   /* Under the labels, so the line never crosses out a booth name; over the
-     stands, so it is not hidden by the ones it runs across. */
-  const line = document.createElementNS(SVGNS, "path");
-  line.setAttribute("class", "route-line");
-  line.setAttribute("aria-hidden", "true");
-  line.setAttribute(
-    "d",
-    "M" +
-      state.route
-        .map(({ recs }) => {
-          const box = bbox(recs[0].data.poly);
-          return `${box.cx} ${box.cy}`;
-        })
-        .join("L")
-  );
-  svg.insertBefore(line, state.labelsLayer);
+     stands, so it is not hidden by the ones it runs across. One path for the
+     chain and both legs: a leg is the same line saying the same thing, run
+     from the stop the day leaves by to the door it leaves through. */
+  let d = state.route.length ? "M" + state.route.map((s) => stopPoint(s).join(" ")).join("L") : "";
+  for (const { mouth, anchor } of pointers) {
+    if (!anchor) continue;
+    const [mx, my] = mouth.edge.pt(mouth.at);
+    d += `M${anchor[0]} ${anchor[1]}L${mx} ${my}`;
+  }
+  if (d) {
+    const line = document.createElementNS(SVGNS, "path");
+    line.setAttribute("class", "route-line");
+    line.setAttribute("aria-hidden", "true");
+    line.setAttribute("d", d);
+    svg.insertBefore(line, state.labelsLayer);
+  }
 
   /* Appended last, so the numbers sit above every name and every stand. The
      layer is aria-hidden: the same numbers are already in each stand's own
      accessible name, where they can be reached by the button that carries
-     them rather than as loose text in a graphic. */
+     them rather than as loose text in a graphic, and the legs beside them are
+     the two buttons in the bar. */
   const pins = document.createElementNS(SVGNS, "g");
   pins.setAttribute("class", "route-pins");
   pins.setAttribute("aria-hidden", "true");
@@ -1707,6 +2062,95 @@ function renderRoute() {
     }
   }
   svg.appendChild(pins);
+
+  if (pointers.length) {
+    const marks = document.createElementNS(SVGNS, "g");
+    marks.setAttribute("class", "route-legs");
+    marks.setAttribute("aria-hidden", "true");
+    for (const p of pointers) marks.appendChild(legPointer(p));
+    svg.appendChild(marks);
+  }
+}
+
+/* ================= the day's halls, on the overview =================
+
+   The same reading one step back. On the site diagram a number is a hall and
+   not a stop — hall 6 first, then hall 9, then hall 10 — which is the one
+   thing thirteen chips in a row cannot say, however many of them carry a
+   count. It is the hall lens's grouping with the site drawn under it.
+
+   Both numberings are the plan board's own and neither is a walk: a pin
+   inside a hall is that hall group's row, a plate out here is that group's
+   place in the list of groups. */
+
+/* The day's levels collapsed onto the buildings, in the same order: 10.1 and
+   10.2 are one hall out here. The count on each plate already sums its levels
+   (refreshCampus), so a leg carries only its place in the order. */
+const dayBuildings = (halls) => [...new Set(halls.map((h) => hallBase(h.id)))];
+
+/* Those of them the diagram can draw, with the plate to draw on. Hall 1 and
+   hall 11 are on the diagram for orientation and the guide draws neither, so
+   nothing can be planned in them — but the sentence above counts the plan and
+   this counts the picture, and a hall missing from the artwork must cost the
+   picture a number, not the plan a hall. */
+const platedLegs = (buildings) =>
+  buildings
+    .map((id, i) => ({ id, leg: i + 1, plate: state.plates.find((p) => p.id === id) }))
+    .filter((leg) => leg.plate);
+
+function renderCampusRoute(svg, halls) {
+  const buildings = dayBuildings(halls);
+  const stops = halls.reduce((sum, h) => sum + h.n, 0);
+  renderRouteStatus(
+    !state.day
+      ? `<span class="map-route-hint">${esc(t("map.routeHintCampus"))}</span>`
+      : buildings.length
+        ? `${esc(t("map.routeHalls", { n: buildings.length }))} · ${esc(
+            t("map.routeStopsAll", { n: stops })
+          )} <span class="map-route-hint">${esc(t("map.routeOrderNote"))}</span>`
+        : `<span class="map-route-hint">${esc(t("map.routeNoneAnywhere"))}</span>`
+  );
+  const legs = svg ? platedLegs(buildings) : [];
+  if (!legs.length) return;
+
+  const marks = document.createElementNS(SVGNS, "g");
+  marks.setAttribute("class", "route-legs");
+  marks.setAttribute("aria-hidden", "true");
+
+  /* One hall is an order of one: a line through a single plate is a dot, and
+     a number on it reads "first of one", which is noise. The plate is lit
+     either way — that much is not about order, it is where the day is. */
+  const ordered = legs.length > 1;
+  if (ordered) {
+    const line = document.createElementNS(SVGNS, "path");
+    line.setAttribute("class", "route-line");
+    line.setAttribute("d", "M" + legs.map(({ plate }) => `${plate.cx} ${plate.cy}`).join("L"));
+    marks.appendChild(line);
+  }
+
+  for (const { plate, leg } of legs) {
+    plate.leg = leg;
+    for (const el of [plate.g, plate.lg]) el.classList.add("leg");
+    if (!ordered) continue;
+    /* The plate's north-west corner, the same corner a stop pin takes on its
+       stand — the middle of a plate is where its number and its count are. */
+    const r = PIN_R * 1.6 * (leg > 9 ? 1.18 : 1);
+    const cx = plate.x0 + r * 1.1;
+    const cy = plate.y0 + r * 1.1;
+    const disc = document.createElementNS(SVGNS, "circle");
+    disc.setAttribute("class", "route-pin");
+    disc.setAttribute("cx", cx);
+    disc.setAttribute("cy", cy);
+    disc.setAttribute("r", r);
+    const num = document.createElementNS(SVGNS, "text");
+    num.setAttribute("class", "route-pin-n");
+    num.setAttribute("x", cx);
+    num.setAttribute("y", cy + r * 0.38);
+    num.setAttribute("font-size", r * 1.1);
+    num.textContent = leg;
+    marks.append(disc, num);
+  }
+  svg.appendChild(marks);
 }
 
 /* ================= pan / zoom ================= */
@@ -1837,12 +2281,17 @@ function endPointer(e) {
       lastTap = { t: 0, x, y };
     } else {
       lastTap = { t: now, x, y };
-      /* A door into another hall goes there, and so does a hall plate on
-         the overview — one path, because they are the same gesture. The
-         door is checked before the stand underneath it, which is the whole
-         reason its hit path is drawn on top: tapping the passage out of
-         hall 7 must not select the booth standing beside it. */
-      const door = tap.target.closest?.(".hall-door-hit, .campus-hall-hit");
+      /* A door into another hall goes there, and so do a hall plate on the
+         overview and a leg pointer's chip — one path, because they are the
+         same gesture. All three are checked before the stand underneath
+         them, which is the whole reason their hit shapes are drawn on top:
+         tapping the passage out of hall 7 must not select the booth standing
+         beside it. The leg comes first of the three because it is drawn last
+         and means the most where they overlap — it is pointing at hall 9.1,
+         while the door it stands in is only pointing at the Boulevard. */
+      const door = tap.target.closest?.(
+        ".route-leg-hit, .hall-door-hit, .campus-hall-hit"
+      );
       if (door) showHall(door.dataset.hall);
       else {
         const g = tap.target.closest?.(".stand");
