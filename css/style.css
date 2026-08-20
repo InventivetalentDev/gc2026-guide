@@ -2164,6 +2164,17 @@ a.area-hall::after { content: ""; position: absolute; inset: -6px -8px; }
 
 .header-share { white-space: nowrap; }
 
+/* Share measured 60 by 22 and reaches 64 by 28. Commit 6181056 fixed it
+   against the language control, so its visible box must not move. Footer links
+   measured 15px tall and reach about 19px, not 24: the leading between wrapped
+   lines leaves only 2px above and below. Their sides stop inside the literal
+   middle dot and its surrounding spaces, so one link cannot take another's tap. */
+.header-share,
+.subtle-link { position: relative; }
+
+.header-share::after { content: ""; position: absolute; inset: -3px -2px; }
+.subtle-link::after { content: ""; position: absolute; inset: -2px -2px; }
+
 /* The footer copy runs as prose, so the backstop switcher there reads as
    one more link in the Imprint · Privacy row rather than a second button. */
 .lang-switch-link {
