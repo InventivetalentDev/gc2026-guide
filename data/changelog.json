@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-08-20",
+    "revision": 36,
+    "changes": [
+      "The plan stops moving under you. Placing a stop on a day used to fling the page about fifteen hundred pixels down the board, ticking one off as played on the queue table about eighteen hundred, and every ▲▼ nudged the whole page by a row — because putting the keyboard's focus back on the button you had just pressed also asked the browser to scroll to it, and after a redraw that button is a brand-new thing the browser thinks it has never shown you. It is put back without the scroll now. Arrange a day, tick things off, reorder a hall: the page stays exactly where you left it.",
+      "Keyboard and screen-reader users keep what that was there for. Focus still lands on the same button after every move, and when a stop really has travelled somewhere else on the board — a day group further down — the page follows it just far enough to bring the focus ring back on screen, and only when the ring is actually showing.",
+      "Two smaller pieces of the same fault: the plan board and the queue table no longer collapse to a rough guess at their own height for a frame every time they are redrawn, which is what shifted whatever you were reading below them, and the jump links at the top of the planner no longer land their heading behind the sticky header."
+    ]
+  },
+  {
+    "date": "2026-08-20",
     "revision": 35,
     "changes": [
       "The hall map's day route no longer stops at the wall. Pick a day and the hall you are looking at now says which halls come before and after it in your plan — as buttons at the end of the plan bar, so the next one is a tap away — and where we know a doorway that starts the way there, the route line runs out to it and an arrow points through it. Hall 7 to hall 9 comes out as hall 7's Boulevard doors; two halls joined by a passage come out as that passage.",
