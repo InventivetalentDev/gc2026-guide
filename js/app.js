@@ -3064,7 +3064,7 @@ const isBusinessOpenDay = (d) => d?.business !== "closed";
    note:false — they repeat the advice paragraph a plan spanning five days
    would otherwise carry five times, one scroll above where it already reads
    in full. The facts you act on (day, access, hours) stay. */
-function dayHeaderInner(d, { note = true } = {}) {
+function dayHeaderInner(d, { note = true, map = false } = {}) {
   const [, month, day] = d.date.split("-");
   return `<span class="day-when">
       <span class="day-dow">${esc(shortDay(d.date))}</span>
@@ -3074,8 +3074,22 @@ function dayHeaderInner(d, { note = true } = {}) {
     <span class="day-detail">
       ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
       ${note && d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
-    </span>`;
+    </span>${map ? dayMapLink(d) : ""}`;
 }
+
+/* The day lens's answer to the hall lens's "Map →" on each hall heading.
+
+   A day is not one hall, so it opens the overview rather than a hall: every
+   hall that day touches, lit and numbered in your plan's order, which is the
+   question a day heading raises and the only view that answers it whole. One
+   tap from there opens whichever hall you meant. The hall lens keeps its own
+   link pointed at its own hall, so between the two lenses both readings of
+   "show me this on the map" have a way there. */
+const dayMapLink = (d) =>
+  `<a class="route-hall-map day-map" href="${esc(
+    `map.html?day=${encodeURIComponent(d.date)}#overview`
+  )}" title="${esc(t("map.openTitle"))}"
+    aria-label="${esc(t("plan.dayMapAria", { day: dayName(d.date) }))}">${esc(t("map.cue"))}</a>`;
 
 /* Weekday names are derived from the date in the active language rather
    than hand-written per locale — see GCI18N.dayName. The short form is
@@ -3293,19 +3307,25 @@ function moveButtons(key, name, i, total) {
    calendar export writes it into an .ics file, where a link is just noise.
    A game shown at two booths links each of them separately. */
 function itineraryItemLocationHtml(item) {
+  /* The day this stop is on rides along to the map, the way the hall lens's
+     day filter already does (mapLink). This lens *is* a day filter — the row
+     sits under a Thursday heading — and a booth opened from it used to land
+     on a map with no day picked, asking for the day the visitor had just
+     been looking at. Null on an unassigned stop, which mapLink drops. */
+  const day = assignedDay(item.kind, item.key);
   if (item.kind === "game") {
     return item.at.length
       ? item.at
           .map(
             (ex) =>
-              `${esc(ex.name)} — ${hallLink(ex.hall, ex.booth, itineraryLocation(ex, { booth: false }))}`
+              `${esc(ex.name)} — ${hallLink(ex.hall, ex.booth, itineraryLocation(ex, { booth: false }), day)}`
           )
           .join(" · ")
       : t("plan.boothTba");
   }
   /* Where, and only where: the queue index used to be appended here and now
      has a cell of its own, in the column the hall lens keeps it in. */
-  return hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex));
+  return hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex), day);
 }
 
 /* Does this stop stand in the business area? Asked of the location, not of
@@ -3407,7 +3427,10 @@ function renderItinerary() {
        answerable without reading every stop. */
     const shut = dayItems.filter(stopOnClosedDay).length;
     groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
-      <div class="it-group-head" tabindex="-1">${dayHeaderInner(d, { note: false })}</div>
+      <div class="it-group-head" tabindex="-1">${dayHeaderInner(d, {
+        note: false,
+        map: true,
+      })}</div>
       ${
         shut
           ? `<p class="it-group-warn">${esc(
@@ -4496,7 +4519,42 @@ function showView(route, { push = true } = {}) {
   if (push) syncHash();
 }
 
+/* How far down the page a jumped-to heading has to start.
+
+   Every jump the planner offers — the nav chips, the five-days board tapping
+   into a day's group, "back to your plan" — lands its target under a sticky
+   masthead unless the scroll is offset by the masthead's height. That height
+   was written into the stylesheet as a number, and it was the wrong number:
+   161px of header against a 140px offset clipped the top of every heading
+   the guide has ever jumped to. Worse, it is not a constant. The install
+   button appears on the browsers that offer one, the offline notice appears
+   when the network goes, German sets the same row in longer words, and each
+   of those moves the header by a different amount.
+
+   So it is measured instead, on the element itself, and published as a
+   custom property the stylesheet offsets from. The media query that unpins
+   the header on phones overrides the offset there, so nothing has to be
+   measured twice or agreed with in two places.
+
+   ResizeObserver where there is one — every browser this guide targets has
+   had it since 2020 — and a resize listener as the floor, which catches the
+   orientation change that reflows the header even when nothing else fires. */
+function trackHeaderHeight() {
+  const header = $(".site-header");
+  if (!header) return;
+  const publish = () =>
+    document.documentElement.style.setProperty(
+      "--header-h",
+      `${Math.round(header.getBoundingClientRect().height)}px`
+    );
+  publish();
+  if ("ResizeObserver" in window) new ResizeObserver(publish).observe(header);
+  else window.addEventListener("resize", publish);
+}
+
 function bindControls() {
+  trackHeaderHeight();
+
   /* One render per pause, not per keystroke: the grid plus both directory
      lists is too much DOM to rebuild at typing speed on a phone. The value is
      read when the timer fires, so a reset that clears the box mid-wait is

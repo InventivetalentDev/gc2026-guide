@@ -1,6 +1,17 @@
 [
   {
     "date": "2026-08-20",
+    "revision": 36,
+    "changes": [
+      "A booth with several stands in one hall now wears one number on the map, not one per stand. Nintendo files four stands in hall 9, so Thursday's route drew four pins all reading “2” — four stops on the floor and two in the bar above it. The number sits on the largest stand, the one the route line already runs through; the whole booth still lights up, and tapping any part of it still says “Stop 2 of 5”.",
+      "The hall chips count the same thing whichever list they are counting. A chip used to count your saved stands and switch to counting stops the moment you picked a day: hall 9 read ●5 with Capcom and Nintendo saved, then ●2 on the Thursday that held both of them. It counts stops either way now — the unit your plan, the route bar and the overview plates all already use — and the map opens on the hall holding most of your plan again, rather than on whichever hall happened to hold the most rectangles.",
+      "The By day view can reach the map. Each day's heading carries a “Map →” that opens the site overview with that day already picked, the way each hall's heading in By hall opens its hall. Every booth address under a day carries its day across too, so the map no longer opens asking you to pick the day you were just looking at.",
+      "Headings the planner jumps to no longer land underneath the masthead. The scroll offset was written as a fixed number, and the masthead has no fixed height — it grows for the install button, for the offline notice, and for German setting the same row in longer words — so it is measured now.",
+      "All four tabs fit on a phone. Exhibitors, Visit planner, Event info and Updates measured wider than any phone screen, so the row scrolled with nothing to show that it scrolled, and Updates sat off the right edge where nobody would look for it. They wrap onto two lines instead."
+    ]
+  },
+  {
+    "date": "2026-08-20",
     "revision": 35,
     "changes": [
       "The hall map's day route no longer stops at the wall. Pick a day and the hall you are looking at now says which halls come before and after it in your plan — as buttons at the end of the plan bar, so the next one is a tap away — and where we know a doorway that starts the way there, the route line runs out to it and an arrow points through it. Hall 7 to hall 9 comes out as hall 7's Boulevard doors; two halls joined by a passage come out as that passage.",

@@ -1254,10 +1254,22 @@ a.dir-stand:focus-visible b { color: var(--signal); }
    ============================================================ */
 /* Every jump-nav target clears the sticky header — the plan's day groups
    included, which the day board's counts jump to; the mobile block below
-   shrinks this once the header stops being sticky. */
+   shrinks this once the header stops being sticky.
+
+   --header-h is the masthead's measured height, published by app.js
+   (trackHeaderHeight) because the masthead has no fixed one: the install
+   button, the offline notice and the longer German strings each change it.
+   The fallback is what a stock English desktop masthead measures, for the
+   moment before the script runs. The 12px on top is breathing room — a
+   heading flush against the header's edge reads as clipped even when it is
+   whole.
+
+   #trade is not a jump-nav target but is scrolled to the same way: the toast
+   that turns trade mode on offers to show you the section it just filled. */
 #plan-section,
 #plan-board .it-group,
-#view-planner .section-title { scroll-margin-top: 140px; }
+#view-planner .section-title,
+#trade { scroll-margin-top: calc(var(--header-h, 161px) + 12px); }
 /* Centered in .empty's bottom padding, so message and action read as one
    block; invisible whenever the message is. */
 #plan-browse { display: block; margin: -48px auto 60px; }
@@ -1329,13 +1341,19 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .it-group + .it-group { border-top: 1px solid var(--rule); }
 .it-group-head {
   display: grid;
-  grid-template-columns: 92px 130px 1fr;
+  /* the fourth column is the day's "Map →", which only the plan's own day
+     groups carry — the five-days board renders the same header without it
+     and simply leaves the column empty */
+  grid-template-columns: 92px 130px 1fr auto;
   gap: 0 18px;
   align-items: baseline;
   padding: 11px 18px;
   background: var(--ground-3);
   border-bottom: 1px solid var(--rule);
 }
+/* Placed rather than flowed, so the phone layout below can fold the hours
+   onto their own line underneath without the chip following them down. */
+.day-map { grid-row: 1; grid-column: -2 / -1; justify-self: end; align-self: center; }
 .it-group-head.unassigned { display: block; }
 .it-group-title {
   font-family: var(--font-mono);
@@ -2252,16 +2270,32 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 
 @media (max-width: 620px) {
   .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
-  .tabs { padding: 0 16px; }
+  /* Four tabs measure ~534px and no phone is that wide, so the row used to
+     scroll — and a row that scrolls with no edge cut to show it looks like a
+     row that ends. "04 Updates" sat off the right of every phone, which is a
+     quarter of the guide reachable only by a swipe nobody was invited to
+     make. It wraps to two lines instead: all four labels on screen, nothing
+     to discover, no scroll affordance to design. The extra line costs the
+     phone nothing, because the masthead is not sticky here — it scrolls away
+     with the rest of the header the moment the list moves.
+
+     Each tab takes half the row rather than its natural width, so the two
+     lines stack into a grid rather than ragging. The flush-left padding the
+     base rule gives only the first tab is given to all four here, or the
+     second column would sit 20px right of where the first one starts and the
+     grid would read as an accident. */
+  .tabs { padding: 0 16px; flex-wrap: wrap; overflow-x: hidden; }
+  .tab { flex: 1 0 45%; padding-left: 0; padding-right: 12px; }
   .toast { left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); }
   /* the full masthead is ~290px on a phone — far too much to pin above a
      long scrolling list, so it scrolls away here instead */
   .site-header { position: static; }
-  /* …and with nothing pinned on top, the sticky-header scroll offset would
-     just strand a jumped-to heading 140px down the screen */
+  /* …and with nothing pinned on top, the measured header offset above would
+     just strand a jumped-to heading a masthead's height down the screen */
   #plan-section,
   #plan-board .it-group,
-  #view-planner .section-title { scroll-margin-top: 16px; }
+  #view-planner .section-title,
+  #trade { scroll-margin-top: 16px; }
 
   /* The phone masthead. The control row dissolves and each button takes its
      own place in the grid's right column: share beside the wordmark, the
@@ -2298,7 +2332,10 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   /* full-width like the detail text above it — half-indented it reads as a
      stray line rather than a fact of the day */
   .day-planned { grid-column: 1 / -1; margin-top: 0; }
-  .it-group-head { grid-template-columns: 76px 1fr; row-gap: 8px; }
+  .it-group-head { grid-template-columns: 76px 1fr auto; row-gap: 8px; }
+  /* Day, access and the map chip share the top line; the hours take the
+     whole of the next one rather than the 76px column they would flow into. */
+  .it-group-head .day-detail { grid-column: 1 / -1; }
   /* Same fold as the tablet block above, one notch narrower in column one. */
   .it-item { grid-template-columns: minmax(96px, 1fr) auto auto 20px; row-gap: 9px; }
   .toolbar-row .row-label { flex-basis: 100%; }

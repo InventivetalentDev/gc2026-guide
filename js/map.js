@@ -984,44 +984,52 @@ function setTrade(on) {
 
 const standsOf = (ex) => (ex.stands?.length ? ex.stands : [{ hall: ex.hall, booth: ex.booth }]);
 
-function hallSavedCount(id) {
+/* How much of your plan stands in one hall — the number on its chip, and,
+   summed over a building's levels, the number on its plate on the overview.
+
+   Stops, not stands. A card holding four stands in one hall (Nintendo does)
+   is one place you walk to, one row in the plan, one pin on the floor, and
+   so one here: this badge is read next to a hall name as "how much of mine
+   is in there", and every other number the guide prints about a saved list
+   answers that question in stops. Counting rectangles instead made the badge
+   mean one thing with a day picked and another without — hall 9 read ●5 on
+   the saved list and ●2 on the Thursday that held both its booths — and sent
+   the map's opening hall to whichever hall happened to hold the most
+   *stands*, past the one holding most of the plan.
+
+   The two branches count the same unit for the same reason. Which side of
+   the parse you are on decides how well the guide can see the hall, never
+   what a stop is. */
+function hallCountBy(id, counts) {
   const hall = state.halls.get(id);
   /* Not loaded yet — count from guide data alone. Reads through standsOf so
      a multi-stand trade record is counted in every hall it stands in, not
      only in the scalar `hall` a curated card carries. */
   if (!hall) {
     return [...state.exhibitors, ...state.trade].filter(
-      (ex) => exSaved(ex) && standsOf(ex).some((s) => String(s.hall) === id)
-    ).length;
-  }
-  let n = 0;
-  for (const s of hall.stands) if (standRecord(id, s).exs.some(exSaved)) n += 1;
-  return n;
-}
-
-/* The same count with a day over it: how many of that day's stops stand in
-   this hall. With the overlay on, "which hall is today in" is the question
-   the row is being read for, and answering it with the whole saved list
-   would send you into halls you have nothing planned in.
-
-   Stops, not stands — the badge has to agree with the number the route bar
-   prints for the hall you are looking at, and a card holding two stands in
-   one hall is still one stop. */
-function hallStopCount(id) {
-  const planned = (ex) =>
-    GCMarks.hasSaved(state.marks.saved, ex) &&
-    GCMarks.stopDays(state.marks.saved, state.itinerary, ex).has(state.day);
-  const hall = state.halls.get(id);
-  if (!hall) {
-    return [...state.exhibitors, ...state.trade].filter(
-      (ex) => planned(ex) && standsOf(ex).some((s) => String(s.hall) === id)
+      (ex) => counts(ex) && standsOf(ex).some((s) => String(s.hall) === id)
     ).length;
   }
   const stops = new Set();
   for (const s of hall.stands)
-    for (const ex of standRecord(id, s).exs) if (planned(ex)) stops.add(ex);
+    for (const ex of standRecord(id, s).exs) if (counts(ex)) stops.add(ex);
   return stops.size;
 }
+
+const hallSavedCount = (id) => hallCountBy(id, exSaved);
+
+/* The same count with a day over it: how many of that day's stops stand in
+   this hall. With the overlay on, "which hall is today in" is the question
+   the row is being read for, and answering it with the whole saved list
+   would send you into halls you have nothing planned in. Same unit either
+   way, so the chip agrees with the number the route bar prints below it. */
+const hallStopCount = (id) =>
+  hallCountBy(
+    id,
+    (ex) =>
+      GCMarks.hasSaved(state.marks.saved, ex) &&
+      GCMarks.stopDays(state.marks.saved, state.itinerary, ex).has(state.day)
+  );
 
 /* Is the day scoping what the row counts? Whenever a day is picked — on a
    hall, where the row says which halls that day is in, and on the overview,
@@ -2031,35 +2039,43 @@ function renderRoute() {
      a hidden pin is a lost stop, unlike a hidden label — and zooming in
      separates them; this only decides which one you can read before you do. */
   for (const stop of [...state.route].reverse()) {
+    /* Every stand the stop holds is lit and carries the stop's number in its
+       own accessible name — the whole footprint is the place you are walking
+       to, and a keyboard user landing on any part of it should hear which
+       stop it is. */
     for (const rec of stop.recs) {
       rec.stop = stop;
       rec.g.classList.add("stop");
       rec.g.setAttribute("aria-label", rec.aria + t("map.stopAria", { n: stop.n, total }));
-
-      const box = bbox(rec.data.poly);
-      /* Two digits need a wider disc, or "10" runs over its own edge. */
-      const r = PIN_R * (stop.n > 9 ? 1.18 : 1);
-      /* Pinned to the stand's north-west corner rather than its middle: the
-         middle is where its name is, and a route that covers the names it is
-         routing you between has cost more than it gave. A stand too small to
-         have a corner to spare simply wears the pin centred. */
-      const cx = box.x0 + Math.min(r * 0.6, box.w / 2);
-      const cy = box.y0 + Math.min(r * 0.6, box.h / 2);
-
-      const disc = document.createElementNS(SVGNS, "circle");
-      disc.setAttribute("class", `route-pin${stop.played ? " done" : ""}`);
-      disc.setAttribute("cx", cx);
-      disc.setAttribute("cy", cy);
-      disc.setAttribute("r", r);
-      const num = document.createElementNS(SVGNS, "text");
-      num.setAttribute("class", `route-pin-n${stop.played ? " done" : ""}`);
-      num.setAttribute("x", cx);
-      /* half a cap height below the centre — SVG text hangs off its baseline */
-      num.setAttribute("y", cy + r * 0.38);
-      num.setAttribute("font-size", r * 1.1);
-      num.textContent = stop.n;
-      pins.append(disc, num);
     }
+
+    /* The number itself is drawn once, on the same stand the route line runs
+       through (stopPoint takes recs[0], the largest). One stop is one number:
+       Nintendo files four stands in hall 9 and wore four discs all reading
+       "2", which is four stops on the floor and two in the bar above it. */
+    const box = bbox(stop.recs[0].data.poly);
+    /* Two digits need a wider disc, or "10" runs over its own edge. */
+    const r = PIN_R * (stop.n > 9 ? 1.18 : 1);
+    /* Pinned to the stand's north-west corner rather than its middle: the
+       middle is where its name is, and a route that covers the names it is
+       routing you between has cost more than it gave. A stand too small to
+       have a corner to spare simply wears the pin centred. */
+    const cx = box.x0 + Math.min(r * 0.6, box.w / 2);
+    const cy = box.y0 + Math.min(r * 0.6, box.h / 2);
+
+    const disc = document.createElementNS(SVGNS, "circle");
+    disc.setAttribute("class", `route-pin${stop.played ? " done" : ""}`);
+    disc.setAttribute("cx", cx);
+    disc.setAttribute("cy", cy);
+    disc.setAttribute("r", r);
+    const num = document.createElementNS(SVGNS, "text");
+    num.setAttribute("class", `route-pin-n${stop.played ? " done" : ""}`);
+    num.setAttribute("x", cx);
+    /* half a cap height below the centre — SVG text hangs off its baseline */
+    num.setAttribute("y", cy + r * 0.38);
+    num.setAttribute("font-size", r * 1.1);
+    num.textContent = stop.n;
+    pins.append(disc, num);
   }
   svg.appendChild(pins);
 

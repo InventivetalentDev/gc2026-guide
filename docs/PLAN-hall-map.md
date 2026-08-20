@@ -485,11 +485,25 @@ a visitor would follow literally — so the line is thin, dashed, drawn
 walking route" in both languages.
 
 **A stop is a booth, not a stand.** Where a card holds several stands in
-one hall the map lights all of them already; each carries the same
-number, because it is one stop you walk to, and the line runs through the
-largest. The hall row's badge counts stops too while a day is on, so
-"which hall is Thursday in" is answered by the row you were already
-reading rather than by tapping through twelve halls.
+one hall the map lights all of them already, and every one of them
+carries the stop's number in its accessible name — the whole footprint
+is the place you are walking to. The *drawn* number is one, on the
+largest stand, which is the one the line runs through. Printing it on
+each stand instead was the first cut and it read as several stops:
+Nintendo files four stands in hall 9, so a Thursday holding Capcom and
+Nintendo drew four discs reading "2" beside one reading "1", against a
+bar that said two stops.
+
+**And the hall row's badge counts stops, with a day on or without one.**
+The badge sits beside a hall name and is read as "how much of mine is in
+there"; every other number the guide prints about a saved list answers
+that in stops. Counting stands when no day was picked and stops when one
+was made the same badge mean two things — hall 9 read ●5 on the saved
+list and ●2 on the Thursday holding both of its booths — and sent the
+opening hall (the one holding most of your plan) to whichever hall held
+the most rectangles. One unit, so "which hall is Thursday in" is
+answered by the row you were already reading rather than by tapping
+through twelve halls.
 
 **A day is not one hall, and the wall is where the drawing used to
 stop.** Pins numbered 1–4 in hall 7.1 answer "what here, in what order"
@@ -558,6 +572,18 @@ day filter is not persisted either, and a URL is what lets the plan
 board's "Map →" hand a day over. A `?day=` nobody planned is dropped on
 arrival, the same check a day that has just lost its last stop has to
 pass.
+
+Both of the plan board's lenses hand it over, and each opens the view its
+own grouping is about. The hall lens's heading is a hall, so its "Map →"
+opens that hall (`?day=…#7.1`) — the day riding along only when its
+single-day filter is on, because an unfiltered link must not pick a day
+for the map. The day lens's heading is a day, which is rarely one hall, so
+its "Map →" opens the overview (`?day=…#overview`): every hall that day
+touches, lit and numbered, with one tap from there into whichever was
+meant. Under a day heading each stop's address carries that stop's own
+day too — the row is already inside the answer to "which day", and
+arriving on a map that asks for it again is a question the visitor just
+answered.
 
 ## Deliberately not built
 
