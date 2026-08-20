@@ -222,25 +222,56 @@ body {
 }
 
 /* ---- tabs: signage strip, not browser chrome ---- */
-.tabs-outer { border-top: 1px solid var(--rule-soft); }
-/* The row wraps rather than scrolls, at every width. Four tabs measure ~534px
-   and no phone is that wide, so this used to be a scrolling row — and a row
-   that scrolls with no edge cut to show it looks like a row that ends, which
-   left "04 Updates" off the right of every phone: a quarter of the guide
-   reachable only by a swipe nobody was invited to make.
+/* position: relative for the scroll cue below, which cannot live inside .tabs:
+   that element is the scroll port (an absolute child would scroll away with the
+   tabs) and it is the role="tablist", whose children are supposed to be tabs. */
+.tabs-outer { border-top: 1px solid var(--rule-soft); position: relative; }
+.tabs { display: flex; overflow-x: auto; scrollbar-width: none; padding: 0 24px; }
+.tabs::-webkit-scrollbar { display: none; }
 
-   Not keyed to the phone breakpoint, because the width the labels need is not
-   only the viewport's business. German sets the same four labels wider, and a
-   visitor reading at 150% carries every one of them up with the text — the
-   German row at 700px and a 24px root font is 758px, well clear of any phone
-   and still wider than its screen. Whether it fits is the actual question, so
-   wrap is the actual answer, and it costs nothing on the widths where the row
-   fits in one line anyway.
+/* The row scrolls, and hiding its scrollbar (above) took away the only sign
+   that it does. Four labels measure ~534px against a 320–430px phone, and the
+   cut lands cleanly between two tabs, so the row reads as ending at "03 Event
+   info" — leaving "04 Updates" reachable only by a swipe nobody is invited to
+   make.
 
-   overflow-x survives as a backstop rather than a feature: nothing can
-   overflow a row that wraps, unless one label alone is wider than the screen,
-   and clipping that is better than pushing the whole page sideways. */
-.tabs { display: flex; flex-wrap: wrap; overflow-x: hidden; padding: 0 24px; }
+   So the cut is made deliberate: a plate at whichever edge still has tabs past
+   it, carrying a chevron, scrolling the row when tapped. A plate rather than a
+   fade because a fade is a gradient, and this design does not have any — the
+   hard edge and the hairline are the same vocabulary as the hall plates.
+
+   Hidden from assistive tech (app.js sets aria-hidden and tabindex="-1"): a
+   keyboard user reaches all four tabs by tabbing, and the browser scrolls each
+   into view on focus, so the cue would be two extra stops in the middle of the
+   nav offering something already had. It is a pointer affordance for a pointer
+   problem.
+
+   Shown only when there is something past the edge; app.js toggles .on. */
+.tabs-cue {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 38px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  /* --ground, the page's own colour, so the plate reads as the row being cut
+     off rather than as a control sitting on top of it. */
+  background: var(--ground);
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.tabs-cue.on { display: flex; }
+.tabs-cue:hover { color: var(--ink); }
+/* The hairline is the cut: it stands between the plate and the tab it covers,
+   so the row is visibly continuing rather than ending. */
+.tabs-cue-end { right: 0; border-left: 1px solid var(--rule-soft); }
+.tabs-cue-start { left: 0; border-right: 1px solid var(--rule-soft); }
 
 .tab {
   background: none;
@@ -2299,17 +2330,6 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 @media (max-width: 620px) {
   .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
   .tabs { padding: 0 16px; }
-  /* The row wraps everywhere (see .tabs above); this is what it wraps *into*
-     on a phone, where it always wraps and the shape is worth deciding. Each
-     tab takes half the row rather than its natural width, so the two lines
-     stack into a grid rather than ragging. The flush-left padding the base
-     rule gives only the first tab is given to all four, or the second column
-     would sit 20px right of where the first one starts and the grid would
-     read as an accident.
-
-     The second line costs the phone nothing: the masthead is not sticky here,
-     so it scrolls away with the rest of the header the moment the list moves. */
-  .tab { flex: 1 0 45%; padding-left: 0; padding-right: 12px; }
   .toast { left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); }
   /* the full masthead is ~290px on a phone — far too much to pin above a
      long scrolling list, so it scrolls away here instead */

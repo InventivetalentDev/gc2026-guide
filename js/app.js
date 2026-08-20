@@ -4552,8 +4552,92 @@ function trackHeaderHeight() {
   else window.addEventListener("resize", publish);
 }
 
+/* The tab row scrolls, and says so.
+
+   Four labels measure ~534px and no phone is that wide, so the row has always
+   scrolled — deliberately, with its scrollbar hidden, which on a phone is the
+   right call for a bar of four. What it cost is the only sign that scrolling
+   is a thing to do: the cut lands cleanly between two tabs, so the row reads
+   as ending at "03 Event info" and "04 Updates" is off the right of every
+   phone with nothing to suggest it exists.
+
+   A plate at the overflowing edge, then, carrying a chevron and scrolling the
+   row when tapped. Built here rather than written into index.html because it
+   is answering a question only the layout can answer — whether this row, in
+   this language, at this text size, on this screen, has anywhere left to go —
+   and because a shell that predates this script then simply has the row it
+   always had, rather than two plates nothing moves.
+
+   Appended to .tabs-outer rather than to .tabs: .tabs is the scroll port, so
+   an absolute child would scroll away with the tabs it is meant to sit over,
+   and it is the role="tablist", whose children are supposed to be tabs.
+
+   aria-hidden, and out of the tab order: every tab is reachable by tabbing and
+   the browser scrolls each into view as it takes focus, so a keyboard user has
+   already been given what this offers. Two extra stops in the middle of the
+   nav would be a cost with no matching gain. */
+function trackTabOverflow() {
+  const row = $(".tabs");
+  const outer = $(".tabs-outer");
+  if (!row || !outer) return;
+
+  const cues = ["start", "end"].map((side) => {
+    const cue = document.createElement("button");
+    cue.type = "button";
+    cue.className = `tabs-cue tabs-cue-${side}`;
+    cue.tabIndex = -1;
+    cue.setAttribute("aria-hidden", "true");
+    /* The map's leg buttons already say "the plan continues that way" with
+       these two ("◂ 6.1", "9.1 ▸"), and they are solid enough to read at a
+       glance where a thin chevron is not. Same glyph, same meaning. */
+    cue.textContent = side === "start" ? "◂" : "▸";
+    /* Most of a screenful, not all of it: leaving the tab you were reading in
+       view is what makes the second page read as the same row continued. */
+    cue.addEventListener("click", () =>
+      row.scrollBy({ left: (side === "start" ? -1 : 1) * row.clientWidth * 0.7, behavior: "smooth" })
+    );
+    outer.appendChild(cue);
+    return { side, el: cue };
+  });
+
+  /* The plates are absolutely positioned by css/style.css, which rides
+     stale-while-revalidate and can therefore be one version behind this
+     script. Without its rules these are two default-styled buttons sitting
+     under the masthead, which is worse than the row anyone already had — so
+     ask the stylesheet whether it has heard of them, and withdraw if not. */
+  if (getComputedStyle(cues[0].el).position !== "absolute") {
+    for (const { el } of cues) el.remove();
+    return;
+  }
+
+  /* A pixel of slack at each end: fractional layout widths and the browser's
+     own scroll snapping both leave scrollLeft a hair short of the end, which
+     would otherwise strand a chevron pointing at nothing. */
+  const sync = () => {
+    const room = row.scrollWidth - row.clientWidth;
+    for (const { side, el } of cues) {
+      const more = side === "start" ? row.scrollLeft > 1 : row.scrollLeft < room - 1;
+      el.classList.toggle("on", more);
+    }
+  };
+
+  sync();
+  row.addEventListener("scroll", sync, { passive: true });
+  /* The tabs themselves are observed, not just the row: switching language
+     rewrites all four labels in place, which changes what fits without
+     changing the row's own box at all. */
+  if ("ResizeObserver" in window) {
+    const ro = new ResizeObserver(sync);
+    ro.observe(row);
+    for (const tab of $$(".tab")) ro.observe(tab);
+  } else {
+    window.addEventListener("resize", sync);
+  }
+}
+
 function bindControls() {
   trackHeaderHeight();
+  trackTabOverflow();
 
   /* One render per pause, not per keystroke: the grid plus both directory
      lists is too much DOM to rebuild at typing speed on a phone. The value is
