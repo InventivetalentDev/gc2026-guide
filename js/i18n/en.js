@@ -378,7 +378,8 @@ window.GC_STRINGS.en = {
     "The dates, hours, tickets and hall areas on this page come from {n} source.|The dates, hours, tickets and hall areas on this page come from {n} sources.",
   "sources.note.card":
     "The location, lineup and queue call on this card come from {n} source.|The location, lineup and queue call on this card come from {n} sources.",
-  "sources.lastChecked": " Last checked {date}.",
+  "sources.lastUpdated": " Last updated {date}.",
+  "sources.lastChecked": " Sources re-checked {date}.",
   "sources.caveat":
     "This is an unofficial guide, and booth numbers and lineups keep changing until the doors open. If a detail decides your day, check it at the source.",
 
