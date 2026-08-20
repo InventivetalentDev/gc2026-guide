@@ -888,7 +888,6 @@ function refreshMarks() {
     renderChips();
     return;
   }
-  let saved = 0;
   for (const rec of state.stands) {
     const isSaved = rec.exs.some(exSaved);
     const isPlayed = rec.exs.length > 0 && rec.exs.every(exPlayed);
@@ -896,13 +895,19 @@ function refreshMarks() {
       el.classList.toggle("saved", isSaved);
       el.classList.toggle("played", isPlayed);
     }
-    if (isSaved) saved += 1;
   }
   /* The overlay is a reading of the saved list and the plan, so it is redrawn
      wherever those are: this runs after every hall render, every mark change
      and every storage event. */
   renderRoute();
   const covered = state.stands.filter((r) => r.exs.length).length;
+  /* The first two numbers describe the drawing — how many stands it holds and
+     how many of them the guide covers. The third describes your plan, and so
+     counts stops, the way the chip for this hall directly above it does. It
+     used to count lit rectangles, which put "5 saved" under a chip reading 2
+     for the Thursday holding Capcom and Nintendo: one hall, one screen, two
+     numbers for the same question. */
+  const saved = hallCountBy(state.hall, exSaved);
   $("#counts").textContent =
     t("map.counts", { n: state.stands.length, covered: covered || t("map.coveredNone") }) +
     (saved ? t("map.countsSaved", { n: saved }) : "");
