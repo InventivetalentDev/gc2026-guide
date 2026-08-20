@@ -64,6 +64,7 @@ const state = {
   plates: [],           // render records for the overview's hall plates
   marks: { saved: null, played: null },
   itinerary: { exhibitors: new Map(), games: new Map() },
+  planRanks: new Map(),  // stop key -> position, the order the guide was left in
   sel: null,
   /* the day the route overlay is showing: an ISO date, "none" for the stops
      still waiting for a day, or null for "overlay off" */
@@ -79,12 +80,20 @@ function loadMarks() {
   state.marks.played = GCMarks.readMarks("played");
   /* The plan rides along with the marks rather than being loaded on its own:
      every caller here is reacting to "the lists may have moved", and a day
-     assignment made in the guide is exactly that kind of move.
+     assignment — or a stop moved up the list — made in the guide is exactly
+     that kind of move.
 
-     Optional-chained for the same reason as the GCI18N shim above: a stale
-     cached js/marks.js without the read must not stop the map booting. */
+     Guarded for the same reason as the GCI18N shim above: a stale cached
+     js/marks.js without these reads must not stop the map booting. */
   state.itinerary = GCMarks.readItinerary?.() || state.itinerary;
+  state.planRanks = GCMarks.readOrder ? GCMarks.orderRanks(GCMarks.readOrder()) : state.planRanks;
 }
+
+/* Where a booth sits in the plan, read exactly as the guide's hall lens reads
+   it: a booth is keyed by its own id there and here, so pin 3 is the third
+   row of the hall the pins were drawn from, arranged or not. */
+const exRank = (ex) =>
+  state.planRanks.get(GCMarks.stopKey("exhibitor", ex.id)) ?? GCMarks.UNRANKED;
 
 const exSaved = (ex) => GCMarks.hasSaved(state.marks.saved, ex);
 /* A booth reads as played when marked directly, or when every game you
@@ -1464,10 +1473,12 @@ async function showOverview() {
 
    Three things make it honest rather than decorative:
 
-   The order is the plan's own — busiest first, played stops sinking to the
-   end — and the comparator comes from js/marks.js, so pin 3 is the third row
-   of the list it was read from. Two views of one plan that disagreed about
-   which stop is first would be worse than one view.
+   The order is the plan's own — whatever order you left the list in, or
+   busiest first with played stops sinking to the end while you have left it
+   alone — and both the comparator and the positions come from js/marks.js,
+   so pin 3 is the third row of the list it was read from. Two views of one
+   plan that disagreed about which stop is first would be worse than one
+   view.
 
    The line is *not* a walking route and never claims to be. Nothing here
    knows where the aisles run: the snapshot files stand blocks and stands, and
@@ -1518,7 +1529,7 @@ function routeStops() {
       stops.get(ex).recs.push(rec);
     }
   }
-  const order = GCMarks.compareStops(exPlayed, GCI18N.lang);
+  const order = GCMarks.compareStops(exPlayed, GCI18N.lang, exRank);
   return [...stops.values()]
     .sort((a, b) => order(a.ex, b.ex))
     .map((stop, i) => ({ ...stop, n: i + 1 }));
@@ -2046,10 +2057,15 @@ document.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("storage", (e) => {
-  /* IT_KEY too: assign a day on the plan board and an open sheet's
-     "planned · Thu" — and the route overlay's pins — follow without a
-     reload, like the marks do. */
-  const keys = [...Object.values(GCMarks.MARK_KEYS), GCMarks.PREFS_KEY, GCMarks.IT_KEY];
+  /* IT_KEY and ORDER_KEY too: assign a day on the plan board, or move a stop
+     up it, and an open sheet's "planned · Thu" — and the route overlay's
+     pins — follow without a reload, like the marks do. */
+  const keys = [
+    ...Object.values(GCMarks.MARK_KEYS),
+    GCMarks.PREFS_KEY,
+    GCMarks.IT_KEY,
+    GCMarks.ORDER_KEY,
+  ];
   if (e.key !== null && !keys.includes(e.key)) return;
   /* The guide writes prefs on nearly every interaction, so this fires far
      more often than a mark change and can easily land before the hall index

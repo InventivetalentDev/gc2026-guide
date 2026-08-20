@@ -28,6 +28,13 @@ const state = {
   },
   /* item-key → ISO day date; replaced from localStorage in main() */
   itinerary: { exhibitors: new Map(), games: new Map() },
+  /* the order you put the plan in — stop keys, first to last. Empty until
+     something is moved, which is what "no opinion yet, sort it automatically"
+     looks like. See "the plan's order" below. */
+  planOrder: [],
+  /* the same list read the other way, stop key → position. Derived, never
+     stored: always written through setPlanOrder(). */
+  planRanks: new Map(),
   /* which arrangement of the plan board is on screen; persisted in prefs */
   planLens: "day",
   /* hall-lens day filter: "all", an ISO day date, or "none" (unassigned) */
@@ -252,7 +259,7 @@ function mergeStrings(exhibitors, event, meta, strings) {
    js/marks.js, because the hall map reads and writes the same two lists and
    draws the same plan on the floor. Everything below still calls
    loadMarks/persistMarks/gameKey by their old names. */
-const { MARK_KEYS, PREFS_KEY, IT_KEY, gameKey } = GCMarks;
+const { MARK_KEYS, PREFS_KEY, IT_KEY, ORDER_KEY, gameKey } = GCMarks;
 
 const loadMarks = (mark) => GCMarks.readMarks(mark);
 const persistMarks = (mark) => GCMarks.writeMarks(mark, state.marks[mark]);
@@ -371,7 +378,7 @@ function toggleMark(mark, kind, key) {
   set.has(key) ? set.delete(key) : set.add(key);
   persistMarks(mark);
   /* Only the saved set scopes the itinerary; a played tick can't orphan it. */
-  if (mark === "saved") pruneItinerary();
+  if (mark === "saved") prunePlan();
   onMarksChanged();
 }
 
@@ -436,7 +443,9 @@ function keepingFocus(container, render, fallback) {
   const inside = el && container.contains(el);
   const sel = !inside
     ? null
-    : el.dataset.itDay
+    : el.dataset.moveDir
+      ? `.mv[data-move-key="${CSS.escape(el.dataset.moveKey)}"][data-move-dir="${CSS.escape(el.dataset.moveDir)}"]`
+      : el.dataset.itDay
       ? `[data-it-kind="${CSS.escape(el.dataset.itKind)}"][data-it-key="${CSS.escape(el.dataset.itKey)}"][data-it-day="${CSS.escape(el.dataset.itDay)}"]`
       : el.dataset.mark && el.dataset.bmKey
       ? `.bm[data-mark="${CSS.escape(el.dataset.mark)}"][data-bm-kind="${CSS.escape(el.dataset.bmKind)}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
@@ -449,7 +458,13 @@ function keepingFocus(container, render, fallback) {
   render();
   if (!sel) return;
   const again = container.querySelector(sel);
-  if (again) return again.focus();
+  /* An arrow that has just carried its stop to the end of its group comes
+     back disabled, and focus() on a disabled button goes nowhere — land on
+     the one still pointing back the way it came. */
+  if (again?.disabled) {
+    const partner = [...again.parentElement.children].find((sib) => sib !== again && !sib.disabled);
+    if (partner) return partner.focus();
+  } else if (again) return again.focus();
   if (index < 0) return;
   const buttons = [...container.querySelectorAll(".bm")];
   (buttons[Math.min(index, buttons.length - 1)] || fallback)?.focus();
@@ -997,6 +1012,9 @@ function applyIncoming(incoming, mode = "merge") {
       exhibitors: new Map(state.itinerary.exhibitors),
       games: new Map(state.itinerary.games),
     },
+    /* A replacing import drops the positions of everything it removes, and a
+       hand-arranged plan is too much work to lose to an undone import. */
+    planOrder: [...state.planOrder],
     moved: incoming.moved,
   };
   if (mode === "replace") {
@@ -1021,7 +1039,7 @@ function applyIncoming(incoming, mode = "merge") {
     }
     /* When the day plan stayed home, local assignments survive for items
        still saved and fall away with the items the replace removed. */
-    pruneItinerary();
+    prunePlan();
   } else {
     incoming.exhibitors.forEach((id) => state.marks.saved.exhibitors.add(id));
     incoming.games.forEach((key) => state.marks.saved.games.add(key));
@@ -1032,7 +1050,7 @@ function applyIncoming(incoming, mode = "merge") {
       persistMarks("played");
     }
     /* Applied after the saved list, because an assignment only survives
-       loadItinerary/pruneItinerary while the item it points at is saved.
+       loadItinerary/prunePlan while the item it points at is saved.
        Blanks only: an addition must not reschedule what the visitor already
        placed — overwriting is what replace is for. */
     if (dayCount(incoming.days)) {
@@ -1071,8 +1089,11 @@ function restoreBookmarks(snapshot) {
     games: new Map(snapshot.itinerary.games),
   };
   persistItinerary();
-  /* Undo can take away items the visitor already placed on a day. */
-  pruneItinerary();
+  setPlanOrder([...snapshot.planOrder]);
+  persistPlanOrder();
+  /* Undo can take away items the visitor already placed on a day, or
+     arranged — prunePlan scopes both stores back to the restored list. */
+  prunePlan();
   renderBookmarkViews();
   showToast(snapshot.moved ? t("toast.moveUndone") : t("toast.importUndone"), null, null, {
     priority: true,
@@ -1546,7 +1567,11 @@ function assignToDay(kind, key, date) {
   onItineraryChanged();
 }
 
-function pruneItinerary() {
+/* Both stores are scoped by the saved list: an assignment or a position for
+   something you no longer have saved is not a fact about your plan, and
+   keeping it would quietly resurrect on a re-save. Called wherever the saved
+   list shrinks. */
+function prunePlan() {
   let changed = false;
   for (const kind of ["exhibitors", "games"]) {
     for (const key of state.itinerary[kind].keys()) {
@@ -1556,6 +1581,12 @@ function pruneItinerary() {
     }
   }
   if (changed) persistItinerary();
+
+  const live = livePlanKeys();
+  const kept = state.planOrder.filter((key) => live.has(key));
+  if (kept.length === state.planOrder.length) return;
+  setPlanOrder(kept);
+  persistPlanOrder();
 }
 
 function onItineraryChanged() {
@@ -1563,6 +1594,37 @@ function onItineraryChanged() {
      filter on the hall view), so the whole plan section re-renders. */
   renderPlan();
 }
+
+/* ---------- the plan's order, stored ----------
+
+   Which stop comes first inside a day, or inside a hall. The automatic
+   answer — busiest queue first, played stops last — is what the plan opens
+   with; this is the override, written the first time somebody moves a row.
+   Both lenses read it, and so does the hall map, which numbers the same
+   stops on the floor: the storage shape, the key spelling and the comparator
+   all live in js/marks.js for that reason.
+
+   Read at boot with no validation against the show days, unlike the
+   itinerary: a position is not a claim about the schedule, so nothing here
+   can go stale when data/event.json changes. It is scoped by the saved list
+   instead (prunePlan above), the way the itinerary is. */
+
+const loadPlanOrder = () => GCMarks.readOrder();
+const persistPlanOrder = () => GCMarks.writeOrder(state.planOrder);
+
+/* One writer, because the Map is the list: setting one without the other is
+   the bug this exists to make impossible. */
+function setPlanOrder(keys) {
+  state.planOrder = keys;
+  state.planRanks = GCMarks.orderRanks(keys);
+}
+
+/* Where a stop sits, or UNRANKED for one nobody has placed — which sorts it
+   to the end of its group, under the automatic rule, next to the others
+   nobody has placed. */
+const planRank = (kind, key) =>
+  state.planRanks.get(GCMarks.stopKey(kind, key)) ?? GCMarks.UNRANKED;
+const exPlanRank = (ex) => planRank("exhibitor", ex.id);
 
 /* ---------- filtering & sorting ---------- */
 
@@ -3021,11 +3083,16 @@ function dayHeaderInner(d, { note = true } = {}) {
 const dayName = (date) => GCI18N.dayName(date);
 const shortDay = (date) => GCI18N.dayName(date, "short");
 
+/* `crowd` is filled in below rather than looked up per read: it is what both
+   the queue cell and the automatic order are built from, and GCMarks'
+   comparator reads a plain `.crowd` off whatever it is handed — the same
+   property an exhibitor already carries, so one comparator serves the day
+   lens, the hall lens and the map. */
 function itineraryItems() {
   const exhibitors = [...state.marks.saved.exhibitors]
     .map((key) => {
       const ex = resolveSavedExhibitor(key);
-      return ex ? { kind: "exhibitor", key, name: ex.name, ex } : null;
+      return ex ? { kind: "exhibitor", key, name: ex.name, ex, crowd: ex.crowd || 0 } : null;
     })
     .filter(Boolean);
 
@@ -3034,7 +3101,9 @@ function itineraryItems() {
       (ex.games || []).some((g) => gameKey(g.title) === key)
     );
     const name = at.length ? at[0].games.find((g) => gameKey(g.title) === key).title : key;
-    return { kind: "game", key, name, at };
+    /* A game shown at two booths takes the worse queue of the two: that is
+       the one you will actually stand in if you want to play it. */
+    return { kind: "game", key, name, at, crowd: Math.max(0, ...at.map((ex) => ex.crowd || 0)) };
   });
 
   return [...exhibitors, ...games];
@@ -3051,23 +3120,172 @@ function itineraryLocation(ex, { booth = true } = {}) {
     : t("where.hall", { hall: ex.hall });
 }
 
-function itineraryCrowd(item) {
-  return item.kind === "exhibitor"
-    ? item.ex.crowd || 0
-    : Math.max(0, ...item.at.map((ex) => ex.crowd || 0));
-}
-
-function compareItineraryItems(a, b) {
-  return itineraryCrowd(b) - itineraryCrowd(a) || byName(a.name, b.name);
-}
-
 const itineraryPlayed = (item) =>
   item.kind === "exhibitor" ? hasPlayed(item.ex) : isPlayed("game", item.key);
 
-/* Played stops sink below the live ones inside each group, same as the
-   queue-priority list — the day keeps its shape but leads with what's left. */
-function compareItineraryRows(a, b) {
-  return itineraryPlayed(a) - itineraryPlayed(b) || compareItineraryItems(a, b);
+/* ---------- the plan's order, arranged ----------
+
+   The storage half is up with the itinerary's; this is the half that knows
+   what a stop is.
+
+   Two lenses, two kinds of row, one list of keys. A day-lens row is a plan
+   item — the booth or the game you saved — and is keyed as one. A hall-lens
+   row is always a booth, including the booths that are only in your plan
+   because you saved a game shown there, and is keyed as that booth. So a
+   saved booth carries one position through both lenses, while a game holds
+   its own position in the day list without pulling its publisher's row
+   around the hall list, which is the right answer for a publisher showing
+   four games you saved.
+
+   The map reads the booth keys, and reads them exactly as the hall lens
+   does, because its pins number a hall's stops for one day — which is the
+   hall lens under a day filter, drawn on the floor. */
+
+/* Every stop the plan holds, keyed the way the order stores them. Both row
+   populations, deduped: an exhibitor you saved is one stop, not two. */
+function planStops() {
+  const stops = new Map();
+  const add = (key, name, crowd, played) => {
+    if (!stops.has(key)) stops.set(key, { key, name, crowd, played });
+  };
+  for (const item of itineraryItems())
+    add(GCMarks.stopKey(item.kind, item.key), item.name, item.crowd, itineraryPlayed(item));
+  for (const ex of plannedExhibitors())
+    if (hasSaved(ex)) add(GCMarks.stopKey("exhibitor", ex.id), ex.name, ex.crowd || 0, hasPlayed(ex));
+  return stops;
+}
+
+/* The keys a stored position may still refer to — see prunePlan. The raw
+   saved keys are in it as well as the resolved ones, so a trade booth whose
+   directory has not downloaded yet keeps its place instead of being pruned
+   for being temporarily unresolvable. */
+function livePlanKeys() {
+  const live = new Set(planStops().keys());
+  for (const key of state.marks.saved.exhibitors) live.add(GCMarks.stopKey("exhibitor", key));
+  for (const key of state.marks.saved.games) live.add(GCMarks.stopKey("game", key));
+  return live;
+}
+
+/* The automatic order — busiest first, played last — over the plain
+   {name, crowd, played} records planStops() makes. */
+const autoStopOrder = () => GCMarks.compareStops((stop) => stop.played, GCI18N.lang, null);
+
+/* The stored order with everything missing from it appended, in the automatic
+   order. That is exactly where those stops are already on screen — an
+   unranked stop falls through to the automatic rule at the end of its group —
+   so the first move writes the plan down as it stands and changes one thing,
+   rather than silently reshuffling everything else on the way past. */
+function completePlanOrder() {
+  const stops = planStops();
+  const kept = state.planOrder.filter((key) => stops.has(key));
+  const have = new Set(kept);
+  const rest = [...stops.values()]
+    .filter((stop) => !have.has(stop.key))
+    .sort(autoStopOrder())
+    .map((stop) => stop.key);
+  return [...kept, ...rest];
+}
+
+/* Move one row within the group it is displayed in — one day, or one hall.
+   `groupKeys` is that group as rendered, read back off the DOM so the thing
+   being permuted is the list the visitor is actually looking at.
+
+   Only the positions that group occupies are rewritten. A stop pulled to the
+   top of Thursday keeps every relation it had to Friday's stops and to the
+   halls it does not stand in, so moving a row never reshuffles a list
+   somewhere else on the board. */
+function movePlanStop(key, groupKeys, delta) {
+  const from = groupKeys.indexOf(key);
+  const to = from + delta;
+  if (from < 0 || to < 0 || to >= groupKeys.length) return;
+  const order = completePlanOrder();
+  const slots = groupKeys.map((k) => order.indexOf(k)).sort((a, b) => a - b);
+  /* A row whose key is not in the completed order cannot be placed, and
+     writing to slot -1 would corrupt the rest. Nothing renders such a row
+     today; this is here so nothing quietly starts to. */
+  if (slots[0] < 0) return;
+  const moved = [...groupKeys];
+  moved.splice(to, 0, ...moved.splice(from, 1));
+  slots.forEach((slot, i) => (order[slot] = moved[i]));
+  setPlanOrder(order);
+  persistPlanOrder();
+  renderPlan();
+}
+
+/* Back to automatic. Undoable from the toast rather than guarded by a
+   confirm(): a hand-arranged plan is real work, and the cheapest way to say
+   "that was not what I meant" is to hand it straight back. */
+function resetPlanOrder() {
+  if (!state.planOrder.length) return;
+  const before = state.planOrder;
+  const restore = () => {
+    setPlanOrder(before);
+    persistPlanOrder();
+    renderPlan();
+  };
+  setPlanOrder([]);
+  persistPlanOrder();
+  renderPlan();
+  showToast(t("toast.orderReset"), t("action.undo"), restore);
+}
+
+/* Your order first and last: a stop you put below a played one stays there,
+   because "I moved it here" outranks anything the guide would otherwise
+   reason about it. Under that, the automatic rule — which is the whole
+   ordering until the first move. */
+const planRowOrder = () =>
+  GCMarks.compareStops(itineraryPlayed, GCI18N.lang, (item) => planRank(item.kind, item.key));
+
+/* The queue index as its own cell, in both lenses and in the same words.
+   It is what the plan sorts itself by, so it has to be readable next to the
+   stop: "why is this one first" needs an answer on the page, and once the
+   order can be overridden by hand it needs one even more — a list that no
+   longer runs 5, 4, 4, 2 should still show what it is not running in.
+
+   A business booth has no queue to forecast; what decides whether walking
+   over is worth it there is the badge, so that is what its cell says. */
+function crowdCell(className, crowd, business) {
+  if (business)
+    return `<span class="${className}" data-level="0">${esc(t("plan.tradeBadge"))}</span>`;
+  const title = crowd
+    ? t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) })
+    : t("plan.queueUnknown");
+  return `<span class="${className}" data-level="${esc(crowd)}" title="${esc(title)}">${esc(
+    t("route.queueShort", { n: crowd || "?" })
+  )} · ${esc(crowdLabel(crowd))}</span>`;
+}
+
+/* The two arrows that put a stop where you want it, rendered from its place
+   in its group so neither ever points out of one. A group of one gets none:
+   there is nothing to arrange, and two dead buttons on every row of a
+   one-stop day would be the loudest thing on the board.
+
+   The group is named on the row rather than threaded through the markup as
+   an index, so the delegated handler can read the order it is permuting
+   straight back off the screen — see bindControls.
+
+   Where the row now sits rides in the group's accessible name rather than in
+   a live region: a move re-renders the board and focus is put back on the
+   equivalent arrow (keepingFocus), which is a fresh element, so the name is
+   read out again. That is the announcement — "Move Nintendo in the plan, 3
+   of 5" — without a second channel to keep in step with the list. */
+function moveButtons(key, name, i, total) {
+  if (total < 2) return "";
+  const arrow = { up: "▲", down: "▼" };
+  return `<span class="row-move" role="group" aria-label="${esc(
+    t("plan.moveAria", { name, n: i + 1, total })
+  )}">${["up", "down"]
+    .map((dir) => {
+      const label = t(`plan.move.${dir}`, { name });
+      const end = dir === "up" ? i === 0 : i === total - 1;
+      return `<button class="mv" type="button" data-move-dir="${dir}" data-move-key="${esc(
+        key
+      )}"${end ? " disabled" : ""}
+        title="${esc(label)}" aria-label="${esc(label)}"><span aria-hidden="true">${
+          arrow[dir]
+        }</span></button>`;
+    })
+    .join("")}</span>`;
 }
 
 /* Returns markup, not text: the hall reads through to the map, the same way
@@ -3085,15 +3303,9 @@ function itineraryItemLocationHtml(item) {
           .join(" · ")
       : t("plan.boothTba");
   }
-  const where = hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex));
-  /* A business booth has no queue to forecast, and "Queue unknown" there
-     reads as "we didn't check" rather than "this is not that kind of stop".
-     Its badge requirement is the useful thing to say in that space. */
-  if (inBusinessArea(item.ex)) return `${where} · ${esc(t("plan.tradeBadge"))}`;
-  const crowd = item.ex.crowd || 0;
-  return `${where} · ${esc(
-    crowd ? t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) }) : t("plan.queueUnknown")
-  )}`;
+  /* Where, and only where: the queue index used to be appended here and now
+     has a cell of its own, in the column the hall lens keeps it in. */
+  return hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex));
 }
 
 /* Does this stop stand in the business area? Asked of the location, not of
@@ -3137,7 +3349,7 @@ function itineraryDayChips(item) {
     .join("")}</span>`;
 }
 
-function itineraryItem(item) {
+function itineraryItem(item, group, i, total) {
   const kindLabel =
     item.kind === "game"
       ? t("kind.game")
@@ -3145,13 +3357,16 @@ function itineraryItem(item) {
         ? t("kind.trade")
         : t("kind.booth");
   const shut = stopOnClosedDay(item);
-  return `<div class="it-item" data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-played="${itineraryPlayed(item)}">
+  return `<div class="it-item" data-it-kind="${esc(item.kind)}" data-it-key="${esc(item.key)}" data-played="${itineraryPlayed(item)}"
+    data-stop-key="${esc(GCMarks.stopKey(item.kind, item.key))}" data-stop-group="${esc(group)}">
     <span class="it-main">
       <span class="it-kind">${esc(kindLabel)}</span>
       <span class="it-name">${esc(item.name)}</span>
     </span>
     <span class="it-loc">${itineraryItemLocationHtml(item)}</span>
+    ${crowdCell("it-crowd", item.crowd, itemInBusinessArea(item))}
     ${itineraryDayChips(item)}
+    ${moveButtons(GCMarks.stopKey(item.kind, item.key), item.name, i, total)}
     ${markButton("saved", item.kind, item.key, item.name)}
     ${
       shut
@@ -3166,9 +3381,10 @@ function itineraryItem(item) {
 function renderItinerary() {
   const items = itineraryItems();
   const validDays = new Set((state.event.days || []).map((d) => d.date));
+  const order = planRowOrder();
   const unassigned = items
     .filter((item) => !validDays.has(assignedDay(item.kind, item.key)))
-    .sort(compareItineraryRows);
+    .sort(order);
   const groups = [];
 
   if (unassigned.length) {
@@ -3176,13 +3392,15 @@ function renderItinerary() {
       <div class="it-group-head unassigned"><span class="it-group-title">${esc(
         t("plan.unassigned")
       )}</span></div>
-      ${unassigned.map(itineraryItem).join("")}
+      ${unassigned
+        .map((item, i) => itineraryItem(item, "none", i, unassigned.length))
+        .join("")}
     </div>`);
   }
   for (const d of state.event.days || []) {
     const dayItems = items
       .filter((item) => assignedDay(item.kind, item.key) === d.date)
-      .sort(compareItineraryRows);
+      .sort(order);
     if (!dayItems.length) continue;
     /* One line at the top of the day rather than only a note per row: the
        question "is any of today's plan behind a closed door" should be
@@ -3197,7 +3415,7 @@ function renderItinerary() {
             )}</p>`
           : ""
       }
-      ${dayItems.map(itineraryItem).join("")}
+      ${dayItems.map((item, i) => itineraryItem(item, d.date, i, dayItems.length)).join("")}
     </div>`);
   }
 
@@ -3547,9 +3765,13 @@ function buildICS() {
   ];
 
   for (const d of state.event.days || []) {
+    /* The order you arranged, then busiest first — but played stops are not
+       sunk here the way the board sinks them. An exported day is the day as
+       planned; what you have already done to it is this week's news, and the
+       .ics file is written once. */
     const dayItems = items
       .filter((item) => assignedDay(item.kind, item.key) === d.date)
-      .sort(compareItineraryItems);
+      .sort(GCMarks.compareStops(() => false, GCI18N.lang, (item) => planRank(item.kind, item.key)));
     if (!dayItems.length) continue;
 
     lines.push("BEGIN:VEVENT", `UID:gc2026-${d.date}@gc2026-guide`, `DTSTAMP:${stamp}`);
@@ -3642,10 +3864,11 @@ function routeGroups() {
           : key === "tba"
             ? t("route.locationTba")
             : t("where.hall", { hall: key }),
-      /* Busiest first, played stops sinking to the end of their hall. The
-         comparator is shared with the map, which numbers the same stops on
-         the floor and must count them in this order (js/marks.js). */
-      items: buckets.get(key).sort(GCMarks.compareStops(hasPlayed, GCI18N.lang)),
+      /* Your order first, then busiest, with played stops sinking to the end
+         of their hall. The comparator and the positions are both shared with
+         the map, which numbers the same stops on the floor and must count
+         them in this order (js/marks.js). */
+      items: buckets.get(key).sort(GCMarks.compareStops(hasPlayed, GCI18N.lang, exPlanRank)),
     })),
     absent: absent.sort(byName),
     played,
@@ -3683,7 +3906,7 @@ function renderRoute() {
             ? t("plate.tba")
             : group.key;
       const rows = group.items
-        .map((ex) => {
+        .map((ex, i) => {
           const baseLocation = ex.booth
             ? ex.booth
             : ex.hall
@@ -3693,16 +3916,16 @@ function renderRoute() {
              suffix is a caveat about the data, not part of the address, and
              underlining it would offer to show you a stand we're not sure of. */
           const unconf = ex.hall && !ex.locationConfirmed ? t("plate.unconfSuffix") : "";
-          const crowd = ex.crowd || 0;
-          return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}">
+          /* The group a move is measured against is the hall as rendered —
+             under a day filter that is exactly the set the map numbers, so
+             an arrow here moves a pin there. */
+          return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}"
+            data-stop-key="${esc(GCMarks.stopKey("exhibitor", ex.id))}" data-stop-group="${esc(group.key)}">
             <span class="route-name">${esc(ex.name)}${dayFilter ? "" : routeDayTags(ex)}</span>
             <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation, dayFilter)}${unconf}</span>
-            <span class="route-crowd" data-level="${esc(inBusinessArea(ex) ? 0 : crowd)}">${
-              inBusinessArea(ex)
-                ? esc(t("plan.tradeBadge"))
-                : `${esc(t("route.queueShort", { n: crowd || "?" }))} · ${esc(crowdLabel(crowd))}`
-            }</span>
+            ${crowdCell("route-crowd", ex.crowd || 0, inBusinessArea(ex))}
             <span class="row-actions">
+              ${moveButtons(GCMarks.stopKey("exhibitor", ex.id), ex.name, i, group.items.length)}
               ${markButton("played", "exhibitor", ex.id, ex.name)}
               ${markButton("saved", "exhibitor", ex.id, ex.name)}
             </span>
@@ -3856,6 +4079,10 @@ function renderPlan() {
     "hidden",
     !itineraryItems().some((item) => validDays.has(assignedDay(item.kind, item.key)))
   );
+  /* Offered only once there is an arrangement to give up: a plan still
+     sorting itself has nothing to reset, and the button would be a control
+     for a state nobody is in. */
+  $("#plan-order-reset")?.classList.toggle("hidden", state.planOrder.length === 0);
 }
 
 /* ---------- event info ---------- */
@@ -4341,8 +4568,10 @@ function bindControls() {
     if (!confirm(t("confirm.clearSaved", { n }))) return;
     state.marks.saved = { exhibitors: new Set(), games: new Set() };
     state.itinerary = { exhibitors: new Map(), games: new Map() };
+    setPlanOrder([]);
     persistMarks("saved");
     persistItinerary();
+    persistPlanOrder();
     onMarksChanged({ rebuild: true });
   });
   $("#clear-played").addEventListener("click", () => {
@@ -4353,6 +4582,7 @@ function bindControls() {
     onMarksChanged({ rebuild: true });
   });
   $("#export-ics").addEventListener("click", downloadICS);
+  $("#plan-order-reset")?.addEventListener("click", resetPlanOrder);
   bindShareDialog();
   bindSiteShare();
   bindSourcesDialog();
@@ -4371,6 +4601,19 @@ function bindControls() {
       $(`#exhibitor-grid [data-face="${CSS.escape(owner)}"]`)?.focus();
       return;
     }
+    /* An arrow moves its row inside the group it is drawn in, and the group
+       is read straight back off the screen: what gets permuted is the list
+       the visitor is looking at, whichever lens drew it. */
+    const move = e.target.closest("[data-move-dir]");
+    if (move) {
+      const group = move.closest("[data-stop-group]")?.dataset.stopGroup;
+      if (group === undefined) return;
+      const keys = $$(`#plan-board [data-stop-group="${CSS.escape(group)}"]`).map(
+        (row) => row.dataset.stopKey
+      );
+      movePlanStop(move.dataset.moveKey, keys, move.dataset.moveDir === "up" ? -1 : 1);
+      return;
+    }
     const day = e.target.closest("[data-it-day]");
     if (day) {
       assignToDay(day.dataset.itKind, day.dataset.itKey, day.dataset.itDay);
@@ -4386,11 +4629,12 @@ function bindControls() {
   });
   /* Same marks, second tab: keep them from overwriting each other. */
   window.addEventListener("storage", (e) => {
-    const watched = [...Object.values(MARK_KEYS), IT_KEY, PREFS_KEY];
+    const watched = [...Object.values(MARK_KEYS), IT_KEY, ORDER_KEY, PREFS_KEY];
     if (e.key !== null && !watched.includes(e.key)) return;
     if (e.key === null || e.key === MARK_KEYS.saved) state.marks.saved = loadMarks("saved");
     if (e.key === null || e.key === MARK_KEYS.played) state.marks.played = loadMarks("played");
     if (e.key === null || e.key === IT_KEY) state.itinerary = loadItinerary();
+    if (e.key === null || e.key === ORDER_KEY) setPlanOrder(loadPlanOrder());
     if (e.key === null || e.key === PREFS_KEY) {
       Object.assign(state, loadPrefs());
       /* The <details> holds its own open state, so a pref that arrived from
@@ -4405,7 +4649,7 @@ function bindControls() {
     /* A trade booth saved in the other tab needs its data here before the
        plan can show it — the same never-vanish rule as at boot. */
     if (hasSavedTrade()) loadDirectory();
-    pruneItinerary();
+    prunePlan();
     renderFilters();
     renderExhibitors();
     renderMarkControls();
@@ -4482,6 +4726,9 @@ async function main() {
      below share the wire with the core data instead of queueing behind it. */
   state.marks.saved = loadMarks("saved");
   state.marks.played = loadMarks("played");
+  /* No schedule check to wait for, unlike the itinerary below: a position is
+     a fact about your list, not about the show days. */
+  setPlanOrder(loadPlanOrder());
   Object.assign(state, loadPrefs());
   /* Rule 1: the pref gates discovery, not resolution. A trade booth already
      on the list resolves whether or not trade mode is on. */

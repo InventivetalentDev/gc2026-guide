@@ -53,6 +53,7 @@ window.GC_STRINGS.de = {
   "action.yourPlan": "Dein Plan →",
   "action.clearFilters": "Filter zurücksetzen",
   "action.exportIcs": "In Kalender exportieren (.ics)",
+  "action.resetOrder": "Reihenfolge zurücksetzen",
   "action.undo": "Rückgängig",
   "action.dismiss": "Schließen",
 
@@ -189,9 +190,9 @@ window.GC_STRINGS.de = {
   "planner.dayPlannedAria": "Stopps für {day} in deinem Plan anzeigen",
 
   "plan.sub.day":
-    "Gib jedem gemerkten Stand und Spiel einen Tag. Nicht zugeordnetes steht oben, bis du es einsortierst.",
+    "Gib jedem gemerkten Stand und Spiel einen Tag und bring den Tag dann in die Reihenfolge, in der du ihn abläufst — die Pfeile schieben einen Stopp nach oben oder unten. Nicht zugeordnetes steht oben, bis du es einsortierst.",
   "plan.sub.hall":
-    "Deine Stopps sind nach Hallen gruppiert und nach Hallennummer sortiert — arbeite die Liste ab, dann läufst du nicht kreuz und quer.",
+    "Deine Stopps sind nach Hallen gruppiert und nach Hallennummer sortiert — arbeite die Liste ab, dann läufst du nicht kreuz und quer. Die Pfeile legen die Reihenfolge innerhalb einer Halle fest, und genau so nummeriert die Karte ihre Punkte.",
   "plan.arrangeAria": "Deinen Plan anordnen",
   "plan.lensDay": "Nach Tag",
   "plan.lensHall": "Nach Halle",
@@ -204,6 +205,10 @@ window.GC_STRINGS.de = {
   "plan.boothTba": "Stand noch offen",
   "plan.queueWith": "Andrang {n}/5 {label}",
   "plan.queueUnknown": "Andrang unbekannt",
+  "plan.moveAria": "{name} im Plan verschieben — {n} von {total}",
+  "plan.move.up": "{name} nach oben schieben",
+  "plan.move.down": "{name} nach unten schieben",
+  "plan.resetOrderTitle": "Den Plan wieder nach Andrang sortieren, stärkster zuerst",
   "plan.assignAria": "{name} einem Tag zuordnen",
   "plan.assignToDay": "{day} zuordnen",
   "plan.removeFromDay": "Von {day} entfernen",
@@ -334,6 +339,7 @@ window.GC_STRINGS.de = {
   "share.linkHas": "Ein geteilter Link enthält {items} — {n} neu für dich.",
   "share.addAction": "Zu meiner Liste hinzufügen",
   "share.added": "Du hast {items} aus dem geteilten Link hinzugefügt.",
+  "toast.orderReset": "Plan wieder in Andrang-Reihenfolge.",
   "toast.moveUndone": "Übernahme rückgängig gemacht.",
   "toast.importUndone": "Hinzufügen aus dem geteilten Link rückgängig gemacht.",
   "moved.withList": "Der Guide ist auf hallgui.de umgezogen. Deine Liste kommt mit.",
@@ -366,7 +372,7 @@ window.GC_STRINGS.de = {
 
   /* ---------- confirmations & boot ---------- */
   "confirm.clearSaved":
-    "{n} gemerkten Eintrag und seine Tagesplanung wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} gemerkten Einträge und ihre Tagesplanung wirklich löschen? Das lässt sich nicht rückgängig machen.",
+    "{n} gemerkten Eintrag, seine Tagesplanung und seinen Platz im Plan wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} gemerkten Einträge, ihre Tagesplanung und die Reihenfolge, in die du sie gebracht hast, wirklich löschen? Das lässt sich nicht rückgängig machen.",
   "confirm.clearPlayed":
     "{n} „Gespielt“-Markierung wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} „Gespielt“-Markierungen wirklich löschen? Das lässt sich nicht rückgängig machen.",
   "boot.loadFailed":

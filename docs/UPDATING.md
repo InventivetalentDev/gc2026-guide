@@ -157,10 +157,11 @@ This document is the playbook for refreshing the data — written so a scheduled
   `confirmed`, and never `playable: true`. Several Hall 10 entries (Stage Tour,
   House Flipper 2, PROJECT BLITZ) rest on exactly this and say so in their notes.
 - **A game `title` is a user-facing key, so treat it like `id`.** Visitors save games and
-  mark them played by lowercased title, and day assignments in `gc2026.itinerary.v1`
+  mark them played by lowercased title, and both the day assignments in
+  `gc2026.itinerary.v1` and the hand-made stop order in `gc2026.planorder.v1`
   deliberately follow the same key — rename *Fable* to *Fable (2026)* and everyone who
   saved or played it silently loses that mark, on every booth showing it, and the rename
-  also orphans its day assignment. Correct an outright wrong title, but don't
+  also orphans its day assignment and the place they moved it to. Correct an outright wrong title, but don't
   re-punctuate, re-subtitle or "tidy" one that already works. The same key is why a title
   spelled identically at two booths (Alien: Isolation 2 at both Xbox and SEGA) is saved
   and marked played at both at once. That is the intent, so keep shared titles spelled

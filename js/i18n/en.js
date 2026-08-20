@@ -57,6 +57,7 @@ window.GC_STRINGS.en = {
   "action.yourPlan": "Your plan →",
   "action.clearFilters": "Clear filters",
   "action.exportIcs": "Export to calendar (.ics)",
+  "action.resetOrder": "Reset order",
   "action.undo": "Undo",
   "action.dismiss": "Dismiss",
 
@@ -205,9 +206,9 @@ window.GC_STRINGS.en = {
   "planner.dayPlannedAria": "Show {day}'s stops in your plan",
 
   "plan.sub.day":
-    "Give each saved booth and game a day. Unassigned items sit at the top until you place them.",
+    "Give each saved booth and game a day, then put the day in the order you'll walk it — the arrows move a stop up or down. Unassigned items sit at the top until you place them.",
   "plan.sub.hall":
-    "Your stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls.",
+    "Your stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls. The arrows set the order inside a hall, which is the order the map numbers its pins in.",
   "plan.arrangeAria": "Arrange your plan",
   "plan.lensDay": "By day",
   "plan.lensHall": "By hall",
@@ -220,6 +221,10 @@ window.GC_STRINGS.en = {
   "plan.boothTba": "Booth TBA",
   "plan.queueWith": "Queue {n}/5 {label}",
   "plan.queueUnknown": "Queue unknown",
+  "plan.moveAria": "Move {name} in the plan — {n} of {total}",
+  "plan.move.up": "Move {name} up",
+  "plan.move.down": "Move {name} down",
+  "plan.resetOrderTitle": "Sort the plan by queue index again, busiest first",
   "plan.assignAria": "Assign {name} to a day",
   "plan.assignToDay": "Assign to {day}",
   "plan.removeFromDay": "Remove from {day}",
@@ -346,6 +351,7 @@ window.GC_STRINGS.en = {
   "share.linkHas": "A shared link has {items} — {n} new to you.",
   "share.addAction": "Add to my list",
   "share.added": "Added {items} from the shared link.",
+  "toast.orderReset": "Plan back in queue order.",
   "toast.moveUndone": "Move undone.",
   "toast.importUndone": "Shared list import undone.",
   "moved.withList": "The guide has moved to hallgui.de. Your list comes with you.",
@@ -378,7 +384,7 @@ window.GC_STRINGS.en = {
 
   /* ---------- confirmations & boot ---------- */
   "confirm.clearSaved":
-    "Forget all {n} saved item and its day assignment? This can't be undone.|Forget all {n} saved items and their day assignments? This can't be undone.",
+    "Forget all {n} saved item, its day assignment and its place in the plan? This can't be undone.|Forget all {n} saved items, their day assignments and the order you put them in? This can't be undone.",
   "confirm.clearPlayed":
     "Forget all {n} played mark? This can't be undone.|Forget all {n} played marks? This can't be undone.",
   "boot.loadFailed":
