@@ -88,6 +88,10 @@ const GCI18N = window.GCI18N || {
 const t = GCI18N.t;
 const formatDate = GCI18N.formatDate || ((date) => String(date));
 
+/* Dates in the data are ISO `YYYY-MM-DD`, so string order is date order.
+   "Strictly newer than", with a missing second date counting as older. */
+const isLaterDate = (a, b) => Boolean(a) && (!b || a > b);
+
 /* Category, crowd and age vocabularies are ids, not text — display labels
    live in js/i18n/<lang>.js under type.*, crowd.* and age.*. "experience"
    stays one broad category on purpose: the flavour ("sim racing",
@@ -1439,6 +1443,12 @@ function sourceParts(url) {
   }
 }
 
+/* Two dates, because they answer different questions and only one of them
+   moves on a quiet day: `updated` is when this entry's own facts last
+   changed, `checked` is when the guide last went back to its sources at all.
+   The refresh routine records the sweep in data/meta.json whether or not it
+   found anything, so a card nobody has had to correct in a week reads as
+   re-checked yesterday rather than as a week stale. */
 function sourcesSubject(kind, key) {
   if (kind === "event") {
     return {
@@ -1446,6 +1456,7 @@ function sourcesSubject(kind, key) {
       what: "event",
       sources: state.event?.sources,
       updated: state.meta?.lastUpdated,
+      checked: state.meta?.lastChecked,
     };
   }
   const ex = state.exhibitors.find((item) => item.id === key);
@@ -1455,6 +1466,7 @@ function sourcesSubject(kind, key) {
     what: "card",
     sources: ex.sources,
     updated: ex.lastUpdated,
+    checked: state.meta?.lastChecked,
   };
 }
 
@@ -1484,7 +1496,12 @@ function openSources(kind, key) {
   $("#sources-note").textContent =
     t(`sources.note.${subject.what}`, { n: list.length }) +
     (subject.updated
-      ? t("sources.lastChecked", { date: formatDate(subject.updated) })
+      ? t("sources.lastUpdated", { date: formatDate(subject.updated) })
+      : "") +
+    /* Only when the sweep is newer than the entry — the same date twice
+       would read as two claims about one day. */
+    (isLaterDate(subject.checked, subject.updated)
+      ? t("sources.lastChecked", { date: formatDate(subject.checked) })
       : "");
   $("#sources-list").innerHTML = list
     .map((url, i) => {
@@ -4464,6 +4481,11 @@ function renderFreshness() {
   const m = state.meta;
   $("#data-freshness").textContent =
     t("meta.freshness", { date: formatDate(m.lastUpdated), rev: m.revision }) +
+    /* The sentence the sources dialog prints, on the surface everyone sees
+       without opening a dialog — one claim about the sweep, one wording. */
+    (isLaterDate(m.lastChecked, m.lastUpdated)
+      ? t("sources.lastChecked", { date: formatDate(m.lastChecked) })
+      : "") +
     (m.note ? ` ${m.note}` : "");
 }
 
