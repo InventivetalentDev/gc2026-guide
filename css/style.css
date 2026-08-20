@@ -1721,8 +1721,9 @@ a.area-hall {
   /* A grid item is blockified, so without this the anchor spans its whole
      column — the full row width once the list goes single-column on a
      phone, where every tap in the empty half of that line would navigate.
-     The hit area stays the number. */
+     The hit area stays the number, padded out below. */
   justify-self: start;
+  position: relative;
   color: var(--signal);
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, var(--signal) 45%, transparent);
@@ -1731,6 +1732,17 @@ a.area-hall {
 }
 a.area-hall:hover,
 a.area-hall:focus-visible { text-decoration-color: currentColor; }
+/* Hall "5" sets eight pixels wide, which is a plate to read and not a plate
+   to hit — a fingertip covers three times that. The number keeps its size and
+   its place in the column (moving it would break the plates' alignment down
+   the list, which is half of what makes them scannable); an invisible box
+   around it takes the tap, at 24×24 for the narrowest of them.
+
+   Only these plates, and only because they are plates. A hall number inside a
+   planner row is a phrase in a line of text, where the line's own height is
+   the constraint and a padded-out box would start swallowing the taps meant
+   for the row it sits in. */
+a.area-hall::after { content: ""; position: absolute; inset: -6px -8px; }
 .area-name { font-weight: 600; font-size: .92rem; }
 .area-desc { color: var(--ink-mid); font-size: .85rem; }
 
