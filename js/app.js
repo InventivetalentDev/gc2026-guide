@@ -3099,7 +3099,7 @@ const isBusinessOpenDay = (d) => d?.business !== "closed";
    note:false — they repeat the advice paragraph a plan spanning five days
    would otherwise carry five times, one scroll above where it already reads
    in full. The facts you act on (day, access, hours) stay. */
-function dayHeaderInner(d, { note = true } = {}) {
+function dayHeaderInner(d, { note = true, map = false } = {}) {
   const [, month, day] = d.date.split("-");
   return `<span class="day-when">
       <span class="day-dow">${esc(shortDay(d.date))}</span>
@@ -3109,8 +3109,22 @@ function dayHeaderInner(d, { note = true } = {}) {
     <span class="day-detail">
       ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
       ${note && d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
-    </span>`;
+    </span>${map ? dayMapLink(d) : ""}`;
 }
+
+/* The day lens's answer to the hall lens's "Map →" on each hall heading.
+
+   A day is not one hall, so it opens the overview rather than a hall: every
+   hall that day touches, lit and numbered in your plan's order, which is the
+   question a day heading raises and the only view that answers it whole. One
+   tap from there opens whichever hall you meant. The hall lens keeps its own
+   link pointed at its own hall, so between the two lenses both readings of
+   "show me this on the map" have a way there. */
+const dayMapLink = (d) =>
+  `<a class="route-hall-map day-map" href="${esc(
+    `map.html?day=${encodeURIComponent(d.date)}#overview`
+  )}" title="${esc(t("map.openTitle"))}"
+    aria-label="${esc(t("plan.dayMapAria", { day: dayName(d.date) }))}">${esc(t("map.cue"))}</a>`;
 
 /* Weekday names are derived from the date in the active language rather
    than hand-written per locale — see GCI18N.dayName. The short form is
@@ -3328,19 +3342,25 @@ function moveButtons(key, name, i, total) {
    calendar export writes it into an .ics file, where a link is just noise.
    A game shown at two booths links each of them separately. */
 function itineraryItemLocationHtml(item) {
+  /* The day this stop is on rides along to the map, the way the hall lens's
+     day filter already does (mapLink). This lens *is* a day filter — the row
+     sits under a Thursday heading — and a booth opened from it used to land
+     on a map with no day picked, asking for the day the visitor had just
+     been looking at. Null on an unassigned stop, which mapLink drops. */
+  const day = assignedDay(item.kind, item.key);
   if (item.kind === "game") {
     return item.at.length
       ? item.at
           .map(
             (ex) =>
-              `${esc(ex.name)} — ${hallLink(ex.hall, ex.booth, itineraryLocation(ex, { booth: false }))}`
+              `${esc(ex.name)} — ${hallLink(ex.hall, ex.booth, itineraryLocation(ex, { booth: false }), day)}`
           )
           .join(" · ")
       : t("plan.boothTba");
   }
   /* Where, and only where: the queue index used to be appended here and now
      has a cell of its own, in the column the hall lens keeps it in. */
-  return hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex));
+  return hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex), day);
 }
 
 /* Does this stop stand in the business area? Asked of the location, not of
@@ -3442,7 +3462,10 @@ function renderItinerary() {
        answerable without reading every stop. */
     const shut = dayItems.filter(stopOnClosedDay).length;
     groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
-      <div class="it-group-head" tabindex="-1">${dayHeaderInner(d, { note: false })}</div>
+      <div class="it-group-head" tabindex="-1">${dayHeaderInner(d, {
+        note: false,
+        map: true,
+      })}</div>
       ${
         shut
           ? `<p class="it-group-warn">${esc(
@@ -4547,7 +4570,126 @@ function showView(route, { push = true } = {}) {
   if (push) syncHash();
 }
 
+/* How far down the page a jumped-to heading has to start.
+
+   Every jump the planner offers — the nav chips, the five-days board tapping
+   into a day's group, "back to your plan" — lands its target under a sticky
+   masthead unless the scroll is offset by the masthead's height. That height
+   was written into the stylesheet as a number, and it was the wrong number:
+   161px of header against a 140px offset clipped the top of every heading
+   the guide has ever jumped to. Worse, it is not a constant. The install
+   button appears on the browsers that offer one, the offline notice appears
+   when the network goes, German sets the same row in longer words, and each
+   of those moves the header by a different amount.
+
+   So it is measured instead, on the element itself, and published as a
+   custom property the stylesheet offsets from. The media query that unpins
+   the header on phones overrides the offset there, so nothing has to be
+   measured twice or agreed with in two places.
+
+   ResizeObserver where there is one — every browser this guide targets has
+   had it since 2020 — and a resize listener as the floor, which catches the
+   orientation change that reflows the header even when nothing else fires. */
+function trackHeaderHeight() {
+  const header = $(".site-header");
+  if (!header) return;
+  const publish = () =>
+    document.documentElement.style.setProperty(
+      "--header-h",
+      `${Math.round(header.getBoundingClientRect().height)}px`
+    );
+  publish();
+  if ("ResizeObserver" in window) new ResizeObserver(publish).observe(header);
+  else window.addEventListener("resize", publish);
+}
+
+/* The tab row scrolls, and says so.
+
+   Four labels measure ~534px and no phone is that wide, so the row has always
+   scrolled — deliberately, with its scrollbar hidden, which on a phone is the
+   right call for a bar of four. What it cost is the only sign that scrolling
+   is a thing to do: the cut lands cleanly between two tabs, so the row reads
+   as ending at "03 Event info" and "04 Updates" is off the right of every
+   phone with nothing to suggest it exists.
+
+   A plate at the overflowing edge, then, carrying a chevron and scrolling the
+   row when tapped. Built here rather than written into index.html because it
+   is answering a question only the layout can answer — whether this row, in
+   this language, at this text size, on this screen, has anywhere left to go —
+   and because a shell that predates this script then simply has the row it
+   always had, rather than two plates nothing moves.
+
+   Appended to .tabs-outer rather than to .tabs: .tabs is the scroll port, so
+   an absolute child would scroll away with the tabs it is meant to sit over,
+   and it is the role="tablist", whose children are supposed to be tabs.
+
+   aria-hidden, and out of the tab order: every tab is reachable by tabbing and
+   the browser scrolls each into view as it takes focus, so a keyboard user has
+   already been given what this offers. Two extra stops in the middle of the
+   nav would be a cost with no matching gain. */
+function trackTabOverflow() {
+  const row = $(".tabs");
+  const outer = $(".tabs-outer");
+  if (!row || !outer) return;
+
+  const cues = ["start", "end"].map((side) => {
+    const cue = document.createElement("button");
+    cue.type = "button";
+    cue.className = `tabs-cue tabs-cue-${side}`;
+    cue.tabIndex = -1;
+    cue.setAttribute("aria-hidden", "true");
+    /* The map's leg buttons already say "the plan continues that way" with
+       these two ("◂ 6.1", "9.1 ▸"), and they are solid enough to read at a
+       glance where a thin chevron is not. Same glyph, same meaning. */
+    cue.textContent = side === "start" ? "◂" : "▸";
+    /* Most of a screenful, not all of it: leaving the tab you were reading in
+       view is what makes the second page read as the same row continued. */
+    cue.addEventListener("click", () =>
+      row.scrollBy({ left: (side === "start" ? -1 : 1) * row.clientWidth * 0.7, behavior: "smooth" })
+    );
+    outer.appendChild(cue);
+    return { side, el: cue };
+  });
+
+  /* The plates are absolutely positioned by css/style.css, which rides
+     stale-while-revalidate and can therefore be one version behind this
+     script. Without its rules these are two default-styled buttons sitting
+     under the masthead, which is worse than the row anyone already had — so
+     ask the stylesheet whether it has heard of them, and withdraw if not. */
+  if (getComputedStyle(cues[0].el).position !== "absolute") {
+    for (const { el } of cues) el.remove();
+    return;
+  }
+
+  /* A pixel of slack at each end: fractional layout widths and the browser's
+     own scroll snapping both leave scrollLeft a hair short of the end, which
+     would otherwise strand a chevron pointing at nothing. */
+  const sync = () => {
+    const room = row.scrollWidth - row.clientWidth;
+    for (const { side, el } of cues) {
+      const more = side === "start" ? row.scrollLeft > 1 : row.scrollLeft < room - 1;
+      el.classList.toggle("on", more);
+    }
+  };
+
+  sync();
+  row.addEventListener("scroll", sync, { passive: true });
+  /* The tabs themselves are observed, not just the row: switching language
+     rewrites all four labels in place, which changes what fits without
+     changing the row's own box at all. */
+  if ("ResizeObserver" in window) {
+    const ro = new ResizeObserver(sync);
+    ro.observe(row);
+    for (const tab of $$(".tab")) ro.observe(tab);
+  } else {
+    window.addEventListener("resize", sync);
+  }
+}
+
 function bindControls() {
+  trackHeaderHeight();
+  trackTabOverflow();
+
   /* One render per pause, not per keystroke: the grid plus both directory
      lists is too much DOM to rebuild at typing speed on a phone. The value is
      read when the timer fires, so a reset that clears the box mid-wait is

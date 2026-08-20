@@ -153,6 +153,51 @@ table beside `CAMPUS`, one entry, `"2.1": { dy: 1 }`. It is a documented
 guess until someone walks hall 2 with the map open, and it is one sign
 to undo.
 
+### 3a. A quarter turn rotates the geometry, not the drawing
+
+A wide hall fitted to a portrait screen leaves most of the screen empty, so
+the map offers one clockwise quarter turn beside the zoom controls. It turns
+the hall's coordinates before layout rather than rotating the finished SVG.
+A finished-SVG turn would leave every booth and door name sideways;
+counter-rotating those labels would then make `fitName()` size them against
+the wrong width. With geometry first, labels, walls, route pins and leg
+pointers all receive ordinary hall coordinates and need no rotation case of
+their own.
+
+For a hall `W` metres wide and `H` metres high, `(x, y)` becomes
+`(H - y, x)` and the size becomes `[H, W]`. Margins stay attached to their
+physical walls: west becomes north, north becomes east, east becomes south,
+and south becomes west. Door centres use the same wall mapping:
+
+| old wall | new wall | new door `at` | margin after the turn |
+|---|---|---|---|
+| north | east | unchanged | new east = old north |
+| east | south | `H - at` | new south = old east |
+| south | west | unchanged | new west = old south |
+| west | north | `H - at` | new north = old west |
+
+`at` is the centre of the opening and `H` is the unrotated height, so its
+span is never part of the reversal. The cached snapshot stays unrotated;
+only a page-lifetime copy is turned, and nothing about the turn is stored or
+put in the URL: `#9.1/A070` is the same stand either way.
+
+**The map decides, until the visitor does.** A hall opens turned when two
+things are true — the screen is taller than it is wide, and the hall comes out
+bigger turned. Both are needed. The first is the problem this was built for, a
+hall lying across a phone held upright; on a screen already wider than it is
+tall there is nothing to solve, and turning a hall away from the orientation
+the official plan prints it in wants a better reason than a few percent of
+scale. The second is asked directly, in the terms `fitView()` will use a moment
+later, rather than read off the hall's aspect ratio: halls 10.1 and 10.2 are
+taller than they are wide, so a portrait phone leaves them alone while the
+other eleven gain about half again.
+
+The decision is taken before the first draw and again when the window changes
+shape, which is what turning the phone does. It stops for good the first time
+the visitor presses the button: they have looked at this hall and said which
+way they want it, and that outranks any rule here — the same reading the plan
+board applies to a stop somebody moved by hand.
+
 ### 4. The join is client-side, at load — geometry files stay editorial-free
 
 Stands and guide exhibitors meet by `hall` + normalised booth code
@@ -485,11 +530,25 @@ a visitor would follow literally — so the line is thin, dashed, drawn
 walking route" in both languages.
 
 **A stop is a booth, not a stand.** Where a card holds several stands in
-one hall the map lights all of them already; each carries the same
-number, because it is one stop you walk to, and the line runs through the
-largest. The hall row's badge counts stops too while a day is on, so
-"which hall is Thursday in" is answered by the row you were already
-reading rather than by tapping through twelve halls.
+one hall the map lights all of them already, and every one of them
+carries the stop's number in its accessible name — the whole footprint
+is the place you are walking to. The *drawn* number is one, on the
+largest stand, which is the one the line runs through. Printing it on
+each stand instead was the first cut and it read as several stops:
+Nintendo files four stands in hall 9, so a Thursday holding Capcom and
+Nintendo drew four discs reading "2" beside one reading "1", against a
+bar that said two stops.
+
+**And the hall row's badge counts stops, with a day on or without one.**
+The badge sits beside a hall name and is read as "how much of mine is in
+there"; every other number the guide prints about a saved list answers
+that in stops. Counting stands when no day was picked and stops when one
+was made the same badge mean two things — hall 9 read ●5 on the saved
+list and ●2 on the Thursday holding both of its booths — and sent the
+opening hall (the one holding most of your plan) to whichever hall held
+the most rectangles. One unit, so "which hall is Thursday in" is
+answered by the row you were already reading rather than by tapping
+through twelve halls.
 
 **A day is not one hall, and the wall is where the drawing used to
 stop.** Pins numbered 1–4 in hall 7.1 answer "what here, in what order"
@@ -558,6 +617,18 @@ day filter is not persisted either, and a URL is what lets the plan
 board's "Map →" hand a day over. A `?day=` nobody planned is dropped on
 arrival, the same check a day that has just lost its last stop has to
 pass.
+
+Both of the plan board's lenses hand it over, and each opens the view its
+own grouping is about. The hall lens's heading is a hall, so its "Map →"
+opens that hall (`?day=…#7.1`) — the day riding along only when its
+single-day filter is on, because an unfiltered link must not pick a day
+for the map. The day lens's heading is a day, which is rarely one hall, so
+its "Map →" opens the overview (`?day=…#overview`): every hall that day
+touches, lit and numbered, with one tap from there into whichever was
+meant. Under a day heading each stop's address carries that stop's own
+day too — the row is already inside the answer to "which day", and
+arriving on a map that asks for it again is a question the visitor just
+answered.
 
 ## Deliberately not built
 

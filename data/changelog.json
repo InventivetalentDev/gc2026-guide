@@ -1,11 +1,24 @@
 [
   {
     "date": "2026-08-20",
-    "revision": 36,
+    "revision": 37,
     "changes": [
       "The plan stops moving under you. Placing a stop on a day used to fling the page about fifteen hundred pixels down the board, ticking one off as played on the queue table about eighteen hundred, and every ▲▼ nudged the whole page by a row — because putting the keyboard's focus back on the button you had just pressed also asked the browser to scroll to it, and after a redraw that button is a brand-new thing the browser thinks it has never shown you. It is put back without the scroll now. Arrange a day, tick things off, reorder a hall: the page stays exactly where you left it.",
       "Keyboard and screen-reader users keep what that was there for. Focus still lands on the same button after every move, and when a stop really has travelled somewhere else on the board — a day group further down — the page follows it just far enough to bring the focus ring back on screen, and only when the ring is actually showing.",
-      "Two smaller pieces of the same fault: the plan board and the queue table no longer collapse to a rough guess at their own height for a frame every time they are redrawn, which is what shifted whatever you were reading below them, and the jump links at the top of the planner no longer land their heading behind the sticky header."
+      "The plan board and the queue table no longer collapse to a rough guess at their own height for a frame every time they are redrawn, which is the other thing that shifted whatever you were reading below them. The full directory's rows guess their height per screen size now as well, so its scrollbar stops jumping about as you read."
+    ]
+  },
+  {
+    "date": "2026-08-20",
+    "revision": 36,
+    "changes": [
+      "A booth with several stands in one hall now wears one number on the map, not one per stand. Nintendo files four stands in hall 9, so Thursday's route drew four pins all reading “2” — four stops on the floor and two in the bar above it. The number sits on the largest stand, the one the route line already runs through; the whole booth still lights up, and tapping any part of it still says “Stop 2 of 5”.",
+      "The hall chips count the same thing whichever list they are counting. A chip used to count your saved stands and switch to counting stops the moment you picked a day: hall 9 read ●5 with Capcom and Nintendo saved, then ●2 on the Thursday that held both of them. It counts stops either way now — the unit your plan, the route bar and the overview plates all already use — and the map opens on the hall holding most of your plan again, rather than on whichever hall happened to hold the most rectangles.",
+      "The By day view can reach the map. Each day's heading carries a “Map →” that opens the site overview with that day already picked, the way each hall's heading in By hall opens its hall. Every booth address under a day carries its day across too, so the map no longer opens asking you to pick the day you were just looking at.",
+      "Headings the planner jumps to no longer land underneath the masthead. The scroll offset was written as a fixed number, and the masthead has no fixed height — it grows for the install button, for the offline notice, and for German setting the same row in longer words — so it is measured now.",
+      "The tab row says that it scrolls. Exhibitors, Visit planner, Event info and Updates measure wider than any phone, so the row has always scrolled — but its scrollbar is hidden, and the cut lands cleanly between two tabs, so it read as a row ending at “Event info” with Updates off the right edge and nothing to suggest it was there. A plate now sits at whichever edge still has tabs past it, carrying the same ▸ the hall map's next-hall buttons use, and scrolls the row when tapped.",
+      "The hall plates in Event info's Halls & areas list are easier to hit. They open the map, and hall “5” sets eight pixels wide — a plate to read, not a plate to tap. The number keeps its size and its place in the column; the tap area around it does not.",
+      "The count under the hall map now agrees with the chip above it. The line reading “20 stands · 18 in the guide · 5 saved” counted lit rectangles for that last number, so hall 9 could say “5 saved” while its own chip said 2 — Capcom and Nintendo, two stops standing on five stands. The first two numbers still describe the drawing; the third describes your plan, and counts stops."
     ]
   },
   {
