@@ -374,7 +374,8 @@ const polyPath = (poly) => "M" + poly.map((p) => p[0] + " " + p[1]).join("L") + 
 /* Decimal metre coordinates such as 1.3 otherwise come back from four
    turns as 1.3000000000000114. Snapping subtraction noise below a
    nanometre keeps a round trip exact without moving any filed point. */
-const rotatePoint = ([x, y], H) => [Math.round((H - y) * 1e9) / 1e9, x];
+const snap = (v) => Math.round(v * 1e9) / 1e9;
+const rotatePoint = ([x, y], H) => [snap(H - y), x];
 
 /* The renderer must receive a new hall all at once. Rotating the cached
    polygons in place would make the next turn start from the last view,
@@ -409,7 +410,7 @@ function rotateDoors(doors, H) {
   return doors.map((door) => ({
     ...door,
     edge: edge[door.edge],
-    at: door.edge === "e" || door.edge === "w" ? rotatePoint([0, door.at], H)[0] : door.at,
+    at: door.edge === "e" || door.edge === "w" ? snap(H - door.at) : door.at,
   }));
 }
 
@@ -2390,8 +2391,9 @@ $("#zoom-fit")?.addEventListener("click", fitCurrent);
 
 /* map.html is network-first while this script and its stylesheet can arrive
    from different cached revisions. Add the control here so old script never
-   leaves dead markup, then keep it only when the new CSS has given it the
-   same 40 px shape as its neighbours. The check runs before a paint. */
+   leaves dead markup, then ask the CSS marker whether the new rule arrived.
+   A measurement was the wrong question because the button's size may change
+   independently of this guard. The check runs before a paint. */
 {
   const controls = $(".map-zoom");
   if (controls) {
@@ -2405,7 +2407,7 @@ $("#zoom-fit")?.addEventListener("click", fitCurrent);
       'fill="none" stroke="currentColor" stroke-width="1.6">' +
       '<path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2v4h-4"/></svg>';
     controls.appendChild(button);
-    if (getComputedStyle(button).width !== "40px") {
+    if (getComputedStyle(button).getPropertyValue("--rotate-btn").trim() !== "1") {
       button.remove();
     } else {
       button.addEventListener("click", () => {

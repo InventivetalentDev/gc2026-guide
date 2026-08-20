@@ -212,6 +212,7 @@
 }
 .map-zoom-btn:hover,
 .map-rotate-btn:hover { color: var(--ink); border-color: var(--ink-dim); }
+.map-rotate-btn { --rotate-btn: 1; }
 .map-rotate-btn[aria-pressed="true"] { color: var(--signal); border-color: var(--signal); }
 
 /* --- the hall itself --- */
