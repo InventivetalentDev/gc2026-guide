@@ -458,6 +458,12 @@
             <button class="chip lens-chip active" type="button" data-lens="day" aria-pressed="true" data-i18n="plan.lensDay">By day</button>
             <button class="chip lens-chip" type="button" data-lens="hall" aria-pressed="false" data-i18n="plan.lensHall">By hall</button>
           </div>
+          <!-- Only shown once the plan has been arranged by hand; a plan
+               still sorting itself has nothing to reset. -->
+          <button class="reset hidden" id="plan-order-reset" type="button"
+                  data-i18n="action.resetOrder"
+                  data-i18n-attr="title:plan.resetOrderTitle"
+                  title="Sort the plan by queue index again, busiest first">Reset order</button>
           <button class="reset hidden" id="export-ics" type="button" data-i18n="action.exportIcs">Export to calendar (.ics)</button>
           <span class="result-count" id="plan-count"></span>
         </div>

@@ -1277,6 +1277,51 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   margin: -2px 0 12px;
 }
 
+/* The queue index, one cell in both lenses — crowdCell() writes it. It is the
+   number the plan sorts itself by, so it belongs next to the stop in either
+   arrangement, and it is the number a hand-arranged order is departing from.
+   Colour only at the top of the scale: 4 and 5 are the ones worth queueing
+   early for, and painting the calm end green would say the opposite. */
+.route-crowd,
+.it-crowd {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--ink-mid);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.route-crowd[data-level="4"], .it-crowd[data-level="4"] { color: var(--warn); }
+.route-crowd[data-level="5"], .it-crowd[data-level="5"] { color: var(--alert); }
+
+/* The two arrows that move a stop up or down its group. Same 20px square as
+   the mark buttons they sit beside: these are row controls, not a second
+   toolbar, and a row that shouted about its own position would be reading
+   the plan backwards. */
+.row-move { display: flex; gap: 4px; align-self: center; }
+.row-actions .row-move { margin-right: 4px; }
+.mv {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  color: var(--ink-dim);
+  font-size: .58rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .12s, border-color .12s, background .12s, opacity .12s;
+}
+.mv:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-dim); }
+/* Disabled, not hidden: an end of the list is a fact about the row, and a
+   control that vanished under the pointer would shift the two beside it. */
+.mv:disabled { opacity: .28; cursor: default; }
+
 /* ============================================================
    planner — your plan, day lens (itinerary)
    ============================================================ */
@@ -1303,8 +1348,8 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 
 .it-item {
   display: grid;
-  grid-template-columns: minmax(150px, 1.1fr) minmax(180px, 1.35fr) auto 20px;
-  gap: 0 16px;
+  grid-template-columns: minmax(140px, 1.1fr) minmax(150px, 1.2fr) auto auto auto 20px;
+  gap: 0 14px;
   align-items: center;
   padding: 12px 18px;
   border-bottom: 1px solid var(--rule-soft);
@@ -1549,16 +1594,6 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   color: var(--ink-mid);
   font-variant-numeric: tabular-nums;
 }
-.route-crowd {
-  font-family: var(--font-mono);
-  font-size: .72rem;
-  font-weight: 700;
-  color: var(--ink-mid);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-.route-crowd[data-level="4"] { color: var(--warn); }
-.route-crowd[data-level="5"] { color: var(--alert); }
 .route-absent {
   margin-top: 12px;
   color: var(--ink-dim);
@@ -2201,6 +2236,15 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .route-item { grid-template-columns: 1fr auto auto; row-gap: 4px; }
   .route-booth { grid-column: 1 / -1; grid-row: 2; }
   .route-crowd { grid-column: 2; grid-row: 1; }
+  /* Six columns do not fit a tablet, so the day row folds the same way the
+     hall row above it does: name, queue and the controls on the first line,
+     the address under them, the day chips under that. */
+  .it-item { grid-template-columns: minmax(120px, 1fr) auto auto 20px; row-gap: 7px; }
+  .it-loc { grid-column: 1 / -1; grid-row: 2; }
+  .it-crowd { grid-column: 2; grid-row: 1; }
+  .it-item .row-move { grid-column: 3; grid-row: 1; }
+  .it-days { grid-column: 1 / -1; grid-row: 3; justify-content: flex-start; }
+  .it-warn { grid-column: 1 / -1; grid-row: 4; }
   .wristband-item { grid-template-columns: 1fr auto; }
   .wristband-loc,
   .wristband-games { grid-column: 1 / -1; justify-self: start; }
@@ -2255,8 +2299,8 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
      stray line rather than a fact of the day */
   .day-planned { grid-column: 1 / -1; margin-top: 0; }
   .it-group-head { grid-template-columns: 76px 1fr; row-gap: 8px; }
-  .it-item { grid-template-columns: minmax(110px, 1fr) minmax(0, 1.2fr) 20px; row-gap: 9px; }
-  .it-days { grid-column: 1 / -1; justify-content: flex-start; }
+  /* Same fold as the tablet block above, one notch narrower in column one. */
+  .it-item { grid-template-columns: minmax(96px, 1fr) auto auto 20px; row-gap: 9px; }
   .toolbar-row .row-label { flex-basis: 100%; }
   /* let the summary text take a full line instead of squeezing into a column */
   .toolbar-summary { flex-wrap: wrap; row-gap: 4px; }

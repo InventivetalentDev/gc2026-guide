@@ -8,7 +8,8 @@
    a different booth code normalisation would light up the wrong stand,
    and a different stop order would print numbers on the map that do not
    match the list they came from. So the storage shapes, the "is this
-   saved" predicate, the booth-code normaliser and the plan's stop order
+   saved" predicate, the booth-code normaliser and the plan's stop order —
+   both halves of it, the automatic rule and the order you moved it into —
    live here, and nothing else does — this is not a utility drawer.
 
    Loaded as a plain script before js/app.js and js/map.js (no build
@@ -161,12 +162,72 @@ const GCMarks = (() => {
     return days;
   }
 
-  /* The order stops are visited in, within one hall: busiest first, and
-     anything already played sinks to the end. `played` and `lang` are passed
-     in rather than reached for — each page already has its own copy of the
-     played rule and of the active locale, and this file deliberately knows
-     about neither. */
-  const compareStops = (played, lang) => (a, b) =>
+  /* ---- the order you put the plan in ----
+
+     The automatic order below answers "busiest first" well enough to open
+     with, and badly enough that anyone with a real morning planned wants to
+     argue with it: the 5/5 booth you are meeting a friend at second, the 2/5
+     one that opens an hour early. So the plan carries an order of its own,
+     and the automatic rule becomes what it falls back to.
+
+     One flat list of stop keys, in the order they are visited. A key is the
+     item as the marks store files it, prefixed by kind, because a booth and
+     a game can carry the same string and both are stops here:
+
+       "e:" + exhibitor id   ("e:dir:some-slug" for a business-hall booth)
+       "g:" + gameKey(title)
+
+     A booth's key ranks it in the hall lens and on the map; a game's key
+     ranks its row in the day lens. They share one list because they share
+     one plan — and because the day lens shows both kinds side by side and
+     has to sort them against each other.
+
+     Everything not in the list ranks UNRANKED and falls through to the
+     automatic rule, which is what an untouched plan does: the list is empty
+     until the first time somebody moves a stop, and a newly saved booth
+     lands at the end of its group rather than shouldering its way in. */
+  const ORDER_KEY = "gc2026.planorder.v1";
+  const UNRANKED = Number.MAX_SAFE_INTEGER;
+
+  const stopKey = (kind, key) => (kind === "game" ? "g:" : "e:") + key;
+
+  function readOrder() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(ORDER_KEY) || "[]");
+      return Array.isArray(raw) ? raw.filter((key) => typeof key === "string") : [];
+    } catch {
+      /* corrupt entry, or storage blocked entirely (Safari private mode) */
+      return [];
+    }
+  }
+
+  function writeOrder(keys) {
+    try {
+      localStorage.setItem(ORDER_KEY, JSON.stringify(keys));
+    } catch {
+      /* out of quota or storage denied — the order still holds for this session */
+    }
+  }
+
+  /* stop key -> position. Built once per render rather than scanned per
+     comparison: a 40-stop plan sorted by indexOf() is 1,600 string compares
+     for a list nobody can see all of. */
+  const orderRanks = (keys) => new Map(keys.map((key, i) => [key, i]));
+
+  /* The order stops are visited in, within one group — one hall, or one day.
+
+     Your own order first, and it is the whole answer once you have given one:
+     a stop you moved below a played one stays below it, because "I put it
+     there" outranks any rule this file could apply on top. Below that, the
+     automatic order: busiest first, anything already played sinking to the
+     end.
+
+     `played`, `lang` and `rank` are passed in rather than reached for — each
+     page already has its own copy of the played rule, of the active locale
+     and of which key a thing is filed under, and this file deliberately knows
+     about none of the three. */
+  const compareStops = (played, lang, rank) => (a, b) =>
+    (rank ? rank(a) - rank(b) : 0) ||
     (played(a) ? 1 : 0) - (played(b) ? 1 : 0) ||
     (b.crowd || 0) - (a.crowd || 0) ||
     String(a.name).localeCompare(String(b.name), lang);
@@ -193,5 +254,6 @@ const GCMarks = (() => {
     MARK_KEYS, PREFS_KEY, gameKey, readMarks, writeMarks, savedGames, hasSaved, boothCodes,
     DIR_PREFIX, dirKey, isDirKey, dirSlug, isBusinessHall, tradeMode, setTradeMode,
     IT_KEY, readItinerary, stopDays, compareStops,
+    ORDER_KEY, UNRANKED, stopKey, readOrder, writeOrder, orderRanks,
   };
 })();

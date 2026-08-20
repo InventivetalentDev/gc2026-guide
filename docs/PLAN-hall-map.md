@@ -464,13 +464,16 @@ geometry.
 Three decisions make it honest rather than decorative:
 
 **The order is the plan's, not a solver's.** The pins run in the same
-order the plan board's hall lens lists that hall's stops: busiest first,
-played stops sinking to the end. That comparator moved into
-`js/marks.js` (`compareStops`) alongside `boothCodes` and `stopDays`,
-for the same reason those are there — two views of one plan that
-disagreed about which stop is number 1 would be worse than one view. The
-guide's own route sort now reads through it too, so there is one
-definition and no second copy to drift.
+order the plan board's hall lens lists that hall's stops: whatever order
+the visitor arranged that hall into, or busiest first with played stops
+sinking to the end while they have left it alone. Both the comparator
+(`compareStops`) and the stored positions moved into `js/marks.js`
+alongside `boothCodes` and `stopDays`, for the same reason those are
+there — two views of one plan that disagreed about which stop is number 1
+would be worse than one view. The guide's own route sort reads through it
+too, so there is one definition and no second copy to drift. Rearranging
+is the plan board's own follow-up feature; see
+`docs/PLAN-itinerary-builder.md` section 7.
 
 **The line joining the pins is not a path, and says so.** A shortest walk
 is exactly the thing this data cannot support: Koelnmesse files stand

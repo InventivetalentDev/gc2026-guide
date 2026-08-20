@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-20",
+    "revision": 34,
+    "changes": [
+      "Your plan is yours to order. Every stop in the By day and By hall views now has ▲▼ buttons that move it up or down its group, and from the first move the plan keeps the order you left it in — for that day, for that hall, and for the numbered pins the hall map draws from it. Until you move anything it still sorts itself busiest-queue-first with played stops last, which is what the new “Reset order” button hands it back to (with an Undo, in case that was a mistake).",
+      "Moving a stop only ever moves it inside the day or the hall you are looking at: pulling something to the top of Thursday leaves Friday, and every hall it does not stand in, exactly as it was. A booth saved after you have started arranging joins at the end of its group, where you will see it, rather than pushing into the middle on a queue forecast.",
+      "The By day view now shows each stop's queue index next to it — Q5 · Extreme, Q2 · Light — the way the By hall view always has. A saved game takes the worse queue of the booths showing it, since that is the one you would stand in; a business-hall booth says “Trade badge” instead, because it has no queue to forecast. The address line under each stop is now just the address.",
+      "The order travels with the plan, not with the browser tab: arrange a day in one window and a second window follows, and the hall map picks it up the same way it picks up day assignments."
+    ]
+  },
+  {
+    "date": "2026-08-20",
     "revision": 33,
     "changes": [
       "New on the hall map: your plan, drawn on the floor. Pick a day in the new Plan row and that day's stops in the hall you're looking at get numbered pins — 1, 2, 3 — in exactly the order your plan board lists them: busiest queue first, anything you've already played last. The hall chips count that day's stops instead of your whole saved list while a day is on, so you can see at a glance which halls Thursday is actually in.",
