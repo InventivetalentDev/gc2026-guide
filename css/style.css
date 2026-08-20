@@ -2087,6 +2087,17 @@ a.area-hall:focus-visible { text-decoration-color: currentColor; }
 
 .header-share { white-space: nowrap; }
 
+/* Share measured 60 by 22, and the footer links 15px tall. Commit 6181056
+   fixed Share against the language control, so its visible box must not move.
+   The footer links keep theirs too: the middle-dot separator gap bounds each
+   overlay at the sides, and the leading bounds it above and below so one link
+   cannot take a neighbouring tap. */
+.header-share,
+.subtle-link { position: relative; }
+
+.header-share::after { content: ""; position: absolute; inset: -3px -2px; }
+.subtle-link::after { content: ""; position: absolute; inset: -5px -2px; }
+
 /* The footer copy runs as prose, so the backstop switcher there reads as
    one more link in the Imprint · Privacy row rather than a second button. */
 .lang-switch-link {
