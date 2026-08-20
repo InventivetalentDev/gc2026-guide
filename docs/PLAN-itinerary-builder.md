@@ -281,3 +281,103 @@ Manual, via `python3 -m http.server 8000`:
    octets. Serve a day without `open` → all-day fallback event.
 10. DevTools offline after one online load → planner, itinerary, and
     export all work offline.
+
+## 7. Follow-up: the order you put it in
+
+Shipped in revision 34, alongside the hall map's day route overlay
+(`docs/PLAN-hall-map.md` decision 10). The plan could say *which day* a
+stop was on and, since the overlay, *where in the hall* it stood — but the
+order inside a day was never yours: it was queue index descending, played
+stops last, and nothing on the page let you argue with it. A morning has
+reasons a crowd forecast does not know about (you are meeting someone at
+11, the 2/5 booth opens an hour early, the 5/5 one is the reason you
+bought the ticket), and once the map started numbering pins from that
+order, "third in the list" became a claim about where you would physically
+be at 11am.
+
+### Design decisions
+
+- **The automatic order stays, as a fallback.** An untouched plan sorts
+  itself exactly as before and stores nothing; `gc2026.planorder.v1` is
+  written the first time a stop is moved. So the feature costs a first-time
+  visitor nothing, and "reset" is a real state to return to rather than a
+  second sort mode.
+- **Storage** — a flat array of stop keys, first to last:
+
+  ```json
+  ["e:xbox", "g:onimusha: way of the sword", "e:dir:1d3_digitech_oue"]
+  ```
+
+  `"e:"` + exhibitor id, `"g:"` + `gameKey(title)` — the marks store's own
+  identities, prefixed because a booth id and a game key are both free
+  strings and could collide. Positions are *not* validated against the show
+  schedule the way assignments are (`loadItinerary`): a position is a fact
+  about your list, not about the days, so nothing here can go stale when
+  `event.json` changes. It is scoped by the saved list instead
+  (`prunePlan`), which is the same rule the itinerary follows.
+- **Where a key comes from** — a day-lens row is a plan item and is keyed
+  as one; a hall-lens row is always the *booth*, including booths that are
+  only in your plan because you saved a game shown there. A saved booth
+  therefore carries one position through both lenses, while a game holds
+  its own position in the day list without pulling its publisher's row
+  around the hall list — which is the right answer for a publisher showing
+  four games you saved.
+- **Your order outranks the rest of the rule.** The comparator is
+  position, then played-sinks-last, then busiest, then name
+  (`GCMarks.compareStops`). A stop moved below a played one stays there:
+  "I put it here" has to beat anything the guide would otherwise reason
+  about it, or the arrows would be a suggestion box. Anything unranked —
+  a booth saved after you started arranging — falls through to the
+  automatic tail at the end of its group, where it is visible rather than
+  silently wedged into the middle.
+- **The first move writes the whole plan down** (`completePlanOrder`).
+  The automatic order is not stored anywhere, so a partial list would let
+  the two halves disagree the moment a crowd forecast changed. Seeding from
+  the order already on screen means the first move changes exactly one
+  thing.
+- **A move permutes one group, not the list.** `movePlanStop` rewrites only
+  the positions its group occupies, so pulling a stop to the top of
+  Thursday leaves every relation to Friday's stops — and to the halls it
+  does not stand in — exactly as it was.
+- **Arrows, not drag.** Two 20px buttons per row, matching the mark buttons
+  beside them, disabled at the ends of a group and omitted entirely from a
+  group of one. The guide is used one-handed on a phone in a hall: a drag
+  gesture on a long scrolling list competes with the scroll, and the same
+  control has to work for touch, mouse, keyboard and a screen reader
+  without a second code path. The group being permuted is read back off the
+  DOM (`data-stop-group`), so one delegated handler serves both lenses and
+  the thing being reordered is always the list on screen.
+- **Reset is undoable, not confirmed.** A hand-arranged plan is real work;
+  the cheapest way to say "not what I meant" is the toast's Undo, which the
+  share-import flow already established.
+- **Not in the share link.** `buildShareLink` is budgeted to the byte so a
+  30-item list plus its day plan still fits a QR code; a permutation costs
+  another character per item. A recipient's copy re-derives the automatic
+  order from the same crowd data, which is the order the sender started
+  from.
+
+### Verification
+
+Beyond section 6, all against `python3 -m http.server 8000`:
+
+11. Save six booths, open the plan → every row carries a `Q4 · Busy` cell
+    (games take the worse queue of the booths showing them; a business-hall
+    booth says "Trade badge" instead), and the location line no longer
+    repeats it.
+12. Move a stop up three times → it leads its day; reload → still there;
+    `gc2026.planorder.v1` holds every stop, not just the moved one.
+13. Move the last stop of Thursday to the top → Friday's group and the
+    unassigned group are byte-identical to before.
+14. Flip to By hall → the same arrangement shows through, scoped to each
+    hall. Move a stop there, then open that hall on the map with the day
+    filter on → the pins are numbered in the new order.
+15. Keyboard: Tab to an arrow, Enter → the row moves and focus stays on an
+    arrow of the same row, on the enabled one when the row has reached an
+    end of its group.
+16. Reset order → the board returns to queue order, the button disappears,
+    and the toast's Undo puts the arrangement back.
+17. Two windows side by side → a move in one reorders the other through the
+    `storage` event. Clear saved empties the order too; unsaving one stop
+    drops only that stop's position.
+18. `localStorage.setItem('gc2026.planorder.v1','garbage')` → no console
+    error, plan sorts automatically.

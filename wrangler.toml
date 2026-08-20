@@ -19,6 +19,15 @@ compatibility_date = "2026-08-14"
 # rather the guide answered on gc26.guide and nothing else.
 workers_dev = true
 
+# Where .github/workflows/cloudflare-preview.yml puts pull requests to be
+# looked at: `wrangler versions upload` gives a PR a version of this same
+# Worker at pr-<n>-gc2026-guide.<subdomain>.workers.dev, with production and
+# its hostnames untouched — a version is not a deployment, and an upload does
+# not apply triggers. Left unset this follows workers_dev, so it is pinned
+# true here: turning workers_dev off (above) should not quietly take the
+# preview system down with it.
+preview_urls = true
+
 [assets]
 directory = "./dist"
 
@@ -58,11 +67,17 @@ pattern = "hallgui.de"
 custom_domain = true
 
 # Three hostnames are draining behind it, and all three serve the guide rather
-# than redirect for exactly one reason: a saved list is per-origin, so a
-# redirect would strand every list built on them. They stay until the move
-# notice has had a fair run at the people standing on them (offerMove in
-# js/app.js), and come off one at a time, in the order docs/DEPLOYING.md sets
-# out.
+# than redirect at the edge for exactly one reason: a saved list is per-origin,
+# so a blanket redirect would strand every list built on them. They stay until
+# the move notice has had a fair run at the people standing on them (offerMove
+# in js/app.js), and come off one at a time, in the order docs/DEPLOYING.md
+# sets out.
+#
+# What a Worker route cannot know is whether the browser asking has anything on
+# the hostname to lose, and that is the whole question. So the redirect is in
+# the page instead — the head of index.html and map.html — where it can see an
+# empty localStorage, an installed app, and a device with no network, and send
+# on only the arrivals with nothing at stake.
 #
 # gamescom.guide is the urgent one. "gamescom" is a registered mark of game —
 # Verband der deutschen Games-Branche e.V., unofficial sites have been warned

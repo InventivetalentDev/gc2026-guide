@@ -14,6 +14,40 @@
 
   if (standalone) document.documentElement.dataset.standalone = "true";
 
+  /* An installed copy is a choice of address, and the redirect in the head of
+     index.html and map.html has to be able to see it. That block moves a
+     draining hostname to hallgui.de only when nothing at all is stored on it,
+     and "installed, but nothing saved yet" otherwise looks exactly like a
+     first visit — the move notice writes its answer only when somebody
+     answers it, so an ignored toast leaves no trace either.
+
+     A standalone launch is that fact, written where it can be read
+     synchronously on every later load, including from a plain browser tab on
+     the same origin — which is the visit the redirect actually has to judge,
+     since the app itself is stopped by the display-mode check.
+
+     navigator.getInstalledRelatedApps() would name it more directly and is
+     deliberately not used: it is Chromium-only, it answers a promise so it
+     cannot gate something that has to happen before the first paint, and it
+     reads the manifest link that map.html deliberately does not have.
+
+     iOS is the gap and there is no closing it. A home-screen web app there
+     keeps its own storage container, so nothing written in the app is visible
+     to Safari on the same origin, and no API offers the install either; a tab
+     there is judged on its own storage, which is all anything knows. */
+  const INSTALLED_KEY = "gc2026.installed.v1";
+
+  function rememberInstalled() {
+    try {
+      localStorage.setItem(INSTALLED_KEY, "1");
+    } catch {
+      /* storage blocked (Safari private mode) — then this origin is holding
+         nothing to strand, which is the case the redirect is safe in anyway */
+    }
+  }
+
+  if (standalone) rememberInstalled();
+
   /* ---------- service worker ---------- */
 
   /* Reload only when the user asked for the update. A first visit also fires
@@ -106,6 +140,10 @@
   }
 
   window.addEventListener("appinstalled", () => {
+    /* The installing tab hears this first, and it is a browser tab: recording
+       it here is what stops the redirect above pulling this origin out from
+       under an install made seconds ago. */
+    rememberInstalled();
     deferredPrompt = null;
     if (installBtn) installBtn.hidden = true;
     const notice = window.gcToast?.show(t("pwa.installed"));

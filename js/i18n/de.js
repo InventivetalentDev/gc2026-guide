@@ -16,6 +16,7 @@ window.GC_STRINGS = window.GC_STRINGS || {};
 
 window.GC_STRINGS.de = {
   /* ---------- document & navigation ---------- */
+  "doc.title": "gamescom 2026 Guide — Aussteller, Spiele & Hallenplan",
   "meta.description":
     "Inoffizieller Guide zur gamescom 2026 — Aussteller, Spiele, Hallen- und Standnummern, erwarteter Andrang und Besuchsplanung.",
   "nav.skip": "Zum Inhalt springen",
@@ -53,6 +54,7 @@ window.GC_STRINGS.de = {
   "action.yourPlan": "Dein Plan →",
   "action.clearFilters": "Filter zurücksetzen",
   "action.exportIcs": "In Kalender exportieren (.ics)",
+  "action.resetOrder": "Reihenfolge zurücksetzen",
   "action.undo": "Rückgängig",
   "action.dismiss": "Schließen",
 
@@ -217,9 +219,9 @@ window.GC_STRINGS.de = {
   "planner.dayPlannedAria": "Stopps für {day} in deinem Plan anzeigen",
 
   "plan.sub.day":
-    "Gib jedem gemerkten Stand und Spiel einen Tag. Nicht zugeordnetes steht oben, bis du es einsortierst.",
+    "Gib jedem gemerkten Stand und Spiel einen Tag und bring den Tag dann in die Reihenfolge, in der du ihn abläufst — die Pfeile schieben einen Stopp nach oben oder unten. Nicht zugeordnetes steht oben, bis du es einsortierst.",
   "plan.sub.hall":
-    "Deine Stopps sind nach Hallen gruppiert und nach Hallennummer sortiert — arbeite die Liste ab, dann läufst du nicht kreuz und quer.",
+    "Deine Stopps sind nach Hallen gruppiert und nach Hallennummer sortiert — arbeite die Liste ab, dann läufst du nicht kreuz und quer. Die Pfeile legen die Reihenfolge innerhalb einer Halle fest, und genau so nummeriert die Karte ihre Punkte.",
   "plan.arrangeAria": "Deinen Plan anordnen",
   "plan.lensDay": "Nach Tag",
   "plan.lensHall": "Nach Halle",
@@ -232,6 +234,10 @@ window.GC_STRINGS.de = {
   "plan.boothTba": "Stand noch offen",
   "plan.queueWith": "Andrang {n}/5 {label}",
   "plan.queueUnknown": "Andrang unbekannt",
+  "plan.moveAria": "{name} im Plan verschieben — {n} von {total}",
+  "plan.move.up": "{name} nach oben schieben",
+  "plan.move.down": "{name} nach unten schieben",
+  "plan.resetOrderTitle": "Den Plan wieder nach Andrang sortieren, stärkster zuerst",
   "plan.assignAria": "{name} einem Tag zuordnen",
   "plan.assignToDay": "{day} zuordnen",
   "plan.removeFromDay": "Von {day} entfernen",
@@ -362,6 +368,7 @@ window.GC_STRINGS.de = {
   "share.linkHas": "Ein geteilter Link enthält {items} — {n} neu für dich.",
   "share.addAction": "Zu meiner Liste hinzufügen",
   "share.added": "Du hast {items} aus dem geteilten Link hinzugefügt.",
+  "toast.orderReset": "Plan wieder in Andrang-Reihenfolge.",
   "toast.moveUndone": "Übernahme rückgängig gemacht.",
   "toast.importUndone": "Hinzufügen aus dem geteilten Link rückgängig gemacht.",
   "moved.withList": "Der Guide ist auf hallgui.de umgezogen. Deine Liste kommt mit.",
@@ -394,7 +401,7 @@ window.GC_STRINGS.de = {
 
   /* ---------- confirmations & boot ---------- */
   "confirm.clearSaved":
-    "{n} gemerkten Eintrag und seine Tagesplanung wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} gemerkten Einträge und ihre Tagesplanung wirklich löschen? Das lässt sich nicht rückgängig machen.",
+    "{n} gemerkten Eintrag, seine Tagesplanung und seinen Platz im Plan wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} gemerkten Einträge, ihre Tagesplanung und die Reihenfolge, in die du sie gebracht hast, wirklich löschen? Das lässt sich nicht rückgängig machen.",
   "confirm.clearPlayed":
     "{n} „Gespielt“-Markierung wirklich löschen? Das lässt sich nicht rückgängig machen.|Alle {n} „Gespielt“-Markierungen wirklich löschen? Das lässt sich nicht rückgängig machen.",
   "boot.loadFailed":
@@ -464,7 +471,29 @@ window.GC_STRINGS.de = {
   "map.zoomFit": "Ganze Halle zeigen",
   "map.counts": "{n} Stände · {covered} im Guide",
   "map.countsSaved": " · {n} gemerkt",
+  "map.countsPlanned": " · {n} geplant",
   "map.chipSavedAria": ", {n} gemerkt",
+  "map.routeAria": "Stopps eines Tages zeigen",
+  "map.routeKicker": "Plan",
+  "map.routeDayOn": "Stopps für {day} zeigen",
+  "map.routeDayOff": "Stopps für {day} ausblenden",
+  "map.routeUnplacedOn": "Stopps ohne Tag zeigen",
+  "map.routeUnplacedOff": "Stopps ohne Tag ausblenden",
+  "map.routeHint": "Tag wählen, um die Stopps zu nummerieren",
+  "map.routeStops": "{n} Stopp hier|{n} Stopps hier",
+  "map.routeOrderNote": "· Planreihenfolge, kein Laufweg",
+  "map.routeNoneHere": "in dieser Halle nichts geplant",
+  "map.legPrev": "◂ {hall} · {n} Stopp|◂ {hall} · {n} Stopps",
+  "map.legNext": "{hall} · {n} Stopp ▸|{hall} · {n} Stopps ▸",
+  "map.legPrevAria": "Im Plan vor dieser Halle: Halle {hall}, {n} Stopp — öffnen|Im Plan vor dieser Halle: Halle {hall}, {n} Stopps — öffnen",
+  "map.legNextAria": "Im Plan nach dieser Halle: Halle {hall}, {n} Stopp — öffnen|Im Plan nach dieser Halle: Halle {hall}, {n} Stopps — öffnen",
+  "map.routeHintCampus": "Tag wählen, um die Hallen der Reihe nach zu sehen",
+  "map.routeHalls": "{n} Halle|{n} Hallen",
+  "map.routeStopsAll": "{n} Stopp|{n} Stopps",
+  "map.routeNoneAnywhere": "an diesem Tag nichts geplant",
+  "map.chipPlannedAria": ", {n} Stopp geplant|, {n} Stopps geplant",
+  "map.stopBadge": "Stopp {n} von {total}",
+  "map.stopAria": " — Stopp {n} von {total}",
   "map.outlines": "Standflächen",
   "map.officialHallPlan": "offizieller Hallenplan",
   "map.checkedOn": "geprüft am {date} · schematisch, inoffiziell",
@@ -472,6 +501,29 @@ window.GC_STRINGS.de = {
   "map.door.boulevard": "Boulevard",
   "map.door.entrance-east": "Eingang Ost",
   "map.doorsApprox": "Hallentüren von uns, ungefähr",
+
+  /* ---------- die Geländeübersicht ----------
+
+     "Übersicht" ist der Chip ganz links: ein Schritt zurück von einer
+     Halle auf das ganze Gelände. Die Namen der vier Eingänge brechen bei
+     Bedarf auf zwei Zeilen um — deshalb bleiben sie zweiteilig ("Eingang
+     / Nord"). Piazza und Confex heißen auf dem offiziellen Plan auch auf
+     Deutsch so. */
+  "map.overview": "Übersicht",
+  "map.overviewAria": "Übersicht über das gesamte Gelände",
+  "map.campusAria": "Schema der gamescom-Hallen, des Boulevards dazwischen und der Eingänge",
+  "map.campusCounts": "{n} Hallen · zum Öffnen antippen",
+  "map.campusLayout": "Geländeplan",
+  "map.campusNotToScale": "nicht maßstabsgetreu",
+  "map.place.boulevard": "Boulevard",
+  "map.place.piazza": "Piazza",
+  "map.place.confex": "Confex",
+  "map.place.congress-north": "Congress Nord",
+  "map.place.congress-east": "Congress Ost",
+  "map.gate.entrance-north": "Eingang Nord",
+  "map.gate.entrance-east": "Eingang Ost",
+  "map.gate.entrance-south": "Eingang Süd",
+  "map.gate.entrance-west": "Eingang West",
 
   /* ---------- business access & the business halls ----------
 

@@ -11,13 +11,15 @@ exhibitor names, all in metres) is exactly what an honest map needs.
 **Status: built and integrated.** `tools/fetch-hallplan.mjs` snapshots the
 geometry into `data/hallplan/`; `map.html` + `js/map.js` + `css/map.css`
 draw it; `js/marks.js` holds what the map and the guide must agree on;
-`sw.js` precaches both pages and all twelve hall levels; the guide links out
+`sw.js` precaches both pages and all thirteen hall levels; the guide links out
 from every place it names a hall — card plates, the plan board, queue
 priority, the wristband list and all 1,630 rows of the full directory —
-and the map links back to a card. A card may hold several stands and the
-map lights every one of them; a booth's gallery level, which Koelnmesse
-files as a second stand on the same outline, is drawn as the one booth it
-is. Each hall is framed in its area colour and its doors are drawn as
+and the map links back to a card. The plan board's day assignments come
+back the other way as a numbered route overlay — pick a day and this
+hall's stops for it are pinned in the plan's own order (decision 10). A
+card may hold several stands and the map lights every one of them; a
+booth's gallery level, which Koelnmesse files as a second stand on the
+same outline, is drawn as the one booth it is. Each hall is framed in its area colour and its doors are drawn as
 openings in that frame — both from `data/hallplan/outline.json`, which is
 ours rather than Koelnmesse's, because their data has no wall in it
 (decision 5b). This document records the discovery, the design decisions and
@@ -60,30 +62,31 @@ Measured, after trimming to what we render (see the tool):
 
 | hall level | area | stands | file (raw) | gzipped |
 |---|---|---|---|---|
-| 5.2 | entertainment | 90 | 11 KB | 3.2 KB |
-| 6.1 | entertainment | 35 | 5 KB | 1.4 KB |
-| 7.1 | entertainment | 23 | 3 KB | 1.1 KB |
-| 8.1 | entertainment | 35 | 5 KB | 1.5 KB |
+| 5.1 | entertainment | 141 | 15 KB | 3.3 KB |
+| 5.2 | entertainment | 90 | 11 KB | 3.1 KB |
+| 6.1 | entertainment | 35 | 4 KB | 1.3 KB |
+| 7.1 | entertainment | 23 | 3 KB | 1.0 KB |
+| 8.1 | entertainment | 35 | 4 KB | 1.5 KB |
 | 9.1 | entertainment | 21 | 3 KB | 0.9 KB |
-| 10.1 | entertainment | 191 | 25 KB | 7.0 KB |
-| 10.2 | entertainment | 95 | 24 KB | 8.2 KB |
-| 2.1 | business | 83 | 10 KB | 3.0 KB |
+| 10.1 | entertainment | 191 | 25 KB | 6.8 KB |
+| 10.2 | entertainment | 95 | 24 KB | 8.6 KB |
+| 2.1 | business | 83 | 10 KB | 2.9 KB |
 | 2.2 | business | 95 | 12 KB | 3.3 KB |
-| 3.2 | business | 102 | 16 KB | 5.3 KB |
-| 4.1 | business | 55 | 13 KB | 5.2 KB |
+| 3.2 | business | 102 | 16 KB | 5.6 KB |
+| 4.1 | business | 56 | 14 KB | 5.3 KB |
 | 4.2 | business | 31 | 5 KB | 1.5 KB |
-| **total** | | **856** | **132 KB** | **~42 KB** |
+| **total** | | **998** | **147 KB** | **~45 KB** |
 
-The whole show costs about one webfont. "Lazy-loading because it might be
-a lot of data" inverted into "lazy-load for first paint, precache the lot
-for offline".
+The whole show costs about one webfont. So the plan changed from
+"lazy-load because it might be a lot of data" to "lazy-load for first
+paint, precache the lot for offline".
 
 ## Design decisions
 
 ### 1. Own SVG rendering — no Leaflet, no tiles, no libraries
 
 The official map uses Leaflet with `L.CRS.Simple`. At our scale that
-machinery is dead weight: the biggest hall level is 191 polygons, and a
+machinery buys nothing: the biggest hall level is 191 polygons, and a
 few hundred SVG paths is nothing for a phone. The prototype's whole
 renderer + pan/zoom is ~350 lines of dependency-free JS, in keeping with
 the repo's grain (self-hosted fonts, hand-rolled QR, no build step).
@@ -206,9 +209,9 @@ The snapshot on disk is untouched, as ever.
 
 ### 5. Per-hall lazy files, precached for offline
 
-One JSON per hall level, fetched on first open (0.9–8.4 KB gz), prefetched
-for the rest on idle. Integration adds all twelve + `index.json` to the
-service worker's `DATA` list (`sw.js:44`) — 42 KB gz buys "the map works
+One JSON per hall level, fetched on first open (0.9–8.6 KB gz), prefetched
+for the rest on idle. Integration adds all thirteen + `index.json` to the
+service worker's `DATA` list (`sw.js:44`) — 45 KB gz buys "the map works
 in a dead-reception hall before you ever opened it", which is the whole
 point of the PWA. Runtime updates come free: the `/data/` path rule
 (`sw.js:194`) already serves them network-first with cache fallback.
@@ -283,7 +286,7 @@ against the boundary, and 6–7 m elsewhere, where the outermost thing is a
 full-depth block that needs a perimeter aisle behind it. One number to
 change if a walk says otherwise.
 
-**Which end faces the Boulevard?** That one is worth more than it looks:
+**Which end faces the Boulevard?** This matters more than it looks:
 halls 6, 7 and 9 all open onto the same concourse, and knowing whether it
 is behind you or 200 m the other way is most of what a hall map is for.
 The current plan page exposes nothing directly — no door, no entrance
@@ -306,9 +309,9 @@ moved, so those are read off the pixels as fractions of each wall and
 laid onto ours. It settles what the geometry could not — hall 7 does have
 three doors onto the Boulevard, at 19/48/79 % of its east wall, and its
 passage to hall 6 is at the south-west corner rather than the aisle we
-had snapped it to. Where the two sources meet they agree, which is the
-reassuring part: hall 9's passage to hall 10, hall 10.1's to halls 4, 5,
-9 and 11, all land where the campus polygons put them.
+had snapped it to. Where the two sources meet they agree: hall 9's passage to hall 10, and
+hall 10.1's to halls 4, 5, 9 and 11, all land where the campus polygons
+put them.
 
 Three caveats are in the data as `approx`, because that set is artwork
 too and it shows: hall 8's east-wall doors there are the hall-7 template
@@ -319,7 +322,7 @@ that way, and hall 6 has no plan in the set at all. Those borrow hall 7's
 spacing — same 82 m depth, same building module — and are drawn held
 back.
 
-Consequences worth naming:
+Consequences:
 
 - **The doors are ours, and the credit line says so.** `booth outlines:
   official hall plan · … · hall doors ours, approximate`. Everything else
@@ -450,15 +453,120 @@ save-in-app stay in sync across tabs today. At integration the map page
 should reuse the app's mark helpers verbatim rather than keeping its
 replica (see steps).
 
+### 10. The day route is an order, not a walk
+
+The plan board can already place every saved stop on a day. Reading those
+assignments back onto the floor is what turns "Thursday: eight stops" into
+"Thursday in hall 7.1: these four, in this order" — and it is the one
+thing the plan board structurally cannot show, because a list has no
+geometry.
+
+Three decisions make it honest rather than decorative:
+
+**The order is the plan's, not a solver's.** The pins run in the same
+order the plan board's hall lens lists that hall's stops: whatever order
+the visitor arranged that hall into, or busiest first with played stops
+sinking to the end while they have left it alone. Both the comparator
+(`compareStops`) and the stored positions moved into `js/marks.js`
+alongside `boothCodes` and `stopDays`, for the same reason those are
+there — two views of one plan that disagreed about which stop is number 1
+would be worse than one view. The guide's own route sort reads through it
+too, so there is one definition and no second copy to drift. Rearranging
+is the plan board's own follow-up feature; see
+`docs/PLAN-itinerary-builder.md` section 7.
+
+**The line joining the pins is not a path, and says so.** A shortest walk
+is exactly the thing this data cannot support: Koelnmesse files stand
+blocks and stands, never aisles, and the doors on the outline are already
+our own reading (decision 5b). A route line drawn confidently through
+geometry we do not have would be a guess about the one thing on this page
+a visitor would follow literally — so the line is thin, dashed, drawn
+*under* the labels, and the bar it belongs to says "plan order, not a
+walking route" in both languages.
+
+**A stop is a booth, not a stand.** Where a card holds several stands in
+one hall the map lights all of them already; each carries the same
+number, because it is one stop you walk to, and the line runs through the
+largest. The hall row's badge counts stops too while a day is on, so
+"which hall is Thursday in" is answered by the row you were already
+reading rather than by tapping through twelve halls.
+
+**A day is not one hall, and the wall is where the drawing used to
+stop.** Pins numbered 1–4 in hall 7.1 answer "what here, in what order"
+and leave the question the wall itself raises — *and then where?* — to
+the chip row above. So the halls either side of this one in the plan
+board's hall order are named at the end of the bar's sentence, as
+buttons that open them, and where `outline.json` files a doorway that
+starts the way there, an arrowhead is drawn through it with the route
+line run out to meet it. Either side is measured against the hall on
+screen rather than against its place in the list, so a hall with nothing
+planned in it still stands between two legs: someone who walked into 8.1
+on a day planned for 7.1 and 9.1 is exactly the person who needs telling
+which way is which.
+
+**Which door is a breadth-first walk of the doorways, and claims no
+more.** `exitToward()` seeds itself with the openings the storey on
+screen actually files — 10.2 files its own, and a first step borrowed
+from 10.1 would point at a wall this floor has none in — then expands
+over every door in the file, with the Boulevard and the gates as nodes
+in their own right, because they are how two halls that share no wall
+are joined. Two halls joined by a passage come out as that passage; hall
+7 to hall 9 comes out as hall 7's Boulevard doors. It counts doorways,
+not metres. There is no distance in this data and this is not a shortest
+walk: it is the first step of one, which is the whole of what an arrow
+at a doorway says — leave by here.
+
+Where nothing filed reaches the hall, nothing is drawn. Seven of the
+thirteen levels file no doors at all, and an arrow at a wall we have
+never opened would be the invention decision 5b exists to avoid — the
+leg is still named in the bar, where saying it costs no geometry. Of the
+doors that do start the way there, the one marked is the one nearest the
+stop being left from: hall 7's east wall has three openings onto the
+same Boulevard, and which of them is closest to stop 3 is a fact about
+geometry we have, unlike anything past the wall. A door whose own label
+is already the hall being pointed at gets the arrow and no name — the
+wall has said it once, and the map should not say it twice.
+
+The name goes in the margin, set exactly the way a door's own name is —
+same side, same rotation on an end wall — one line further out, so the
+two never collide however that wall's doors happen to group. Outside is
+the only place on this map with nothing to cover; a name set inside at a
+doorway lands on the outermost stand row, which is the row the map
+exists to show. That costs a second reserved line beyond every wall with
+a doorway in it, whether or not a day is lit and even where no plan will
+ever point — about 6 m of margin, three or four per cent off the hall at
+fit zoom. The alternative is growing the picture under someone who has
+zoomed into a booth, every time a day chip is tapped, which is worse
+than the margin by a distance.
+
+**One step further back, the overview says which halls, in what order.**
+The same reading with the site drawn under it: the day's halls lit,
+numbered 1, 2, 3 in the same hall order, joined by the same dashed line.
+Out here a number is a hall and not a stop — hall 6 first, then hall 9 —
+which is the one thing thirteen chips in a row cannot say however many
+of them carry a count. Both numberings are the plan board's own and
+neither is a walk: a pin inside a hall is that hall group's row, a plate
+out here is that group's place among the groups. A day in one hall gets
+no number and no line, because "first of one" is not an order. The
+plates and the chip row are day-scoped together while a day is picked,
+which is what `dayScoped()` decides for both — the overview used to be
+its exception, back when it carried no route of its own to agree with.
+
+The chosen day rides in the address bar (`map.html?day=2026-08-27#7.1`)
+rather than in prefs: it is a question about one visit, the guide's own
+day filter is not persisted either, and a URL is what lets the plan
+board's "Map →" hand a day over. A `?day=` nobody planned is dropped on
+arrival, the same check a day that has just lost its last stop has to
+pass.
+
 ## Deliberately not built
 
-Route/day overlays (numbered stops for a selected day — though the sheet
-now *names* the day a stop is planned for, see "how it is wired" 8),
-search-on-map, played *toggling* from the map (it is shown, not editable —
-the guide owns that flow), and keyboard interaction beyond Escape, the
-zoom keys and the labelled stand buttons: a keyboard user gets the guide's
-list, which is better for that input anyway, and pretending otherwise with
-an arrow-key pan would be theatre. None of these change the architecture.
+Search-on-map, played *toggling* from the map (it is shown, not editable —
+the guide owns that flow), a *walking* route rather than a plan order
+(decision 10), and keyboard interaction beyond Escape, the zoom keys and
+the labelled stand buttons: a keyboard user gets the guide's list, which is
+better for that input anyway, and pretending otherwise with an arrow-key
+pan would be theatre. None of these change the architecture.
 
 ## How it is wired
 
@@ -469,14 +577,17 @@ an arrow-key pan would be theatre. None of these change the architecture.
    shared as-is: it null-checks everything it touches, so on the map it
    just registers the worker and drives the offline flag.
 2. **Shared rules** live in `js/marks.js` (`GCMarks`), loaded before both
-   apps: the storage keys and shape, `gameKey`, the booth-or-game
-   `hasSaved` predicate, and `boothCodes` — the booth-code normaliser
-   that decides which stand lights up. `js/app.js` calls it behind its
+   apps: the storage keys and shapes, `gameKey`, the booth-or-game
+   `hasSaved` predicate, `boothCodes` — the booth-code normaliser that
+   decides which stand lights up — and the plan's three facts,
+   `readItinerary` / `stopDays` / `compareStops`, which decide which day a
+   stop is on and which stop is number 1. `js/app.js` calls it behind its
    existing names. The one copy that cannot be shared is in
    `tools/fetch-hallplan.mjs` (Node, no DOM), and that file says so.
 3. **Service worker**: `map.html`, `js/map.js`, `js/marks.js` and
-   `css/map.css` are in `SHELL`; all eight `data/hallplan/*` files are in
-   `DATA`. `handleNavigation` picks its fallback with `pageKey()` — an
+   `css/map.css` are in `SHELL`; every `data/hallplan/*` file is in
+   `DATA` — the thirteen hall levels, the index, the outlines and the
+   campus layout. `handleNavigation` picks its fallback with `pageKey()` — an
    offline navigation to `/map.html` gets the cached map, not the guide,
    which is what every navigation used to fall back to.
 4. **Cross-links in**: `hallMarker()` renders the hall plate as an anchor
@@ -507,16 +618,22 @@ an arrow-key pan would be theatre. None of these change the architecture.
     names a *span* rather than a hall: "5–10" for the entertainment area,
     "2–4" for the business one, "5" for a level whose halves it does not
     separate. `areaMapHall()` resolves those to the lowest hall inside
-    the span the snapshot can draw — 5.2, 2.1 and 5.2 — so the plate
+    the span the snapshot can draw — 5.1, 2.1 and 5.1 — so the plate
     opens the near end of the area and the map's own area-grouped chip
-    row carries you along the rest. An exact hall (10.1, 10.2, 5.2)
-    links to itself; only whole levels widen, because "5.1" is a hall
-    the snapshot either has or hasn't and landing on 5.2 instead would
-    be a different room. Hall 1, 5.1, 11.1 and the four hall-less rows
-    stay plain text. The plate keeps the label the data filed, so the
-    accessible name carries both — "Halls 5–10 — open Hall 5.2 on the
+    row carries you along the rest. An exact hall (10.1, 10.2, 5.1)
+    links to itself; only whole levels widen, because "11.1" is a hall
+    the snapshot either has or hasn't and landing on 10.2 instead would
+    be a different room. Hall 1, 11.1 and the four hall-less rows stay
+    plain text. The plate keeps the label the data filed, so the
+    accessible name carries both — "Halls 5–10 — open Hall 5.1 on the
     hall map" — rather than letting the number you tapped and the hall
     you land in disagree silently.
+4b. **The day hand-off**: `mapLink()` takes an optional day, and the plan
+    board's hall lens passes its active day filter into both the hall
+    header's "Map →" and each stop's booth number. So a plan filtered to
+    Thursday opens the map with Thursday's route already drawn; an
+    unfiltered link deliberately carries nothing, because it has no day
+    to have an opinion about.
 5. **Cross-links out**: the sheet links to `./#exhibitors?ex=<id>`, and
    `focusExhibitor()` in `js/app.js` scrolls that card into view and
    flashes it, clearing any filter that would otherwise hide it.
@@ -546,6 +663,18 @@ an arrow-key pan would be theatre. None of these change the architecture.
    two pages started reading it, per that file's rule. The map shows
    assignments and never edits them; a `storage` event keeps an open
    sheet's day current, like the marks.
+9. **The overview** (decision/open question 5) is the hall row's first
+   chip and renders into the same `#map` element a hall does — which is
+   what gives it the pan, the pinch, the zoom buttons and the fit button
+   without a second implementation. `state.hall` holds `"overview"` while
+   it is up, so the URL is `#overview`, `refreshMarks()` forks to
+   `refreshCampus()` (per-hall saved counts rather than per-stand marks),
+   and a hall plate's tap target is the door layer's trick again: an
+   invisible path over the label layer, handled by the same line that
+   handles a door. `data/hallplan/campus.json` is fetched once the first
+   hall is on screen, never before it, and the chip is offered only when
+   it lands — so an installed shell whose worker predates the file simply
+   does not show it, and no control on the page opens nothing.
 
 ## Verification (manual test script)
 
@@ -627,14 +756,61 @@ Serve the repo root; clear `gc2026.saved.v1`.
     links too, keeps its amber plate, and says "trade & media only" in
     its title and its accessible name; chips in hall 1 and the F-areas
     are still not links. In Event info, the areas list opens the map at
-    the near end of a span — "5–10" at 5.2, "2–4" at 2.1 with the trade
-    banner up — an exact hall at itself, and 1 / 5.1 / 11.1 / "—" not at
+    the near end of a span — "5–10" at 5.1, "2–4" at 2.1 with the trade
+    banner up — an exact hall at itself, and 1 / 11.1 / "—" not at
     all. The `.ics` export still contains no markup.
 12. **Offline** — airplane mode, reopen installed app → map, switch to a
     never-opened hall: renders from precache. Navigating straight to
     `map.html` offline serves the map, not the guide.
 13. **Escaping** — official names render through `esc()`/`textContent`
     everywhere; no raw HTML from snapshot JSON reaches the DOM.
+14. **The overview** — the row's first chip draws the site: halls 2–11
+    each in place, the Boulevard down the middle with halls 6 and 7 west
+    of it and 9 and 10 east, hall 8 across the north end, the business
+    halls south behind the Piazza. Halls 1 and 11 are dimmed and take no
+    taps; every other plate opens its hall, and the plate you tapped is
+    the chip that is now active. Save a booth in hall 7 and its plate
+    carries ●1 inside the plate and a signal outline, live, without
+    leaving the overview. Gate names sit clear of the halls at every
+    zoom — north above the plan, south below it, east and west set back
+    over the passages — and there are four of them, not the six the
+    source's artwork marks. `#overview` is a working deep link, and
+    with `campus.json` 404ing the chip is absent and that link falls
+    through to a hall rather than an empty stage.
+15. **Day route** — with nothing assigned, the plan bar is absent. Assign
+    four hall 7.1 stops to Thursday in the guide and mark one played: the
+    bar appears with a Thu chip, tapping it pins 1–4 in the plan board's
+    own row order with the played stop last, the hall chip's badge counts
+    stops instead of saves, and the sheet on a pinned stand reads "Stop 1
+    of 4". A card with two stands in the hall wears its number twice.
+    Tapping the lit chip clears the overlay and the `?day=` with it. The
+    plan board's "Map →" under a Thursday filter lands with the route
+    already on; `?day=1999-01-01` lands with it off. Switching to a hall
+    with nothing planned says so rather than showing an empty bar, and an
+    assignment made in another tab reaches an open map through `storage`.
+
+16. **Legs and the way out** — assign stops in halls 5.2, 6.1, 7.1, 9.1
+    and 10.1 to one day. In 7.1 the bar reads "2 stops here" and ends in
+    "◂ 6.1" and "9.1 ▸", both of which open that hall with the `?day=`
+    still on. The route line runs out to two doorways: an arrowhead into
+    the south passage, unnamed because the wall beside it already reads
+    "Hall 6.1", and one out of the east wall's third Boulevard opening —
+    the one nearest the stop it leaves from — with "Hall 9.1" set in the
+    margin beyond the Boulevard's own name, reading the same way round
+    and clear of every stand. Switch to 8.1, which has nothing planned,
+    where both names land on the south wall one line apart: both legs still
+    stand at their doors with no line to reach them. Switch to 5.2,
+    which files no doors: the leg is named in the bar and nothing is
+    drawn. Two storeys of one hall (10.1 → 10.2) are two legs in the bar
+    and no arrow between them — the escalator is in no file we have.
+17. **The day across the site** — on the overview with that day picked,
+    halls 5, 6, 7, 9 and 10 are lit and numbered 1–5 along one dashed
+    line, the plates and the chips above them both count that day's
+    stops rather than the whole saved list, and the footer reads
+    "9 planned". 10.1 and 10.2 are one plate, one number and the sum of
+    both storeys. A day in a single hall lights its plate and draws
+    neither number nor line. With no day picked the bar offers its own
+    hint and everything reverts to saves.
 
 ## Open questions
 
@@ -654,13 +830,18 @@ Serve the repo root; clear `gc2026.saved.v1`.
    cosmetic: whether an annexe should read as subordinate to its parent
    rather than as a peer. Decide after seeing them on site.
 3. **The other hall levels.** Mostly answered: the five business-area
-   levels are drawn (decision 5a), which leaves hall 1 (Event Arena,
-   20 stands and a single directory row — a venue, not a floor of
-   stands), hall 5.1 (Cosplay Village and the merch halls, 61 directory
-   stands — the strongest remaining candidate), and the outdoor F-areas
-   and P4, which have 11 directory stands between them. Each is a
-   `HALLS` entry in the tool plus a re-run, and each needs its own
-   orientation check, since the signs are a per-hall fact.
+   levels are drawn (decision 5a), and hall 5.1 with them — Cosplay
+   Village, the Artist Area and the ground-floor merch shops, 141
+   stands, the largest entertainment level after hall 10.1. Its signs
+   are as filed: both of hall 5's storeys carry the same `scalex`/
+   `scaley`, its stand rows run A→E the same way round as every other
+   hall's, and flipping it drops the two levels' structural-block
+   overlap from 0.46 to 0.30 — so no `SIGN_FIX` entry, unlike hall 2.1.
+   That leaves hall 1 (Event Arena, 20 stands and a single directory
+   row — a venue, not a floor of stands) and the outdoor F-areas and
+   P4, which have 11 directory stands between them. Each is a `HALLS`
+   entry in the tool plus a re-run, and each needs its own orientation
+   check, since the signs are a per-hall fact.
 4. ~~**Feeding confirmations back.**~~ Built: `unclaimedReport()` lists
    official stand names matching a guide exhibitor in that hall whose
    card has not claimed them. It found twelve stands across eight cards
@@ -668,20 +849,45 @@ Serve the repo root; clear `gc2026.saved.v1`.
    suggestion list for the sourced editorial process and is never
    auto-applied — the match is loose on purpose, which is exactly why a
    human has to read it.
-5. **A campus overview.** The official page embeds hall-outline
-   coordinates for the whole campus (its `hallen` array) — a schematic
-   "which hall is where" entry screen is buildable from data if the
-   per-hall chips prove insufficient wayfinding. Half-spent already:
-   decision 5b reads that array for adjacency (which wall faces the
-   Boulevard, which passage joins which two halls) without drawing any
-   of it. What it is not good enough for is a map — the polygons are on
-   a 5-unit grid and two neighbouring halls come out at different
-   scales, so an overview built from them would be a diagram, not a
-   plan. It also carries the four site entrances (Nord, Ost, Süd, West,
-   plus "Eingang Halle 9"), which the doors deliberately stop short of:
-   those are labelled on the campus artwork, not against a hall wall,
-   and guessing which of hall 8's openings *is* Eingang Nord is a walk,
-   not a derivation.
+5. ~~**A campus overview.**~~ Built, and it is the diagram this entry
+   always said it would be. `tools/fetch-hallplan.mjs --campus` snapshots
+   the page's `hallen` array to `data/hallplan/campus.json`, and the hall
+   row's first chip draws it: every hall in its place, the Boulevard and
+   the Piazza between them, every Durchgang and Passage, the Confex and
+   the Congress wings, the four gates — and a tap on a hall opens it. The
+   halls the guide draws no level of (1 and 11) are on it dimmed, for
+   orientation, and take no taps; each hall the guide *does* draw carries
+   the count of your saved booths in it, the same ●n the chips use.
+
+   What it is still not is a plan: the rings are on a 5-unit grid and each
+   hall is fitted to its slot rather than drawn to scale (hall 6 comes out
+   at ~1.5 m per unit across and ~1.4 down, hall 4 at ~1.6 and ~2.1), so
+   nothing on it measures anything. It is right about where a hall is and
+   wrong about how big it is, and the credit line under it says "diagram,
+   not to scale" for exactly that reason.
+
+   The gates came with it, and did not need the guess this entry feared.
+   They are dots on the site artwork the page lays over the outlines, and
+   once that artwork's frame is pinned to the outlines' (it is theirs
+   shifted 134 units) each lands where it should — Nord in hall 8's own
+   entrance hall, West between halls 2 and 4, Ost beside hall 10, Süd past
+   the corridor between halls 3 and 11. A dot is a coordinate, so we take
+   the points and none of the drawing.
+
+   Four of them, though the artwork marks six. That artwork is
+   Koelnmesse's *Verkehrsleitfaden* — the traffic guide for the grounds,
+   drawn once for every fair they host, with the Hohenzollernbrücke, the
+   streets and the car parks on it — so it marks every way onto the site
+   the buildings have, not the ones a given show opens. "Eingang Halle 9"
+   and "Eingang Boulevard" are in neither the gamescom-configured `hallen`
+   array nor anything gamescom publishes, and the guide's own entrances
+   section says four gates. Drawn beside the four in the same style they
+   would read as a fifth and sixth way in. Taking a coordinate is safe;
+   claiming a door is open is not, and `CAMPUS_ENTRANCES` in the tool is
+   where that line is drawn.
+
+   All of which is a different question from which of hall 8's *openings*
+   is Eingang Nord, which is still a walk and still not on a hall wall.
 7. **Which doors are actually there.** Halls 6 and 9 borrow hall 7's
    door spacing — hall 6 has no 2017 plan and hall 9's Boulevard side is
    not drawn in its own — and hall 8's Boulevard doors are placed from
@@ -691,6 +897,14 @@ Serve the repo root; clear `gc2026.saved.v1`.
    off the booths is in the same position: a stated allowance, because
    no source measures it. Settling either is a walk down the Boulevard
    with the map open, and the fix is a number in one file.
-6. **Day-route overlay.** Numbered stops from the plan board's day
-   assignments drawn on the hall — the natural second iteration once the
-   base map is in.
+6. ~~**Day-route overlay.**~~ Built — see decision 10. Two things are
+   left. One is a question only a walk answers: whether the straight line
+   between stops is read as an order (which is what it is, and what the
+   bar says) or as a path (which the data cannot support). If it reads as
+   a path on site, the fix is to drop the line and keep the pins — the
+   numbers carry the feature on their own. The other is cosmetic: a
+   twelve-stop day in hall 10.1 puts two pins on neighbouring small
+   stands close enough to overlap at fit zoom. Nothing is lost — unlike a
+   label, a pin is never dropped, the stand stays tappable and its sheet
+   still reads "Stop 9 of 12" — and the paint order puts the earlier stop
+   on top, which is the one you need first. Zooming in separates them.

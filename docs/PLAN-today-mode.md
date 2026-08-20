@@ -69,7 +69,16 @@ reads.
   come out of `renderRoute()` and are shared, and `routeGroups()` takes the day
   and the hide-played flag as arguments defaulting to the view state. Today is
   the hall lens scoped to one date; a second copy of that markup would drift the
-  moment either view grew a field.
+  moment either view grew a field — which it did, twice, within the week.
+- **Today honours the plan's order but does not offer to change it.**
+  `routeGroups()` sorts through the shared `GCMarks.compareStops`, so a hall
+  arranged by hand in the planner is walked that way here for free. The reorder
+  arrows are suppressed (`routeBoard(..., { move: false })`) for two reasons
+  that agree: the delegated handler reads the order it is permuting off
+  `#plan-board`, so an arrow anywhere else is a dead button, and Today's list is
+  one day with the played stops folded away — arranging against a set the
+  visitor cannot see is the wrong offer. Anything that changes the order goes
+  through `onPlanOrderChanged()`, which redraws both screens.
 
 ## Implementation
 

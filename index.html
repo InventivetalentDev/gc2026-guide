@@ -5,6 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning." data-i18n-attr="content:meta.description">
   <meta name="color-scheme" content="dark">
+  <!-- The old addresses, for anyone who has nothing on them yet. Three
+       hostnames still answer while they drain (wrangler.toml), and they serve
+       the guide rather than redirect because everything the guide holds — the
+       saved list, the day plan, the played marks — is per-origin, so a
+       redirect would strand all of it.
+
+       That argument is about people with something to strand. Someone
+       arriving now from an old link or a printed URL has nothing here, and
+       nothing is what a redirect costs them: send them to the address that is
+       staying, before a byte is painted.
+
+       Four things stop it, and each is a way of saying somebody chose to be
+       here:
+
+       storage      anything at all in localStorage — a saved booth, a chosen
+                    language, a dismissed move notice, the installed marker
+                    js/pwa.js writes. Whoever left it gets offerMove() in
+                    js/app.js instead, which carries their plan across rather
+                    than dropping them on an empty origin.
+       standalone   the installed app is running this. Its address bar does not
+                    update, so a redirect would leave the app showing another
+                    origin with no sign of what happened and no way back.
+       offline      the destination has no service worker and no cache on this
+                    device, so redirecting with no network redirects to an
+                    error page — and a Koelnmesse hall is where that is
+                    likeliest.
+       blocked      localStorage throws (Safari private mode, cookies blocked).
+                    Unreadable is not empty, and staying is the reversible
+                    half.
+
+       Path, query and hash all ride along: an old #s?t=… share link arrives at
+       hallgui.de as a share link, and ?lang=de arrives in German. replace()
+       rather than assign() so Back goes to wherever they came from instead of
+       to a URL that redirects again.
+
+       js/app.js keeps its own copy of the host list, and map.html its own copy
+       of this block — the same deal as the language stamp below, which
+       js/i18n.js also duplicates. Nothing that runs this early can be a file,
+       and the whole block comes out with the last retired hostname. -->
+  <script>
+    (function () {
+      try {
+        var home = "https://hallgui.de";
+        var legacy = ["gc2026.inventivetalent.org", "gamescom.guide", "gc26.guide"];
+        if (legacy.indexOf(location.host) === -1 || location.origin === home) return;
+        if (navigator.onLine === false) return;
+        var displayed = function (mode) {
+          return window.matchMedia("(display-mode: " + mode + ")").matches;
+        };
+        if (displayed("standalone") || displayed("minimal-ui") || navigator.standalone === true) return;
+        if (localStorage.length !== 0) return;
+        location.replace(home + location.pathname + location.search + location.hash);
+      } catch (e) {
+        /* storage unreadable, or no matchMedia: stay, and leave it to the move
+           notice — the path everyone on these hostnames had until now */
+      }
+    })();
+  </script>
   <!-- Language, decided before anything paints. The guide switches at
        runtime rather than on separate /de/ URLs (one deploy, one service
        worker scope, no interaction with the SPA routing in wrangler.toml),
@@ -39,17 +97,95 @@
     })();
   </script>
   <meta name="theme-color" content="#09090a">
-  <title>gamescom 2026 Guide</title>
+  <title data-i18n="doc.title">gamescom 2026 Guide — exhibitors, games &amp; hall plan</title>
+
   <!-- Absolute, and deliberately not relative: the same file is served on
        hallgui.de and on the three hostnames being retired behind it, and this
        is what points search engines at the new domain without redirecting
-       anyone. A redirect would strand every saved list on the old origin. -->
+       anyone. A redirect would strand every saved list on the old origin.
+
+       Rewritten to the German variant's own address by the stamping script
+       below when ?lang=de is on the URL — a language variant that canonicals
+       to the English page is a language variant that gets dropped. -->
   <link rel="canonical" href="https://hallgui.de/">
+
+  <!-- The only route a crawler has to the German guide. The language is
+       resolved at runtime from navigator.languages, and a crawler arrives
+       with no German preference and no stored one, so it would otherwise see
+       nothing but English no matter how often it came back. ?lang=de is the
+       one address that pins the language regardless of who is asking.
+
+       The set is identical on both variants and includes self, which is what
+       makes it reciprocal; x-default is the unpinned address, where the
+       runtime picks for the visitor. Kept in step with sitemap.xml and with
+       SUPPORTED in js/i18n.js. -->
+  <link rel="alternate" hreflang="en" href="https://hallgui.de/">
+  <link rel="alternate" hreflang="de" href="https://hallgui.de/?lang=de">
+  <link rel="alternate" hreflang="x-default" href="https://hallgui.de/">
+
+  <!-- Link previews. The guide is passed around in queues and Discord servers
+       far more than it is searched for, and every one of those unfurlers is a
+       server that fetches the HTML and never runs a line of it — so these
+       carry the English text statically rather than through data-i18n, which
+       only ever resolves in a real browser. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="gamescom 2026 guide">
+  <!-- The same two strings as <title> and the description above, so they carry
+       the same keys rather than a third copy to keep in step: static English
+       for the unfurlers, German for anything that does render the page. -->
+  <meta property="og:title" content="gamescom 2026 Guide — exhibitors, games &amp; hall plan" data-i18n-attr="content:doc.title">
+  <meta property="og:description" content="Unofficial guide to gamescom 2026 — exhibitors, games, hall &amp; booth locations, crowd forecasts and visit planning." data-i18n-attr="content:meta.description">
+  <meta property="og:url" content="https://hallgui.de/">
+  <!-- 1200×630 is the size every unfurler crops to; icons/og-cover.png is
+       generated at that size by tools/make-screenshots.mjs. Absolute because
+       a relative og:image is resolved by too few of them to rely on. -->
+  <meta property="og:image" content="https://hallgui.de/icons/og-cover.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The gamescom 2026 guide, showing exhibitor cards with hall and booth numbers.">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:locale:alternate" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="manifest" id="app-manifest" href="manifest.webmanifest">
+  <!-- Everything above carries the English defaults, so a crawler or unfurler
+       that never runs scripts still gets a complete and correct set. This
+       stamps the German variant over them, and splits on two different
+       questions:
+
+       what the URL says     canonical and og:url, which are claims about
+                             which address this page *is*. hallgui.de/ is one
+                             page whatever the visitor's browser prefers, so
+                             deriving these from the resolved language would
+                             have one address reporting two canonicals
+                             depending on who asked — the surest way to have
+                             neither believed.
+
+       what is on screen     the manifest and og:locale, which describe the
+                             page the visitor actually got. -->
   <script>
-    if (document.documentElement.lang === "de") {
-      document.getElementById("app-manifest").href = "manifest.de.webmanifest";
-    }
+    (function () {
+      try {
+        var alt = function (code) {
+          return document.querySelector('link[rel="alternate"][hreflang="' + code + '"]').href;
+        };
+        var set = function (selector, value) {
+          document.querySelector(selector).setAttribute("content", value);
+        };
+        if (new URLSearchParams(location.search).get("lang") === "de") {
+          document.querySelector('link[rel="canonical"]').href = alt("de");
+          set('meta[property="og:url"]', alt("de"));
+        }
+        if (document.documentElement.lang === "de") {
+          document.getElementById("app-manifest").href = "manifest.de.webmanifest";
+          set('meta[property="og:locale"]', "de_DE");
+          set('meta[property="og:locale:alternate"]', "en_GB");
+        }
+      } catch (e) {
+        /* The English defaults in the markup are already correct and
+           complete; a failure here must not take the page down with it. */
+      }
+    })();
   </script>
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -67,6 +203,77 @@
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23ff4d17'/><text x='50' y='72' font-size='58' font-family='monospace' font-weight='700' text-anchor='middle' fill='%230c0c0d'>26</text></svg>">
+
+  <!-- What the page is about, stated for machines. Everything below the
+       masthead is rendered from JSON after boot, so a crawler's first look at
+       this file finds a header, a footer and no subject at all; this is the
+       one part of the page that says "this is a listing for a five-day trade
+       show in Cologne" without a script having to run first.
+
+       Deliberately absent: ticket prices, as an Offer. They are in the guide
+       and they are correct, but an unofficial listing quoting prices in a
+       search result is the one thing here that could be read as selling
+       something, and the official shop is the only place that should be.
+       Also absent: a SearchAction. The search is client-side with no URL for
+       a query to arrive on, so declaring one would be a promise the app
+       cannot keep.
+
+       The dates, the name and the place are checked against data/event.json
+       by tools/check-seo.mjs on every build — this is a hand-written copy of
+       data that moves, and the gate is what stops it drifting. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://hallgui.de/#website",
+        "url": "https://hallgui.de/",
+        "name": "gamescom 2026 guide",
+        "description": "Unofficial visitor guide to gamescom 2026 — exhibitors, games, hall and booth locations, crowd forecasts and visit planning.",
+        "inLanguage": ["en", "de"],
+        "isAccessibleForFree": true,
+        "about": { "@id": "https://hallgui.de/#event" },
+        "creator": {
+          "@type": "Person",
+          "name": "inventivetalent",
+          "url": "https://inventivetalent.org"
+        }
+      },
+      {
+        "@type": "Event",
+        "@id": "https://hallgui.de/#event",
+        "name": "gamescom 2026",
+        "description": "The games industry trade fair and consumer show at Koelnmesse in Cologne.",
+        "startDate": "2026-08-26T09:00:00+02:00",
+        "endDate": "2026-08-30T20:00:00+02:00",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "image": "https://hallgui.de/icons/og-cover.png",
+        "url": "https://hallgui.de/",
+        "sameAs": "https://www.gamescom.global/",
+        "location": {
+          "@type": "Place",
+          "name": "Koelnmesse",
+          "url": "https://www.koelnmesse.de/",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Messeplatz 1",
+            "addressLocality": "Cologne",
+            "postalCode": "50679",
+            "addressCountry": "DE"
+          }
+        },
+        "organizer": {
+          "@type": "Organization",
+          "name": "Koelnmesse GmbH",
+          "url": "https://www.koelnmesse.de/"
+        },
+        "subjectOf": { "@id": "https://hallgui.de/#website" }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
@@ -94,17 +301,24 @@
            the block the dates and countdown are right-aligned against. One row
            under the countdown on a wide screen; on a phone the group dissolves
            (display: contents) and each button takes its own place in the
-           masthead grid — share in the dead space beside the wordmark, because
-           handing the guide to the person next to you in a queue is a thing
-           you do standing up, one-handed. -->
+           masthead grid — share in the dead space beside the wordmark, where a
+           thumb can reach it one-handed in a queue. -->
       <div class="header-actions">
         <button class="header-share" id="share-site" type="button" aria-haspopup="dialog"
                 data-i18n="shareSite.action" data-i18n-attr="aria-label:shareSite.actionAria"
                 aria-label="Share this guide">Share</button>
-        <!-- Labelled with the other language's own name by js/i18n.js, and
-             hidden until it wires up so a scripting failure cannot leave a
-             dead control in the header. -->
-        <button class="lang-switch" data-lang-switch type="button" hidden></button>
+        <!-- A real link, and no longer hidden until scripting reaches it.
+             ?lang=de is the only address that pins the language for someone
+             who does not arrive with a German browser — a crawler, a link
+             pasted into a German Discord, a browser with scripting off — and
+             a <button> gave none of them a way to the German guide at all.
+
+             js/i18n.js relabels it for whichever language you are not
+             reading, points it at the view you are on, and takes the click so
+             switching still goes through setLang: remembered, and with ?lang
+             kept off the address bar. Following it without scripts still
+             works; the choice just rides that one load. -->
+        <a class="lang-switch" data-lang-switch href="?lang=de" lang="de" hreflang="de">Deutsch</a>
         <button class="install-btn" id="install-app" type="button" hidden data-i18n="pwa.install">Install app</button>
       </div>
     </div>
@@ -273,6 +487,12 @@
             <button class="chip lens-chip active" type="button" data-lens="day" aria-pressed="true" data-i18n="plan.lensDay">By day</button>
             <button class="chip lens-chip" type="button" data-lens="hall" aria-pressed="false" data-i18n="plan.lensHall">By hall</button>
           </div>
+          <!-- Only shown once the plan has been arranged by hand; a plan
+               still sorting itself has nothing to reset. -->
+          <button class="reset hidden" id="plan-order-reset" type="button"
+                  data-i18n="action.resetOrder"
+                  data-i18n-attr="title:plan.resetOrderTitle"
+                  title="Sort the plan by queue index again, busiest first">Reset order</button>
           <button class="reset hidden" id="export-ics" type="button" data-i18n="action.exportIcs">Export to calendar (.ics)</button>
           <span class="result-count" id="plan-count"></span>
         </div>
@@ -332,7 +552,8 @@
         <p data-i18n="updates.lede">This guide is refreshed every few days until the show as exhibitors announce lineups and booth locations. What changed in each revision:</p>
         <!-- The changelog itself stays English: it is a transparency log
              rewritten every few days, and translating it would double the
-             editorial cycle. German readers get told rather than puzzled. -->
+             editorial cycle. German readers are told so rather than left to
+             work it out. -->
         <p class="mono-note" data-i18n="updates.englishOnly" data-i18n-only="de" hidden></p>
       </div>
       <div id="changelog" class="timeline"></div>
@@ -352,7 +573,7 @@
              German visitor looks for, and § 5 DDG is about it being easy to
              find. A second switcher lives here as the findability backstop
              for anyone who scrolled past the header. -->
-        <p><a class="subtle-link" href="imprint.html" data-i18n="footer.imprint">Imprint</a> &middot; <a class="subtle-link" href="privacy.html" data-i18n="footer.privacy">Privacy</a> &middot; <button class="subtle-link lang-switch-link" data-lang-switch type="button" hidden></button></p>
+        <p><a class="subtle-link" href="imprint.html" data-i18n="footer.imprint">Imprint</a> &middot; <a class="subtle-link" href="privacy.html" data-i18n="footer.privacy">Privacy</a> &middot; <a class="subtle-link lang-switch-link" data-lang-switch href="?lang=de" lang="de" hreflang="de">Deutsch</a></p>
         <p class="mono-note" id="data-freshness"></p>
       </div>
       <div class="footer-col">

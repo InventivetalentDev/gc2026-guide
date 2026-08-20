@@ -46,7 +46,7 @@
   {"nr":"A-040 B-039","a":196,"poly":[[55.5,67.5],[41,67.5],[41,54],[55.5,54]],"names":["servers.com B.V"]},
   {"nr":"A-050 B-049","a":122,"poly":[[41,67.5],[32,67.5],[32,54],[41,54]],"names":["Keywords International Limited"]},
   {"nr":"A-060","a":530,"poly":[[26,48.5],[26,70.5],[21.5,70.5],[21.5,75],[6,75],[6,50],[6.5,50],[6.5,48.5]],"names":["Gamer Network Ltd","Capybara Games","Cherry Europe GmbH","ESM.ONE INC","Finji, LLC.","G.B.T. Technology Trading GmbH","Gravity Well","Innovision Multimedia Limited","INSTINCT3 GmbH","Jackbox Games","MICROIDS SA","MY.GAMES B.V.","SAPPHIRE Technology Ltd.","VaultN B.V.","Zotac Europe GmbH"]},
-  {"nr":"A-060g","a":530,"poly":[[26,48.5],[6.5,48.5],[6.5,50],[6,50],[6,75],[21.5,75],[21.5,70.5],[26,70.5]],"names":[]},
+  {"nr":"A-060g","a":530,"poly":[[26,48.5],[6.5,48.5],[6.5,50],[6,50],[6,75],[21.5,75],[21.5,70.5],[26,70.5]],"names":["Bonfire Studios, Inc"]},
   {"nr":"B-009","a":20,"poly":[[119.5,52.5],[124.5,52.5],[124.5,56.5],[119.5,56.5]],"names":["Ocean Drive Studio, Inc."]},
   {"nr":"B-011","a":20,"poly":[[119.5,56.5],[124.5,56.5],[124.5,60.5],[119.5,60.5]],"names":["Kakao Games Corp."]},
   {"nr":"B-013","a":15,"poly":[[119.5,65.5],[122.5,65.5],[122.5,60.5],[119.5,60.5]],"names":["AREA 35"]},

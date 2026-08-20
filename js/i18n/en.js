@@ -16,6 +16,11 @@ window.GC_STRINGS = window.GC_STRINGS || {};
 
 window.GC_STRINGS.en = {
   /* ---------- document & navigation ---------- */
+  /* The tab label, the bookmark, and the blue line of a search result — one
+     string doing three jobs, which is why it names what the guide is for
+     rather than only what it is called. map.html has had its own since it
+     was written; this is index.html's. */
+  "doc.title": "gamescom 2026 Guide — exhibitors, games & hall plan",
   "meta.description":
     "Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning.",
   "nav.skip": "Skip to content",
@@ -53,6 +58,7 @@ window.GC_STRINGS.en = {
   "action.yourPlan": "Your plan →",
   "action.clearFilters": "Clear filters",
   "action.exportIcs": "Export to calendar (.ics)",
+  "action.resetOrder": "Reset order",
   "action.undo": "Undo",
   "action.dismiss": "Dismiss",
 
@@ -229,9 +235,9 @@ window.GC_STRINGS.en = {
   "planner.dayPlannedAria": "Show {day}'s stops in your plan",
 
   "plan.sub.day":
-    "Give each saved booth and game a day. Unassigned items sit at the top until you place them.",
+    "Give each saved booth and game a day, then put the day in the order you'll walk it — the arrows move a stop up or down. Unassigned items sit at the top until you place them.",
   "plan.sub.hall":
-    "Your stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls.",
+    "Your stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls. The arrows set the order inside a hall, which is the order the map numbers its pins in.",
   "plan.arrangeAria": "Arrange your plan",
   "plan.lensDay": "By day",
   "plan.lensHall": "By hall",
@@ -244,6 +250,10 @@ window.GC_STRINGS.en = {
   "plan.boothTba": "Booth TBA",
   "plan.queueWith": "Queue {n}/5 {label}",
   "plan.queueUnknown": "Queue unknown",
+  "plan.moveAria": "Move {name} in the plan — {n} of {total}",
+  "plan.move.up": "Move {name} up",
+  "plan.move.down": "Move {name} down",
+  "plan.resetOrderTitle": "Sort the plan by queue index again, busiest first",
   "plan.assignAria": "Assign {name} to a day",
   "plan.assignToDay": "Assign to {day}",
   "plan.removeFromDay": "Remove from {day}",
@@ -370,6 +380,7 @@ window.GC_STRINGS.en = {
   "share.linkHas": "A shared link has {items} — {n} new to you.",
   "share.addAction": "Add to my list",
   "share.added": "Added {items} from the shared link.",
+  "toast.orderReset": "Plan back in queue order.",
   "toast.moveUndone": "Move undone.",
   "toast.importUndone": "Shared list import undone.",
   "moved.withList": "The guide has moved to hallgui.de. Your list comes with you.",
@@ -402,7 +413,7 @@ window.GC_STRINGS.en = {
 
   /* ---------- confirmations & boot ---------- */
   "confirm.clearSaved":
-    "Forget all {n} saved item and its day assignment? This can't be undone.|Forget all {n} saved items and their day assignments? This can't be undone.",
+    "Forget all {n} saved item, its day assignment and its place in the plan? This can't be undone.|Forget all {n} saved items, their day assignments and the order you put them in? This can't be undone.",
   "confirm.clearPlayed":
     "Forget all {n} played mark? This can't be undone.|Forget all {n} played marks? This can't be undone.",
   "boot.loadFailed":
@@ -469,7 +480,33 @@ window.GC_STRINGS.en = {
   "map.zoomFit": "Show the whole hall",
   "map.counts": "{n} stands · {covered} in the guide",
   "map.countsSaved": " · {n} saved",
+  "map.countsPlanned": " · {n} planned",
   "map.chipSavedAria": ", {n} saved",
+  /* ---- the day route overlay (see renderRoute in js/map.js) ----
+     The bar names what the numbers mean and stops short of claiming a walk:
+     the snapshot files stands, never aisles, so the line joining the pins is
+     the plan's order and nothing more. */
+  "map.routeAria": "Show one day's stops",
+  "map.routeKicker": "Plan",
+  "map.routeDayOn": "Show {day}'s stops",
+  "map.routeDayOff": "Hide {day}'s stops",
+  "map.routeUnplacedOn": "Show the stops without a day yet",
+  "map.routeUnplacedOff": "Hide the stops without a day yet",
+  "map.routeHint": "pick a day to number its stops",
+  "map.routeStops": "{n} stop here|{n} stops here",
+  "map.routeOrderNote": "· plan order, not a walking route",
+  "map.routeNoneHere": "nothing planned in this hall",
+  "map.legPrev": "◂ {hall} · {n} stop|◂ {hall} · {n} stops",
+  "map.legNext": "{hall} · {n} stop ▸|{hall} · {n} stops ▸",
+  "map.legPrevAria": "Before this hall in the plan: hall {hall}, {n} stop — open it|Before this hall in the plan: hall {hall}, {n} stops — open it",
+  "map.legNextAria": "After this hall in the plan: hall {hall}, {n} stop — open it|After this hall in the plan: hall {hall}, {n} stops — open it",
+  "map.routeHintCampus": "pick a day to see its halls in order",
+  "map.routeHalls": "{n} hall|{n} halls",
+  "map.routeStopsAll": "{n} stop|{n} stops",
+  "map.routeNoneAnywhere": "nothing planned that day",
+  "map.chipPlannedAria": ", {n} stop planned|, {n} stops planned",
+  "map.stopBadge": "Stop {n} of {total}",
+  "map.stopAria": " — stop {n} of {total}",
   "map.outlines": "booth outlines",
   "map.officialHallPlan": "official hall plan",
   "map.checkedOn": "checked {date} · schematic, unofficial",
@@ -482,6 +519,38 @@ window.GC_STRINGS.en = {
      files blocks and stands, never a wall or a doorway, so every opening
      on the map is our own reading of where one is. */
   "map.doorsApprox": "hall doors ours, approximate",
+
+  /* ---------- the campus overview ----------
+
+     The row's first chip: one step back from a hall to the whole site.
+     "Overview" rather than "Site" or "All halls" because the chips beside
+     it are halls, and this is the view of them.
+
+     map.place.* names a piece of ground between the halls, map.gate.* one
+     of the four gates — both keyed by what data/hallplan/campus.json calls
+     it. A gate name is set in a strip of margin or over a passage, and
+     wraps to two lines to fit either, so it reads as "Entrance / North";
+     keep them two words for that reason. */
+  "map.overview": "Overview",
+  "map.overviewAria": "Overview of the whole site",
+  "map.campusAria": "Diagram of the gamescom halls, the Boulevard between them and the entrances",
+  "map.campusCounts": "{n} halls · tap one to open it",
+  "map.campusLayout": "campus layout",
+  /* The halls on this diagram are fitted to their slots on Koelnmesse's
+     own artwork rather than drawn to scale, so it is right about where a
+     hall is and wrong about how big it is. Said out loud, next to the
+     credit, because the map's other view is true metres — and after
+     map.checkedOn, which already calls the drawing schematic. */
+  "map.campusNotToScale": "not to scale",
+  "map.place.boulevard": "Boulevard",
+  "map.place.piazza": "Piazza",
+  "map.place.confex": "Confex",
+  "map.place.congress-north": "Congress North",
+  "map.place.congress-east": "Congress East",
+  "map.gate.entrance-north": "Entrance North",
+  "map.gate.entrance-east": "Entrance East",
+  "map.gate.entrance-south": "Entrance South",
+  "map.gate.entrance-west": "Entrance West",
 
   /* ---------- the trade badge & the business halls ----------
 
