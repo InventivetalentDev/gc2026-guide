@@ -14,7 +14,9 @@
  *   1. key parity          — every en key exists in de, and nothing extra
  *   2. plural parity       — an en "one|other" string is plural in de too
  *   3. placeholder parity  — the same {name} set on both sides
- *   4. referential         — data keys point at things the base data has
+ *   4. referential         — data keys point at things the base data has, and
+ *                            the enums in the data (a trade card's `access`, a
+ *                            changelog bullet's `kind`) have wording behind them
  *   5. staleness           — the English changed after the German was written
  *
  * (5) is what keeps a fast editorial cycle honest: data/i18n/en.json is
@@ -41,6 +43,10 @@ const CODE_TAGS = ["not exhibiting", "offsite"];
 /* The `access` enum on a trade card. Kept in step with trade.access.* in
    js/i18n/<lang>.js and with TRADE_ACCESS_KEYS in js/app.js. */
 const TRADE_ACCESS_KEYS = ["open", "appointment", "mixed"];
+
+/* Where the changelog's `kind` enum takes its wording from — the labels behind
+   it are `${KIND_PREFIX}<kind>` in the UI registry. See checkChangelog. */
+const KIND_PREFIX = "updates.kind.";
 
 const errors = [];
 const warnings = [];
@@ -202,6 +208,32 @@ function checkReferences(strings, exhibitors, event, directory) {
   }
 }
 
+/* The changelog's `kind` is an enum in the data whose wording lives in the UI
+   registry — the same arrangement as `access` on a trade card. It is checked
+   here because the failure is silent in exactly the way this file exists to
+   catch: an untagged or misspelled bullet renders as a bullet with no tag, so
+   the Updates timeline stops being scannable one line at a time, and nothing
+   on screen says a line is missing. */
+function checkChangelog(uiSource, changelog) {
+  const kinds = new Set(
+    [...uiSource.keys()].filter((k) => k.startsWith(KIND_PREFIX)).map((k) => k.slice(KIND_PREFIX.length))
+  );
+  for (const entry of changelog) {
+    (entry.changes || []).forEach((change, i) => {
+      const where = `rev ${entry.revision} bullet ${i + 1}`;
+      const kind = typeof change === "string" ? undefined : change?.kind;
+      if (!kind) {
+        fail(`changelog: ${where} has no kind — tag it ${[...kinds].join(", ")}`);
+      } else if (!kinds.has(kind)) {
+        fail(`changelog: ${where} has kind "${kind}", which has no ${KIND_PREFIX}* wording`);
+      }
+      if (typeof change !== "string" && !String(change?.text || "").trim()) {
+        fail(`changelog: ${where} has no text`);
+      }
+    });
+  }
+}
+
 /* ---------- 5: has the English moved on without the German? ---------- */
 
 function checkStaleness(source, update) {
@@ -256,6 +288,7 @@ const dataDE = readJSON("data/i18n/de.json");
 const exhibitors = readJSON("data/exhibitors.json");
 const event = readJSON("data/event.json");
 const directory = readJSON("data/directory.json");
+const changelog = readJSON("data/changelog.json");
 
 const uiSource = flatten(registries[SOURCE], "", new Map());
 const dataSource = flatten(dataEN, "", new Map());
@@ -264,6 +297,7 @@ checkParity("ui", uiSource, flatten(registries.de, "", new Map()), "de");
 checkParity("data", dataSource, flatten(dataDE, "", new Map()), "de");
 checkReferences(dataEN, exhibitors, event, directory);
 checkReferences(dataDE, exhibitors, event, directory);
+checkChangelog(uiSource, changelog);
 
 /* One namespace so a key can never collide across the two surfaces. */
 const everything = new Map();

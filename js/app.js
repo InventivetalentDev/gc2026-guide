@@ -39,6 +39,12 @@ const state = {
   planLens: "day",
   /* hall-lens day filter: "all", an ISO day date, or "none" (unassigned) */
   planDay: "all",
+  /* which kind of change the Updates timeline is showing: "all" or one of
+     CHANGE_KINDS. Deliberately not in prefs — the other view preferences are
+     about how you like to read, and this one hides entries. A changelog that
+     came back next week still filtered to "fix", with no memory of having set
+     it, would be a transparency log quietly holding things back. */
+  updateKind: "all",
   /* hall ids the hall map can draw; filled from data/hallplan/index.json */
   mapHalls: new Set(),
   /* hall id -> official area key ("entertainment" | "business"), from the same
@@ -4251,18 +4257,112 @@ function renderEvent() {
   $("#badge-toggle").addEventListener("click", () => setTrade(!state.trade, { announce: true }));
 }
 
-/* ---------- changelog ---------- */
+/* ---------- changelog ----------
+
+   Every bullet in data/changelog.json carries a `kind`, and this is the whole
+   reason it does: a revision that added game information reads the same as one
+   that moved a button around until something says which it was. The three are
+   what the update cycle actually produces — see docs/UPDATING.md for the rule
+   each is written to:
+
+     feature — what the guide can do changed
+     fix     — the guide was misbehaving and now isn't
+     content — what the guide knows about the show changed
+
+   A revision is never tagged in the data. Its kinds are the distinct kinds of
+   its bullets, derived here, so the two can't drift apart the way a
+   hand-maintained summary line would. */
+
+const CHANGE_KINDS = ["feature", "fix", "content"];
+
+/* A bullet written before the kinds existed is a bare string. That pairing is
+   real for one load — the JSON is served network-first but falls back to the
+   cached copy offline, so an installed guide can hold last week's changelog
+   against this week's script — and it renders untagged rather than throwing or
+   inventing a kind for prose nobody classified. */
+function changeParts(change) {
+  if (typeof change === "string") return { kind: null, text: change };
+  const kind = CHANGE_KINDS.includes(change?.kind) ? change.kind : null;
+  return { kind, text: String(change?.text ?? "") };
+}
+
+function kindTag(kind, cls) {
+  return `<span class="${cls}" data-kind="${esc(kind)}">${esc(t(`updates.kind.${kind}`))}</span>`;
+}
 
 function renderChangelog() {
   const entries = [...(state.changelog || [])].sort((a, b) => b.revision - a.revision);
-  $("#changelog").innerHTML = entries
+  const latest = entries[0]?.revision;
+  const present = new Set();
+  const rows = entries.map((e) => {
+    const changes = (e.changes || []).map(changeParts);
+    for (const c of changes) if (c.kind) present.add(c.kind);
+    /* The revision's own tags: the distinct kinds under it, in CHANGE_KINDS
+       order so every head reads left to right the same way. Taken from all of
+       its bullets, never from the ones a filter leaves showing — a log that hid
+       the fact that this revision also shipped a feature would be a worse
+       transparency log than the untagged one it replaces. */
+    return { entry: e, changes, kinds: CHANGE_KINDS.filter((k) => changes.some((c) => c.kind === k)) };
+  });
+
+  /* The row only offers kinds this changelog actually contains: a chip that
+     filters to nothing is a question the log can't answer. It stays hidden
+     entirely while nothing is tagged — the legacy pairing above. */
+  const kinds = CHANGE_KINDS.filter((k) => present.has(k));
+  const filters = $("#update-filters");
+  if (filters) {
+    if (!kinds.includes(state.updateKind)) state.updateKind = "all";
+    filters.innerHTML = ["all", ...kinds]
+      .map(
+        (kind) =>
+          `<button class="chip kind-chip ${state.updateKind === kind ? "active" : ""}" type="button"
+            data-kind="${esc(kind)}" aria-pressed="${state.updateKind === kind}">${esc(
+              kind === "all" ? t("filter.all") : t(`updates.kind.${kind}`)
+            )}</button>`
+      )
+      .join("");
+    filters.closest(".updates-toolbar")?.classList.toggle("hidden", kinds.length < 2);
+    $$("#update-filters .chip").forEach((chip) =>
+      chip.addEventListener("click", () => {
+        state.updateKind = chip.dataset.kind;
+        renderChangelog();
+        $(`#update-filters [data-kind="${CSS.escape(state.updateKind)}"]`)?.focus();
+      })
+    );
+  }
+
+  const wanted = state.updateKind;
+  const visible = rows
+    .map((row) => ({
+      ...row,
+      shown: wanted === "all" ? row.changes : row.changes.filter((c) => c.kind === wanted),
+    }))
+    .filter((row) => row.shown.length);
+
+  if (!visible.length) {
+    $("#changelog").innerHTML = entries.length
+      ? `<p class="empty">${esc(t("updates.noneOfKind"))}</p>`
+      : "";
+    return;
+  }
+
+  $("#changelog").innerHTML = visible
     .map(
-      (e) => `<div class="timeline-entry">
+      ({ entry: e, kinds: revKinds, shown }) =>
+        `<div class="timeline-entry"${e.revision === latest ? ' data-latest="true"' : ""}>
         <div class="timeline-head">
           <span class="timeline-date">${esc(formatDate(e.date))}</span>
           <span class="rev-tag">${esc(t("updates.rev", { n: e.revision }))}</span>
+          ${revKinds.map((k) => kindTag(k, "kind-tag")).join("")}
         </div>
-        <ul>${(e.changes || []).map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
+        <ul>${shown
+          .map(
+            (c) =>
+              `<li${c.kind ? ` data-kind="${esc(c.kind)}"` : ""}>${
+                c.kind ? kindTag(c.kind, "change-tag") : ""
+              }${esc(c.text)}</li>`
+          )
+          .join("")}</ul>
       </div>`
     )
     .join("");

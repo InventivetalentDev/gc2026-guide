@@ -277,6 +277,13 @@ window.GC_STRINGS.de = {
     "Dieser Guide wird bis zur Messe alle paar Tage aktualisiert, sobald Aussteller ihre Spiele und Standorte bekannt geben. Was sich in welcher Revision geändert hat:",
   "updates.rev": "Rev. {n}",
   "updates.englishOnly": "Die Änderungsliste unten erscheint auf Englisch.",
+  "updates.filterLabel": "Zeigen",
+  "updates.kind.feature": "Funktion",
+  /* "Behoben", not "Fehlerbehebung": the tag is set inline at the head of every
+     bullet, and the long compound took a third of the line on a phone. */
+  "updates.kind.fix": "Behoben",
+  "updates.kind.content": "Messe-Infos",
+  "updates.noneOfKind": "Zu dieser Art sind noch keine Änderungen verzeichnet.",
 
   /* ---------- countdown & freshness ---------- */
   "countdown.days": "T−{n} Tag|T−{n} Tage",
