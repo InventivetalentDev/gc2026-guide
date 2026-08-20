@@ -1819,31 +1819,71 @@ a.area-hall::after { content: ""; position: absolute; inset: -6px -8px; }
 /* ============================================================
    updates timeline
    ============================================================ */
+.updates-toolbar {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.chip.kind-chip.active { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
+
 .timeline { border-left: 1px solid var(--rule); padding-left: 26px; margin-left: 6px; }
 .timeline-entry { position: relative; padding-bottom: 30px; }
 .timeline-entry::before {
   content: "";
   position: absolute; left: -31px; top: 7px;
   width: 9px; height: 9px; border-radius: 50%;
-  background: var(--signal); border: 2px solid var(--ground);
+  background: var(--rule); border: 2px solid var(--ground);
 }
-.timeline-entry:not(:first-child)::before { background: var(--rule); }
-.timeline-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+/* Filled for the newest revision, and keyed on that rather than on being the
+   first entry drawn: with the kind filter on, the first entry drawn is the
+   newest one of *that kind*, and a lit dot there would say "latest revision"
+   about a revision three weeks old. */
+.timeline-entry[data-latest="true"]::before { background: var(--signal); }
+.timeline-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 8px; }
 .timeline-date { font-family: var(--font-mono); font-size: .88rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-.rev-tag {
+.rev-tag,
+.kind-tag,
+.change-tag {
   font-family: var(--font-mono);
   font-size: .62rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--signal); border: 1px solid var(--signal-wash); background: var(--signal-wash);
   padding: 1px 7px; border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  white-space: nowrap;
 }
+/* The revision number is the entry's name, not a signal, and it gave up the
+   orange when the kind tags arrived: colour in this head now means what kind
+   of work the revision was, and two orange plates side by side would have
+   said it twice with two different meanings. */
+.rev-tag { color: var(--ink-dim); border-color: var(--rule); }
+
+/* Three kinds told apart on the palette that is already here rather than on a
+   fourth hue: the green/amber/red run is severity throughout this app (queue
+   levels, crowd levels, unconfirmed data) and cyan/purple is which area a hall
+   is in, so borrowing either would have a tag claiming a meaning that is taken.
+   What is left is the signal orange, spent as it is everywhere else on "the
+   guide does something new", and two steps of the ink ramp. Content takes the
+   bright one because it is the kind people come to this page looking for — new
+   game information — and a fix, which changes nothing about the show, takes the
+   quiet one. */
+.kind-tag[data-kind="feature"],
+.change-tag[data-kind="feature"] { color: var(--signal); border-color: var(--signal-wash); background: var(--signal-wash); }
+.kind-tag[data-kind="content"],
+.change-tag[data-kind="content"] { color: var(--ink); border-color: var(--rule); background: var(--ground-3); }
+.kind-tag[data-kind="fix"],
+.change-tag[data-kind="fix"] { color: var(--ink-dim); border-color: var(--rule-soft); background: var(--ground-2); }
+
 .timeline-entry ul { list-style: none; }
 .timeline-entry li {
   color: var(--ink-mid); font-size: .88rem;
-  padding: 4px 0 4px 16px; position: relative;
+  padding: 4px 0; position: relative;
 }
-.timeline-entry li::before {
+/* The tag replaces the em-dash this list used to lead each bullet with — the
+   line still opens with a mark at the same left edge, and it now says
+   something. Untagged bullets keep the dash: see changeParts(). */
+.timeline-entry li:not([data-kind]) { padding-left: 16px; }
+.timeline-entry li:not([data-kind])::before {
   content: "—"; position: absolute; left: 0; color: var(--ink-dim);
 }
+.change-tag { margin-right: 9px; position: relative; top: -1px; }
 
 /* ============================================================
    footer
@@ -2401,7 +2441,8 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .it-group-head .day-detail { grid-column: 1 / -1; }
   /* Same fold as the tablet block above, one notch narrower in column one. */
   .it-item { grid-template-columns: minmax(96px, 1fr) auto auto 20px; row-gap: 9px; }
-  .toolbar-row .row-label { flex-basis: 100%; }
+  .toolbar-row .row-label,
+  .updates-toolbar .row-label { flex-basis: 100%; }
   /* let the summary text take a full line instead of squeezing into a column */
   .toolbar-summary { flex-wrap: wrap; row-gap: 4px; }
   .toolbar-summary .row-label { flex: 0 0 auto; }

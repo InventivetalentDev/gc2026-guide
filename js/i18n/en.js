@@ -290,6 +290,15 @@ window.GC_STRINGS.en = {
   "updates.rev": "rev {n}",
   /* Shown to German readers only — see data-i18n-only in index.html. */
   "updates.englishOnly": "",
+  /* The kind labels are chrome, not changelog prose, so they translate like
+     "rev {n}" does even though the bullets they mark stay English. Kept to one
+     word each: they are set in letterspaced uppercase mono and repeat down the
+     whole page. */
+  "updates.filterLabel": "Show",
+  "updates.kind.feature": "Feature",
+  "updates.kind.fix": "Fix",
+  "updates.kind.content": "Content",
+  "updates.noneOfKind": "No changes of that kind are recorded yet.",
 
   /* ---------- countdown & freshness ---------- */
   "countdown.days": "T−{n} day|T−{n} days",
