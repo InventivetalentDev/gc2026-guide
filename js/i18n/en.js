@@ -451,14 +451,15 @@ window.GC_STRINGS.en = {
   "map.zoomFit": "Show the whole hall",
   "map.counts": "{n} stands · {covered} in the guide",
   "map.countsSaved": " · {n} saved",
+  "map.countsPlanned": " · {n} planned",
   "map.chipSavedAria": ", {n} saved",
   /* ---- the day route overlay (see renderRoute in js/map.js) ----
      The bar names what the numbers mean and stops short of claiming a walk:
      the snapshot files stands, never aisles, so the line joining the pins is
      the plan's order and nothing more. */
-  "map.routeAria": "Show one day's stops on this hall",
+  "map.routeAria": "Show one day's stops",
   "map.routeKicker": "Plan",
-  "map.routeDayOn": "Show {day}'s stops on this hall",
+  "map.routeDayOn": "Show {day}'s stops",
   "map.routeDayOff": "Hide {day}'s stops",
   "map.routeUnplacedOn": "Show the stops without a day yet",
   "map.routeUnplacedOff": "Hide the stops without a day yet",
@@ -466,6 +467,14 @@ window.GC_STRINGS.en = {
   "map.routeStops": "{n} stop here|{n} stops here",
   "map.routeOrderNote": "· plan order, not a walking route",
   "map.routeNoneHere": "nothing planned in this hall",
+  "map.legPrev": "◂ {hall} · {n} stop|◂ {hall} · {n} stops",
+  "map.legNext": "{hall} · {n} stop ▸|{hall} · {n} stops ▸",
+  "map.legPrevAria": "Before this hall in the plan: hall {hall}, {n} stop — open it|Before this hall in the plan: hall {hall}, {n} stops — open it",
+  "map.legNextAria": "After this hall in the plan: hall {hall}, {n} stop — open it|After this hall in the plan: hall {hall}, {n} stops — open it",
+  "map.routeHintCampus": "pick a day to see its halls in order",
+  "map.routeHalls": "{n} hall|{n} halls",
+  "map.routeStopsAll": "{n} stop|{n} stops",
+  "map.routeNoneAnywhere": "nothing planned that day",
   "map.chipPlannedAria": ", {n} stop planned|, {n} stops planned",
   "map.stopBadge": "Stop {n} of {total}",
   "map.stopAria": " — stop {n} of {total}",

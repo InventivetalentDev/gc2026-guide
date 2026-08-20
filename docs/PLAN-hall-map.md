@@ -491,6 +491,67 @@ largest. The hall row's badge counts stops too while a day is on, so
 "which hall is Thursday in" is answered by the row you were already
 reading rather than by tapping through twelve halls.
 
+**A day is not one hall, and the wall is where the drawing used to
+stop.** Pins numbered 1–4 in hall 7.1 answer "what here, in what order"
+and leave the question the wall itself raises — *and then where?* — to
+the chip row above. So the halls either side of this one in the plan
+board's hall order are named at the end of the bar's sentence, as
+buttons that open them, and where `outline.json` files a doorway that
+starts the way there, an arrowhead is drawn through it with the route
+line run out to meet it. Either side is measured against the hall on
+screen rather than against its place in the list, so a hall with nothing
+planned in it still stands between two legs: someone who walked into 8.1
+on a day planned for 7.1 and 9.1 is exactly the person who needs telling
+which way is which.
+
+**Which door is a breadth-first walk of the doorways, and claims no
+more.** `exitToward()` seeds itself with the openings the storey on
+screen actually files — 10.2 files its own, and a first step borrowed
+from 10.1 would point at a wall this floor has none in — then expands
+over every door in the file, with the Boulevard and the gates as nodes
+in their own right, because they are how two halls that share no wall
+are joined. Two halls joined by a passage come out as that passage; hall
+7 to hall 9 comes out as hall 7's Boulevard doors. It counts doorways,
+not metres. There is no distance in this data and this is not a shortest
+walk: it is the first step of one, which is the whole of what an arrow
+at a doorway says — leave by here.
+
+Where nothing filed reaches the hall, nothing is drawn. Seven of the
+thirteen levels file no doors at all, and an arrow at a wall we have
+never opened would be the invention decision 5b exists to avoid — the
+leg is still named in the bar, where saying it costs no geometry. Of the
+doors that do start the way there, the one marked is the one nearest the
+stop being left from: hall 7's east wall has three openings onto the
+same Boulevard, and which of them is closest to stop 3 is a fact about
+geometry we have, unlike anything past the wall. A door whose own label
+is already the hall being pointed at gets the arrow and no name — the
+wall has said it once, and the map should not say it twice.
+
+The name goes in the margin, set exactly the way a door's own name is —
+same side, same rotation on an end wall — one line further out, so the
+two never collide however that wall's doors happen to group. Outside is
+the only place on this map with nothing to cover; a name set inside at a
+doorway lands on the outermost stand row, which is the row the map
+exists to show. That costs a second reserved line beyond every wall with
+a doorway in it, whether or not a day is lit and even where no plan will
+ever point — about 6 m of margin, three or four per cent off the hall at
+fit zoom. The alternative is growing the picture under someone who has
+zoomed into a booth, every time a day chip is tapped, which is worse
+than the margin by a distance.
+
+**One step further back, the overview says which halls, in what order.**
+The same reading with the site drawn under it: the day's halls lit,
+numbered 1, 2, 3 in the same hall order, joined by the same dashed line.
+Out here a number is a hall and not a stop — hall 6 first, then hall 9 —
+which is the one thing thirteen chips in a row cannot say however many
+of them carry a count. Both numberings are the plan board's own and
+neither is a walk: a pin inside a hall is that hall group's row, a plate
+out here is that group's place among the groups. A day in one hall gets
+no number and no line, because "first of one" is not an order. The
+plates and the chip row are day-scoped together while a day is picked,
+which is what `dayScoped()` decides for both — the overview used to be
+its exception, back when it carried no route of its own to agree with.
+
 The chosen day rides in the address bar (`map.html?day=2026-08-27#7.1`)
 rather than in prefs: it is a question about one visit, the guide's own
 day filter is not persisted either, and a URL is what lets the plan
@@ -727,9 +788,29 @@ Serve the repo root; clear `gc2026.saved.v1`.
     already on; `?day=1999-01-01` lands with it off. Switching to a hall
     with nothing planned says so rather than showing an empty bar, and an
     assignment made in another tab reaches an open map through `storage`.
-    On the overview the bar is absent — a site diagram has no
-    stands to pin — and the hall chips there count saves, the same
-    number the plates under them carry, rather than the day's stops.
+
+16. **Legs and the way out** — assign stops in halls 5.2, 6.1, 7.1, 9.1
+    and 10.1 to one day. In 7.1 the bar reads "2 stops here" and ends in
+    "◂ 6.1" and "9.1 ▸", both of which open that hall with the `?day=`
+    still on. The route line runs out to two doorways: an arrowhead into
+    the south passage, unnamed because the wall beside it already reads
+    "Hall 6.1", and one out of the east wall's third Boulevard opening —
+    the one nearest the stop it leaves from — with "Hall 9.1" set in the
+    margin beyond the Boulevard's own name, reading the same way round
+    and clear of every stand. Switch to 8.1, which has nothing planned,
+    where both names land on the south wall one line apart: both legs still
+    stand at their doors with no line to reach them. Switch to 5.2,
+    which files no doors: the leg is named in the bar and nothing is
+    drawn. Two storeys of one hall (10.1 → 10.2) are two legs in the bar
+    and no arrow between them — the escalator is in no file we have.
+17. **The day across the site** — on the overview with that day picked,
+    halls 5, 6, 7, 9 and 10 are lit and numbered 1–5 along one dashed
+    line, the plates and the chips above them both count that day's
+    stops rather than the whole saved list, and the footer reads
+    "9 planned". 10.1 and 10.2 are one plate, one number and the sum of
+    both storeys. A day in a single hall lights its plate and draws
+    neither number nor line. With no day picked the bar offers its own
+    hint and everything reverts to saves.
 
 ## Open questions
 

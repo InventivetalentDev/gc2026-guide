@@ -107,6 +107,22 @@
   color: var(--ink-mid);
 }
 .map-route-hint { color: var(--ink-dim); }
+/* The halls either side of this one in the day's order. Set like the status
+   sentence they end rather than like the day chips — those choose what the
+   map shows, these leave for another hall, and a control that navigates
+   should not look like one that filters. */
+.map-route-leg {
+  margin-left: 6px;
+  padding: 1px 6px;
+  font: inherit;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.map-route-leg:hover { border-color: var(--signal); color: var(--signal); }
 
 /* --- area access note --- */
 .map-access {
@@ -290,6 +306,27 @@
 }
 /* Played, and dimmed the way the stand under it already is. */
 #map .route-pin.done, #map .route-pin-n.done { opacity: .55; }
+
+/* --- where the day leaves this hall ---
+   The plan carries on past the wall, so the line does too: out to the
+   doorway the outline says starts the way there, an arrowhead through it,
+   and the hall it leads to named in the margin one line beyond the door's
+   own name. Both in the overlay's colour rather than the doors' ink,
+   because they belong to the day you picked and not to the building — the
+   hall has the same doors whichever chip is lit, and the name out here is
+   the only thing on this wall that would be a lie tomorrow. */
+#map .route-leg-head { fill: var(--signal); stroke: none; }
+#map .route-leg-lbl {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  fill: var(--signal);
+  letter-spacing: .04em;
+}
+#map .route-leg-hit { fill: transparent; stroke: none; cursor: pointer; }
+/* A hall the day passes through, on the overview: the plate is lit the way a
+   saved one is, one step brighter, and wears its place in the order. */
+#map .campus-hall.leg path { stroke: var(--signal); stroke-width: 2.4; }
+#map .campus-hall-lbl.leg .campus-num { fill: var(--ink); }
 
 #map text {
   pointer-events: none; user-select: none; -webkit-user-select: none;
