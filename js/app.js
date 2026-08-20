@@ -17,9 +17,9 @@ const state = {
   view: "exhibitors",
   sort: "crowd-desc",
   expanded: new Set(),
-  /* card id → which face is showing, set by tapping a plate. Only holds the
-     cards somebody has actually turned over; everything else follows the
-     filters. Cleared when a filter changes — see faceOf(). */
+  /* card id → which face is showing, set by tapping a plate. Holds only the
+     cards somebody has turned over; everything else follows the filters.
+     Cleared when a filter changes — see faceOf(). */
   flipped: new Map(),
   /* replaced from localStorage in main() — see loadMarks() */
   marks: {
@@ -35,7 +35,7 @@ const state = {
   /* hall ids the hall map can draw; filled from data/hallplan/index.json */
   mapHalls: new Set(),
   /* hall id -> official area key ("entertainment" | "business"), from the same
-     file: what colour a card's hall plate is painted (see hallArea) */
+     file. Sets the colour of a card's hall plate — see hallArea. */
   hallAreas: new Map(),
   /* raw official directory: null until the section is first opened */
   directory: null,
@@ -89,12 +89,12 @@ const crowdLabel = (level) => {
   return label === `crowd.${level}` ? "?" : label;
 };
 
-/* What a business booth actually is when you walk up to it — the question a
-   queue index answers for a consumer booth. The business halls hold two very
+/* What a business booth is when you walk up to it — the question a queue
+   index answers for a consumer booth. The business halls hold two very
    different things under one colour: open stands staffed for walk-up
-   conversation, and closed structures that are meeting rooms with a logo on
-   the outside. Which one you are looking at decides whether turning up is
-   worth anything at all, so it is stated per card and never guessed.
+   conversation, and closed rooms that are meeting spaces with a logo outside.
+   Which one you face decides whether turning up is worth anything, so it is
+   stated per card and never guessed.
 
    The enum lives in the data as `access`; only its wording is localized. */
 const TRADE_ACCESS_KEYS = ["open", "appointment", "mixed"];
@@ -185,12 +185,11 @@ async function loadData() {
 }
 
 /* Write the locale overlay's prose back onto the loaded objects, so every
-   render site keeps reading ex.description / ev.tickets / d.note exactly
-   as before the split — the language never leaks past this point. Keys:
-   exhibitors by id, their game notes by title (titles are untranslated
-   proper nouns and the same identity marks and share links use), days by
-   ISO date, areas by official name. Tolerant throughout: missing keys
-   mean empty prose, never a crash. */
+   render site keeps reading ex.description / ev.tickets / d.note exactly as
+   before the split — the language never leaks past this point. Keys:
+   exhibitors by id, their game notes by title (titles are untranslated proper
+   nouns, and the same identity marks and share links use), days by ISO date,
+   areas by official name. Missing keys mean empty prose, never a crash. */
 function mergeStrings(exhibitors, event, meta, strings) {
   const overlay = strings || {};
   state.tagLabels = overlay.tags || {};
@@ -245,9 +244,9 @@ function mergeStrings(exhibitors, event, meta, strings) {
 /* ---------- saved & played marks ----------
 
    Two independent sets: exhibitor ids, and games keyed by normalised title
-   rather than by booth. Eight titles this year are shown at two booths at once
+   rather than by booth. Eight titles this year show at two booths at once
    (Alien: Isolation 2 sits at both Xbox and SEGA), so a game mark applies at
-   every booth showing the same title. */
+   every booth showing that title. */
 
 /* The storage shapes, the saved-game rule and the plan's stop order live in
    js/marks.js, because the hall map reads and writes the same two lists and
@@ -260,7 +259,7 @@ const persistMarks = (mark) => GCMarks.writeMarks(mark, state.marks[mark]);
 
 /* Both view preferences live here rather than beside the marks they act on:
    "hide played" is a lens on the list, the same kind of thing as the age
-   filter, and neither survives being tangled up with the marks themselves. */
+   filter, and neither works well tangled up with the marks themselves. */
 function loadPrefs() {
   try {
     const raw = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
@@ -319,11 +318,11 @@ const playedCount = () => markCount("played");
    they're showing — the publisher is how you actually get to the game. */
 const hasSaved = (ex) => GCMarks.hasSaved(state.marks.saved, ex);
 
-/* A booth is done when marked directly, or when every game saved there is done.
-   An unsaved booth with some incidentally played games does not count as done —
+/* A booth is done when marked directly, or when every game saved there is
+   done. An unsaved booth with some incidentally played games does not count —
    which is why this reads off savedGames() and there is deliberately no
-   playedGames() mirroring it. The two marks are not symmetric here: saving is
-   what scopes a booth to you, and only then can playing everything finish it. */
+   playedGames() mirroring it. Saving is what scopes a booth to you; only then
+   can playing everything finish it. */
 const hasPlayed = (ex) => {
   const mine = savedGames(ex);
   return isPlayed("exhibitor", ex.id) ||
@@ -339,10 +338,10 @@ const hasAdult = (ex) => ex.ageRestricted === true || adultGames(ex).length > 0;
 const visibleGames = (ex) =>
   state.age === "hide" ? (ex.games || []).filter((g) => !isAdult(g)) : (ex.games || []);
 
-/* The "+" adds to the list and the "−" takes it back off — same language as the
-   "+ 4 more" / "− Show fewer" control, so no icon is needed. The saved state is
-   carried by the filled plate, not by the glyph. Played always uses a check;
-   its muted filled plate carries that state. */
+/* The "+" adds to the list and the "−" takes it back off — same language as
+   the "+ 4 more" / "− Show fewer" control, so no icon is needed. The filled
+   plate carries the saved state, not the glyph. Played always uses a check,
+   with a muted filled plate. */
 function markButton(mark, kind, key, name, { wide = false } = {}) {
   const marked = isMarked(mark, kind, key);
   const label = markLabel(mark, kind, name, marked);
@@ -426,12 +425,12 @@ function syncMarkUI() {
   });
 }
 
-/* Re-rendering a list with innerHTML destroys the button that was just pressed,
-   which drops keyboard focus back to the top of the page. Put it back on the
-   equivalent button whenever one survives the re-render. When the whole row is
-   gone instead (unsaving in a saved-only list removes it), land on the nearest
-   remaining button — or the caller's fallback element — so keyboard users stay
-   in context rather than dropping to <body>. */
+/* Re-rendering a list with innerHTML destroys the button that was just
+   pressed, dropping keyboard focus back to the top of the page. Put it back on
+   the equivalent button whenever one survives the re-render. When the whole row
+   is gone instead (unsaving in a saved-only list removes it), land on the
+   nearest remaining button — or the caller's fallback element — so keyboard
+   users stay in context rather than dropping to <body>. */
 function keepingFocus(container, render, fallback) {
   const el = document.activeElement;
   const inside = el && container.contains(el);
@@ -479,11 +478,11 @@ function renderMarkControls() {
 
    Two wire formats coexist. v1 (dot-separated: exhibitor ids verbatim, games
    as variable-length hashes) is decode-only now, for links that predate v2
-   and are still pinned to chats and fridge doors. v2 writes every item,
-   exhibitor or game alike, as a fixed-width 5-char base36 hash prefix: fixed
-   width needs no separators, and an id like tencent-worlds-of-play stops
-   costing 22 characters. That is what lets a 30-item list back into the QR
-   code, which the v1 format quietly outgrew as the data doubled. */
+   and are still in circulation. v2 writes every item, exhibitor or game alike,
+   as a fixed-width 5-char base36 hash prefix: fixed width needs no separators,
+   and an id like tencent-worlds-of-play stops costing 22 characters. That is
+   what fits a 30-item list back into the QR code, which v1 outgrew as the data
+   doubled. */
 
 const TOK_LEN = 5;
 
@@ -539,11 +538,11 @@ function buildShareCodeMap() {
   });
 
   /* v2 shares one flat namespace and resolves collisions by exclusion: a
-     prefix claimed twice is abandoned by every claimant — never emitted,
-     never resolved — so a token can be lost but never mistranslated, and the
-     loss surfaces through the "no longer in the guide" counts the UI already
-     shows. Zero of the current 217 items collide; head-room runs to about a
-     thousand before 5 characters wants revisiting. */
+     prefix claimed twice is dropped for every claimant — never emitted, never
+     resolved — so a token can be lost but never mistranslated, and the loss
+     shows up in the "no longer in the guide" counts the UI already displays.
+     None of the current 217 items collide; there is head-room to about a
+     thousand before 5 characters needs revisiting. */
   const claims = new Map();
   const claim = (kind, key) => {
     const tok = tok36(key);
@@ -553,16 +552,16 @@ function buildShareCodeMap() {
   state.exhibitors.forEach((ex) => claim("exhibitors", ex.id));
   gameKeys.forEach((key) => claim("games", key));
   /* Trade booths ride the same namespace rather than a parameter of their
-     own: the day plan is positional over this one token list, so a second
-     list could not carry day assignments without duplicating that machinery.
-     Every "dir:" key claimable in the guide is claimed here, including rows a
-     curated card has since taken over — an older link naming one still has to
-     land, and migrateDirAliases folds it onto the card afterwards.
+     own: the day plan is positional over this one token list, so a second list
+     could not carry day assignments without duplicating that machinery. Every
+     "dir:" key claimable in the guide is claimed here, including rows a curated
+     card has since taken over — an older link naming one still has to land, and
+     migrateDirAliases folds it onto the card afterwards.
 
-     Adding ~800 identities to ~220 is what the 5-character headroom note
-     below was about, so tools/fetch-directory.py re-checks it at generation
-     time; only a directory that has actually loaded is in here, so a visitor
-     who never turns trade mode on shares exactly what they always did. */
+     Adding ~800 identities to ~220 is what the 5-character headroom note below
+     was about, so tools/fetch-directory.py re-checks it at generation time.
+     Only a directory that has actually loaded is in here, so a visitor who
+     never turns trade mode on shares exactly what they always did. */
   (state.directory?.exhibitors || []).forEach((entry) => {
     if (isTradeEntry(entry)) claim("exhibitors", dirKey(entry.slug));
   });
@@ -603,17 +602,21 @@ function encodeEntries() {
    very origin they are trying to leave, so sharing could never move a list
    forward.
 
-   Three hosts are draining, and they left for different reasons. gamescom.guide
-   went because "gamescom" is a registered mark of game — Verband der deutschen
-   Games-Branche e.V., which licenses it to exhibitors and has had unofficial
-   sites warned off carrying it in a domain name. gc26.guide went because it was
-   an abbreviation nobody could hold in their head: fine to type, useless to say
-   across a queue. hallgui.de is the last of it — a name that survives the year
-   in it, and reads as "hallguide" once the dot stops being punctuation.
+   Three hosts are draining. gamescom.guide went because "gamescom" is a
+   registered mark of game — Verband der deutschen Games-Branche e.V., which
+   licenses it to exhibitors and has had unofficial sites warned off carrying
+   it in a domain name. gc26.guide went because it was an abbreviation with a
+   year in it: fine to type, useless to say across a queue. hallgui.de is the
+   one that stays.
 
-   All three stay on this list for one reason: people are standing on them, and
-   a saved list cannot cross an origin by itself. Only these are rewritten;
-   hallgui.de and localhost share themselves, as they should. */
+   All three stay on this list because people are standing on them, and a saved
+   list cannot cross an origin by itself. Only these are rewritten; hallgui.de
+   and localhost share themselves.
+
+   The head of index.html and map.html carries the same three names, for the
+   redirect that runs before this file is fetched. A copy rather than an import
+   because nothing loaded as a file can run that early — the same trade the
+   language stamp makes with SUPPORTED in js/i18n.js. */
 const LEGACY_HOSTS = ["gc2026.inventivetalent.org", "gamescom.guide", "gc26.guide"];
 const SHARE_ORIGIN = "https://hallgui.de";
 
@@ -622,10 +625,10 @@ function onLegacyHost() {
 }
 
 /* One character per day: the base36 day of month. Absolute like a literal
-   date — an index into event.days means something else the moment a day is
-   added — at a twentieth of the cost of "token~2026-08-26". Null when two
-   show days would share a character (a show spanning a month boundary into
-   the same day-of-month); then the day plan simply does not ride. */
+   date — an index into event.days would mean something else the moment a day
+   is added — at a twentieth of the cost of "token~2026-08-26". Null when two
+   show days would share a character (a show spanning a month boundary into the
+   same day-of-month); then the day plan simply does not ride. */
 function dayCodeMaps() {
   const toChar = new Map();
   const toDate = new Map();
@@ -666,7 +669,7 @@ function encodePlayedMask(entries) {
 }
 
 /* The ✓ does not require saving first, so played marks the bitmask cannot
-   reach ride as explicit tokens. Usually empty, and costs nothing then. */
+   reach ride as explicit tokens. Usually empty, and free when it is. */
 function encodePlayedOnly() {
   const toks = [];
   state.marks.played.exhibitors.forEach((id) => {
@@ -712,40 +715,46 @@ function buildShareLink({ move = false, days = false, played = false } = {}) {
 
 /* Where the move notice sends people. Everything rides — played marks and
    day assignments included — because this is not a share: it is one person's
-   own plan following them to an address that is going to outlive the old
-   one, the exact case the played and day toggles exist to default off for.
-   The legacy-origin rewrite in buildShareLink aims it at hallgui.de.
+   own plan following them to an address that will outlive the old one, the
+   exact case the played and day toggles default off for. The legacy-origin
+   rewrite in buildShareLink aims it at hallgui.de.
 
-   Payload lives in the hash, so none of it is ever sent to a server — the
+   The payload lives in the hash, so none of it is ever sent to a server — the
    same reason a shared list can be built offline.
 
    Null when there is nothing saved to carry, and the notice just navigates.
    Played marks and day assignments both hang off saved items, so an empty
-   saved list means an empty move; it is also the rule the Share control
-   already uses to decide it has nothing to offer. */
+   saved list means an empty move; that is also the rule the Share control uses
+   to decide it has nothing to offer. */
 function buildMoveLink() {
   if (!encodeEntries().length) return null;
   return buildShareLink({ move: true, days: true, played: true });
 }
 
-/* Nothing on the old hostname looks broken — it serves the same deploy — which
-   is exactly why a visitor can spend the whole show on an address that is going
-   away without ever noticing. Hence one nudge, and only one: it is remembered
-   the moment they answer it either way, because a banner that returns on every
-   load is a banner people learn to read past.
+/* Nothing on the old hostname looks broken — it serves the same deploy — so a
+   visitor can spend the whole show on an address that is going away without
+   noticing. Hence one nudge, and only one: the answer is remembered either
+   way, because a banner that returns on every load is one people learn to
+   ignore.
 
    It is deliberately not a redirect. Someone mid-plan on a show floor should
-   not have the page pulled out from under them, and a move is a decision worth
-   taking on purpose: everything the guide holds is per-origin, so accepting is
-   what carries it (buildMoveLink above) and ignoring leaves it here.
+   not have the page pulled out from under them, and everything the guide holds
+   is per-origin: accepting is what carries it (buildMoveLink above), ignoring
+   leaves it here.
 
-   Bumped on every change of destination, and this is the third. Answering the
-   notice does not settle anyone permanently — it moves them to whatever the
-   answer pointed at, which twice now has become a host that is itself draining.
-   Anyone still carrying a v1 or v2 answer is somewhere on that chain, and the
-   remembered answer is what would keep them from ever hearing about hallgui.de.
-   So the key carries the destination's generation rather than the notice's: one
-   more nudge each time the address changes, then quiet again. */
+   By the time this runs, the only people it can reach are the ones that
+   argument is about. The head of index.html has already sent on anyone whose
+   localStorage was completely empty — nothing per-origin to strand, so nothing
+   to weigh — which leaves this notice to everybody who has something here,
+   installed the app, or was asked once already and stayed.
+
+   The key carries the destination's generation rather than the notice's, and
+   this is the third. Answering does not settle anyone permanently — it moves
+   them to whatever the answer pointed at, which twice has become a host that is
+   itself draining. Anyone still carrying a v1 or v2 answer is somewhere on that
+   chain, and the remembered answer is what would otherwise keep them from
+   hearing about hallgui.de. So: one more nudge each time the address changes,
+   then quiet again. */
 const MOVED_KEY = "gc2026.moved.v3";
 
 function moveNoticeAnswered() {
@@ -968,14 +977,14 @@ function renderBookmarkViews() {
 }
 
 /* The snapshot covers all three lists so Undo puts back exactly what was
-   here — an import landing on a device that had already been used has to be
-   reversible whichever mode it applied in.
+   here — an import landing on a device already in use has to be reversible
+   whichever mode it applied in.
 
    Merge unions and never removes: a friend's link is an offer, not an
    authority over what you already chose. Replace assigns: a move is the same
    person's newer state, and replacing is the only way a removal or a
-   rescheduled day ever travels between their devices. Parts that did not
-   ride are left alone in both modes — absent means "not moved", not "none". */
+   rescheduled day travels between their devices. Parts that did not ride are
+   left alone in both modes — absent means "not moved", not "none". */
 function applyIncoming(incoming, mode = "merge") {
   const before = {
     exhibitors: new Set(state.marks.saved.exhibitors),
@@ -1072,12 +1081,12 @@ function restoreBookmarks(snapshot) {
 }
 
 /* A link can name trade booths the guide has not fetched yet — the recipient
-   may never have turned trade mode on, which is exactly the case the pref is
-   not allowed to break. Unresolved tokens are therefore a reason to go and
-   look before saying "out of date": load the directory, rebuild the
-   vocabulary, and re-read the payload (it is still in sessionStorage) before
-   the offer is made. Offline with a cold cache falls through to the old
-   behaviour, which counts them as no longer in the guide. */
+   may never have turned trade mode on, which is exactly the case the pref must
+   not break. So unresolved tokens are a reason to go and look before saying
+   "out of date": load the directory, rebuild the vocabulary, and re-read the
+   payload (still in sessionStorage) before making the offer. Offline with a
+   cold cache falls through to the old behaviour, which counts them as no
+   longer in the guide. */
 async function offerIncomingWhenReady(incoming) {
   if (incoming.unresolved > 0 && !state.directory) {
     await loadDirectory();
@@ -1120,13 +1129,13 @@ function offerIncoming(incoming) {
     [...incoming.exhibitors].filter((id) => !state.marks.saved.exhibitors.has(id)).length +
     [...incoming.games].filter((key) => !state.marks.saved.games.has(key)).length;
 
-  /* A move landing where a list already lives offers replace, not merge —
-     it is the only path on which a removal or a moved day travels, and a
-     union here would resurrect on this device exactly what was deleted on
-     the other one. Destructive in a way nothing else in the guide is, so
-     the toast counts what goes before anything is touched, and the count
-     only names items the visitor can see — entries the guide no longer
-     recognises are invisible to them and would make the number a lie. */
+  /* A move landing where a list already lives offers replace, not merge — it
+     is the only path on which a removal or a moved day travels, and a union
+     here would resurrect on this device exactly what was deleted on the other
+     one. It is destructive in a way nothing else in the guide is, so the toast
+     counts what goes before anything is touched, and the count names only
+     items the visitor can see — entries the guide no longer recognises are
+     invisible to them and would make the number a lie. */
   if (incoming.moved) {
     const drops =
       [...state.marks.saved.exhibitors].filter(
@@ -1324,16 +1333,15 @@ function bindShareDialog() {
 /* ---------- share the guide ----------
 
    Distinct from sharing a saved list: nothing of yours rides along, so there
-   is nothing to choose and the sheet is just the address, twice — once as a
-   code to hold up to the phone of whoever you are queueing with, once as
-   text to paste wherever you were going to paste it. */
+   is nothing to choose. The sheet is just the address twice — once as a code
+   to hold up to somebody else's phone, once as text to paste. */
 
 /* The address to hand out is not the one in the address bar. That one can
-   carry a shared-list hash, a ?lang the recipient should be resolving for
-   themselves, campaign params, /index.html spelled out, or the hostname the
-   guide is in the middle of leaving — and a QR code outlives every one of
-   those. Each page states where it lives in its canonical tag, so that is
-   what gets shared; the origin rule behind it is buildShareLink's. */
+   carry a shared-list hash, a ?lang the recipient should resolve themselves,
+   campaign params, /index.html spelled out, or the hostname the guide is
+   leaving — and a QR code outlives all of those. Each page states where it
+   lives in its canonical tag, so that is what gets shared; the origin rule
+   behind it is buildShareLink's. */
 function siteShareUrl() {
   const canonical = document.querySelector('link[rel="canonical"]')?.href;
   if (isHttpUrl(canonical)) return canonical;
@@ -1378,11 +1386,11 @@ function bindSiteShare() {
 
 /* ---------- sources & attribution ----------
 
-   Every entry in data/*.json already records the pages it was built from. An
+   Every entry in data/*.json records the pages it was built from. An
    unofficial guide that asks you to plan a day around a booth number owes you
    the ability to check it, so each card carries a quiet marker that opens its
-   list — and the cards you most want to check are exactly the ones whose hall
-   plate says "unconf.". */
+   list — and the cards most worth checking are the ones whose hall plate says
+   "unconf.". */
 
 /* Only http(s) becomes a live link: a stray javascript: or data: URL in the
    data would otherwise be one tap away on every card showing it. */
@@ -1495,8 +1503,8 @@ function bindSourcesDialog() {
    day". Without that distinction a call made before data/event.json lands
    reads every assignment as stale and drops the whole plan — and the next
    assignment writes that emptied map back over the stored one, so the loss
-   is not just for the session. A missing schedule therefore keeps the
-   assignments as filed and lets the next load, which has the days, decide. */
+   outlives the session. A missing schedule therefore keeps the assignments as
+   filed and lets the next load, which has the days, decide. */
 function loadItinerary() {
   /* The parse and the storage shape live in js/marks.js since the map's
      sheet started reading the same key; what is validated on top of them is
@@ -1558,23 +1566,24 @@ function onItineraryChanged() {
 
 /* ---------- filtering & sorting ---------- */
 
-/* Shared orderings. Crowd-desc is the house default wherever booths rank;
-   hall order approximates a sensible walk through the entertainment halls —
+/* Shared orderings. Crowd-desc is the house default wherever booths rank.
+   Hall order approximates a sensible walk through the entertainment halls:
    decimal halls are upper levels, so parseFloat keeps 6.1 after 6 and before
    7, and missing halls sort last. If verified venue routing ever lands,
-   hallRank is the single seam to replace with an explicit order: the grid's
+   hallRank is the single seam to replace with an explicit order — the grid's
    hall sort, the planner's route and the wristband list all read through it. */
 const byName = (a, b) => a.localeCompare(b, GCI18N.lang);
 const byCrowdDesc = (a, b) => (b.crowd || 0) - (a.crowd || 0) || byName(a.name, b.name);
 const hallRank = (hall) => (hall ? parseFloat(hall) : Infinity);
 
 /* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
-   deliberately not a content filter. It hides lineup rows, not prose: an earlier
-   pass regex-scrubbed adult titles out of the searchable description, which made
-   the grid render a name it would then refuse to find, and could never be
-   complete anyway (visitAdvice says "hit MW4 or 007 First Light first", and
-   Plaion carries an "18+" tag). A leaky content filter reads as a guarantee it
-   cannot keep, so descriptions stay exactly as written and stay searchable. */
+   deliberately not a content filter. It hides lineup rows, not prose. An
+   earlier pass regex-scrubbed adult titles out of the searchable description,
+   which made the grid render a name it would then refuse to find, and it could
+   never be complete anyway (visitAdvice says "hit MW4 or 007 First Light
+   first", and Plaion carries an "18+" tag). A leaky content filter reads as a
+   guarantee it cannot keep, so descriptions stay exactly as written and stay
+   searchable. */
 function matchesQuery(ex, q) {
   if (!q) return true;
   const hay = [
@@ -1626,8 +1635,8 @@ function filtersActive() {
    grid renders the pair as a single card you can turn over.
 
    Two cards rather than one card with a nested block, because each face needs
-   everything a card needs (its own location, description, offers, sources,
-   saved state). Keeping them the same shape means a business-only booth like
+   everything a card needs: its own location, description, offers, sources and
+   saved state. Keeping them the same shape means a business-only booth like
    Cloudflare is not a special case, and the planner, map, share links and
    closed-day warning all keep treating each booth as the separate stop it is. */
 
@@ -1756,10 +1765,10 @@ const hasMap = (hall) => state.mapHalls.has(String(hall));
 /* Which area of the show a hall stands in, and so which colour its plate is
    painted (see .hall-plate[data-area] — the official plan's own fills).
 
-   The snapshot is the source, because it is what the map colours halls from;
-   when it is missing the guide's own business-hall boundary answers instead,
-   so a cold cache repaints the plates rather than dropping the distinction.
-   A hall neither can place — an offsite venue, a hall we've never heard of —
+   The snapshot is the source, because it is what the map colours halls from.
+   When it is missing, the guide's own business-hall boundary answers instead,
+   so a cold cache repaints the plates rather than dropping the distinction. A
+   hall neither can place — an offsite venue, a hall we've never heard of —
    returns "" and its plate keeps the signal colour. */
 const hallArea = (hall) => {
   if (!hall) return "";
@@ -1780,10 +1789,10 @@ const mapLink = (hall, booth, day) =>
   (booth ? `/${encodeURIComponent([...GCMarks.boothCodes(booth)][0] || "")}` : "");
 
 /* Every other place a hall is named — the planner rows, the directory — is
-   also a way to that hall on the map. One helper so all of them make the
-   same promise: plain text when the snapshot can't draw that hall, and a
-   link that says out loud where it goes when it can. The visible label is
-   left exactly as the row wrote it; only the destination is added. */
+   also a way to that hall on the map. One helper so all of them behave the
+   same: plain text when the snapshot can't draw that hall, a link that says
+   out loud where it goes when it can. The visible label is left exactly as the
+   row wrote it; only the destination is added. */
 /* One phrasing of "Hall 7.1, booth A061" for every accessible name that
    needs it — the card plate, the planner rows, the directory chips. */
 const whereLabel = (hall, booth) =>
@@ -1797,15 +1806,15 @@ function hallLink(hall, booth, label, day) {
 }
 
 /* The Halls & areas list names a span where every other place names a hall:
-   one hall ("10.1"), a whole level whose halves it doesn't distinguish
-   ("5"), or a run of levels ("5–10"). The map draws one hall at a time, so
-   a span opens at the lowest hall inside it the snapshot can draw — "5–10"
-   lands in the first entertainment hall, "2–4" in the first business one,
-   and the map's own chip row, grouped by area, carries you along the rest.
+   one hall ("10.1"), a whole level whose halves it doesn't distinguish ("5"),
+   or a run of levels ("5–10"). The map draws one hall at a time, so a span
+   opens at the lowest hall inside it the snapshot can draw — "5–10" lands in
+   the first entertainment hall, "2–4" in the first business one — and the
+   map's own chip row, grouped by area, carries you along the rest.
 
-   Only whole levels widen like that. "11.1" is a hall the snapshot either
-   has or hasn't, and quietly landing on 10.2 instead would be a different
-   room — so it stays plain text, as does anything unparseable. */
+   Only whole levels widen like that. "11.1" is a hall the snapshot either has
+   or hasn't, and quietly landing on 10.2 instead would be a different room, so
+   it stays plain text. So does anything unparseable. */
 function areaMapHall(hall) {
   const filed = String(hall ?? "").trim();
   if (!filed) return "";
@@ -1825,14 +1834,14 @@ function areaMapHall(hall) {
 
 /* The way to this card's other booth, notched into the corner of the plate
    that shows the current one. It sits *on* the plate rather than at the foot
-   of the card because that is the corner your thumb is already near and the
-   one place the swap reads as an exchange rather than a jump.
+   of the card because that corner is where your thumb already is, and the one
+   place the swap reads as an exchange rather than a jump.
 
    The colour is not decoration: the square is the other face's plate in
    miniature, painted in the colour Koelnmesse gives that hall on its own plan
    — purple across to the business halls, cyan back to the entertainment ones,
-   the same fills the map washes those halls with. So turning the card over
-   teaches what a plate's colour means in one gesture.
+   the same fills the map uses. Turning the card over teaches what a plate's
+   colour means in one gesture.
 
    The small square carries the other side's saved state, because otherwise a
    saved trade stop is invisible until you turn the card. */
@@ -2700,9 +2709,9 @@ function migrateDirAliases() {
    This is the most useful thing the business halls tell you about themselves,
    and it is a count rather than a judgement. The two shapes are stark: 184
    stands have a single occupant, while 53 shared stands carry 634 of the 821
-   trade exhibitors — because a shared stand is a national or regional
-   pavilion, twenty desks under one roof, and a large stand with one occupant
-   and no co-exhibitors is a publisher's meeting building.
+   trade exhibitors. A shared stand is a national or regional pavilion — twenty
+   desks under one roof — and a large stand with one occupant and no
+   co-exhibitors is a publisher's meeting building.
 
    The row shows the number. What it means is said once in the section note,
    and per booth only on a curated card, where it can be sourced. */
@@ -2927,13 +2936,13 @@ function renderTrade() {
   }
 }
 
-/* Turning it on is also the first fetch, which is what warms the offline
-   cache — the same one-online-load contract the directory already states.
+/* Turning it on is also the first fetch, which warms the offline cache — the
+   same one-online-load contract the directory already states.
 
    `announce` is set by the two remote controls (the toolbar chips and the
-   Event info block), where the thing that just changed — a section far below
-   the fold, or one on another view entirely — is off screen. The button
-   inside the section itself leaves it off: you are standing in the result. */
+   Event info block), where the thing that just changed is off screen. The
+   button inside the section itself leaves it off: you are standing in the
+   result. */
 let tradeToast = null;
 
 function setTrade(on, { announce = false } = {}) {
@@ -3887,16 +3896,15 @@ function renderEvent() {
     })
     .join("");
 
-  /* Entrances are the one piece of event info that is advice rather than
-     fact: the gate that is quickest depends on the day and on which way
-     Koelnmesse is steering the queue that morning. The lede says so, and
-     the trade note gets its own paragraph because "West is best" is only
-     true on the public days.
+  /* Entrances are the one piece of event info that is advice rather than fact:
+     which gate is quickest depends on the day and on which way Koelnmesse is
+     steering the queue that morning. The lede says so, and the trade note gets
+     its own paragraph because "West is best" only holds on the public days.
 
-     Both names stay as they are in every language: `name` is the short
-     English gate letter the guide sorts and links by, and `nameDe` is what
-     Koelnmesse has written on the building — a German reader and an English
-     one are both looking for the sign that says "Eingang West". */
+     Both names stay as they are in every language: `name` is the short English
+     gate letter the guide sorts and links by, and `nameDe` is what Koelnmesse
+     has written on the building — a German reader and an English one are both
+     looking for the sign that says "Eingang West". */
   const ent = ev.entrances;
   const entrances = (ent?.list || [])
     .map(

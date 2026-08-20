@@ -16,6 +16,7 @@ window.GC_STRINGS = window.GC_STRINGS || {};
 
 window.GC_STRINGS.de = {
   /* ---------- document & navigation ---------- */
+  "doc.title": "gamescom 2026 Guide — Aussteller, Spiele & Hallenplan",
   "meta.description":
     "Inoffizieller Guide zur gamescom 2026 — Aussteller, Spiele, Hallen- und Standnummern, erwarteter Andrang und Besuchsplanung.",
   "nav.skip": "Zum Inhalt springen",

@@ -14,9 +14,9 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Share the guide itself** — a Share button in the masthead opens a QR code big enough to hold up to the phone of whoever you are queueing with, plus the link to copy for posting it anywhere else
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them
-- **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up; tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. The entertainment halls and the trade-only business halls, each washed in the colour the official plan gives that area, with the business ones flagged as the door a consumer ticket does not open. Pick a day and that day's stops are pinned on the floor in your plan's own order — busiest first, played ones last — so "Thursday, hall 7.1" is a picture rather than a list. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens it on that stand, and it works offline like everything else
-- **Trade exhibitors**, behind one setting — "I have a trade badge", off by default, switchable from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters, curated cards for the platforms, services and national pavilions standing there, and the one thing that decides whether walking over is worth it — whether a booth is an open stand or a closed room you need an appointment for. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
-- **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the cyan one to turn it back. The square is the other booth's plate in miniature, and both colours are Koelnmesse's own — purple for the business halls, cyan for the entertainment ones — so a plate means the same thing here as it does on the official plan. The two booths stay separate stops in your plan, because they keep different hours
+- **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up. Tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. Entertainment halls and trade-only business halls are each washed in the colour the official plan gives that area, and the business ones are flagged as the door a consumer ticket does not open. Pick a day and that day's stops are pinned on the floor in your plan's own order — busiest first, played ones last — so "Thursday, hall 7.1" is a picture rather than a list. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens the map on that stand. It works offline like everything else
+- **Trade exhibitors**, behind one setting — "I have a trade badge", off by default. Switch it from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters and curated cards for the platforms, services and national pavilions standing there. Each booth says whether it is an open stand or a closed room you need an appointment for — the one thing that decides whether walking over is worth it. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
+- **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the cyan one to turn it back. The square is the other booth's plate in miniature, in Koelnmesse's own colours — purple for the business halls, cyan for the entertainment ones — so a plate means the same thing here as on the official plan. The two booths stay separate stops in your plan, because they keep different hours
 - Event info: dates, hours, tickets, special areas with the way onto the map for the hall each stands in, Opening Night Live, and which of the four **entrances** to use — including what a trade badge changes about that and about when you get in
 - **Installable and offline-capable** — add it to your home screen and the whole guide
   stays readable in a hall with no reception
@@ -25,9 +25,9 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 
 The guide is a PWA. Chrome, Edge and Samsung Internet offer an **Install app** button
 in the masthead; iOS Safari gets the same button pointing at *Share → Add to Home
-Screen*. Installed or not, `sw.js` caches the shell and the data on first visit, which
-is the point of the whole thing: Koelnmesse's halls eat mobile reception, and the
-guide is most needed exactly where the network is worst.
+Screen*. Installed or not, `sw.js` caches the shell and the data on first visit. That
+is the point of the whole thing: mobile reception inside Koelnmesse's halls is poor,
+and the guide is most needed exactly where the network is worst.
 
 Freshness is not traded away for it. Exhibitor data is served network-first and only
 falls back to the last good copy when the network fails — the masthead says
@@ -66,6 +66,12 @@ take to drain. All three are bookmarked or installed on somebody's phone, and a 
 list is per-origin — so they keep serving the guide rather than a redirect until the
 people standing on them have been offered the move.
 
+Arriving on one of them for the first time is the exception. Nothing in `localStorage`,
+no installed app and a working connection together mean there is nothing on that
+hostname to strand, so the head of each page sends that visit straight to `hallgui.de`
+— path, query and hash intact — before anything paints. Everyone else stays and is
+offered the move instead.
+
 The address moved twice, for different reasons. `gamescom.guide` had to go: the name is
 a registered mark of game — Verband der deutschen Games-Branche e.V., who license it to
 exhibitors and have had unofficial sites warned off carrying it in a domain. `gc26.guide`
@@ -80,8 +86,8 @@ they cost nothing in extra origins — `hallguide.de` most importantly, because 
 somebody who only *heard* the name would spell it, and owning both means it does not
 matter which side of the `de` they put the dot on.
 
-Throughout all of it the guide still calls the show by its name, which is ordinary
-referential use and was never the part anyone objects to. Only the domain moved.
+Throughout all of it the guide still calls the show by its name. That is ordinary
+referential use and was never the part anyone objects to; only the domain moved.
 
 Any static host works, but two routing options are not optional if you move it
 elsewhere: `/map.html` must be served without a redirect, and `/` must serve
@@ -266,6 +272,17 @@ switcher sits in the header and the footer. There are no `/de/` URLs: one
 deploy, one service-worker scope, and a share link means the same thing
 whoever opens it.
 
+That last-resort browser detection is also why `?lang=de` has to be a real
+address rather than an implementation detail. A crawler arrives with no German
+preference and nothing stored, so left to itself it would see the English
+guide on every visit and never learn the German one exists. `?lang=de` is the
+one address that pins the language for anyone, so both switchers are `<a>`
+elements pointing at it — `js/i18n.js` relabels them, keeps them on the view
+you are reading, and takes the click so a real visitor still gets the choice
+remembered rather than stuck in the URL. The `<link rel="alternate" hreflang>`
+set in `index.html` and `map.html` says the two are editions of each other,
+and `sitemap.xml` repeats the pairing.
+
 Data and language are stored separately. The base files above hold ids, halls,
 booth numbers and flags; the prose lives in `data/i18n/en.json` and
 `data/i18n/de.json`, keyed by exhibitor id, game title, show date and area
@@ -284,6 +301,36 @@ interpolation and plurals, and a `data-i18n` pass over the static markup.
 `tools/check-i18n.mjs` enforces key, plural and placeholder parity, checks the
 prose still points at data that exists, and flags English that changed after
 its translation — `tools/build-site.sh` runs it before every deploy.
+
+### Search and link previews
+
+Everything below the masthead is rendered from JSON after boot, so the first
+look any machine gets at this site is a header, a footer and no subject. Four
+things put that right, and all four are checked by `tools/check-seo.mjs`
+before a deploy — every one of them is hand-written about data that moves,
+none of it shows on screen, and a mistake in any of it looks exactly like a
+working site until it is somebody else's search result.
+
+- **Canonical.** Four hostnames serve this file (see `wrangler.toml`), and the
+  canonical is what stops them competing as four copies. On `?lang=de` it
+  points at itself instead — a language edition that canonicals to the English
+  page is one that gets dropped.
+- **`hreflang`.** The German guide's only route in; see above.
+- **JSON-LD.** An `Event` and a `WebSite`, so a crawler learns this is a
+  listing for a five-day show in Cologne without running a script. Ticket
+  prices are deliberately left out: the official shop is the only place that
+  should be quoting those in a search result. The dates, name and venue are
+  checked against `data/event.json` on every build.
+- **Open Graph.** The guide is passed around in queues and Discord servers far
+  more than it is searched for, and every unfurler that renders those links is
+  a server that never runs a line of the page — so the preview text is static
+  English in the markup rather than `data-i18n`, and `icons/og-cover.png`
+  (`tools/make-screenshots.mjs`) is the card image.
+
+`robots.txt` is a plain allow-all pointing at the sitemap. `sitemap.xml` is
+generated into `dist/` at deploy time by `tools/make-sitemap.mjs`, which reads
+its URLs back out of the staged pages' own `hreflang` links rather than
+keeping a second list to fall out of step.
 
 See [`docs/UPDATING.md`](docs/UPDATING.md) for the data schema and the periodic-refresh playbook (designed to be run by a scheduled Claude Code routine).
 

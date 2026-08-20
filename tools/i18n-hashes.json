@@ -1,6 +1,7 @@
 {
   "note": "Hash of each English string as of the last time its translations were confirmed. Regenerate with: node tools/check-i18n.mjs --update",
   "keys": {
+    "ui:doc.title": "zd5vel",
     "ui:meta.description": "1llip7d",
     "ui:nav.skip": "1jele5i",
     "ui:nav.sections": "1keh1vx",
