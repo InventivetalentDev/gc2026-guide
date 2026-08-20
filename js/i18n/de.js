@@ -364,7 +364,8 @@ window.GC_STRINGS.de = {
     "Termine, Öffnungszeiten, Tickets und Hallenbereiche auf dieser Seite stammen aus {n} Quelle.|Termine, Öffnungszeiten, Tickets und Hallenbereiche auf dieser Seite stammen aus {n} Quellen.",
   "sources.note.card":
     "Standort, Spiele und erwarteter Andrang in diesem Eintrag stammen aus {n} Quelle.|Standort, Spiele und erwarteter Andrang in diesem Eintrag stammen aus {n} Quellen.",
-  "sources.lastChecked": " Zuletzt geprüft am {date}.",
+  "sources.lastUpdated": " Zuletzt aktualisiert am {date}.",
+  "sources.lastChecked": " Quellen zuletzt geprüft am {date}.",
   "sources.caveat":
     "Das hier ist ein inoffizieller Guide. Standnummern und Spieleangebote können sich bis zur Messe ändern. Wenn ein Detail für deinen Tag wichtig ist, prüf es an der Quelle.",
 
