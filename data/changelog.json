@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-20",
+    "revision": 37,
+    "changes": [
+      "The hall map turns itself a quarter turn on a phone held upright. Halls are long and thin — hall 9 is 166 by 67 metres — so held upright the whole hall used to fit as a band across the middle of the screen, with the booth names shrunk to match. Now it opens on its side, filling the screen, with every name about half again as large. Turn the phone and it turns back.",
+      "Halls 10.1 and 10.2 are taller than they are wide, so they are left as they are — turning them would gain nothing. Nor does anything turn on a screen that is already wider than it is tall. The button under the zoom controls turns the hall by hand either way, and from the moment you press it the map stops deciding for you.",
+      "Nothing about the turn changes what a booth is. The hall is turned before it is drawn rather than after, so the names, the doors, the walls, your saved stands and the numbered pins of a planned day are all drawn the right way up — and a link to a booth number opens the same stand whichever way the hall faces.",
+      "The Share button and the footer links are easier to hit. Share was 22 pixels tall and the footer links 15, both under the 24 a fingertip wants. Neither has moved or changed size; the area that answers a tap around them has grown."
+    ]
+  },
+  {
+    "date": "2026-08-20",
     "revision": 36,
     "changes": [
       "A booth with several stands in one hall now wears one number on the map, not one per stand. Nintendo files four stands in hall 9, so Thursday's route drew four pins all reading “2” — four stops on the floor and two in the bar above it. The number sits on the largest stand, the one the route line already runs through; the whole booth still lights up, and tapping any part of it still says “Stop 2 of 5”.",
