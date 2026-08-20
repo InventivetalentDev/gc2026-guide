@@ -103,6 +103,22 @@ This document is the playbook for refreshing the data — written so a scheduled
 8. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
    human-readable bullet per meaningful change — this renders on the site's Updates tab.
    Skip trivia; write for visitors ("Ubisoft booth confirmed: Hall 6 B010"), not diffs.
+   Every bullet carries a `kind`, and `tools/check-i18n.mjs` fails the deploy if one doesn't:
+   - `content` — **what the guide knows about the show changed**: an exhibitor, booth,
+     lineup, hall, hours, ticket, link or source, whether added, confirmed, corrected or
+     removed. Every bullet of a plain data refresh is this one, including the ones that
+     start "Fixed:" — a booth filed at the wrong stand is show information corrected, and
+     someone scanning the Updates tab for new game info wants it in that scan.
+   - `feature` — **what the guide can do changed**: a new view, control or capability, or
+     an existing one deliberately redesigned.
+   - `fix` — **the guide was misbehaving and now isn't**: a wrong count on screen, a dead
+     tap target, a lost day assignment. Behaviour, never data — a wrong number the guide
+     *published* is `content`; a wrong number the guide *calculated* is `fix`.
+
+   The tags are what make the Updates tab scannable — a revision that added game
+   information has to read differently from one that moved a button. Revisions
+   themselves are never tagged: the timeline derives each entry's tags from its bullets,
+   so there is no summary line that can drift out of step with what is under it.
 9. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
    ```sh
    node -e "['exhibitors','event','meta','changelog'].forEach(f=>JSON.parse(require('fs').readFileSync('data/'+f+'.json')))"
@@ -210,6 +226,10 @@ official area names ("Indie Arena Booth"), "gamescom", "Opening Night Live", and
 the changelog — `data/changelog.json` is a transparency log rewritten every few
 days, and translating it would double the editorial cycle for the one surface
 nobody plans a day around. German readers get told so under the Updates lede.
+Its bullets' `kind` is the exception that proves it: the kinds are an enum, not
+prose, so their labels are translated like "rev {n}" is — a German reader gets
+"Messe-Infos" against an English bullet, and can still tell at a glance which
+revisions brought new show information.
 `imprint.html` and `privacy.html` are also English, though the footer links to
 them are labelled "Impressum" and "Datenschutz" — those are the words people
 look for, and § 5 DDG is about the imprint being easy to find.
@@ -511,10 +531,19 @@ arrived yet. Never make that fetch conditional on the pref.
   {
     "date": "2026-08-07",
     "revision": 2,
-    "changes": ["One bullet per meaningful change, visitor-readable."]
+    "changes": [
+      // kind: "content" | "feature" | "fix" — the rule for picking one is in step 8
+      { "kind": "content", "text": "One bullet per meaningful change, visitor-readable." }
+    ]
   }
 ]
 ```
+
+The Updates tab reads the kinds twice: as a tag on each bullet, and — collected into the
+set of distinct kinds — as the tags on the revision itself, which is also what its filter
+row filters on. A bullet written as a bare string instead of an object still renders, with
+no tag: that is the one load an installed guide can pair a cached pre-tag changelog with
+this script, not a shape to author. `tools/check-i18n.mjs` rejects it in the repo.
 
 ## The offline cache
 

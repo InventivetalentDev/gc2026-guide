@@ -527,6 +527,15 @@
              work it out. -->
         <p class="mono-note" data-i18n="updates.englishOnly" data-i18n-only="de" hidden></p>
       </div>
+      <!-- Every bullet is tagged Feature / Fix / Content, so "when did the
+           show information last change" is one chip away rather than a read
+           through 36 revisions. Filled by renderChangelog from the kinds the
+           changelog actually contains, and hidden until there are two of
+           them to choose between. -->
+      <div class="updates-toolbar hidden">
+        <span class="row-label" id="update-filter-label" data-i18n="updates.filterLabel">Show</span>
+        <div class="filter-row" id="update-filters" role="group" aria-labelledby="update-filter-label"></div>
+      </div>
       <div id="changelog" class="timeline"></div>
     </section>
   </main>
