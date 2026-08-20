@@ -5,6 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="Unofficial guide to gamescom 2026 — exhibitors, games, hall & booth locations, crowd forecasts and visit planning." data-i18n-attr="content:meta.description">
   <meta name="color-scheme" content="dark">
+  <!-- The old addresses, for anyone who has nothing on them yet. Three
+       hostnames still answer while they drain (wrangler.toml), and they serve
+       the guide rather than redirect because everything the guide holds — the
+       saved list, the day plan, the played marks — is per-origin, so a
+       redirect would strand all of it.
+
+       That argument is about people with something to strand. Someone
+       arriving now from an old link or a printed URL has nothing here, and
+       nothing is what a redirect costs them: send them to the address that is
+       staying, before a byte is painted.
+
+       Four things stop it, and each is a way of saying somebody chose to be
+       here:
+
+       storage      anything at all in localStorage — a saved booth, a chosen
+                    language, a dismissed move notice, the installed marker
+                    js/pwa.js writes. Whoever left it gets offerMove() in
+                    js/app.js instead, which carries their plan across rather
+                    than dropping them on an empty origin.
+       standalone   the installed app is running this. Its address bar does not
+                    update, so a redirect would leave the app showing another
+                    origin with no sign of what happened and no way back.
+       offline      the destination has no service worker and no cache on this
+                    device, so redirecting with no network redirects to an
+                    error page — and a Koelnmesse hall is where that is
+                    likeliest.
+       blocked      localStorage throws (Safari private mode, cookies blocked).
+                    Unreadable is not empty, and staying is the reversible
+                    half.
+
+       Path, query and hash all ride along: an old #s?t=… share link arrives at
+       hallgui.de as a share link, and ?lang=de arrives in German. replace()
+       rather than assign() so Back goes to wherever they came from instead of
+       to a URL that redirects again.
+
+       js/app.js keeps its own copy of the host list, and map.html its own copy
+       of this block — the same deal as the language stamp below, which
+       js/i18n.js also duplicates. Nothing that runs this early can be a file,
+       and the whole block comes out with the last retired hostname. -->
+  <script>
+    (function () {
+      try {
+        var home = "https://hallgui.de";
+        var legacy = ["gc2026.inventivetalent.org", "gamescom.guide", "gc26.guide"];
+        if (legacy.indexOf(location.host) === -1 || location.origin === home) return;
+        if (navigator.onLine === false) return;
+        var displayed = function (mode) {
+          return window.matchMedia("(display-mode: " + mode + ")").matches;
+        };
+        if (displayed("standalone") || displayed("minimal-ui") || navigator.standalone === true) return;
+        if (localStorage.length !== 0) return;
+        location.replace(home + location.pathname + location.search + location.hash);
+      } catch (e) {
+        /* storage unreadable, or no matchMedia: stay, and leave it to the move
+           notice — the path everyone on these hostnames had until now */
+      }
+    })();
+  </script>
   <!-- Language, decided before anything paints. The guide switches at
        runtime rather than on separate /de/ URLs (one deploy, one service
        worker scope, no interaction with the SPA routing in wrangler.toml),
