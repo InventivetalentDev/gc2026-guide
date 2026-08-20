@@ -153,6 +153,51 @@ table beside `CAMPUS`, one entry, `"2.1": { dy: 1 }`. It is a documented
 guess until someone walks hall 2 with the map open, and it is one sign
 to undo.
 
+### 3a. A quarter turn rotates the geometry, not the drawing
+
+A wide hall fitted to a portrait screen leaves most of the screen empty, so
+the map offers one clockwise quarter turn beside the zoom controls. It turns
+the hall's coordinates before layout rather than rotating the finished SVG.
+A finished-SVG turn would leave every booth and door name sideways;
+counter-rotating those labels would then make `fitName()` size them against
+the wrong width. With geometry first, labels, walls, route pins and leg
+pointers all receive ordinary hall coordinates and need no rotation case of
+their own.
+
+For a hall `W` metres wide and `H` metres high, `(x, y)` becomes
+`(H - y, x)` and the size becomes `[H, W]`. Margins stay attached to their
+physical walls: west becomes north, north becomes east, east becomes south,
+and south becomes west. Door centres use the same wall mapping:
+
+| old wall | new wall | new door `at` | margin after the turn |
+|---|---|---|---|
+| north | east | unchanged | new east = old north |
+| east | south | `H - at` | new south = old east |
+| south | west | unchanged | new west = old south |
+| west | north | `H - at` | new north = old west |
+
+`at` is the centre of the opening and `H` is the unrotated height, so its
+span is never part of the reversal. The cached snapshot stays unrotated;
+only a page-lifetime copy is turned, and nothing about the turn is stored or
+put in the URL: `#9.1/A070` is the same stand either way.
+
+**The map decides, until the visitor does.** A hall opens turned when two
+things are true — the screen is taller than it is wide, and the hall comes out
+bigger turned. Both are needed. The first is the problem this was built for, a
+hall lying across a phone held upright; on a screen already wider than it is
+tall there is nothing to solve, and turning a hall away from the orientation
+the official plan prints it in wants a better reason than a few percent of
+scale. The second is asked directly, in the terms `fitView()` will use a moment
+later, rather than read off the hall's aspect ratio: halls 10.1 and 10.2 are
+taller than they are wide, so a portrait phone leaves them alone while the
+other eleven gain about half again.
+
+The decision is taken before the first draw and again when the window changes
+shape, which is what turning the phone does. It stops for good the first time
+the visitor presses the button: they have looked at this hall and said which
+way they want it, and that outranks any rule here — the same reading the plan
+board applies to a stop somebody moved by hand.
+
 ### 4. The join is client-side, at load — geometry files stay editorial-free
 
 Stands and guide exhibitors meet by `hall` + normalised booth code
