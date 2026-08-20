@@ -59,6 +59,7 @@ const state = {
   trade: [],            // business-hall rows from data/directory.json, once loaded
   halls: new Map(),     // hall id -> hall json
   rot: false,           // page-lifetime view; never a stored hall fact
+  rotChosen: false,     // the visitor pressed the button, so stop deciding for them
   byStand: new Map(),   // "hall:CODE" -> [exhibitor, …]
   hall: null,           // current hall id, or OVERVIEW
   stands: [],           // render records for the current hall
@@ -417,6 +418,52 @@ function rotateDoors(doors, H) {
 /* Trade changes rebuild the hall and mark refreshes redraw its route from
    the same numbers. Keep one turned copy per loaded hall instead of doing
    the polygon work again on either path. */
+/* The whole picture in hall metres: the booth box, the hall around it, and the
+   room each wall needs beyond itself for its own name and a leg pointer's. One
+   implementation, because renderHall draws it and the rule below measures it,
+   and a second copy of this arithmetic would drift from the first. */
+function drawingBox([W, H], m, doors) {
+  const named = labelledEdges(doors);
+  const doored = new Set(doors.map((d) => d.edge));
+  const out = (k) => Math.max(GAP, doored.has(k) ? LEG_BAND : named.has(k) ? LBL_BAND : 0);
+  return {
+    ox: -(m.w + out("w")),
+    oy: -(m.n + out("n")),
+    vw: W + m.w + m.e + out("w") + out("e"),
+    vh: H + m.n + m.s + out("n") + out("s"),
+  };
+}
+
+/* Should this hall open turned? Two conditions, and both are needed.
+
+   The screen must be taller than it is wide. This is the problem the turn was
+   built for: a hall lying across a phone held upright. On a screen already
+   wider than it is tall there is no such problem to solve, and turning a hall
+   away from the orientation the official plan prints it in wants a reason
+   better than a few percent of scale. The button is still there for anyone who
+   wants it.
+
+   And the hall must actually come out bigger. Asking that directly, in the
+   same terms fitView() will use a moment later, beats reading the hall's aspect
+   ratio: halls 10.1 and 10.2 are taller than they are wide, so on a portrait
+   phone they are already the right way round and this leaves them alone, while
+   the other eleven gain about half again.
+
+   Rotating swaps the picture exactly. Walls move n->e->s->w->n, so the margins
+   and the label bands travel with them and the turned box is the upright one
+   with its sides exchanged. That is why one drawingBox() call answers both.
+
+   False whenever the stage has no size yet, which is the case during the first
+   layout. */
+function shouldTurn(id) {
+  const hall = state.halls.get(id);
+  const r = $("#stage")?.getBoundingClientRect();
+  if (!hall || !r?.width || !r?.height) return false;
+  if (r.width >= r.height) return false;
+  const { vw, vh } = drawingBox(hall.size, rawMarginOf(id), rawDoorsOf(id));
+  return Math.min(r.width / vh, r.height / vw) > Math.min(r.width / vw, r.height / vh);
+}
+
 const rotatedHalls = new Map();
 function hallGeometry(id) {
   const hall = state.halls.get(id);
@@ -506,9 +553,13 @@ const NO_MARGIN = { n: 0, e: 0, s: 0, w: 0 };
 /* How far the wall stands off the booth box, per side. A hall may name
    its own; everything else takes the file's default, and a map with no
    file at all falls back to the box itself. */
+const rawMarginOf = (id) => ({
+  ...NO_MARGIN,
+  ...(state.outline.margin || {}),
+  ...(state.outline.halls?.[id]?.margin || {}),
+});
 function marginOf(id) {
-  const file = state.outline;
-  const margin = { ...NO_MARGIN, ...(file.margin || {}), ...(file.halls?.[id]?.margin || {}) };
+  const margin = rawMarginOf(id);
   return state.rot ? rotateMargin(margin) : margin;
 }
 
@@ -581,9 +632,13 @@ function wallSegments(t0, t1, doors) {
   return out;
 }
 
+const rawDoorsOf = (id) =>
+  (state.outline.halls?.[id]?.doors || []).filter(
+    (d) => EDGE_KEYS.includes(d.edge) && d.span > 0
+  );
+
 const doorsOf = (id) => {
-  const doors = (state.outline.halls?.[id]?.doors || [])
-    .filter((d) => EDGE_KEYS.includes(d.edge) && d.span > 0);
+  const doors = rawDoorsOf(id);
   if (!state.rot) return doors;
   /* East and west reverse against the old height. hallGeometry() has
      already swapped that dimension, so this one read stays on the source. */
@@ -713,14 +768,11 @@ function renderHall(id) {
      under someone who has zoomed into a booth would cost more than the
      6 m of margin does, and a name pushed inside instead lands on the
      stands the map is for. */
-  const named = labelledEdges(doors);
-  const doored = new Set(doors.map((d) => d.edge));
-  const out = (k) =>
-    Math.max(GAP, doored.has(k) ? LEG_BAND : named.has(k) ? LBL_BAND : 0);
-  view.ox = -(m.w + out("w"));
-  view.oy = -(m.n + out("n"));
-  const vw = W + m.w + m.e + out("w") + out("e");
-  const vh = H + m.n + m.s + out("n") + out("s");
+  const box = drawingBox(hall.size, m, doors);
+  view.ox = box.ox;
+  view.oy = box.oy;
+  const vw = box.vw;
+  const vh = box.vh;
 
   const svg = document.createElementNS(SVGNS, "svg");
   svg.setAttribute("id", "map");
@@ -2394,6 +2446,39 @@ $("#zoom-fit")?.addEventListener("click", fitCurrent);
    leaves dead markup, then ask the CSS marker whether the new rule arrived.
    A measurement was the wrong question because the button's size may change
    independently of this guard. The check runs before a paint. */
+let rotBtn = null;
+
+/* Returns whether anything moved, so a caller can skip a redraw it does not
+   need. The button carries the state for a screen reader, so it is set here
+   rather than at each call site. */
+function setRotation(on) {
+  if (state.rot === on) return false;
+  state.rot = on;
+  rotBtn?.setAttribute("aria-pressed", String(on));
+  if (!on) rotatedHalls.clear();
+  return true;
+}
+
+/* Redraw the hall on screen at the current orientation, keeping the open
+   stand open. The campus overview has its own coordinate file: the turn
+   stays set for the next hall, but that separate drawing does not move. */
+function redrawRotation() {
+  if (onOverview() || !state.hall || !state.halls.has(state.hall) || !$("#map")) return;
+  const code = state.sel ? [...state.sel.codes][0] : null;
+  renderHall(state.hall);
+  if (!code) return;
+  const rec = state.stands.find((stand) => stand.codes.has(code));
+  if (rec) selectStand(rec);
+}
+
+/* The automatic choice, taken before a hall is drawn and again when the window
+   changes shape. It stops for good the moment the visitor presses the button:
+   they have looked at this hall and said which way they want it, which outranks
+   any rule this file could apply on top. */
+function autoRotate(id) {
+  return state.rotChosen ? false : setRotation(shouldTurn(id));
+}
+
 {
   const controls = $(".map-zoom");
   if (controls) {
@@ -2410,18 +2495,10 @@ $("#zoom-fit")?.addEventListener("click", fitCurrent);
     if (getComputedStyle(button).getPropertyValue("--rotate-btn").trim() !== "1") {
       button.remove();
     } else {
+      rotBtn = button;
       button.addEventListener("click", () => {
-        state.rot = !state.rot;
-        button.setAttribute("aria-pressed", String(state.rot));
-        if (!state.rot) rotatedHalls.clear();
-        /* The campus overview has its own coordinate file. The turn remains
-           pressed for the next hall, but that separate drawing stays put. */
-        if (onOverview() || !state.hall || !state.halls.has(state.hall) || !$("#map")) return;
-        const code = state.sel ? [...state.sel.codes][0] : null;
-        renderHall(state.hall);
-        if (!code) return;
-        const rec = state.stands.find((stand) => stand.codes.has(code));
-        if (rec) selectStand(rec);
+        state.rotChosen = true;
+        if (setRotation(!state.rot)) redrawRotation();
       });
     }
   }
@@ -2685,6 +2762,9 @@ async function showHall(id, { standCode = null } = {}) {
     renderSourceNote(); /* its door clause is per hall */
     if (!state.halls.has(id)) $("#load").hidden = false;
     await loadHall(id);
+    /* Before the draw, not after: renderHall reads the orientation to lay the
+       hall out, so deciding afterwards would draw it twice. */
+    autoRotate(id);
     renderHall(id);
     /* The address bar always names the hall on screen. A chip or door tap
        used to leave the previous stand's #hall/booth standing, so copying
@@ -2716,7 +2796,14 @@ window.addEventListener("hashchange", () => {
   else if (hallExists(h)) showHall(h, { standCode: code ? code.toUpperCase() : null });
 });
 
-window.addEventListener("resize", fitCurrent);
+/* Turning the phone is the case this exists for: a hall that had to be turned
+   to fit a portrait screen fits upright on a landscape one, and the other way
+   round. Only redraw when the answer actually changed; every other resize just
+   refits what is already there. */
+window.addEventListener("resize", () => {
+  if (!onOverview() && state.hall && autoRotate(state.hall)) redrawRotation();
+  else fitCurrent();
+});
 
 /* The ← is an <a href="./"> so it always works — middle-click, long-press,
    copy the link. But followed as a link it reloads the guide from the top,
