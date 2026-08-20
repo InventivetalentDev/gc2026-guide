@@ -2382,6 +2382,30 @@ function curatedByBooth() {
 let directoryRequest = null;
 let directorySignature = "";
 
+/* `setTrade()` already covers the visitor who first turns trade mode on while
+   online: `loadDirectory()` fetches the file and the service worker keeps it.
+   This idle warm-up covers the visitor who has never used trade mode, loses
+   reception inside a hall, and turns it on there.
+
+   The directory is not precached because it is about 49 KB gzipped, as much as
+   all thirteen hall plans together, and most visitors never turn trade mode
+   on. Trade mode, a settled load, or a request in flight means
+   `loadDirectory()` owns the file; another fetch would race or repeat it.
+   Offline has no response to add to the cache. A visitor using save-data has
+   already refused these optional bytes. On slow-2g or 2g, they would compete
+   with data the visitor actually asked for. Safari reports no connection
+   object; missing information is no objection, so it still gets the warm-up. */
+function warmDirectory() {
+  idle(() => {
+    if (state.trade || state.directory || state.directoryError || directoryRequest) return;
+    if (navigator.onLine === false) return;
+    const connection = navigator.connection;
+    if (connection?.saveData === true) return;
+    if (["slow-2g", "2g"].includes(connection?.effectiveType)) return;
+    fetch(DIRECTORY_URL).catch(() => {});
+  });
+}
+
 /* Always a promise, so a caller that needs the data before it can answer —
    the share decoder — can simply await it. */
 function loadDirectory() {
@@ -4391,6 +4415,7 @@ function resetFilters() {
    callback grows back into the block this exists to break up. */
 const pendingViewRender = new Map();
 let viewRenderPump = false;
+const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 80));
 
 function queueViewRender(view, render) {
   pendingViewRender.set(view, render);
@@ -4407,7 +4432,6 @@ function flushViewRender(view) {
 function pumpViewRenders() {
   if (viewRenderPump || !pendingViewRender.size) return;
   viewRenderPump = true;
-  const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 80));
   idle(() => {
     viewRenderPump = false;
     const next = pendingViewRender.keys().next();
@@ -4784,6 +4808,7 @@ async function main() {
   /* Last, so an import prompt is the thing on screen when both apply — that one
      is priority anyway, and it carries the only Add/Undo the visitor gets. */
   offerMove();
+  warmDirectory();
 }
 
 main();
