@@ -74,8 +74,21 @@
    old script leaves the new tab hidden for a load, and a new script can route
    to a #view-today the old shell does not have. The second one is guarded in
    showView, but a mode that only exists for five days should not spend one of
-   them waiting for a revalidation. */
-const VERSION = "v12";
+   them waiting for a revalidation.
+
+   v13 is the map's stand sheet leaving #stage. The sheet is a sibling of the
+   stage in map.html now and a fixed panel in css/map.css, and together they
+   are what puts its × back within reach on a phone held sideways — clipped
+   to the stage, the top of a sheet taller than it went behind the strips
+   above, and the card could be opened and not closed. Neither half is
+   broken alone, which is why this is a judgement rather than a rule: the
+   new markup under the old stylesheet is an uncapped bottom sheet with no
+   clip over it, and the old markup under the new one scrolls the whole
+   sheet rather than its body, which walks the × off the top on the tallest
+   ones. But this is the page a stranger's #hall/booth link opens, often
+   once, in a hall with no reception — "one load late" is "never" often
+   enough here — and the fix is not whole until both halves have landed. */
+const VERSION = "v13";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;

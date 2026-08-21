@@ -97,24 +97,38 @@
    tight is worse than no control. */
 .map-route {
   flex: none;
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 8px;
   padding: 7px 16px;
   border-bottom: 1px solid var(--rule);
+  /* One line, whatever the width. The chips scrolled inside their own strip
+     and the sentence beside them wrapped instead, so on a phone this bar
+     was two rows deep — as tall as the hall chips above it, for a hint. The
+     whole bar is the scroller now: kicker, chips and sentence in one row,
+     swiped rather than stacked, and the stage keeps the row it was paying
+     for the sentence with. */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+.map-route::-webkit-scrollbar { display: none; }
 .map-route[hidden] { display: none; }
 .map-route-kicker {
   flex: none;
   font-family: var(--font-mono); font-size: .6rem; letter-spacing: .1em;
   text-transform: uppercase; color: var(--ink-dim);
 }
-.map-route-days { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-.map-route-days::-webkit-scrollbar { display: none; }
+/* Not a scroller of its own any more — the bar around it is one, and a
+   scroller inside a scroller takes two swipes to reach the end of. */
+.map-route-days { display: flex; flex: none; gap: 6px; }
 .map-route-days .day-chip { flex: none; }
-/* Pushed to the far end on a wide bar, and allowed its own line on a narrow
-   one — it is a sentence, not a control, and it must never squeeze the
-   chips it describes. */
+/* Pushed to the far end while the bar has room to spare, and scrolled off
+   it rather than wrapping when it hasn't — it is a sentence, not a control,
+   and it must never squeeze the chips it describes or take a row from the
+   map to say so. */
 .map-route-status {
   margin-left: auto;
+  flex: none;
+  white-space: nowrap;
   font-family: var(--font-mono); font-size: .66rem; line-height: 1.35;
   color: var(--ink-mid);
 }
@@ -149,8 +163,9 @@
 .map-access b { color: var(--ink); font-weight: 600; }
 /* Inline in the banner's own text so it wraps with it rather than claiming a
    row of its own — this bar is already the tallest thing between the hall
-   chips and the map. Amber to match the guide's badge chip; plain rule when
-   it is on, because turning it off is not the offer being made. */
+   chips and the map. Amber to match the guide's badge chip. It has one state
+   and one direction: the banner is gone once the exhibitors are on (see
+   renderAccess in js/map.js), so there is no switched-on version of it. */
 .map-access-btn {
   display: inline-block;
   margin-left: 2px;
@@ -165,10 +180,6 @@
   cursor: pointer;
 }
 .map-access-btn:hover { background: color-mix(in srgb, var(--warn) 24%, transparent); }
-.map-access-btn.is-on {
-  border-color: var(--rule); background: none; color: var(--ink-dim);
-}
-.map-access-btn.is-on:hover { border-color: var(--ink-dim); color: var(--ink); }
 
 /* --- stage --- */
 #stage {
@@ -204,8 +215,10 @@
    Pinch and wheel already do the job, but neither is discoverable with a
    mouse alone, and neither offers the way back out — the fit button is
    "show me the whole hall again", which a deep zoom otherwise costs a
-   dozen wheel notches. Under the sheet in the stack (z-index 2 vs 3), so
-   an open sheet wins the corner on a phone rather than fighting for it. */
+   dozen wheel notches. Under the sheet in the stack (z-index 2 vs 20), so
+   an open sheet wins the corner on a phone rather than fighting for it —
+   sideways it does not have to, because the column moves to the other
+   edge and the sheet takes that one for good (last block in this file). */
 .map-zoom {
   position: absolute; right: 10px; bottom: 10px; z-index: 2;
   display: flex; flex-direction: column; gap: 6px;
@@ -376,22 +389,55 @@
    decide this. */
 #map.z0 .nz0, #map.z1 .nz1, #map.z2 .nz2 { display: none; }
 
-/* --- stand detail sheet --- */
+/* --- stand detail sheet ---
+   Fixed to the viewport, not absolute inside #stage, and the two halves of
+   that are one decision: the stage clips to itself, and it is the box on
+   this page that runs out of height first. A sheet taller than the stage
+   used to lose its top edge to the clip — the booth's name, and the × with
+   it — behind the strips above, which on a phone held sideways is every
+   sheet there is: a 360px screen leaves the stage about 130px of the 200
+   the sheet wants. Anchored to the screen instead, it is never clipped, and
+   it opens over the credit line rather than stopping short of it, which is
+   a strip of hall the map keeps. */
 #sheet {
-  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; flex-direction: column;
+  /* Whatever it holds, it stops short of the header: the way out of the
+     sheet is on the screen at every height this page is read at, and on a
+     notched phone below the notch rather than under it. */
+  max-height: min(62dvh, calc(100dvh - 56px - env(safe-area-inset-top)));
   background: var(--ground-2);
   border-top: 2px solid var(--signal);
   padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
   box-shadow: 0 -6px 0 rgba(255, 255, 255, .03);
   transform: translateY(105%);
   transition: transform .18s ease-out;
+  /* The scroll belongs to .map-sheet-body below. This is the fallback for
+     an installed shell whose map.html predates that wrapper: the sheet
+     itself scrolls there, which loses the pinned × but never the content. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
+/* display:flex above is an author rule and would otherwise beat the
+   `hidden` attribute's — same pair as .map-route and .map-access. */
+#sheet[hidden] { display: none; }
 #sheet.open { transform: none; }
+/* What scrolls when the details outrun the height above. The sheet's own
+   box does not, so the × stays in the corner the whole way down — a booth
+   sharing its stand with a dozen named exhibitors is the common case, not
+   the pathological one. */
+.map-sheet-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 
 .map-sheet-close {
   position: absolute; right: 8px; top: 6px;
   background: none; border: 0; color: var(--ink-dim);
   font-size: 1.3rem; line-height: 1; cursor: pointer; padding: 6px 10px;
+  /* over the scrolling body, and never squeezed by it */
+  z-index: 1;
 }
 .map-sheet-close:hover { color: var(--ink); }
 #sheet h2 {
@@ -438,13 +484,22 @@
   background: var(--signal); border-color: var(--signal); color: var(--signal-ink);
 }
 
-/* --- credit line --- */
+/* --- credit line ---
+   Three groups that wrap to three or four rows on a phone, and every row of
+   them is a row the hall does not get. None of the text can go — the source
+   link and its date are the same promise the guide's ⓘ dialog makes, and the
+   legal links are the only route to those pages from a map opened straight
+   from someone else's #hall/booth link — so the box gives instead: prose
+   line-height on a mono credit was never doing anything, and it costs a
+   line's worth of it per row. About fifteen pixels back in portrait, and the
+   sheet now opens over what is left rather than above it. */
 .map-note {
   flex: none;
-  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px;
-  padding: 6px 16px calc(6px + env(safe-area-inset-bottom));
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2px 14px;
+  padding: 5px 16px calc(5px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--rule);
-  font-family: var(--font-mono); font-size: .62rem; color: var(--ink-dim);
+  font-family: var(--font-mono); font-size: .62rem; line-height: 1.3;
+  color: var(--ink-dim);
 }
 .map-note a { color: var(--ink-mid); }
 .map-note a:hover { color: var(--ink); }
@@ -531,4 +586,71 @@
 @media (max-width: 400px) {
   .map-bar, .map-halls, .map-route { padding-left: 12px; padding-right: 12px; }
   .map-note { padding-left: 12px; padding-right: 12px; }
+}
+
+/* --- a phone on its side ---
+   The one screen shape this layout has to be told about. The strips are
+   sized for a portrait phone and stay that height when the screen loses two
+   thirds of its own: header, hall chips, day chips and the access banner
+   come to 180px of a 360px screen, the credit line takes another 48, and
+   the hall is what is left — 130px, which is not a map. So the strips give
+   back the padding they can spare, and the sheet stops being a bottom sheet
+   and takes the right-hand edge instead, where this shape keeps its room.
+   Landscape and nothing else: `orientation` alone would catch a tablet that
+   has the height for all of it, and a narrow phone on its side has no edge
+   to spare for a panel, so it keeps the capped bottom sheet above. */
+@media (max-height: 500px) and (min-width: 620px) {
+  .map-bar {
+    padding-top: calc(6px + env(safe-area-inset-top));
+    padding-bottom: 6px;
+  }
+  .map-halls {
+    padding-top: 6px; padding-bottom: 6px;
+    /* the same one-chip reservation as above, with this block's padding */
+    min-height: calc(26px + 12px + 1px);
+  }
+  .map-route { padding-top: 4px; padding-bottom: 4px; }
+  .map-access { padding-top: 5px; padding-bottom: 5px; }
+  .map-note {
+    padding-top: 4px;
+    padding-bottom: calc(4px + env(safe-area-inset-bottom));
+  }
+
+  /* Sideways is also where the notch is beside the page rather than above
+     it, and the back arrow is the first thing at that edge. */
+  .map-bar, .map-halls, .map-route, .map-access, .map-note {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  /* A panel down the right-hand edge: the hall stays on screen beside it,
+     which is the whole point of having tapped a booth on a map, and the ×
+     lands in a corner with nothing over it. The accent edge moves to the
+     side it now slides in from. */
+  #sheet {
+    left: auto;
+    width: min(360px, 46vw);
+    /* Down to the hall chips and no further: the row that changes halls
+       stays tappable with a stand open, which is most of what you do next.
+       The arithmetic is this block's own — the header and the chip strip at
+       the heights set above, and the rule under them. */
+    max-height: calc(100dvh - 88px - env(safe-area-inset-top));
+    border-top: 0;
+    border-left: 2px solid var(--signal);
+    box-shadow: -6px 0 0 rgba(255, 255, 255, .03);
+    padding-right: max(16px, env(safe-area-inset-right));
+    transform: translateX(105%);
+  }
+
+  /* Four stacked buttons are 178px, taller than the stage this shape
+     leaves; and the bottom-right corner belongs to the panel now. A row,
+     along the other edge, reserved end to end for the same reason the
+     column was reserved top to bottom. */
+  .map-zoom {
+    flex-direction: row;
+    right: auto;
+    left: max(10px, env(safe-area-inset-left));
+    min-height: 40px;
+    min-width: calc(4 * 40px + 3 * 6px);
+  }
 }
