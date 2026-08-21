@@ -4329,6 +4329,22 @@ function previewInstant() {
   return Number.isNaN(at.getTime()) ? null : at;
 }
 
+/* Where "back to the real date" goes: this address with `now` taken out of it
+   and everything else it carries left exactly as it was.
+
+   Dropping the whole query would be simpler and wrong. `?lang` is the one that
+   matters — js/i18n.js resolves it for the load and deliberately never
+   persists it, so a German link opened with ?now on it would exit into English
+   for anybody who has not used the switcher on purpose. The hash is passed in
+   rather than read here, because the href below is written once and the hash
+   moves under it every time the visitor changes tab. */
+const withoutPreview = (hash = "") => {
+  const params = new URLSearchParams(location.search);
+  params.delete("now");
+  const query = params.toString();
+  return location.pathname + (query ? `?${query}` : "") + hash;
+};
+
 /* Every read of "what time is it now" in the app goes through here, so the
    countdown in the masthead and the Today header can never tell a visitor two
    different things. (The .ics DTSTAMP deliberately does not: that field means
@@ -4472,15 +4488,16 @@ function renderPreviewBanner() {
   bar.classList.toggle("hidden", !at);
   if (!at) return;
   const { date, minutes } = showNow();
-  /* The href is the bare path — a correct destination for a middle-click, and
-     for a load where the handler in bindControls never ran. The hash is added
-     back at click time, because it moves while the banner is up and this
-     markup is only rebuilt when Today re-renders. */
+  /* The href stands on its own — a correct destination for a middle-click, and
+     for a load where the handler in bindControls never ran. Only the hash is
+     added back at click time, because it moves while the banner is up and this
+     markup is only rebuilt when Today re-renders; the rest of the address does
+     not move, so withoutPreview() can write it here. */
   bar.innerHTML = `<span class="preview-tag">${esc(t("preview.tag"))}</span>
     <span class="preview-when">${esc(
       t("preview.when", { day: dayName(date), date: formatDate(date), time: hhmm(minutes) })
     )}</span>
-    <a class="preview-exit" href="${esc(location.pathname)}">${esc(t("preview.exit"))}</a>`;
+    <a class="preview-exit" href="${esc(withoutPreview())}">${esc(t("preview.exit"))}</a>`;
 }
 
 function renderToday() {
@@ -5329,9 +5346,9 @@ function bindControls() {
   $("#preview-bar")?.addEventListener("click", (e) => {
     if (!e.target.closest(".preview-exit")) return;
     e.preventDefault();
-    /* Same view, real clock. Dropping the query is a navigation, so the app
-       reboots without ?now rather than trying to unwind it in place. */
-    location.assign(location.pathname + location.hash);
+    /* Same view, same language, real clock. Losing ?now is a navigation, so
+       the app reboots without it rather than trying to unwind it in place. */
+    location.assign(withoutPreview(location.hash));
   });
   /* Today's two doors, pointing at the two things that can be wrong with it:
      an empty day is fixed in the plan, an empty list on the exhibitor grid. */
