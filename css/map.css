@@ -50,6 +50,18 @@
   display: flex; align-items: center; gap: 6px; padding: 10px 16px; overflow-x: auto;
   border-bottom: 1px solid var(--rule);
   scrollbar-width: none;
+  /* Empty in the markup — js/map.js builds the row from the hall snapshot —
+     and an empty flex row is its own padding and nothing else. So the chips
+     arriving grew this strip by a chip's height and pushed the stage down
+     with it, and the stage is very nearly the whole screen: it was the
+     largest layout shift on this page.
+
+     One chip's row, reserved from the first paint. A .chip.hall-chip is 26px
+     at every width the map is read at — 12px of mono, 4px of padding either
+     side, a 1px rule — the 10px above and below are this strip's own, and the
+     last pixel is the rule under it. The row never wraps to a second, it
+     scrolls, so one chip is the whole reservation and not an estimate. */
+  min-height: calc(26px + 20px + 1px);
 }
 .map-halls::-webkit-scrollbar { display: none; }
 .map-halls .chip { white-space: nowrap; }
@@ -197,6 +209,21 @@
 .map-zoom {
   position: absolute; right: 10px; bottom: 10px; z-index: 2;
   display: flex; flex-direction: column; gap: 6px;
+  /* Four slots, not the three in the markup. js/map.js builds the turn
+     button rather than map.html carrying it, deliberately — so that an old
+     script never leaves dead markup behind; see the comment above it there.
+     But appending to a bottom-anchored column lifted the three buttons
+     already on screen by a button and a gap the moment it landed.
+
+     So the column is its finished height from the first paint and the three
+     start where they will stay; the turn button drops into the slot left
+     under them. The arithmetic is the buttons' own: four at 40px with three
+     6px gaps between, both set just below.
+
+     The one visit that sees the gap empty is a stale js/map.js against this
+     stylesheet, which is the same deploy window the marker below exists for
+     — and an empty 40px of corner is the cheaper half of that trade. */
+  min-height: calc(4 * 40px + 3 * 6px);
 }
 .map-zoom-btn,
 .map-rotate-btn {
