@@ -5028,6 +5028,26 @@ const SAVED_ROUTE = "saved";
 
 const routeFor = (view) => (view === "exhibitors" && state.savedOnly ? SAVED_ROUTE : view);
 
+/* Today's stops whose data has not arrived yet.
+
+   A business-hall booth is saved under a `dir:` key and carries its day in the
+   itinerary — both localStorage, both readable the instant the app starts. It
+   only becomes a stop routeGroups() can see once data/directory.json lands,
+   and that file is three times the size of the exhibitor data, so on a first
+   online load it lands after the landing view has been chosen. Counted here,
+   a day made entirely of business booths is a full day rather than an empty
+   one, and Today says the data is still coming; left out, the guide sends
+   somebody standing in hall 3 to the exhibitor grid.
+
+   Zero once the directory is in, because routeGroups() knows better by then —
+   including about a `dir:` key that resolves to nothing at all. */
+const unarrivedStopsOn = (date) =>
+  state.directory
+    ? 0
+    : [...state.marks.saved.exhibitors].filter(
+        (key) => isDirKey(key) && assignedDay("exhibitor", key) === date
+      ).length;
+
 /* Where a bare address lands. On a show day that has stops on it, that is
    Today: someone opening the app mid-show is standing in a hall, not
    browsing. It leads only when it has something to lead with — an empty
@@ -5037,7 +5057,10 @@ function defaultRoute() {
   const day = showDay();
   if (!day) return VIEWS[0];
   const { groups, done } = routeGroups({ day: day.date, hidePlayed: true });
-  const stops = groups.reduce((n, group) => n + group.items.length, 0) + done.length;
+  const stops =
+    groups.reduce((n, group) => n + group.items.length, 0) +
+    done.length +
+    unarrivedStopsOn(day.date);
   return stops ? "today" : VIEWS[0];
 }
 
