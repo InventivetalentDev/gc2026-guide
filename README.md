@@ -253,6 +253,26 @@ which day a stop is on, and which stop is number 1. Anything either page kept
 its own copy of would drift, and a map that numbered your Thursday differently
 from the list it read it off would be worse than no numbers at all.
 
+Every list in the app is drawn by replacing a container's `innerHTML` in one
+write — there is no diffing layer — and one rule falls out of that: **a rebuild
+must not move the page.** The visitor pressed a button that was on screen, so
+the view belongs where they left it when the press is over. Three things
+threaten that, and all three are handled where they arise rather than papered
+over afterwards:
+
+- `focus()` scrolls its element into view, and after a rebuild the element is
+  new, so the browser has no memory of it and centres it. `restoreFocus()` in
+  `js/app.js` puts focus back without the scroll, and reveals the control only
+  when the focus ring is actually showing — the keyboard case, where invisible
+  focus is the worse failure.
+- The browser's scroll anchoring holds a node in view to absorb content
+  loading above it. A wholesale rebuild destroys that node, so it corrects for
+  a shift that never happened; the rebuilt containers opt out with
+  `overflow-anchor: none`.
+- Anything above a list has to be written *before* the list, not after: focus
+  goes back mid-rebuild, and a header row that grows afterwards shoves the
+  control focus just landed on off the screen.
+
 One rule runs through the trade feature and is worth stating once: **the "I
 have a trade badge" setting gates discovery, never resolution.** It decides
 what the guide offers you. It never decides whether something you already

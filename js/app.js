@@ -442,6 +442,41 @@ function syncMarkUI() {
   });
 }
 
+/* Putting focus back must not move the page under the visitor.
+
+   focus() scrolls its element into view, and every element these renders hand
+   it is one innerHTML older than a second: the browser has no memory of where
+   it used to sit, so rather than leaving a control that is already on screen
+   alone it scrolls the thing to the middle of the viewport. That is where the
+   plan's jumps came from — assigning a stop to a day flung the board about
+   1500px, a played tick on the queue table about 1800px, and every reorder
+   crept the page by a row. The visitor pressed a button they could see; the
+   page has to still be where they left it when the press is over.
+
+   Keyboard users are the exception, and the reason this is not simply
+   preventScroll everywhere: focus they cannot see is worse than a scroll. When
+   the browser says the focus ring is showing (:focus-visible is exactly the
+   "was this a keyboard interaction" question, asked of the engine rather than
+   guessed at here) a control that landed off screen is brought back with the
+   smallest scroll that reveals it. */
+const canAskFocusVisible = (() => {
+  try {
+    document.documentElement.matches(":focus-visible");
+    return true;
+  } catch {
+    return false; // pre-2022 engine — no ring to keep in view either
+  }
+})();
+
+function restoreFocus(el) {
+  if (!el) return;
+  el.focus({ preventScroll: true });
+  if (!canAskFocusVisible || !el.matches(":focus-visible")) return;
+  const box = el.getBoundingClientRect();
+  const fold = window.innerHeight || document.documentElement.clientHeight;
+  if (box.bottom <= 0 || box.top >= fold) el.scrollIntoView({ block: "nearest" });
+}
+
 /* Re-rendering a list with innerHTML destroys the button that was just
    pressed, dropping keyboard focus back to the top of the page. Put it back on
    the equivalent button whenever one survives the re-render. When the whole row
@@ -473,11 +508,11 @@ function keepingFocus(container, render, fallback) {
      the one still pointing back the way it came. */
   if (again?.disabled) {
     const partner = [...again.parentElement.children].find((sib) => sib !== again && !sib.disabled);
-    if (partner) return partner.focus();
-  } else if (again) return again.focus();
+    if (partner) return restoreFocus(partner);
+  } else if (again) return restoreFocus(again);
   if (index < 0) return;
   const buttons = [...container.querySelectorAll(".bm")];
-  (buttons[Math.min(index, buttons.length - 1)] || fallback)?.focus();
+  restoreFocus(buttons[Math.min(index, buttons.length - 1)] || fallback);
 }
 
 function renderMarkControls() {
@@ -2331,7 +2366,7 @@ function renderFilters() {
       persistPrefs();
       renderFilters();
       renderExhibitors();
-      $(`#age-filters [data-age="${CSS.escape(age)}"]`)?.focus();
+      restoreFocus($(`#age-filters [data-age="${CSS.escape(age)}"]`));
     })
   );
 }
@@ -3465,6 +3500,17 @@ function renderItinerary() {
     </div>`);
   }
 
+  /* Everything that sits *above* the board is written before the board is:
+     keepingFocus() puts focus back mid-rebuild, and anything above it that
+     grows afterwards pushes the control focus just landed on back off the
+     screen it was scrolled onto. The count is the one line up there that
+     moves with the plan. */
+  const placed = items.filter((item) => validDays.has(assignedDay(item.kind, item.key))).length;
+  $("#plan-count").textContent = items.length
+    ? t("plan.itemCount", { n: items.length }) +
+      (placed ? t("plan.placedSuffix", { n: placed }) : "")
+    : "";
+
   const board = $("#plan-board");
   keepingFocus(board, () => {
     board.innerHTML = groups.join("");
@@ -3485,11 +3531,6 @@ function renderItinerary() {
   /* Absent stops render inline here ("Absent — no booth"); the footnote is the
      hall lens's way of saying the same thing. */
   $("#plan-absent").classList.add("hidden");
-  const placed = items.filter((item) => validDays.has(assignedDay(item.kind, item.key))).length;
-  $("#plan-count").textContent = items.length
-    ? t("plan.itemCount", { n: items.length }) +
-      (placed ? t("plan.placedSuffix", { n: placed }) : "")
-    : "";
 }
 
 /* How many of the plan's items sit on each day — the five-days board wears
@@ -3997,6 +4038,13 @@ function renderRoute() {
     })
     .join("");
 
+  /* Above the board before the board — see the note in renderItinerary. */
+  $("#plan-count").textContent =
+    t("route.stops", { n: stopCount }) +
+    " · " +
+    t("route.halls", { n: hallCount }) +
+    (played ? t("priority.playedSuffix", { n: played }) : "");
+
   keepingFocus(
     routeList,
     () => {
@@ -4023,11 +4071,6 @@ function renderRoute() {
     "hidden",
     stopCount > 0 || savedCount() > 0 || tradeDataPending()
   );
-  $("#plan-count").textContent =
-    t("route.stops", { n: stopCount }) +
-    " · " +
-    t("route.halls", { n: hallCount }) +
-    (played ? t("priority.playedSuffix", { n: played }) : "");
   /* Absent entries have no day to belong to; the footnote is an all-days fact. */
   $("#plan-absent").classList.toggle("hidden", absent.length === 0 || Boolean(dayFilter));
   $("#plan-absent").textContent = absent.length
@@ -4084,7 +4127,7 @@ function renderPlanDayFilter() {
       renderPlan();
       /* The render rebuilds the chip row — put focus back on the chip that
          was pressed, the way the age filter does. */
-      $(`#plan-day-filter [data-plan-day="${CSS.escape(chip.dataset.planDay)}"]`)?.focus();
+      restoreFocus($(`#plan-day-filter [data-plan-day="${CSS.escape(chip.dataset.planDay)}"]`));
     })
   );
 }
@@ -4112,12 +4155,14 @@ function renderPlan() {
   /* Before the board: this can reset a stranded state.planDay back to "all",
      and routeGroups() has to see the corrected value. */
   renderPlanDayFilter();
-  /* Same shell, restyled per lens; toggle (not className) so "hidden" and the
-     renderers' own state survive the swap. */
-  board.classList.toggle("it-board", !hall);
-  board.classList.toggle("route-board", hall);
-  hall ? renderRoute() : renderItinerary();
-  /* Export rides with the plan, not one lens — it always writes the full set
+
+  /* The two buttons in .plan-controls come next, and before the board rather
+     than after it, because that row sits above the board and each of them
+     appears for the first time on the very assignment or move that rebuilds
+     it. keepingFocus() puts focus back mid-rebuild; a control row that grows
+     after that shoves the button focus just landed on back off the screen.
+
+     Export rides with the plan, not one lens — it always writes the full set
      of day assignments, whichever arrangement is on screen. Same visibility
      test the itinerary section used: at least one item placed on a real day. */
   const validDays = new Set((state.event?.days || []).map((d) => d.date));
@@ -4129,6 +4174,12 @@ function renderPlan() {
      sorting itself has nothing to reset, and the button would be a control
      for a state nobody is in. */
   $("#plan-order-reset")?.classList.toggle("hidden", state.planOrder.length === 0);
+
+  /* Same shell, restyled per lens; toggle (not className) so "hidden" and the
+     renderers' own state survive the swap. */
+  board.classList.toggle("it-board", !hall);
+  board.classList.toggle("route-board", hall);
+  hall ? renderRoute() : renderItinerary();
 }
 
 /* ---------- event info ---------- */
@@ -4343,7 +4394,7 @@ function renderChangelog() {
       chip.addEventListener("click", () => {
         state.updateKind = chip.dataset.kind;
         renderChangelog();
-        $(`#update-filters [data-kind="${CSS.escape(state.updateKind)}"]`)?.focus();
+        restoreFocus($(`#update-filters [data-kind="${CSS.escape(state.updateKind)}"]`));
       })
     );
   }
@@ -4862,7 +4913,7 @@ function bindControls() {
       renderExhibitors();
       /* Land on the plate that just became small — the way back — rather than
          dropping focus to the top of the page. */
-      $(`#exhibitor-grid [data-face="${CSS.escape(owner)}"]`)?.focus();
+      restoreFocus($(`#exhibitor-grid [data-face="${CSS.escape(owner)}"]`));
       return;
     }
     /* An arrow moves its row inside the group it is drawn in, and the group
@@ -4968,7 +5019,7 @@ function bindControls() {
       if (!chip) return;
       state.tradeCat = chip.dataset.tradeCat;
       renderTrade();
-      $(`#trade-cat-filters [data-trade-cat="${CSS.escape(state.tradeCat)}"]`)?.focus();
+      restoreFocus($(`#trade-cat-filters [data-trade-cat="${CSS.escape(state.tradeCat)}"]`));
     });
   }
 

@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-08-21",
+    "revision": 38,
+    "changes": [
+      { "kind": "fix", "text": "The plan stops moving under you. Placing a stop on a day used to fling the page about fifteen hundred pixels down the board, ticking one off as played on the queue table about eighteen hundred, and every ▲▼ nudged the whole page by a row — because putting the keyboard's focus back on the button you had just pressed also asked the browser to scroll to it, and after a redraw that button is a brand-new thing the browser thinks it has never shown you. It is put back without the scroll now. Arrange a day, tick things off, reorder a hall: the page stays exactly where you left it." },
+      { "kind": "fix", "text": "Keyboard and screen-reader users keep what that was there for. Focus still lands on the same button after every move, and when a stop really has travelled somewhere else on the board — a day group further down — the page follows it just far enough to bring the focus ring back on screen, and only when the ring is actually showing." },
+      { "kind": "fix", "text": "The plan board and the queue table no longer collapse to a rough guess at their own height for a frame every time they are redrawn, which is the other thing that shifted whatever you were reading below them. The full directory's rows guess their height per screen size now as well, so its scrollbar stops jumping about as you read." }
+    ]
+  },
+  {
+    "date": "2026-08-21",
     "revision": 37,
     "changes": [
       { "kind": "feature", "text": "The hall map turns itself a quarter turn on a phone held upright. Halls are long and thin — hall 9 is 166 by 67 metres — so held upright the whole hall used to fit as a band across the middle of the screen, with the booth names shrunk to match. Now it opens on its side, filling the screen, with every name about half again as large. Turn the phone and it turns back." },

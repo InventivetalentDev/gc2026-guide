@@ -1312,11 +1312,18 @@ a.dir-stand:focus-visible b { color: var(--signal); }
    whole.
 
    #trade is not a jump-nav target but is scrolled to the same way: the toast
-   that turns trade mode on offers to show you the section it just filled. */
+   that turns trade mode on offers to show you the section it just filled.
+
+   The row controls take the same offset, and a gutter off the bottom edge as
+   well, because restoreFocus() (js/app.js) reveals one this way when a
+   re-render has carried it off screen — and focus you cannot see is the thing
+   that reveal exists to prevent, so landing it behind the masthead or flush
+   against the bottom edge would be no reveal at all. */
 #plan-section,
 #plan-board .it-group,
 #view-planner .section-title,
 #trade { scroll-margin-top: calc(var(--header-h, 161px) + 12px); }
+.bm, .mv, .day-chip, .src-btn { scroll-margin: calc(var(--header-h, 161px) + 12px) 0 24px; }
 /* Centered in .empty's bottom padding, so message and action read as one
    block; invisible whenever the message is. */
 #plan-browse { display: block; margin: -48px auto 60px; }
@@ -2390,7 +2397,8 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   #plan-section,
   #plan-board .it-group,
   #view-planner .section-title,
-  #trade { scroll-margin-top: 16px; }
+  #trade,
+  .bm, .mv, .day-chip, .src-btn { scroll-margin-top: 16px; }
 
   /* The phone masthead. The control row dissolves and each button takes its
      own place in the grid's right column: share beside the wordmark, the
@@ -2480,22 +2488,55 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
 
+/* ---- scroll anchoring ----
+
+   The browser keeps a page still while things load above the viewport by
+   picking a node that is in view and holding it there. Every list below is
+   replaced in one innerHTML write, which destroys whichever node it had
+   picked, and it then compensates for a shift that never happened: the page
+   crept a row up or down on every save, every reorder and every filter.
+   Opting the containers out leaves the anchor to be chosen from the stable
+   page around them, which is what a rebuild in place wants — the visitor
+   pressed a button that was on screen, so the view belongs exactly where they
+   left it. */
+#exhibitor-grid,
+#directory-list,
+#trade-list,
+#plan-board,
+#priority-list,
+#wristband-list,
+#day-guide { overflow-anchor: none; }
+
 /* ---- rendering cost ----
 
-   Every long list here is built in one innerHTML write, and laying all of it
-   out at once is most of what froze the first seconds on a phone: 127 cards,
-   up to 200 directory rows behind them. content-visibility lets the browser
-   skip layout and paint for everything below the fold until it is scrolled
-   toward, so the cost of a list tracks the viewport, not the dataset.
+   The two long lists here are built in one innerHTML write, and laying all of
+   them out at once is most of what froze the first seconds on a phone: 142
+   cards, up to 200 directory rows behind them. content-visibility lets the
+   browser skip layout and paint for everything below the fold until it is
+   scrolled toward, so the cost of a list tracks the viewport, not the dataset.
 
    The intrinsic sizes are rough per-item heights — they only steer the
    scrollbar's first guess and are replaced by real geometry once an item has
-   been on screen. Browsers without the property just render everything, which
-   is exactly the behaviour this replaces. The changelog timeline stays out:
-   its date dot is drawn 31px outside the entry's box, and the paint
-   containment this property brings would clip it off. */
-.card { content-visibility: auto; contain-intrinsic-size: auto 460px; }
-.dir-row { content-visibility: auto; contain-intrinsic-size: auto 60px; }
-.priority-item { content-visibility: auto; contain-intrinsic-size: auto 92px; }
-.it-item { content-visibility: auto; contain-intrinsic-size: auto 96px; }
-.route-item { content-visibility: auto; contain-intrinsic-size: auto 88px; }
+   been on screen — but rough has to mean the right order of magnitude. A
+   directory row is 80px stacked on a phone and 38px as a table row above
+   640px, and the single 60px estimate that covered both was wrong by 20px in
+   either direction, which is 4000px of scrollbar across 200 rows. Browsers
+   without the property just render everything, which is exactly the behaviour
+   this replaces. The changelog timeline stays out: its date dot is drawn 31px
+   outside the entry's box, and the paint containment this property brings
+   would clip it off.
+
+   The planner's own lists stay out too, which is a change of mind rather than
+   an oversight. They are short — a plan holds what one visitor saved, the
+   queue table is 23 rows — so there was never much layout to skip, and they
+   are rebuilt on every save, every reorder and every day assignment. Each
+   rebuild is a fresh set of elements, so every row off screen collapses back
+   to its estimate before being measured again, and the document snapped by as
+   much as 1655px in the frame after a plan render — under a visitor who was
+   reading the queue table below it. On a 142-stop plan, dropping the property
+   costs about 24ms per render on a desktop and saves about 110ms on a phone. */
+.card { content-visibility: auto; contain-intrinsic-size: auto 540px; }
+.dir-row { content-visibility: auto; contain-intrinsic-size: auto 38px; }
+@media (max-width: 640px) {
+  .dir-row { contain-intrinsic-size: auto 80px; }
+}
