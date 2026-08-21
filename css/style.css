@@ -310,8 +310,32 @@ body {
    layout
    ============================================================ */
 main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
+/* A tab that is not on screen has its contents skipped, not taken out of the
+   layout.
+
+   display:none throws away every box under the view being left and builds
+   every box under the view being opened from nothing, and the exhibitor grid
+   is six thousand elements of boxes. On a phone that was 120-140ms of
+   rendering charged to the tap — nearly all of what switching tabs cost, and
+   none of it script the profiler could point at. content-visibility keeps the
+   layout it already worked out and hands it straight back, which roughly
+   halved that rendering in both directions.
+
+   The two are the same in the ways that matter for a tab panel nobody has
+   selected: skipped content is invisible to find-in-page, to assistive
+   technology, and to focus. They differ in one way that does — display:none
+   blurs whatever was focused inside it and this does not — so showView()
+   hands that focus back to the document itself.
+
+   Kept as an override of the display swap rather than replacing it, so a
+   browser that has never heard of the property gets exactly the rule it
+   always had. */
 .view { display: none; }
 .view.active { display: block; animation: rise .2s ease-out; }
+@supports (content-visibility: hidden) {
+  .view { display: block; content-visibility: hidden; contain-intrinsic-size: 0 0; }
+  .view.active { content-visibility: visible; }
+}
 
 @keyframes rise {
   from { opacity: 0; transform: translateY(4px); }

@@ -310,12 +310,38 @@ which day a stop is on, and which stop is number 1. Anything either page kept
 its own copy of would drift, and a map that numbered your Thursday differently
 from the list it read it off would be worse than no numbers at all.
 
-Every list in the app is drawn by replacing a container's `innerHTML` in one
-write — there is no diffing layer — and one rule falls out of that: **a rebuild
-must not move the page.** The visitor pressed a button that was on screen, so
-the view belongs where they left it when the press is over. Three things
-threaten that, and all three are handled where they arise rather than papered
-over afterwards:
+Every list in the app is drawn from a function that returns one row's markup as
+a string — `card()`, `tradeRow()`, `directoryRow()` — and `renderKeyed()` in
+`js/app.js` is what puts those strings on screen. It keeps the element it built
+for each row alongside the markup it built it from: a row whose markup has not
+changed is handed back as the same element rather than parsed again, and the
+list is then walked into the order asked for with the fewest moves. That is
+what makes re-sorting the grid cost about what moving 111 cards costs rather
+than what building them costs — the measurements are in the comment above the
+function. Two rules fall out of it:
+
+- **The markup is the cache key.** Anything that should change a row has to
+  change what its row function returns. Everything those functions read — the
+  marks, the age filter, the expanded set, the language — is already in what
+  they return, so this holds by construction; a row that reached outside for
+  state would go stale invisibly.
+- **Per-row listeners are delegated** — on `document`, or on the list's own
+  container — never bound after a render. A reused element keeps the listeners
+  it was built with, so binding per render would stack them on the survivors
+  and miss the rebuilt ones.
+
+Work that the visitor is not waiting for does not run in the handler they are
+waiting on. The two directory lists sit below the grid, so a filter change
+schedules them with `defer()` and they fill a frame later; a view behind
+another tab is re-rendered through `refreshViews()`, which hands it to the same
+idle queue the boot renders use. Both keep the tap charged for what it changed
+on screen and nothing else.
+
+For the rows that *are* rebuilt, the older rule still holds: **a rebuild must
+not move the page.** The visitor pressed a button that was on screen, so the
+view belongs where they left it when the press is over. Three things threaten
+that, and all three are handled where they arise rather than papered over
+afterwards:
 
 - `focus()` scrolls its element into view, and after a rebuild the element is
   new, so the browser has no memory of it and centres it. `restoreFocus()` in
