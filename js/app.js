@@ -5610,6 +5610,12 @@ async function main() {
   const landingView = route === SAVED_ROUTE ? "exhibitors" : route;
   const first = VIEWS.includes(landingView) ? landingView : VIEWS[0];
   bootRender[first]();
+  /* The landing view is on screen, so the screen index.html held open under
+     the empty grid can come back — see the data-booting stamp in its head and
+     the rule it drives in css/style.css. Here rather than a frame later: the
+     render above and this run in one task, so the reservation and the cards
+     that replace it are painted together and nothing moves between them. */
+  delete document.documentElement.dataset.booting;
   for (const view of VIEWS) if (view !== first) queueViewRender(view, bootRender[view]);
   showView(route, { push: false });
   if (!incoming) focusExhibitor(landing.params.get("ex"));

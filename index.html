@@ -96,6 +96,66 @@
       }
     })();
   </script>
+  <!-- Booting, stated before anything paints, for the same reason the stamp
+       above is: the first frame has to know.
+
+       Everything under the toolbar is rendered from JSON after boot, so the
+       exhibitor grid is empty for as long as the data takes — and an empty
+       grid is nothing high, which left the trade section, the full directory
+       and the footer sitting inside the first screen. When the cards landed
+       they were pushed thousands of pixels down at once, and a footer leaving
+       the viewport is scored against the whole viewport: that one frame was
+       most of the guide's layout shift.
+
+       So the grid holds a screen open while it has nothing, and the sections
+       under it start below the fold where their arrival costs nothing. The
+       rule is in css/style.css, and it wants both halves of this: the stamp,
+       which js/app.js takes off the moment the first view has rendered, and
+       :empty, so a boot that fails into a message in the grid drops the
+       reservation with the same frame that fills it.
+
+       Inline and here rather than in js/app.js, which is synchronous and
+       would still be too late — the parser reaches it with the whole body
+       already laid out, and a browser is free to have painted it. Absent
+       when scripting is off, which is the case that has no cards coming and
+       no reason to hold a screen for them. -->
+  <script>document.documentElement.dataset.booting = "";</script>
+  <!-- The install button's row on a phone, held open before it paints.
+
+       js/pwa.js owns this offer, and on iOS it is the only one there is:
+       Safari has no beforeinstallprompt, so an iPhone gets the button
+       pointing at the Share sheet instead. But pwa.js is deferred, and on a
+       phone the button takes a row of its own under the dates — so every iOS
+       visitor got the masthead, and then a moment later the tab strip, every
+       view and the footer shunted 32px down it.
+
+       Nothing in that decision needs the DOM, the network or an event, so the
+       same three questions are asked here and the answer is stamped where
+       css/style.css can hold the row open from the first frame. The button
+       stays hidden: this reserves the row, it does not fill it, and pwa.js is
+       still the only thing that decides whether a button is ever shown in it.
+
+       Chrome's offer arrives as beforeinstallprompt and cannot be answered
+       this early — that one still costs a shift, and it is the case left.
+
+       Kept in step with the iOS test in js/pwa.js, which is the copy that
+       matters; a wrong answer here holds a row open, or fails to. -->
+  <script>
+    (function () {
+      try {
+        var ua = navigator.userAgent;
+        if (!/iphone|ipad|ipod/i.test(ua)) return;
+        if (/crios|fxios|edgios|opios/i.test(ua)) return;
+        if (navigator.standalone === true) return;
+        if (window.matchMedia("(display-mode: standalone)").matches) return;
+        if (window.matchMedia("(display-mode: minimal-ui)").matches) return;
+        document.documentElement.dataset.installOffer = "ios";
+      } catch (e) {
+        /* no matchMedia, or a userAgent that will not be read: the row is
+           not held open, and the button arrives the way it always did */
+      }
+    })();
+  </script>
   <meta name="theme-color" content="#09090a">
   <title data-i18n="doc.title">gamescom 2026 Guide — exhibitors, games &amp; hall plan</title>
 
