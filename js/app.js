@@ -2499,10 +2499,19 @@ function loadDirectory() {
       /* The expensive refreshes — 200 trade rows, the plan board — go
          straight to the DOM only for the view actually on screen. A view
          still holding its queued boot render needs nothing: that render runs
-         with the directory already in state. */
+         with the directory already in state.
+
+         Today belongs on this list for the same reason the plan board does,
+         and more urgently: directory.json is three times the size of the
+         exhibitor data, so on a first online load it lands after main() has
+         painted. Left off, a visitor who opened the app standing in a hall
+         keeps a Today missing its business-hall stops — and the "needs one
+         online load" line standing in for them — until they happen to leave
+         the tab and come back. */
       const work = [
         ["exhibitors", () => { renderTrade(); renderDirectory(); }],
         ["planner", () => { renderPriority(); renderPlan(); }],
+        ["today", renderToday],
       ];
       for (const [view, render] of work) {
         if (pendingViewRender.has(view)) continue;
@@ -4552,13 +4561,12 @@ function renderToday() {
       : "",
   ].join("");
 
-  keepingFocus($("#today-body"), () => {
-    $("#today-body").innerHTML = body;
-  });
-  const fold = $("#today-done");
-  if (fold) fold.addEventListener("toggle", () => (todayDoneOpen = fold.open));
-
-  const unplaced = unplacedCount();
+  /* Above the board before the board — see the note in renderItinerary. This
+     line sits between the header and the list, and it is written on the very
+     tick that empties the list. Written after the board instead, it grew 45px
+     above a button keepingFocus() had already put focus on and measured, and
+     the ring landed off screen — the one thing restoreFocus() exists to
+     prevent. */
   const empty = $("#today-empty");
   empty.classList.toggle("hidden", left > 0);
   empty.textContent = tradeDataPending()
@@ -4568,6 +4576,16 @@ function renderToday() {
       : savedCount()
         ? t("today.nothingToday", { day: dayName(d.date) })
         : t("today.emptyNoSaved");
+
+  keepingFocus($("#today-body"), () => {
+    $("#today-body").innerHTML = body;
+  });
+  const fold = $("#today-done");
+  if (fold) fold.addEventListener("toggle", () => (todayDoneOpen = fold.open));
+
+  /* Everything below the board follows it — nothing here can move the row
+     focus just landed on. */
+  const unplaced = unplacedCount();
   $("#today-unplaced").classList.toggle("hidden", unplaced === 0);
   $("#today-unplaced").textContent = unplaced ? t("today.unplaced", { n: unplaced }) : "";
   /* The plan is the way to fix an empty or a finished day; browsing is only
@@ -4969,11 +4987,11 @@ function resetFilters() {
 
 /* ---------- deferred view rendering ----------
 
-   Boot used to render all four views in one synchronous block, and the page
-   sat frozen — no scroll, no taps — until the whole thing finished. Only one
-   view is visible, so only that one has to be ready before first paint; the
-   other three are queued here and rendered either in idle time or the moment
-   their tab is opened, whichever comes first.
+   Boot used to render every view in one synchronous block, and the page sat
+   frozen — no scroll, no taps — until the whole thing finished. Only one view
+   is visible, so only that one has to be ready before first paint; the rest
+   are queued here and rendered either in idle time or the moment their tab is
+   opened, whichever comes first.
 
    The thunks are plain state→DOM renders, so running one late — or running
    it redundantly after a state change already re-rendered that view — is
@@ -5311,7 +5329,14 @@ function bindControls() {
     /* Unconditional, not only while Today is open: a phone left running
        overnight wakes up on a day the tab did not exist for yet, and
        renderToday is also what puts the tab there. */
-    if (!document.hidden) renderToday();
+    if (document.hidden) return;
+    renderToday();
+    /* The reverse of that, once a year: a phone left open on Today across the
+       last night of the show wakes on a day the view is not for. renderToday
+       takes the tab away but cannot move anyone, so route back through
+       showView, which already owns the "is there a Today" rule and sends a
+       dead one to the planner. */
+    if (state.view === "today" && !showDay()) showView("today");
   });
   /* The lens chips are static markup, so a click never re-renders them out
      from under the pointer — only the board below swaps. */

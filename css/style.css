@@ -241,7 +241,7 @@ body {
    hard edge and the hairline are the same vocabulary as the hall plates.
 
    Hidden from assistive tech (app.js sets aria-hidden and tabindex="-1"): a
-   keyboard user reaches all four tabs by tabbing, and the browser scrolls each
+   keyboard user reaches every tab by tabbing, and the browser scrolls each
    into view on focus, so the cue would be two extra stops in the middle of the
    nav offering something already had. It is a pointer affordance for a pointer
    problem.
