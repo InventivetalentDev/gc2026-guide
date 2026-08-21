@@ -206,6 +206,20 @@ body {
   text-transform: uppercase;
   color: var(--signal);
   font-variant-numeric: tabular-nums;
+  /* Empty in the markup: renderCountdown writes it, and that waits on
+     data/event.json — seconds away on a hall's LTE. An empty <p> is nothing
+     high, so the line arriving grew the masthead by its own height and took
+     the tab strip, the whole of #main and the footer down with it. It was the
+     largest layout shift on the page, and it fired on every cold load.
+
+     One line, reserved from the first paint. Never a guess at what will
+     land in it: every string it can hold is one short line at every width
+     the guide is read at — "T−5 days", "● Live now", "See you next year",
+     and their German counterparts. The em fallback is the same number
+     (line-height 1.55, unitless, times this font-size) for browsers from
+     before lh units. */
+  min-height: 1.55em;
+  min-height: 1lh;
 }
 
 /* The masthead's stamped controls as one row rather than a stack of
@@ -2618,6 +2632,19 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
      the wide masthead, and there is nothing here to align against. */
   .header-meta { grid-column: 1; grid-row: 2; text-align: left; }
   .install-btn { grid-column: 1 / -1; grid-row: 3; justify-self: start; }
+  /* ...and that row is the one thing in the masthead that arrives late, so
+     on the visits where it is coming it is held open from the first paint.
+     index.html stamps the answer before anything paints; see the comment on
+     it for why js/pwa.js cannot be the one to say so.
+
+     Reserved rather than shown: the button keeps its hidden attribute until
+     pwa.js takes it off, so this rule stops matching in the same frame the
+     real button appears, and an iOS visit where pwa.js never loads is left
+     with an empty strip rather than a control that does nothing. */
+  html[data-install-offer] .install-btn[hidden] {
+    display: block;
+    visibility: hidden;
+  }
 
   .grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; gap: 26px; }
@@ -2705,13 +2732,52 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 #wristband-list,
 #day-guide { overflow-anchor: none; }
 
+/* ---- boot reservation ----
+
+   The counterpart to the overflow-anchor rules above: those keep the page
+   still while a list is rebuilt, this keeps it still while the first one
+   arrives.
+
+   index.html stamps data-booting before the first paint and js/app.js takes
+   it off once the landing view has rendered — see the comment on the stamp
+   for why it cannot be set from a script at the end of the body. Between
+   those two moments the grid is empty and everything after it in the
+   document — the trade section, the full directory, the footer — sits inside
+   the first screen, waiting to be shoved off it the moment the cards land. A
+   footer leaving the viewport is scored against the whole viewport, so that
+   single frame carried most of the guide's layout shift.
+
+   A screen of grid is exactly enough to put all of it below the fold, where
+   the cards can arrive for free. Overshooting is free too: this is replaced
+   by real content in the same frame that removes the stamp, and the grid is
+   thousands of pixels tall by then. That first render puts in a few screens
+   of cards and leaves the tail for the next task (see renderExhibitors),
+   which changes nothing here — a few screens is already several times the
+   one this gives back, and the tail lands below the fold.
+
+   :empty is the second half of it, not decoration, and it carries three
+   cases the stamp alone would not. A boot that fails writes its message into
+   the grid (see main() in js/app.js), and the reservation has to come off in
+   the frame that fills it rather than wait for a stamp that failed boot never
+   removes. A filter matching nothing leaves an empty grid too, and that is a
+   page which should be short. And it is what keeps this out of sw.js's
+   version bump: index.html is network-first while this file and js/app.js
+   ride stale-while-revalidate, so a fresh shell can be paired with an
+   app.js that never heard of the stamp — one that renders cards anyway, and
+   drops the reservation by filling the grid. Every other pairing is a rule
+   or a stamp that is simply absent, which is the behaviour these replace. */
+html[data-booting] #exhibitor-grid:empty { min-height: 100vh; }
+
 /* ---- rendering cost ----
 
-   The two long lists here are built in one innerHTML write, and laying all of
-   them out at once is most of what froze the first seconds on a phone: 142
-   cards, up to 200 directory rows behind them. content-visibility lets the
-   browser skip layout and paint for everything below the fold until it is
-   scrolled toward, so the cost of a list tracks the viewport, not the dataset.
+   Laying these lists out all at once is most of what froze the first seconds
+   on a phone: 142 cards, up to 200 directory rows behind them. renderKeyed()
+   keeps a re-render from rebuilding the rows it already has, but the first
+   time each list is built there is nothing to reuse, and every row after it
+   is scrolled to has to be laid out at some point regardless.
+   content-visibility lets the browser skip layout and paint for everything
+   below the fold until it is scrolled toward, so the cost of a list tracks
+   the viewport rather than the dataset.
 
    The intrinsic sizes are rough per-item heights — they only steer the
    scrollbar's first guess and are replaced by real geometry once an item has

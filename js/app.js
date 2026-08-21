@@ -6016,6 +6016,17 @@ async function main() {
   const landingView = route === SAVED_ROUTE ? "exhibitors" : route;
   const first = VIEWS.includes(landingView) ? landingView : VIEWS[0];
   viewRender[first]();
+  /* The landing view is on screen, so the screen index.html held open under
+     the empty grid can come back — see the data-booting stamp in its head and
+     the rule it drives in css/style.css. Here rather than a frame later: the
+     render above and this run in one task, so the reservation and the cards
+     that replace it are painted together and nothing moves between them.
+
+     The render above puts in the first few screens of grid and finishes the
+     rest in the next task (see renderExhibitors), which does not weaken that:
+     what is in by now is already several times the screen this gives back,
+     and the tail arrives below the fold where it costs nothing. */
+  delete document.documentElement.dataset.booting;
   for (const view of VIEWS) if (view !== first) queueViewRender(view, viewRender[view]);
   showView(route, { push: false });
   if (!incoming) focusExhibitor(landing.params.get("ex"));
