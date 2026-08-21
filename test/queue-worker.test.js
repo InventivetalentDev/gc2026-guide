@@ -7,6 +7,7 @@ import event from "../data/event.json";
 import worker, {
   handleLive,
   handleReport,
+  loadSiteData,
   resolveRequestNow,
   runCleanup,
 } from "../worker/index.js";
@@ -21,18 +22,25 @@ const at = (value) => Math.floor(new Date(value).getTime() / 1000);
 function testEnv(extra = {}) {
   return {
     ...env,
-    ASSETS: {
-      async fetch(request) {
-        const path = new URL(request.url).pathname;
-        if (path === "/data/exhibitors.json") return Response.json(exhibitors);
-        if (path === "/data/event.json") return Response.json(event);
-        return new Response(`asset:${path}`);
-      },
-    },
     IP_WRITE_LIMITER: { async limit() { return { success: true }; } },
     ADMIN_AUTH_LIMITER: { async limit() { return { success: true }; } },
     ...extra,
   };
+}
+
+/* `env` here carries whatever is in .dev.vars, which the documented local
+   setup tells you to create — and that file sets the development clock
+   override. Every test that goes in through `worker.fetch` rather than calling
+   a handler with an explicit `now` must therefore say which clock it wants,
+   or it passes on CI (no .dev.vars) and fails on the machine of anyone who
+   followed the runbook. These tests are about routing, not the calendar, so
+   they take the real one. */
+function realClockEnv(extra = {}) {
+  return testEnv({
+    QUEUE_TEST_CLOCK_ENABLED: undefined,
+    QUEUE_TEST_NOW: undefined,
+    ...extra,
+  });
 }
 
 function report(body, client = CLIENT) {
@@ -414,7 +422,6 @@ describe("retention and routing", () => {
     const response = await worker.fetch(
       new Request("https://hallgui.test/api/admin/"),
       testEnv({
-        ASSETS: { async fetch() { throw new Error("shell must not read assets"); } },
         ADMIN_AUTH_LIMITER: { async limit() { throw new Error("shell must not rate-limit"); } },
       }),
       ctx
@@ -427,19 +434,12 @@ describe("retention and routing", () => {
 
   it("short-circuits exhausted admin auth attempts before hashing or asset reads", async () => {
     let attempts = 0;
-    let assetReads = 0;
     const protectedEnv = testEnv({
       ADMIN_TOKEN: "correct-token",
       ADMIN_AUTH_LIMITER: {
         async limit() {
           attempts += 1;
           return { success: false };
-        },
-      },
-      ASSETS: {
-        async fetch() {
-          assetReads += 1;
-          throw new Error("protected auth must not read assets");
         },
       },
     });
@@ -458,7 +458,6 @@ describe("retention and routing", () => {
     );
     expect(response.status).toBe(404);
     expect(attempts).toBe(1);
-    expect(assetReads).toBe(0);
     await waitOnExecutionContext(ctx);
   });
 
@@ -556,52 +555,53 @@ describe("retention and routing", () => {
     });
   });
 
-  it("returns 404 for unknown API paths and delegates non-API requests to assets", async () => {
+  it("answers only /api, and needs no asset binding to do it", async () => {
     const ctx = createExecutionContext();
     for (const path of ["/api", "/api/not-real"]) {
-      const unknown = await worker.fetch(new Request(`https://hallgui.test${path}`), testEnv(), ctx);
+      const unknown = await worker.fetch(new Request(`https://hallgui.test${path}`), realClockEnv(), ctx);
       expect(unknown.status).toBe(404);
     }
 
-    const asset = await worker.fetch(new Request("https://hallgui.test/example.html"), testEnv(), ctx);
-    expect(asset.status).toBe(200);
-    await expect(asset.text()).resolves.toBe("asset:/example.html");
+    /* The site is a different Worker now. Anything outside /api arriving here
+       came in on this Worker's own workers.dev address, not through one of the
+       `/api/*` routes, and there is nothing to hand it to. */
+    const site = await worker.fetch(new Request("https://hallgui.test/example.html"), realClockEnv(), ctx);
+    expect(site.status).toBe(404);
+    await expect(site.json()).resolves.toMatchObject({ error: "not_found" });
+
+    /* The show data is bundled, so nothing here needs an environment that can
+       read files — testEnv() has no ASSETS binding at all, and a live read
+       still answers. */
+    expect(realClockEnv().ASSETS).toBeUndefined();
+    const live = await worker.fetch(
+      new Request("https://hallgui.test/api/queue/live", { headers: { "Sec-Fetch-Mode": "cors" } }),
+      realClockEnv(),
+      ctx
+    );
+    /* On the real clock this is 200 inside a show window and 403 outside one.
+       Either proves the route ran; which one it is says nothing about routing
+       and everything about the date the suite happens to run on. */
+    expect([200, 403]).toContain(live.status);
     await waitOnExecutionContext(ctx);
   });
 
-  it("never reads exhibitor data on the live path and memoizes assets per isolate", async () => {
-    const reads = [];
-    const counting = () => {
-      const base = testEnv();
-      return {
-        ...base,
-        ASSETS: {
-          fetch(request) {
-            reads.push(new URL(request.url).pathname);
-            return base.ASSETS.fetch(request);
-          },
-        },
-      };
-    };
-    const live = () =>
-      new Request("https://hallgui.test/api/queue/live", {
-        headers: { "Sec-Fetch-Mode": "cors" },
-      });
+  it("builds the show data once per isolate rather than per request", async () => {
+    /* This used to count ASSETS reads: the live path once parsed a 93 KB
+       exhibitors.json per poll for data it never looks at, and the fix was a
+       per-isolate memo. Bundling the data made the memo structural — there is
+       no binding left to read from — so what is worth asserting now is that
+       the build really happens at module scope and not per call. */
+    expect(loadSiteData()).toBe(loadSiteData());
+    expect(loadSiteData().queues).toBe(loadSiteData().queues);
 
     const ctx = createExecutionContext();
-    /* Assertions are written to hold whether or not the module-level memo is
-       already warm from an earlier test in this file, so they do not depend on
-       execution order. */
-    await worker.fetch(live(), counting(), ctx);
-    const afterFirst = reads.length;
-    await worker.fetch(live(), counting(), ctx);
+    const before = loadSiteData();
+    await worker.fetch(
+      new Request("https://hallgui.test/api/queue/live", { headers: { "Sec-Fetch-Mode": "cors" } }),
+      realClockEnv(),
+      ctx
+    );
     await waitOnExecutionContext(ctx);
-
-    /* The live read needs the show calendar only. Parsing exhibitors.json here
-       cost ~93 KB per poll for data this path never looks at. */
-    expect(reads).not.toContain("/data/exhibitors.json");
-    /* Whatever the first call had to load, the second loads nothing. */
-    expect(reads.slice(afterFirst)).toEqual([]);
-    expect(afterFirst).toBeLessThanOrEqual(1);
+    expect(loadSiteData()).toBe(before);
   });
 });

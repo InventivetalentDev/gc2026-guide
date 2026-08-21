@@ -23,7 +23,7 @@ SITE="_headers css data fonts icons imprint.html index.html js manifest.de.webma
 # Repo furniture. CNAME used to sit here too — GitHub Pages' custom-domain
 # marker — until Pages went; Cloudflare takes its hostnames from the routes in
 # wrangler.toml instead.
-NOT_SITE=".agents .codex .git .github .gitignore .idea .wrangler README.md LICENSE dist docs node_modules package-lock.json package.json test tools vitest.config.js vitest.config.mjs worker worker-configuration.d.ts wrangler.toml"
+NOT_SITE=".agents .codex .git .github .gitignore .idea .wrangler README.md LICENSE dist docs node_modules package-lock.json package.json test tools vitest.config.js vitest.config.mjs worker worker-configuration.d.ts wrangler-api.toml wrangler.toml"
 
 unclassified=""
 for entry in $(ls -A); do

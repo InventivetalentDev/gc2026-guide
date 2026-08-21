@@ -5,13 +5,16 @@
   "scripts": {
     "build": "tools/build-site.sh",
     "check:client": "node --check js/queue.js && node --check js/app.js && node --check sw.js",
-    "dev": "npm run build && wrangler dev",
-    "deploy": "npm run build && wrangler deploy",
+    "dev": "node tools/dev-proxy.mjs",
+    "dev:api": "wrangler dev --config wrangler-api.toml",
     "test": "npm run build && npm run check:client && vitest run",
     "test:watch": "npm run build && vitest",
-    "db:migrate:local": "wrangler d1 migrations apply gc2026-queues --local",
-    "db:migrate:production": "wrangler d1 migrations apply gc2026-queues --remote",
-    "db:migrate:staging": "wrangler d1 migrations apply gc2026-queues-staging --env staging --remote"
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:api": "wrangler deploy --config wrangler-api.toml --env=\"\"",
+    "deploy:api:staging": "wrangler deploy --config wrangler-api.toml --env staging",
+    "db:migrate:local": "wrangler d1 migrations apply QUEUE_DB --config wrangler-api.toml --env=\"\" --local",
+    "db:migrate:production": "wrangler d1 migrations apply QUEUE_DB --config wrangler-api.toml --env=\"\" --remote",
+    "db:migrate:staging": "wrangler d1 migrations apply QUEUE_DB --config wrangler-api.toml --env staging --remote"
   },
   "engines": {
     "node": ">=22"

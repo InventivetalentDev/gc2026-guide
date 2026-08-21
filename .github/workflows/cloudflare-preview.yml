@@ -1,11 +1,25 @@
 name: Deploy PR previews to Cloudflare
 
-# Uploads each pull request as a *version* of the production Worker — Workers'
-# own preview system, not a second Worker — and comments the preview URLs on
-# the PR. A version is not a deployment: nothing any real hostname serves
-# changes until the merge lands on main and cloudflare.yml deploys it, and
-# `versions upload` does not apply triggers, so the custom domains in
-# wrangler.toml cannot move from here.
+# Uploads each pull request as a *version* — Workers' own preview system, not a
+# throwaway Worker — and comments the URLs on the PR. A version is not a
+# deployment: nothing any real hostname serves changes until the merge lands on
+# main and cloudflare.yml deploys it, and `versions upload` does not apply
+# triggers, so no route or custom domain can move from here.
+#
+# Two Workers, previewed differently, and the difference is the point:
+#
+#   site — a version of the production site Worker. Safe because that Worker
+#          has no bindings at all: assets and nothing else.
+#   api  — a version of the *staging* API Worker (`--env staging`), so the
+#          bindings it inherits are the staging database and the staging admin
+#          token. A preview therefore cannot reach the show's data, by
+#          configuration rather than by a check. Uploading it to the top-level
+#          environment would hand unreviewed code the production database.
+#
+# The two previews are not wired to each other: `/api/*` is a zone route, and
+# workers.dev has no zones, so the site preview has no API behind it and the
+# queue tab shows its offline notice there. Reviewing the whole loop is what
+# staging is for.
 #
 # The same-repository check on the job is the guard. A PR is arbitrary HTML
 # and JavaScript, and a preview publishes it, live and public, on a
@@ -32,7 +46,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  preview:
+  site:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
@@ -61,6 +75,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.123.0"
           command: versions upload --preview-alias pr-${{ github.event.pull_request.number }} --message "PR #${{ github.event.pull_request.number }} @ ${{ github.event.pull_request.head.sha }}"
 
       # One comment per PR, edited in place on every push; the marker is how
@@ -97,6 +112,95 @@ jobs:
             "**Preview** of $SHA, uploaded as a version of the production Worker — deployed nowhere. hallgui.de does not change until this merges." \
             "$links" \
             "The PR link is one origin across pushes, so the service worker updates there the way it does in production: the first load after a push can serve the one before. Reload once more, or use the per-push link, which is a fresh origin every time.")
+
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)
+          if [ -n "$existing" ]; then
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -f body="$body" > /dev/null
+          else
+            gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" -f body="$body" > /dev/null
+          fi
+
+  # Only when the API actually changed: a CSS-only pull request has no reason
+  # to spend a version, and every alias is retained against a per-Worker limit.
+  api:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Did this PR touch the API?
+        id: changed
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # A pull_request checkout is the shallow merge ref, so neither of
+          # these commits is necessarily present. Fetch both — `git diff A B`
+          # compares two trees and needs no merge base, so depth 1 is enough.
+          git fetch --depth=1 origin "$BASE" "$HEAD"
+          if git diff --name-only "$BASE" "$HEAD" \
+             | grep -qE '^(worker/|wrangler-api\.toml$|data/(exhibitors|event)\.json$)'; then
+            echo 'api=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'api=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.changed.outputs.api == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install development tools
+        if: steps.changed.outputs.api == 'true'
+        run: npm ci
+
+      # The API's review is its test suite far more than its URL, so a failing
+      # suite must not produce a preview somebody then pokes at by hand.
+      - name: Test the Worker
+        if: steps.changed.outputs.api == 'true'
+        run: npx vitest run
+
+      # `--env staging` is the safety property, not a convenience: it selects
+      # the staging Worker, whose bindings are the staging database and admin
+      # token. Note that migrations are NOT applied here — a PR that adds one
+      # previews against the un-migrated staging schema and will error. Apply
+      # it by hand first (docs/DEPLOYING.md); automating it would let any open
+      # PR rewrite the staging schema under the others.
+      - name: Upload the API preview version
+        if: steps.changed.outputs.api == 'true'
+        id: upload
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.123.0"
+          command: versions upload --config wrangler-api.toml --env staging --preview-alias pr-${{ github.event.pull_request.number }} --message "PR #${{ github.event.pull_request.number }} @ ${{ github.event.pull_request.head.sha }}"
+
+      - name: Comment the API preview URL on the PR
+        if: steps.changed.outputs.api == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPLOAD_OUTPUT: ${{ steps.upload.outputs.command-output }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          urls=$(grep -oE 'https://[A-Za-z0-9.-]+\.workers\.dev' <<<"$UPLOAD_OUTPUT" | sort -u || true)
+          alias_url=$(grep -m1 "^https://pr-$PR-" <<<"$urls" || true)
+
+          if [ -z "$alias_url" ]; then
+            echo "No preview URL in wrangler's output. Is preview_urls still true in wrangler-api.toml?" >&2
+            printf '%s\n' "$UPLOAD_OUTPUT" >&2
+            exit 1
+          fi
+
+          marker="<!-- cloudflare-api-preview-comment -->"
+          body=$(printf '%s\n\n%s\n\n%s\n\n%s' \
+            "$marker" \
+            "**Queue API preview** of $SHA, uploaded as a version of the *staging* API Worker." \
+            "- $alias_url/api/queue/live" \
+            "It is bound to the staging database and the staging admin token, so nothing here can touch the show's data. The site preview above has no API behind it — \`/api/*\` is a zone route and workers.dev has no zones — so exercise the full loop on staging.")
 
           existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
             --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)

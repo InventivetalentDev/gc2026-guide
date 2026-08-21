@@ -1,8 +1,12 @@
-# Cloudflare Workers deployment for the gamescom 2026 guide.
+# Cloudflare Workers deployment for the gamescom 2026 guide — the site.
 #
-# Static pages still come from the asset directory. The Worker script handles
-# only /api/* for live queue reports and delegates every other request to the
-# existing asset routing.
+# Assets only: a directory of static files served from the edge, with no Worker
+# script and no bindings of any kind. The live queue API is a second Worker
+# (wrangler-api.toml) that claims `/api/*` on these same hostnames with routes,
+# which are matched ahead of the Custom Domains below. Same origin, no CORS.
+#
+# Nothing here can reach a database or a secret, which is what makes a pull
+# request preview of this Worker harmless — see the note on preview_urls.
 #
 # That directory is dist/, staged from the repo root by tools/build-site.sh —
 # run it before deploying. The site still has no build step; dist/ is a copy
@@ -12,9 +16,7 @@
 # The full setup and domain-cutover runbook is in docs/DEPLOYING.md.
 
 name = "gc2026-guide"
-main = "worker/index.js"
 compatibility_date = "2026-08-17"
-compatibility_flags = ["nodejs_compat"]
 
 # gc2026-guide.<subdomain>.workers.dev — the URL a deploy can be checked on
 # before any domain points at it, and the one that still answers if a custom
@@ -26,15 +28,17 @@ workers_dev = true
 # looked at: `wrangler versions upload` gives a PR a version of this same
 # Worker at pr-<n>-gc2026-guide.<subdomain>.workers.dev, with production and
 # its hostnames untouched — a version is not a deployment, and an upload does
-# not apply triggers. Left unset this follows workers_dev, so it is pinned
-# true here: turning workers_dev off (above) should not quietly take the
-# preview system down with it.
+# not apply triggers. That is the whole story only because this Worker has no
+# bindings: a version of it inherits nothing, so a preview is the static site
+# and nothing else. (`/api/*` does not answer on a preview, since routes are
+# a property of zones; the queue tab degrades to its offline notice there.
+# The API previews separately — wrangler-api.toml.) Left unset this follows
+# workers_dev, so it is pinned true: turning workers_dev off (above) should
+# not quietly take the preview system down with it.
 preview_urls = true
 
 [assets]
 directory = "./dist"
-binding = "ASSETS"
-run_worker_first = ["/api", "/api/*"]
 
 # Both handling options below are deliberate, and the defaults actively break
 # this app.
@@ -64,37 +68,11 @@ html_handling = "none"
 # unknown path renders the app rather than a bare 404.
 not_found_handling = "single-page-application"
 
-# Replace this draft ID with the UUID returned by
-# `npx wrangler d1 create gc2026-queues` before the first production deploy.
-[[d1_databases]]
-binding = "QUEUE_DB"
-database_name = "gc2026-queues"
-database_id = "00000000-0000-0000-0000-000000000000"
-migrations_dir = "worker/migrations"
-
-[triggers]
-crons = ["0 * * * *"]
-
+# Kept from before the split. It is not a binding and grants nothing — the
+# site Worker still has request metrics worth having, and dropping it would
+# have been a silent change to monitoring rather than part of the split.
 [observability]
 enabled = true
-
-# The IP limiter is deliberately loose: venue Wi-Fi and mobile carrier NATs
-# put many legitimate visitors behind one address.
-[[ratelimits]]
-name = "IP_WRITE_LIMITER"
-namespace_id = "2026081701"
-
-[ratelimits.simple]
-limit = 20
-period = 60
-
-[[ratelimits]]
-name = "ADMIN_AUTH_LIMITER"
-namespace_id = "2026081702"
-
-[ratelimits.simple]
-limit = 60
-period = 60
 
 # The home address. Everything the guide says about itself — the canonical
 # links, the share links, content@hallgui.de — points here. It has no year in
@@ -147,48 +125,3 @@ custom_domain = true
 # hallguide.de is the one that matters most: it is how somebody who only heard
 # the name would spell it, which is the whole reason the dot can sit where it
 # does in hallgui.de.
-
-# Staging is a separate workers.dev deployment with isolated bindings. An
-# explicit empty route list prevents it from inheriting the production custom
-# domains above.
-[env.staging]
-name = "gc2026-guide-staging"
-workers_dev = true
-routes = []
-
-[env.staging.assets]
-directory = "./dist"
-binding = "ASSETS"
-html_handling = "none"
-not_found_handling = "single-page-application"
-run_worker_first = ["/api", "/api/*"]
-
-# Replace this draft ID with the UUID returned by
-# `npx wrangler d1 create gc2026-queues-staging` before deploying staging.
-[[env.staging.d1_databases]]
-binding = "QUEUE_DB"
-database_name = "gc2026-queues-staging"
-database_id = "00000000-0000-0000-0000-000000000000"
-migrations_dir = "worker/migrations"
-
-[env.staging.triggers]
-crons = ["0 * * * *"]
-
-[env.staging.observability]
-enabled = true
-
-[[env.staging.ratelimits]]
-name = "IP_WRITE_LIMITER"
-namespace_id = "2026081711"
-
-[env.staging.ratelimits.simple]
-limit = 20
-period = 60
-
-[[env.staging.ratelimits]]
-name = "ADMIN_AUTH_LIMITER"
-namespace_id = "2026081712"
-
-[env.staging.ratelimits.simple]
-limit = 60
-period = 60

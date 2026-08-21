@@ -1,11 +1,12 @@
 # Live queue times — crowd-sourced wait reports
 
-**Status: MVP implemented and reviewed, revision 6 — 17 August 2026. The
+**Status: MVP implemented and reviewed, revision 7 — 21 August 2026. The
 Worker, D1 migration, client surfaces, offline completion flow, moderation
-page, tests, privacy copy and deployment runbook are in the repository. Two
-things below were changed after review rather than as first written, and are
-marked where they apply: the closure quorum and the estimate ceiling (§4).
-Reporting also moved off the exhibitor cards into its own tab (§5). Phase 2
+page, tests, privacy copy and deployment runbook are in the repository. Four
+things below were changed after the first implementation rather than as first
+written, and are marked where they apply: the closure quorum and the estimate
+ceiling (§4), reporting moving off the exhibitor cards into its own tab (§5),
+and the API becoming a Worker of its own, separate from the site (§1). Phase 2
 remains deliberately deferred; real staging/production databases and on-device
 checks are deployment work, not completed by this implementation.**
 
@@ -60,41 +61,71 @@ Two constraints shape everything below:
 
 ## 1. Where the backend lives
 
-Before this MVP the site deployed as an **assets-only Cloudflare Worker** —
-`wrangler.toml` had no `main` script, just `[assets]`. The implementation adds
-a script to that same Worker and routes selected paths to it:
+Before this feature the site deployed as an **assets-only Cloudflare Worker** —
+`wrangler.toml` had no `main` script, just `[assets]`. The API is a **second
+Worker**, `gc2026-queues-api`, configured by `wrangler-api.toml`:
 
 ```toml
+name = "gc2026-queues-api"
 main = "worker/index.js"
 
-[assets]
-directory = "./dist"
-html_handling = "none"
-not_found_handling = "single-page-application"
-run_worker_first = ["/api", "/api/*"]
+[[routes]]
+pattern = "hallgui.de/api/*"
+zone_name = "hallgui.de"
+# …and one for each other hostname the guide answers on
 ```
 
-`run_worker_first` matters and is not optional decoration. With
-`not_found_handling = "single-page-application"`, an unmatched path is
-answered with `index.html` — without the explicit route list, whether an
-`/api/` request reaches the script depends on the browser's `Sec-Fetch-Mode`
-header. The array opts out of that inference: `/api/*` always runs the
-script, everything else keeps today's behaviour byte for byte. Asset routing
-needs Wrangler ≥ 4.20.0; the rate-limit bindings used by this MVP raise the
-effective floor to ≥ 4.36.0, and the repository pins 4.123.0.
+The two meet at the edge rather than inside one script. The site holds each
+hostname as a **Custom Domain**; the API holds `<host>/api/*` on it as a
+**route**, and a route is matched ahead of a Custom Domain for the paths it
+covers. So the guide keeps **one origin on every production hostname** —
+hallgui.de and the three draining legacy domains — with no CORS, no per-host
+API URL, and a client that still asks for `/api/…` relative to wherever it was
+loaded from. `_headers` needs nothing (there is no CSP to extend; `/api/*`
+response headers are set by the script).
 
-Same Worker means **same origin on every production hostname** — hallgui.de,
-the three draining legacy domains and the production workers.dev address — so
-no CORS or per-host API URL in the client. Staging is a separate named Worker
-with its own D1 database and workers.dev hostname. `_headers` needs nothing
-(there is no CSP to extend; `/api/*` response headers are set by the script).
-`worker/` sits outside `dist/`; `tools/build-site.sh` was updated to classify
-the new Worker, tests and package metadata as non-site files so its deliberate
-top-level leakage check still passes.
+**This was originally one Worker, and the change is worth recording.** The
+first implementation added `main` to `wrangler.toml` and used
+`run_worker_first = ["/api", "/api/*"]` to route inside a single script. A
+separate Worker on an `api.` subdomain had been considered and rejected: it
+buys independent deploys at the cost of CORS preflights on every report, a
+second runbook, and a hardcoded origin in a client that has none.
 
-A separate Worker on an api. subdomain was considered and rejected: it buys
-independent deploys at the cost of CORS preflights on every report, a second
-runbook, and a hardcoded origin in a client that currently has none.
+What that reasoning missed is that the two can be separate Workers *without*
+being separate origins — which is exactly what routes-over-Custom-Domains
+gives. And there turned out to be a reason to want it. PR previews upload each
+pull request as a **version** of a Worker, and a version inherits that Worker's
+bindings and secrets. While the API lived in the site Worker, previewing any
+client change — a CSS fix — meant running unreviewed code against the
+production database holding the show's live data, with the real admin token
+bound. The site Worker now has no database to inherit, and the API is previewed
+through its own staging environment. Neither half can reach production data
+from a preview, by construction rather than by a check somebody has to
+remember. The rejected trade-off was never actually on the table; the cost of
+the split is one more config file and one more deploy step.
+
+Two consequences follow from the API no longer sitting behind the site:
+
+- **It has no `ASSETS` binding**, so it cannot read `data/exhibitors.json` and
+  `data/event.json` off the site at runtime. It imports them instead, which
+  bundles them into the script — the queue allowlist and the event calendar are
+  now built once at module scope rather than fetched and cached per isolate.
+  Faster, and one less failure mode; the cost is that a data-only change needs
+  an API deploy to reach the allowlist, which the deploy workflow does anyway.
+- **A non-`/api` path reaching it is a mistake**, not a page request, so it
+  answers 404 rather than falling through to the site. In production nothing
+  routes there; on its own `workers.dev` address it is reachable and should say
+  plainly that it is not the guide.
+
+Locally the two are two processes with no edge to arrange them, so
+`tools/dev-proxy.mjs` serves the repository and forwards `/api/*` to
+`wrangler dev`. It exists only for that; nothing in `dist/` or either Worker
+refers to it.
+
+`worker/` sits outside `dist/`; `tools/build-site.sh` classifies the Worker,
+its config, tests and package metadata as non-site files so its deliberate
+top-level leakage check still passes. The rate-limit bindings need Wrangler
+≥ 4.36.0; the repository pins 4.123.0.
 
 ## 2. The session model
 
@@ -541,10 +572,13 @@ Two things will bite if not done deliberately:
 
 Deploy order: separate staging and production D1 databases are created and
 migrated first, and independent `ADMIN_TOKEN` secrets are set via
-`wrangler secret put`; `wrangler.toml` carries `main`, the `ASSETS` binding,
-selective `run_worker_first`, D1, cron and rate-limit bindings. The explicit
-`staging` environment has no custom-domain routes, so its workers.dev URL can
-verify real routing, isolation and moderation before production deploys; the
+`wrangler secret put --config wrangler-api.toml`; `wrangler-api.toml` carries
+`main`, the `/api/*` routes, D1, cron and rate-limit bindings, none of which
+the site Worker has any longer. A deploy is site, then migration, then API —
+the site never waits on the API, and the schema is in place before the code
+that reads it. The explicit `staging` environment has no routes at all, so its
+workers.dev URL can verify isolation and moderation before production deploys;
+it is also where PR previews of the API land. The
 time-controlled two-profile behavioral loop runs locally before Aug 26, and
 the real two-device staging loop runs once an event access window opens. The
 ordinary production workers.dev URL is not staging. The detailed safe order
@@ -596,7 +630,9 @@ reasoning survives:
 | `worker/admin.js` | new — phone-first admin page + actions, token guard, audit log |
 | `worker/core.js` | new — queue vocabulary, show-hour gate and pure estimator |
 | `worker/migrations/` | new — tracked D1 schema, outcome trigger, revision guard and rolling-window indexes |
-| `wrangler.toml` | `main`, `run_worker_first`, D1 binding, cron trigger |
+| `wrangler-api.toml` | new — the API Worker: `main`, `/api/*` routes on every hostname, D1, cron trigger, rate limits, staging environment |
+| `wrangler.toml` | unchanged in shape — still assets-only, and now deliberately holds no bindings at all |
+| `tools/dev-proxy.mjs` | new — dev-only single origin: serves the repo, forwards `/api/*` to `wrangler dev` |
 | `js/app.js` | report dialog + prompt bar and live chips across cards/planner/route |
 | `js/queue.js` | local session/pending state, polling, freshness and API transport |
 | `index.html` | chip rows, disclosure, prompt bar, live chip slots |
@@ -608,7 +644,8 @@ reasoning survives:
 | `data/changelog.json`, `data/meta.json` | revision entry |
 | `docs/DEPLOYING.md` | D1 setup, staging-first API deploy, teardown |
 | `package.json`, `vitest.config.mjs`, `test/` | pinned Worker tooling and estimator/API regressions |
-| `.github/workflows/cloudflare.yml` | Node 22 build/test/dry-run/migrate/deploy gate |
+| `.github/workflows/cloudflare.yml` | Node 22 build/test/dry-run gate, then site → migrate → API |
+| `.github/workflows/cloudflare-preview.yml` | site preview, plus a path-filtered API preview against staging |
 | `js/map.js`, `map.html` | phase 2 — popover chip |
 
 ## Verification
@@ -617,10 +654,15 @@ Implemented automated checks cover all 145 active queue identities and exact gam
 keys, Berlin show-hour boundaries, estimator tiers/closure/mechanics, the
 joined → immediate first update flow and later throttle, strict UUIDs and rate
 limits, deferred completion validation/replay, retention, admin auth/actions,
-anomaly output, teardown behavior and API-vs-assets routing. The Node 22 Worker
+anomaly output, teardown behavior, and that the API answers only `/api` and
+needs no asset binding to do it. The Node 22 Worker
 suite passes, both Wrangler production and staging dry-runs pass, the i18n
 checker reports parity, the static staging build excludes server files, and
-client syntax plus focused state-machine smokes pass.
+client syntax plus focused state-machine smokes pass. The two-Worker split was
+additionally driven end to end locally through `tools/dev-proxy.mjs`: joins,
+a completed wait, mechanics metadata, the estimator's response through the
+60-second edge cache, and the app rendering it — all on one origin, with the
+API returning 404 for every non-`/api` path.
 
 Still required before production: create the two real D1 databases, replace
 the draft UUIDs, set independent admin secrets, apply remote migrations, run

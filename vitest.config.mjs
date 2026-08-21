@@ -10,7 +10,9 @@ const migrations = await readD1Migrations(
 export default defineConfig({
   plugins: [
     cloudflareTest({
-      wrangler: { configPath: "./wrangler.toml" },
+      /* The API Worker is what these tests exercise; the site is assets with
+         no script of its own. */
+      wrangler: { configPath: "./wrangler-api.toml" },
       // The bundled local workerd currently trails the deployment date by
       // nine days. Keep production on today's compatibility date while tests
       // run against the newest semantics that this pinned pool provides.

@@ -17,6 +17,8 @@ import {
   isAdminAuthorized,
 } from "./admin.js";
 import { readTextLimited } from "./http.js";
+import exhibitors from "../data/exhibitors.json";
+import event from "../data/event.json";
 
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CLIENT_HEADER = "X-GC-Queue-Client";
@@ -89,58 +91,31 @@ async function readJson(request) {
   }
 }
 
-async function assetJson(env, request, pathname) {
-  const url = new URL(pathname, request.url);
-  const response = await env.ASSETS.fetch(new Request(url, { method: "GET" }));
-  if (!response.ok) throw new Error(`Asset ${pathname} returned ${response.status}`);
-  return response.json();
-}
+/* The show data the API validates against, bundled into the Worker rather than
+   read back out of the site.
 
-/* Per-isolate memo of the deployed data. A Worker version always serves its own
-   assets, so these bytes cannot change under a live isolate — only a new deploy
-   replaces them, and that deploy starts new isolates. So there is no TTL to get
-   wrong here, and nothing to invalidate.
+   It used to reach for the deployed files through an ASSETS binding, because
+   the API and the site were one Worker. Split apart, that binding would have
+   to become either a second assets directory holding a copy of data/, or an
+   HTTPS fetch of hallgui.de — and the second one makes live reporting depend
+   on the guide's own availability, which is precisely the coupling splitting
+   them was meant to remove.
 
-   The promise is cached rather than the parsed value, so concurrent requests
-   share one asset read instead of racing; a rejection evicts itself, so a
-   failure during cold start does not poison the isolate for its whole life.
-   Callers treat the results as read-only — `queues` is now one shared Map. */
-const assetCache = new Map();
+   Bundling costs one thing and it is worth naming: the allowlist is fixed at
+   deploy. A booth added to data/exhibitors.json is not reportable until this
+   Worker is deployed again, and a report for it answers `unknown_queue` in the
+   meantime. The two deploys are kept in step by CI running both on every push
+   to main — a data-only commit redeploys the API too, and .github/workflows
+   /cloudflare.yml is where that is enforced.
 
-function cachedAssetJson(env, request, pathname) {
-  const cached = assetCache.get(pathname);
-  if (cached) return cached;
-  const pending = assetJson(env, request, pathname).catch((error) => {
-    assetCache.delete(pathname);
-    throw error;
-  });
-  assetCache.set(pathname, pending);
-  return pending;
-}
+   Built once per isolate at module scope: no subrequest, no await, and no
+   cache to invalidate. Treated as read-only by every caller — `queues` is one
+   shared Map. */
+const QUEUES = buildQueueAllowlist(exhibitors);
+const SITE = { exhibitors, event, queues: QUEUES };
 
-/* The live read needs the show calendar and nothing else. It used to load the
-   full site bundle: ~95 KB of JSON parsed and a 160-entry allowlist rebuilt on
-   every poll from every phone, before the edge-cache check had even run, for
-   exhibitor data that path never looks at. */
-export const loadEvent = (env, request) => cachedAssetJson(env, request, "/data/event.json");
-
-let siteData = null;
-
-export function loadSiteData(env, request) {
-  if (!siteData) {
-    siteData = (async () => {
-      const [exhibitors, event] = await Promise.all([
-        cachedAssetJson(env, request, "/data/exhibitors.json"),
-        loadEvent(env, request),
-      ]);
-      return { exhibitors, event, queues: buildQueueAllowlist(exhibitors) };
-    })().catch((error) => {
-      siteData = null;
-      throw error;
-    });
-  }
-  return siteData;
-}
+export const loadEvent = () => event;
+export const loadSiteData = () => SITE;
 
 function requireQueue(body, queues) {
   if (typeof body.exhibitor !== "string" || typeof body.game !== "string") {
@@ -562,7 +537,7 @@ async function routeAdmin(request, env, ctx, now) {
     return handleAdminData(env, now, await getUncachedLive(env, now));
   }
   if (path === "/api/admin/action" && request.method === "POST") {
-    const site = await loadSiteData(env, request);
+    const site = loadSiteData();
     const response = await handleAdminAction(request, env, now, site.queues);
     await invalidateLive(request, ctx);
     return response;
@@ -588,8 +563,12 @@ export async function runCleanup(env, now = nowSeconds()) {
 
 async function fetchHandler(request, env, ctx) {
   const url = new URL(request.url);
+  /* This Worker is only ever reached through the `/api/*` routes in
+     wrangler-api.toml, or directly on its own workers.dev address. Anything
+     else arriving here is the latter, and it is not the guide — the guide is a
+     different Worker on the same hostnames. */
   if (url.pathname !== "/api" && !url.pathname.startsWith("/api/")) {
-    return env.ASSETS.fetch(request);
+    throw new HttpError(404, "not_found");
   }
 
   const now = resolveRequestNow(request, env);
@@ -597,7 +576,7 @@ async function fetchHandler(request, env, ctx) {
     return routeAdmin(request, env, ctx, now);
   }
   if (url.pathname === "/api/queue/report") {
-    const site = await loadSiteData(env, request);
+    const site = loadSiteData();
     /* Ordinary facts age into the live response under its 60-second edge TTL.
        Invalidating on every write turns a busy queue into one eight-query D1
        aggregation per report, defeating the cache. Moderation actions still
@@ -605,7 +584,7 @@ async function fetchHandler(request, env, ctx) {
     return handleReport(request, env, site, now);
   }
   if (url.pathname === "/api/queue/live") {
-    return handleLive(request, env, ctx, await loadEvent(env, request), now);
+    return handleLive(request, env, ctx, loadEvent(), now);
   }
   throw new HttpError(404, "not_found");
 }
