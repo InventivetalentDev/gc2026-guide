@@ -1,6 +1,18 @@
 [
   {
     "date": "2026-08-21",
+    "revision": 41,
+    "changes": [
+      { "kind": "fix", "text": "The guide stops stopping to think. Changing the sort order, ticking a filter or clearing the search box used to throw away every card on the page and build all hundred and eleven of them again \u2014 half a megabyte of markup, to arrive at the same cards in a different order. On a mid-range phone that was a third of a second of a page that would not answer, and with trade exhibitors switched on, closer to two-thirds. It moves the cards it already has now, and builds only the ones that actually changed: the same sort takes about a third of the time it did, and less than that again with the trade booths in." },
+      { "kind": "fix", "text": "Nothing below the fold is redrawn while you wait for what is above it. The trade list and the full directory sit a screen and a half under the exhibitor grid, and both were being rebuilt inside the same tap that filtered the grid \u2014 two hundred rows each, before the grid you were looking at could be shown. They fill a moment later now, which is most of the difference between a search box that keeps up with typing and one that does not." },
+      { "kind": "fix", "text": "Saving a booth stops redrawing three screens you are not on. The + on a card moves your plan, the queue-priority table and Today as well as the card itself, and all of them were rebuilt before the press had finished \u2014 usually behind two other tabs. Whichever screen you are actually looking at still updates on the press; the rest are brought up to date in the gaps, before you can get to them." },
+      { "kind": "fix", "text": "Opening the trade section or the full directory happens on the tap. The section used to wait for its two hundred rows to be built before it would so much as open. It opens now, and the rows arrive on the next frame." },
+      { "kind": "fix", "text": "Tapping something while the guide is still starting up no longer waits for it to finish. The other tabs are drawn in the background so they are ready before you ask for them, and a tap that landed in the middle of that used to queue behind it \u2014 which is how a heading or a filter row nothing was even listening for could take a second to answer. That work steps aside for a tap now, and the exhibitor grid arrives a screenful at a time rather than all at once." },
+      { "kind": "fix", "text": "Switching tabs got quicker. A tab you are not on was being taken out of the page's layout altogether, so every switch cost the browser a rebuild of everything on both sides of it \u2014 around a hundred and forty milliseconds of a phone doing nothing you asked for. It keeps the layout it already worked out now and hands it back, which halves that." }
+    ]
+  },
+  {
+    "date": "2026-08-21",
     "revision": 40,
     "changes": [
       { "kind": "fix", "text": "Today waits for your business-hall stops instead of walking past them. The trade directory is the largest file the guide loads and it lands a moment after the first screen is drawn — and until it did, a booth in halls 2\u20134 was simply missing from Today. If it was the only thing you had planned that day, Today said your trade data had not arrived yet and went on saying it. It fills itself in the moment the directory lands now, rather than waiting for you to leave the tab and come back." },

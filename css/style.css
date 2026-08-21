@@ -324,8 +324,32 @@ body {
    layout
    ============================================================ */
 main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
+/* A tab that is not on screen has its contents skipped, not taken out of the
+   layout.
+
+   display:none throws away every box under the view being left and builds
+   every box under the view being opened from nothing, and the exhibitor grid
+   is six thousand elements of boxes. On a phone that was 120-140ms of
+   rendering charged to the tap — nearly all of what switching tabs cost, and
+   none of it script the profiler could point at. content-visibility keeps the
+   layout it already worked out and hands it straight back, which roughly
+   halved that rendering in both directions.
+
+   The two are the same in the ways that matter for a tab panel nobody has
+   selected: skipped content is invisible to find-in-page, to assistive
+   technology, and to focus. They differ in one way that does — display:none
+   blurs whatever was focused inside it and this does not — so showView()
+   hands that focus back to the document itself.
+
+   Kept as an override of the display swap rather than replacing it, so a
+   browser that has never heard of the property gets exactly the rule it
+   always had. */
 .view { display: none; }
 .view.active { display: block; animation: rise .2s ease-out; }
+@supports (content-visibility: hidden) {
+  .view { display: block; content-visibility: hidden; contain-intrinsic-size: 0 0; }
+  .view.active { content-visibility: visible; }
+}
 
 @keyframes rise {
   from { opacity: 0; transform: translateY(4px); }
@@ -2719,14 +2743,17 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
    for why it cannot be set from a script at the end of the body. Between
    those two moments the grid is empty and everything after it in the
    document — the trade section, the full directory, the footer — sits inside
-   the first screen, waiting to be shoved off it by 142 cards arriving in one
-   write. A footer leaving the viewport is scored against the whole viewport,
-   so that single frame carried most of the guide's layout shift.
+   the first screen, waiting to be shoved off it the moment the cards land. A
+   footer leaving the viewport is scored against the whole viewport, so that
+   single frame carried most of the guide's layout shift.
 
    A screen of grid is exactly enough to put all of it below the fold, where
    the cards can arrive for free. Overshooting is free too: this is replaced
    by real content in the same frame that removes the stamp, and the grid is
-   thousands of pixels tall by then.
+   thousands of pixels tall by then. That first render puts in a few screens
+   of cards and leaves the tail for the next task (see renderExhibitors),
+   which changes nothing here — a few screens is already several times the
+   one this gives back, and the tail lands below the fold.
 
    :empty is the second half of it, not decoration, and it carries three
    cases the stamp alone would not. A boot that fails writes its message into
@@ -2743,11 +2770,14 @@ html[data-booting] #exhibitor-grid:empty { min-height: 100vh; }
 
 /* ---- rendering cost ----
 
-   The two long lists here are built in one innerHTML write, and laying all of
-   them out at once is most of what froze the first seconds on a phone: 142
-   cards, up to 200 directory rows behind them. content-visibility lets the
-   browser skip layout and paint for everything below the fold until it is
-   scrolled toward, so the cost of a list tracks the viewport, not the dataset.
+   Laying these lists out all at once is most of what froze the first seconds
+   on a phone: 142 cards, up to 200 directory rows behind them. renderKeyed()
+   keeps a re-render from rebuilding the rows it already has, but the first
+   time each list is built there is nothing to reuse, and every row after it
+   is scrolled to has to be laid out at some point regardless.
+   content-visibility lets the browser skip layout and paint for everything
+   below the fold until it is scrolled toward, so the cost of a list tracks
+   the viewport rather than the dataset.
 
    The intrinsic sizes are rough per-item heights — they only steer the
    scrollbar's first guess and are replaced by real geometry once an item has
