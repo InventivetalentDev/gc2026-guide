@@ -22,16 +22,16 @@
 
 /* Bump when the shell's halves must land together. A new index.html arrives
    network-first while the old app.js is served stale-while-revalidate, so a
-   markup change that needs its matching script (rev 21's share dialog, and
-   the header's share-the-guide button after it) rides one load with dead
-   controls unless the version change announces it.
+   markup change that needs its matching script (rev 21's share dialog, and the
+   header's share-the-guide button after it) rides one load with dead controls
+   unless the version change announces it.
 
-   v7 was the gc26.guide move and v8 is the hallgui.de one, both the same
-   problem pointed at the hosts being retired: the move notice lives in app.js
-   and the i18n files, all served stale-while-revalidate. Left unbumped, a
-   visitor already holding the old shell gets the old app.js — which has never
-   heard of the new address — and the one nudge they were owed does not fire
-   until some later load. The bump is what makes it the first one.
+   v7 was the gc26.guide move and v8 the hallgui.de one — the same problem,
+   pointed at the hosts being retired. The move notice lives in app.js and the
+   i18n files, all served stale-while-revalidate; left unbumped, a visitor
+   already holding the old shell gets the old app.js, which has never heard of
+   the new address, and the one nudge they were owed does not fire until some
+   later load. The bump is what makes it the first one.
 
    v9 adds live queues. Its /api/ bypass has to arrive with the matching
    client: an older worker would otherwise put a queue response into the
@@ -39,8 +39,55 @@
    the guide's own "./" fallback.
 
    So the rule is narrower than "bump on every deploy": bump when a shell file
-   has to be believed rather than merely eventually refreshed. */
-const VERSION = "v9";
+   has to be believed rather than merely eventually refreshed.
+
+   v9 is the map's zoom controls — buttons in map.html whose handlers live in
+   js/map.js. The markup arrives network-first while the old script rides
+   stale-while-revalidate, and buttons that do nothing are exactly the
+   dead-controls case this version number exists for.
+
+   v10 is the language switch becoming a link. It is a <a href="?lang=de"> in
+   index.html now, so that a crawler has a route to the German guide at all,
+   and it needs both of the files that ride stale-while-revalidate beside it:
+   js/i18n.js to point it at the view you are on and to take the click, and
+   css/style.css to drop the underline an <a> brings with it. Held back, the
+   old pair renders the control as underlined prose and sends a click to
+   ?lang=de instead of remembering the choice — a control that looks wrong and
+   half-works, which is the case this number exists for.
+
+   v11 is three shell changes that landed behind v10 and each need a script
+   this cache would otherwise hand over a version late:
+
+   - the map's day route bar. map.html carries the <div id="route"> and every
+     line that fills it lives in js/map.js, with its bar, pins and legs in
+     css/map.css. Both ride stale-while-revalidate, so the returning visitor
+     got the new markup, the old script, and a bar that stays hidden.
+   - the plan board's "Reset order" button, the same shape one page over:
+     markup in index.html, handler in js/app.js.
+   - the masthead's measured height. app.js publishes --header-h and
+     style.css offsets every jump-nav target from it; held apart, the
+     stylesheet falls back to a number and the headings the planner jumps to
+     land under the header again.
+
+   None of the three breaks anything visibly — a hidden control is quieter
+   than a dead one — which is exactly why they would have gone unnoticed for
+   a load. The rule does not ask for damage, only that the halves have to
+   land together.
+
+   v12 is Today: a fifth tab and a fifth <section> in index.html, both driven
+   entirely by js/app.js. Mismatched, the halves fail in both directions — an
+   old script leaves the new tab hidden for a load, and a new script can route
+   to a #view-today the old shell does not have. The second one is guarded in
+   showView, but a mode that only exists for five days should not spend one of
+   them waiting for a revalidation.
+
+   v13 is live queues: a sixth tab and section in index.html, js/queue.js
+   beside app.js, and — the load-bearing one — the /api/ bypass in this file.
+   An older worker has no bypass, so it would put a live queue response into
+   the stale-while-revalidate shell cache and answer the next reader with a
+   minute-old wait as though it were current; an admin navigation would
+   replace the guide's own "./" fallback outright. */
+const VERSION = "v13";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
@@ -79,7 +126,7 @@ const SHELL = [
   "fonts/jetbrains-mono-latin.woff2",
 ];
 
-/* The hall plans are ~42 KB gzipped for all twelve levels — about one
+/* The hall plans are ~45 KB gzipped for all thirteen levels — about one
    font — so they are precached rather than fetched on demand. The point
    of the map is standing in a hall with no reception, and a hall you
    never happened to open before losing signal is exactly the one you
@@ -100,6 +147,11 @@ const DATA = [
      map that is wayfinding rather than booth-finding — exactly what you
      want in a hall with no signal. */
   "data/hallplan/outline.json",
+  /* The whole site in one diagram — 7 KB, and the view someone opens when
+     they have lost track of which hall they are in, which is exactly the
+     moment there is no signal. */
+  "data/hallplan/campus.json",
+  "data/hallplan/hall-5.1.json",
   "data/hallplan/hall-5.2.json",
   "data/hallplan/hall-6.1.json",
   "data/hallplan/hall-7.1.json",

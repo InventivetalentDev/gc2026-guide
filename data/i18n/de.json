@@ -7,6 +7,7 @@
     "dates": "26.–30. Aug. 2026",
     "tickets": "Nur online über den offiziellen gamescom-Shop — keine Tageskasse vor Ort. Tagestickets: Do/Fr/So 31,50 € (ermäßigt 22,50 €), Samstag 41,00 €; Abendtickets ab 16:00 Uhr 10,50–13,00 €; Familienticket 69,50–86,00 €; Mittwochs-Wildcard 65,50 € (ausverkauft am 5. Aug. 2026). Tickets für Opening Night Live sind ausverkauft; die Samstags-Tagestickets sind seit dem 14. Aug. 2026 ebenfalls ausverkauft — für diesen Tag gibt es nur noch das Abendticket ab 16:00 Uhr für 13 €. Tagestickets enthalten die kostenlose Fahrt mit Bus und Bahn im VRS-Gebiet.",
     "crowdTips": [
+      "Die Ausstellungsfläche selbst ist zum ersten Mal in den 18 Jahren der gamescom komplett ausgebucht — 233.000 m² und über 1.600 Aussteller. Rechne mit der bisher vollsten gamescom.",
       "Die Samstags-Tagestickets sind ausverkauft (Stand 14. Aug. 2026) — geh lieber am Donnerstag oder Sonntag zum Anspielen; für Samstag gibt es nur noch das Abendticket ab 16:00 Uhr.",
       "Die Mittwochs-Wildcard (Einlass ab 13:00 Uhr) ist der ruhigste Weg zu den heißesten Demos, war aber am 5. Aug. ausverkauft — ohne sie ist Donnerstagmorgen das nächstbeste Zeitfenster mit wenig Andrang.",
       "Auch mit einem Business-Ticket kommst du am Mittwoch nicht überall hinein: Mehrere AAA-Stände lassen vormittags nur geladene Presse zu oder bleiben den ganzen Tag geschlossen (Xbox 2026: Stand öffnet erst Donnerstag; Capcom 2025: bis ca. 11:00 Uhr nur Presse). Schau auf die Kanäle des Standes, bevor du deinen Mittwoch danach planst.",
@@ -182,7 +183,14 @@
     "services": "Dienstleistungen",
     "studio": "Studio",
     "walk-up": "ohne Termin",
-    "web games": "Webspiele"
+    "web games": "Webspiele",
+    "storage": "Speicher",
+    "drawing tablets": "Grafiktabletts",
+    "keyboards": "Tastaturen",
+    "accessories": "Zubehör",
+    "chairs": "Stühle",
+    "collectibles": "Sammlerstücke",
+    "manga": "Manga"
   },
   "countries": {
     "Andorra": "Andorra",
@@ -327,11 +335,16 @@
       "visitAdvice": "Such PlayStation nicht auf dem Messegelände — spiel Multiplattform-PS5-Titel bei Xbox, Bandai Namco, SEGA und anderen Publisher-Ständen. Ein Überraschungstrailer bei ONL ist immer möglich."
     },
     "google-play": {
-      "description": "Ein Stand nahe Xbox in Halle 7.1. Zu erwarten sind Mobile-Titel und Partnerspiele von Google Play Games on PC, Demo-Stationen und Giveaways — das genaue Lineup ist noch nicht angekündigt.",
-      "crowdNote": "Gleichmäßiger, aber überschaubarer Andrang; Schlangen vor allem für Merch und Giveaways.",
+      "description": "Ein Stand nahe Xbox in Halle 7.1 mit einem Rewards-Hub und einer Live-Arena für Fruit Ninja sowie Multigaming-Stationen für Dave the Diver, Subway Surfers City, eFootball, Wobbly Life und Asphalt Legends Unite. Am 26. Aug. veranstaltet Google zudem eine Entwicklersession zu Studio-Partnerschaften und Retention.",
+      "crowdNote": "Gleichmäßiger, aber überschaubarer Andrang; Schlangen vor allem an der Arena und für Giveaways.",
       "visitAdvice": "Den ganzen Tag über meist ohne Warten machbar — lässt sich gut mit dem Xbox-Stand in derselben Halle verbinden.",
       "games": {
-        "Partner mobile/PC titles": "Noch keine Titel genannt."
+        "Fruit Ninja": "Live-Arena-Spiel — Halfbricks Mobile-Klassiker bekommt eine Wettkampfbühne.",
+        "Dave the Diver": "Mintrockets Hit an einer Multigaming-Demo-Station.",
+        "Subway Surfers City": "Sybos Titel an einer Multigaming-Demo-Station.",
+        "eFootball": "Konamis Mobile-Fußballsimulation an einer Multigaming-Demo-Station.",
+        "Wobbly Life": "Titel von RubberBandGames/Curve Games an einer Multigaming-Demo-Station.",
+        "Asphalt Legends Unite": "Gameloft-Rennspiel an einer Multigaming-Demo-Station."
       }
     },
     "capcom": {
@@ -385,12 +398,13 @@
       }
     },
     "ubisoft": {
-      "description": "Der gewohnte Platz am Eingang von Halle 6 mit einer spielbaren Demo von Rayman Legends Retold und der zurückkehrenden Community Lounge — Entwicklertalks und live gestreamte Sessions (26.–29. Aug.) zu Rainbow Six Siege, AC Black Flag Resynced, Anno 117 und The Division 2.",
+      "description": "Der gewohnte Platz am Eingang von Halle 6 mit einer spielbaren Demo von Rayman Legends Retold und der zurückkehrenden Community Lounge — Entwicklertalks und live gestreamte Sessions (26.–29. Aug.) zu Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 und The Division 2.",
       "crowdNote": "Ein spielbarer Titel plus Lounge-Format — mittlere Wartezeiten, dieses Jahr kein großes neues AAA-Hands-on.",
       "visitAdvice": "Die Rayman-Schlange ist unter der Woche vormittags gut machbar. Die Community-Lounge-Sessions laufen nach Zeitplan — Termine stehen auf Ubisofts Kanälen.",
       "games": {
         "Rayman Legends Retold": "Demo: Einstiegslevel, eine neue Drachenritt-Sequenz und ein klassisches Musiklevel.",
         "Assassin's Creed Black Flag Resynced": "Community-Lounge-Showcase des Black-Flag-Remakes.",
+        "Assassin's Creed Shadows": "Entwicklertalk in der Community Lounge, keine Demo-Station.",
         "Anno 117: Pax Romana": "Community-Lounge-Sessions.",
         "Rainbow Six Siege": "Community-Lounge-Sessions statt Demo-Schlange.",
         "The Division 2": "Community-Sessions zum Live-Service-Titel."
@@ -1446,6 +1460,116 @@
       "description": "Die offiziellen gamescom-Merchandise-Shops, betrieben von Campus Sportswear unter der Marke gamescomwear. Die Hauptshops liegen in der Merchandise-Fläche in Halle 5.2, dazu kommen kleinere Theken in den Hallen 6.1, 7.1, 8.1, 9.1, 10.1 und 10.2 — genau das sind die namenlosen Kioske an den Gängen der Entertainment-Hallen.",
       "crowdNote": "Vor den Shops in Halle 5.2 bilden sich Schlangen; an den Theken in den Hallen bleibt es kurz.",
       "visitAdvice": "Nimm die Theke in der Halle, in der du ohnehin bist, statt dafür nach Halle 5.2 zu laufen."
+    },
+    "gateron": {
+      "description": "Mechanische Tastatur-Switches von der Marke hinter den meisten Drittanbieter-Switch-Sets, im Verzeichnis als Huizhou Jiadalong Electronic Technology geführt — einer der weniger auffälligen Stände in der Hardware-Reihe von Halle 10.1.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "deepcool": {
+      "description": "PC-Kühlung und Gehäuse-Hardware in der Hardware-Reihe von Halle 10.1 — Kühler, Lüfter und Gehäuse aus der 2026er-Reihe.",
+      "crowdNote": "Gleichmäßiger Andrang von Komponenten-Käufern, keine echte Schlange.",
+      "visitAdvice": "Jederzeit; lässt sich gut mit dem Rest der Hardware-Reihe verbinden."
+    },
+    "lexar": {
+      "description": "Flash-Speicher und SD-/microSD-Karten in der Hardware-Reihe von Halle 10.1 — Speicher für Switch 2, Steam Deck und Handheld-PCs.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "xppen": {
+      "description": "Grafiktabletts und Stift-Displays der Marke, im Verzeichnis als Hanvon Ugee Technology geführt — gezielt an das Digital-Art- und Streaming-Publikum der Messe gerichtet.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "epomaker": {
+      "description": "Mechanische Tastaturen aus der 2026er-Reihe der Marke, in der Hardware-Reihe von Halle 10.1.",
+      "crowdNote": "Gleichmäßiger Andrang von Hobbyisten, keine echte Schlange.",
+      "visitAdvice": "Jederzeit; lässt sich gut mit dem Rest der Hardware-Reihe verbinden."
+    },
+    "iqunix": {
+      "description": "Mechanische Tastaturen aus der 2026er-Reihe der Marke, in der Hardware-Reihe von Halle 10.1.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "genki": {
+      "description": "Zubehör für Handhelds — Docks, Hüllen und Controller — der Marke, im Verzeichnis als Human Things geführt.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "havit": {
+      "description": "Günstige Peripherie — Tastaturen, Mäuse, Headsets — der Marke, im Verzeichnis als Guangzhou Havit Technology geführt.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "karnox": {
+      "description": "Gaming- und Sim-Racing-Stühle aus der 2026er-Reihe der Marke, in der Hardware-Reihe von Halle 10.1.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "diablo-chairs": {
+      "description": "Gaming-Stühle der europäischen Marke, im Verzeichnis als Domator24 geführt — teilt sich einen Stand mit iiyama.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "iiyama": {
+      "description": "Gaming-Monitore der etablierten Display-Marke — teilt sich einen Stand mit Diablo Chairs in der Hardware-Reihe von Halle 10.1.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "retro-games": {
+      "description": "Offiziell lizenzierte Retro-Konsolen-Neuauflagen — THEC64 Mini, TheA500 Mini und ähnliche — von der britischen Marke dahinter, in der Retro-Ecke von Halle 10.2.",
+      "crowdNote": "Nostalgie-Publikum, das mit den Originalen aufgewachsen ist; zum Stöbern, keine Schlange.",
+      "visitAdvice": "Gut mit dem Rest des Retro- und Familienbereichs in Halle 10.2 zu verbinden."
+    },
+    "ravensburger": {
+      "description": "Der Stand des deutschen Brett- und Puzzlespiel-Verlags in der Cards & Boards Area (Halle 5.2) — Neuheiten und Demotische.",
+      "crowdNote": "Familien- und Hobbyisten-Publikum; am vollsten rund um feste Demo-Termine.",
+      "visitAdvice": "Jeder Nachmittag funktioniert; früh kommen für einen Platz am Demotisch."
+    },
+    "panini": {
+      "description": "Sticker und Sammelkarten des globalen Sammelkarten-Verlags, in der Cards & Boards Area (Halle 5.2).",
+      "crowdNote": "Gleichmäßiger Sammler-Andrang, mehr rund um neue Serien.",
+      "visitAdvice": "Jederzeit; lässt sich gut mit dem Rest der Karten- und Sammelstände in Halle 5.2 verbinden."
+    },
+    "bushiroad": {
+      "description": "Der Stand des Verlags hinter Cardfight!! Vanguard und Weiss Schwarz in der Cards & Boards Area (Halle 5.2) — Turniere und Demotische für sein TCG-Lineup.",
+      "crowdNote": "Eingefleischtes TCG-Publikum; am vollsten während fester Turnier-Slots.",
+      "visitAdvice": "Schau auf den eigenen Zeitplan des Standes, wenn du mitspielen willst."
+    },
+    "pegasus-spiele": {
+      "description": "Der Stand des deutschen Brettspiel-Verlags und -Vertriebs in der Cards & Boards Area (Halle 5.2) — Neuheiten und Demotische.",
+      "crowdNote": "Familien- und Hobbyisten-Publikum; am vollsten rund um feste Demo-Termine.",
+      "visitAdvice": "Jeder Nachmittag funktioniert; früh kommen für einen Platz am Demotisch."
+    },
+    "purearts": {
+      "description": "Lizenzierte Videospiel-Statuen und Sammlerstücke des kanadischen Herstellers, in der Cards & Boards Area (Halle 5.2).",
+      "crowdNote": "Sammler-Publikum zum Stöbern, keine echte Schlange.",
+      "visitAdvice": "Jederzeit; lässt sich gut mit dem Rest der Sammelstände in Halle 5.2 verbinden."
+    },
+    "tsume-art": {
+      "description": "Sammlerstatuen des Herstellers aus Luxemburg, in Halle 5.1.",
+      "crowdNote": "Sammler-Publikum zum Stöbern, keine echte Schlange.",
+      "visitAdvice": "Jederzeit."
+    },
+    "fangamer": {
+      "description": "Offiziell lizenzierter Indie-Spiele-Merch — Undertale, Stardew Valley und ähnliches — vom bekannten Online-Shop, in Halle 5.1.",
+      "crowdNote": "Gleichmäßiger Fan-Andrang bei neuen Drops; sonst zum Stöbern.",
+      "visitAdvice": "Am ersten Publikumstag früh kommen für limitierte Artikel."
+    },
+    "game-informer": {
+      "description": "Der Stand des wiederbelebten Spielemagazins in Halle 10.1, das die Messe begleitet.",
+      "crowdNote": "Ein Medien-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Blick, wenn du ohnehin in der Nähe bist."
+    },
+    "shueisha-games": {
+      "description": "Der Spiele-Arm des Manga-Verlags Shueisha (Shonen Jump) mit einem Stand in Halle 10.2 — das Lineup für die Messe ist noch nicht angekündigt.",
+      "crowdNote": "Unklar, bis ein Lineup angekündigt ist.",
+      "visitAdvice": "Kurz vor der Messe noch mal nachschauen, was spielbar ist."
+    },
+    "metanet": {
+      "description": "Das kanadische Indie-Studio hinter dem Plattformer N++, mit einem Stand in Halle 10.2 — die Pläne für die Messe sind noch nicht angekündigt.",
+      "crowdNote": "Unklar, bis ein Lineup angekündigt ist.",
+      "visitAdvice": "Kurz vor der Messe noch mal nachschauen, was spielbar ist."
     }
   }
 }

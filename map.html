@@ -4,6 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#09090a">
+<!-- The old addresses, for anyone who has nothing on them yet — the long
+     version of this note is on the same block in index.html. It earns its
+     place here twice over: a #hall/stand link is the most-shared thing the
+     guide produces, plenty were shared from the hostnames now draining, and
+     this page has no move notice of its own to fall back on. -->
+<script>
+  (function () {
+    try {
+      var home = "https://hallgui.de";
+      var legacy = ["gc2026.inventivetalent.org", "gamescom.guide", "gc26.guide"];
+      if (legacy.indexOf(location.host) === -1 || location.origin === home) return;
+      if (navigator.onLine === false) return;
+      var displayed = function (mode) {
+        return window.matchMedia("(display-mode: " + mode + ")").matches;
+      };
+      if (displayed("standalone") || displayed("minimal-ui") || navigator.standalone === true) return;
+      if (localStorage.length !== 0) return;
+      location.replace(home + location.pathname + location.search + location.hash);
+    } catch (e) {
+      /* storage unreadable, or no matchMedia: stay put */
+    }
+  })();
+</script>
 <title data-i18n="map.docTitle">Hall map · gamescom 2026 guide</title>
 <meta name="description" content="Booth-level hall maps for gamescom 2026, with your saved booths marked. Works offline." data-i18n-attr="content:map.metaDescription">
 <!-- Language before first paint — see the same block in index.html. The map
@@ -36,8 +59,61 @@
     }
   })();
 </script>
-<!-- see index.html — canonical is absolute so it also points the old domains here -->
+<!-- see index.html — canonical is absolute so it also points the old domains
+     here, and is rewritten to the German variant below when ?lang=de is on
+     the URL. -->
 <link rel="canonical" href="https://hallgui.de/map.html">
+
+<!-- The crawler's only route to the German map: the language is resolved from
+     navigator.languages, and a crawler brings no German preference. Same shape
+     as index.html, and kept in step with sitemap.xml. -->
+<link rel="alternate" hreflang="en" href="https://hallgui.de/map.html">
+<link rel="alternate" hreflang="de" href="https://hallgui.de/map.html?lang=de">
+<link rel="alternate" hreflang="x-default" href="https://hallgui.de/map.html">
+
+<!-- Link previews. A #hall/stand link to this page is the single most shared
+     thing the guide produces — "we are at 8.1 B031" with the map behind it —
+     and every unfurler that renders it is a server that never runs a script,
+     so the English text is static rather than data-i18n. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="gamescom 2026 guide">
+<!-- Same two strings as <title> and the description above, so they carry the
+     same keys: static English for the unfurlers, German for anything that does
+     render the page. -->
+<meta property="og:title" content="Hall map · gamescom 2026 guide" data-i18n-attr="content:map.docTitle">
+<meta property="og:description" content="Booth-level hall maps for gamescom 2026, with your saved booths marked. Works offline." data-i18n-attr="content:map.metaDescription">
+<meta property="og:url" content="https://hallgui.de/map.html">
+<meta property="og:image" content="https://hallgui.de/icons/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The gamescom 2026 guide, showing exhibitor cards with hall and booth numbers.">
+<meta property="og:locale" content="en_GB">
+<meta property="og:locale:alternate" content="de_DE">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- The German stamp over those English defaults — see the longer note on the
+     same block in index.html for why canonical follows the URL while og:locale
+     follows what is on screen. No manifest to swap here. -->
+<script>
+  (function () {
+    try {
+      var alt = document.querySelector('link[rel="alternate"][hreflang="de"]').href;
+      var set = function (selector, value) {
+        document.querySelector(selector).setAttribute("content", value);
+      };
+      if (new URLSearchParams(location.search).get("lang") === "de") {
+        document.querySelector('link[rel="canonical"]').href = alt;
+        set('meta[property="og:url"]', alt);
+      }
+      if (document.documentElement.lang === "de") {
+        set('meta[property="og:locale"]', "de_DE");
+        set('meta[property="og:locale:alternate"]', "en_GB");
+      }
+    } catch (e) {
+      /* The English defaults above are already complete and correct. */
+    }
+  })();
+</script>
 
 <!-- No manifest link: the map is inside the guide's scope ("./"), so an
      install from here is the same installed app. -->
@@ -61,12 +137,33 @@
 
 <nav class="map-halls" id="halls" aria-label="Halls" data-i18n-attr="aria-label:map.hallsAria"></nav>
 
+<!-- The plan's day assignments, read back onto the floor: pick a day and this
+     hall's stops for it are numbered in the order the plan board lists them,
+     with the halls either side of it named at the end of the status line. On
+     the overview the same chips number the halls themselves. Filled by
+     js/map.js, and hidden outright until at least one stop has been placed on
+     a day in the guide. -->
+<div class="map-route" id="route" role="group" aria-label="Show one day's stops" data-i18n-attr="aria-label:map.routeAria" hidden>
+  <span class="map-route-kicker" aria-hidden="true" data-i18n="map.routeKicker">Plan</span>
+  <div class="map-route-days" id="route-days"></div>
+  <span class="map-route-status" id="route-status"></span>
+</div>
+
 <!-- Filled by js/map.js from the area the current hall belongs to, and
      only shown when that area is one a consumer ticket does not open. -->
 <p class="map-access" id="access" hidden></p>
 
 <div id="stage">
   <p class="map-load" id="load" data-i18n="map.loading">loading hall …</p>
+  <!-- Pinch and wheel do the same job, but neither is discoverable with a
+       mouse alone, and neither offers a way back to the whole hall once
+       zoomed in. Plain buttons, like every map people already know; the
+       open sheet slides over them, so a phone keeps the corner. -->
+  <div class="map-zoom">
+    <button class="map-zoom-btn" id="zoom-in" type="button" aria-label="Zoom in" data-i18n-attr="aria-label:map.zoomIn">+</button>
+    <button class="map-zoom-btn" id="zoom-out" type="button" aria-label="Zoom out" data-i18n-attr="aria-label:map.zoomOut">−</button>
+    <button class="map-zoom-btn" id="zoom-fit" type="button" aria-label="Show the whole hall" data-i18n-attr="aria-label:map.zoomFit"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+  </div>
   <section id="sheet" aria-labelledby="sheet-name" hidden>
     <button class="map-sheet-close" id="sheet-close" type="button" aria-label="Close stand details" data-i18n-attr="aria-label:map.closeSheetAria">×</button>
     <h2 id="sheet-name"></h2>
@@ -86,7 +183,7 @@
 <footer class="map-note">
   <span id="counts"></span>
   <span id="srcnote"></span>
-  <span><a href="imprint.html" data-i18n="footer.imprint">Imprint</a> · <a href="privacy.html" data-i18n="footer.privacy">Privacy</a> · <button class="lang-switch-link" data-lang-switch type="button" hidden></button></span>
+  <span><a href="imprint.html" data-i18n="footer.imprint">Imprint</a> · <a href="privacy.html" data-i18n="footer.privacy">Privacy</a> · <a class="lang-switch-link" data-lang-switch href="?lang=de" lang="de" hreflang="de">Deutsch</a></span>
 </footer>
 
 <script src="js/i18n/en.js"></script>

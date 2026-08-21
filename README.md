@@ -14,10 +14,10 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Share the guide itself** — a Share button in the masthead opens a QR code big enough to hold up to the phone of whoever you are queueing with, plus the link to copy for posting it anywhere else
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Live queue times during the show** — a **Live queues** tab, open only while the show is on, that lists the lines you are standing in and searches all ~160 queues to report a new one; the cards themselves just show the figures, with one *Report a queue* link that opens the tab already narrowed to that booth. Optional reports under a random, resettable device id per playable game (or per booth where there is no playable lineup), server-side aggregation with report count and age, measured waits that can finish offline, and a phone-first moderation console
-- **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours and crowd advice inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter)
-- **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up; tap a booth for its lineup and queue call. The entertainment halls and the trade-only business halls, each washed in the colour the official plan gives that area, with the business ones flagged as the door a consumer ticket does not open. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens it on that stand, and it works offline like everything else
-- **Trade exhibitors**, behind one setting — "I have a trade badge", off by default, switchable from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters, curated cards for the platforms, services and national pavilions standing there, and the one thing that decides whether walking over is worth it — whether a booth is an open stand or a closed room you need an appointment for. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
-- **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the cyan one to turn it back. The square is the other booth's plate in miniature, and both colours are Koelnmesse's own — purple for the business halls, cyan for the entertainment ones — so a plate means the same thing here as it does on the official plan. The two booths stay separate stops in your plan, because they keep different hours
+- **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them. Each stop wears its queue index in both arrangements, and ▲▼ put the list in **the order you'll actually walk it** — the guide opens with busiest-queue-first and hands the order over the moment you disagree; the hall map numbers its pins from the same order. Either arrangement reaches the map from its own headings — a hall heading opens that hall, a day heading opens the whole site with that day lit
+- **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up. Tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. Entertainment halls and trade-only business halls are each washed in the colour the official plan gives that area, and the business ones are flagged as the door a consumer ticket does not open. Pick a day and that day's stops are pinned on the floor in your plan's own order — the one you arranged, or busiest first with played ones last until you do — so "Thursday, hall 7.1" is a picture rather than a list. It does not stop at the wall: the halls either side of this one in the plan are named in the bar, a tap from opening, and where a doorway is known to start the way there the route runs out to it and an arrow points through. The overview answers the same question for the whole site — every hall that day touches, lit and numbered in order. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens the map on that stand. It works offline like everything else
+- **Trade exhibitors**, behind one setting — "I have a trade badge", off by default. Switch it from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters and curated cards for the platforms, services and national pavilions standing there. Each booth says whether it is an open stand or a closed room you need an appointment for — the one thing that decides whether walking over is worth it. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
+- **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the cyan one to turn it back. The square is the other booth's plate in miniature, in Koelnmesse's own colours — purple for the business halls, cyan for the entertainment ones — so a plate means the same thing here as on the official plan. The two booths stay separate stops in your plan, because they keep different hours
 - Event info: dates, hours, tickets, special areas with the way onto the map for the hall each stands in, Opening Night Live, and which of the four **entrances** to use — including what a trade badge changes about that and about when you get in
 - **Installable and offline-capable** — add it to your home screen and the whole guide
   stays readable in a hall with no reception
@@ -26,9 +26,9 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 
 The guide is a PWA. Chrome, Edge and Samsung Internet offer an **Install app** button
 in the masthead; iOS Safari gets the same button pointing at *Share → Add to Home
-Screen*. Installed or not, `sw.js` caches the shell and the data on first visit, which
-is the point of the whole thing: Koelnmesse's halls eat mobile reception, and the
-guide is most needed exactly where the network is worst.
+Screen*. Installed or not, `sw.js` caches the shell and the data on first visit. That
+is the point of the whole thing: mobile reception inside Koelnmesse's halls is poor,
+and the guide is most needed exactly where the network is worst.
 
 Freshness is not traded away for it. Exhibitor data is served network-first and only
 falls back to the last good copy when the network fails — the masthead says
@@ -48,6 +48,38 @@ python3 -m http.server 8000
 ```
 
 (Opening `index.html` via `file://` won't work because the app fetches JSON.)
+
+One part of the guide can't be reached that way: the **Today** tab exists only on
+the five show days, so before Aug 26 there is nothing to click. `?now` moves the
+clock for one load, on whatever server you already have:
+
+| URL | |
+|---|---|
+| `?now` | the show's first day, an hour after the doors open |
+| `?now=14:30` | same day, that time in Cologne |
+| `?now=2026-08-29` | that day, an hour after its doors |
+| `?now=2026-08-29T19:45` | that day, 15 minutes before closing |
+
+It works anywhere the page does — a `file://`-adjacent IDE server, a phone on the
+LAN, the deployed site — and combines with the rest: `?now=2026-08-29#today`,
+`?now&lang=de`. Today only has stops if you gave some a day, so save a couple of
+booths in the planner first, or you'll get its empty state.
+
+A moved clock says so: a bar across the top of every page names the moment it is
+pretending to be, and links back out. It has to, because otherwise a screenshot of
+`?now=2026-08-27` is indistinguishable from the real Thursday. Like `?lang`, it wins
+for one load, is never stored, and never rides in a link the guide builds.
+
+## Deploying
+
+Live on **Cloudflare Workers** as an assets-only Worker — static files served from
+the edge, no Worker script. `.github/workflows/cloudflare.yml` deploys every push to
+`main`; `wrangler.toml` is the whole configuration. There is still no build step:
+`tools/build-site.sh` copies the site into `dist/` for upload, because a Worker's
+asset directory has to hold the site and nothing else. Pull requests from branches
+in this repo each get a preview — a version of the same Worker on its own
+`workers.dev` URL, commented on the PR, deployed nowhere; forks deliberately do not
+([`docs/DEPLOYING.md`](docs/DEPLOYING.md), *PR previews*).
 
 That mode deliberately has no live queue API. To run the complete app with a local D1
 database, use Node 22+, then:
@@ -81,6 +113,12 @@ take to drain. All three are bookmarked or installed on somebody's phone, and a 
 list is per-origin — so they keep serving the guide rather than a redirect until the
 people standing on them have been offered the move.
 
+Arriving on one of them for the first time is the exception. Nothing in `localStorage`,
+no installed app and a working connection together mean there is nothing on that
+hostname to strand, so the head of each page sends that visit straight to `hallgui.de`
+— path, query and hash intact — before anything paints. Everyone else stays and is
+offered the move instead.
+
 The address moved twice, for different reasons. `gamescom.guide` had to go: the name is
 a registered mark of game — Verband der deutschen Games-Branche e.V., who license it to
 exhibitors and have had unofficial sites warned off carrying it in a domain. `gc26.guide`
@@ -95,8 +133,8 @@ they cost nothing in extra origins — `hallguide.de` most importantly, because 
 somebody who only *heard* the name would spell it, and owning both means it does not
 matter which side of the `de` they put the dot on.
 
-Throughout all of it the guide still calls the show by its name, which is ordinary
-referential use and was never the part anyone objects to. Only the domain moved.
+Throughout all of it the guide still calls the show by its name. That is ordinary
+referential use and was never the part anyone objects to; only the domain moved.
 
 Any static host works, but two routing options are not optional if you move it
 elsewhere: `/map.html` must be served without a redirect, and `/` must serve
@@ -173,9 +211,21 @@ The day view is the itinerary: assign each stop a day, see that day's hours and 
 advice inline, export the assignments to a calendar file. The hall view is the walking
 route, and it reads the same assignments back: each stop carries tags for the days it
 is planned on, and once anything is placed, day chips filter the route down to a single
-day's stops in hall order. Assignments are kept separately under `gc2026.itinerary.v1`,
-follow the same booth and game keys, and stay on this device too; the arrangement you
-last picked is a view preference in `gc2026.prefs.v1`.
+day's stops in hall order. Filtered to a day, the hall view's map links hand that day
+to the hall map, which numbers the same stops on the floor in the same order — the
+numbers and the rows come from one comparator, so they can never disagree. Assignments
+are kept separately under `gc2026.itinerary.v1`, follow the same booth and game keys,
+and stay on this device too; the arrangement you last picked is a view preference in
+`gc2026.prefs.v1`.
+
+Within a day, or within a hall, the order is the queue index descending with played
+stops last — until you say otherwise. The ▲▼ on each row move a stop up or down its
+group, and from the first move the plan keeps the order you left it in, under
+`gc2026.planorder.v1`: a flat list of stop keys that both arrangements and the hall
+map's numbered pins read. Nothing is stored until you move something, so a plan you
+never argued with sorts itself, and **Reset order** — with an Undo in the toast — hands
+it back to the queue index. New stops join at the end of their group rather than
+shouldering into the middle of a plan you have already thought about.
 
 It is entirely local, so it needs no network: with the app running off the service
 worker cache in a dead-reception hall, the list still renders, both saved-only filters
@@ -236,6 +286,42 @@ one step. Somebody who accepted an earlier notice gets asked once more, because 
 they accepted then was an address that has since moved on. See
 [`docs/DEPLOYING.md`](docs/DEPLOYING.md).
 
+### Today
+
+On the five show days a fifth tab appears at the front of the row, and the guide
+stops being a pre-show tool. **Today** is the walking route scoped to the day it
+actually is: your stops for today in hall order, the ones you have ticked `✓`
+folded away at the bottom, and a header that says whether the halls are open,
+what time they close and how long that leaves. When more than one stop is left it
+names the one with the worst queue, because that is the decision the morning
+actually turns on.
+
+It is a lens, not a fourth list. Today reads the saved list, the played marks,
+the day assignments and the order you put the plan in, and stores nothing of its
+own — reorder a hall in the planner and Today walks it that way. That has one
+consequence worth stating: a stop with no day can never appear on it. The count under the
+list says how many are in that position and leads to the planner, where they get
+one. Opening the guide mid-show lands on Today whenever the day has stops on it —
+an empty Today would be a worse front door than the exhibitor grid, so it only
+leads when it has something to lead with.
+
+Which day it is gets read in the show's own timezone rather than the device's, so
+a phone still set to another continent does not open Wednesday's plan on Thursday
+morning. The hours come from `open`/`close` in `data/event.json`, the same two
+fields the calendar export writes, so a schedule change stays a data edit. The
+clock is refreshed whenever the tab is opened or the app comes back to the
+foreground — a phone that spent an hour in a pocket must not come back saying
+"closes in 3h".
+
+The one thing it does not do is arrange. The reorder arrows stay on the planner,
+which shows the whole plan; Today shows one day with the played stops folded
+away, and arrows there would rearrange a list against stops you cannot see.
+
+Off-show none of it exists: the tab is gone, and `#today` lands on the planner
+rather than on a page explaining that gamescom is not running. That is also why
+there is no launcher shortcut for it — the manifest is a fixed, year-round
+artifact, and launchers truncate the list it already has.
+
 ## Architecture
 
 Editorial content lives in `data/` as JSON; the app (`index.html`, `js/app.js`,
@@ -248,8 +334,31 @@ The hall map is a second page (`map.html`, `js/map.js`, `css/map.css`) rather
 than a fifth tab: it wants the whole viewport, and a full-screen pan/pinch
 surface fights the app's own scrolling. `js/marks.js` holds the few rules both
 pages must agree on — the saved/played storage shape, the booth-code
-normalisation that decides which stand lights up, and the `dir:<slug>` identity
-a business-hall booth is saved under on either page.
+normalisation that decides which stand lights up, the `dir:<slug>` identity a
+business-hall booth is saved under on either page, and the plan's two rules:
+which day a stop is on, and which stop is number 1. Anything either page kept
+its own copy of would drift, and a map that numbered your Thursday differently
+from the list it read it off would be worse than no numbers at all.
+
+Every list in the app is drawn by replacing a container's `innerHTML` in one
+write — there is no diffing layer — and one rule falls out of that: **a rebuild
+must not move the page.** The visitor pressed a button that was on screen, so
+the view belongs where they left it when the press is over. Three things
+threaten that, and all three are handled where they arise rather than papered
+over afterwards:
+
+- `focus()` scrolls its element into view, and after a rebuild the element is
+  new, so the browser has no memory of it and centres it. `restoreFocus()` in
+  `js/app.js` puts focus back without the scroll, and reveals the control only
+  when the focus ring is actually showing — the keyboard case, where invisible
+  focus is the worse failure.
+- The browser's scroll anchoring holds a node in view to absorb content
+  loading above it. A wholesale rebuild destroys that node, so it corrects for
+  a shift that never happened; the rebuilt containers opt out with
+  `overflow-anchor: none`.
+- Anything above a list has to be written *before* the list, not after: focus
+  goes back mid-rebuild, and a header row that grows afterwards shoves the
+  control focus just landed on off the screen.
 
 One rule runs through the trade feature and is worth stating once: **the "I
 have a trade badge" setting gates discovery, never resolution.** It decides
@@ -264,11 +373,12 @@ allowed to have. `docs/PLAN-trade-exhibitors.md` is the design record.
 | `data/exhibitors.json` | Array of exhibitors: location, games, tags, crowd forecast — structure only. `type: "trade"` cards are business-area booths and carry `offers` and an `access` value instead of a lineup and a queue index |
 | `data/directory.json` | The raw official exhibitor list (~1650 rows) with each row's product groups. Lazy-loaded — it backs the Full directory and the trade list. Generated by `tools/fetch-directory.py` |
 | `data/event.json` | Event structure: opening times, business-area hours, trade-day flags, areas |
-| `data/meta.json` | `lastUpdated`, `revision` |
+| `data/meta.json` | `lastUpdated` and `revision` — when the data last changed — plus `lastChecked`, the day the sources were last swept, which moves on every refresh whether or not it found anything. That is what lets a card nobody has had to correct in a week say so, instead of reading as a week stale |
 | `data/i18n/<lang>.json` | Every sentence a visitor reads, per language, keyed back to the files above |
-| `data/changelog.json` | Per-revision change notes, shown on the Updates tab (English only) |
+| `data/changelog.json` | Per-revision change notes, shown on the Updates tab (English only). Each bullet is tagged `content`, `feature` or `fix` — what the guide knows about the show, what it can do, what it was getting wrong — so "when did the game information last change" is one chip away rather than a read through every revision |
 | `data/hallplan/index.json`, `data/hallplan/hall-*.json` | Booth outlines per hall level, for the map. Generated by `tools/fetch-hallplan.mjs` from Koelnmesse's hall-plan data — booth *numbers* stay editorial in `exhibitors.json`, and the two are joined at load time |
 | `data/hallplan/outline.json` | How far each hall's wall stands off its booths, and where the doors in it are. Hand-written, and the one file in that directory the tool never touches: the official data files stand blocks and stands, never a wall or a doorway |
+| `data/hallplan/campus.json` | The whole site in one diagram — every hall in its place, the Boulevard between them, the passages and the gates — behind the map's Overview chip. Generated by the same tool from the hall-plan page's campus outlines, which are fitted to Koelnmesse's artwork rather than drawn to scale: right about where a hall is, wrong about how big it is, and it says so |
 | `worker/` | Live queue Worker, estimator, phone moderation page and tracked D1 migrations; never copied into `dist/` |
 
 ### Languages
@@ -278,6 +388,17 @@ The guide is English and German. The language is decided at load time — the
 switcher sits in the header and the footer. There are no `/de/` URLs: one
 deploy, one service-worker scope, and a share link means the same thing
 whoever opens it.
+
+That last-resort browser detection is also why `?lang=de` has to be a real
+address rather than an implementation detail. A crawler arrives with no German
+preference and nothing stored, so left to itself it would see the English
+guide on every visit and never learn the German one exists. `?lang=de` is the
+one address that pins the language for anyone, so both switchers are `<a>`
+elements pointing at it — `js/i18n.js` relabels them, keeps them on the view
+you are reading, and takes the click so a real visitor still gets the choice
+remembered rather than stuck in the URL. The `<link rel="alternate" hreflang>`
+set in `index.html` and `map.html` says the two are editions of each other,
+and `sitemap.xml` repeats the pairing.
 
 Data and language are stored separately. The base files above hold ids, halls,
 booth numbers and flags; the prose lives in `data/i18n/en.json` and
@@ -299,6 +420,36 @@ interpolation and plurals, and a `data-i18n` pass over the static markup.
 prose still points at data that exists, and flags English that changed after
 its translation — `tools/build-site.sh` runs it before every deploy.
 
+### Search and link previews
+
+Everything below the masthead is rendered from JSON after boot, so the first
+look any machine gets at this site is a header, a footer and no subject. Four
+things put that right, and all four are checked by `tools/check-seo.mjs`
+before a deploy — every one of them is hand-written about data that moves,
+none of it shows on screen, and a mistake in any of it looks exactly like a
+working site until it is somebody else's search result.
+
+- **Canonical.** Four hostnames serve this file (see `wrangler.toml`), and the
+  canonical is what stops them competing as four copies. On `?lang=de` it
+  points at itself instead — a language edition that canonicals to the English
+  page is one that gets dropped.
+- **`hreflang`.** The German guide's only route in; see above.
+- **JSON-LD.** An `Event` and a `WebSite`, so a crawler learns this is a
+  listing for a five-day show in Cologne without running a script. Ticket
+  prices are deliberately left out: the official shop is the only place that
+  should be quoting those in a search result. The dates, name and venue are
+  checked against `data/event.json` on every build.
+- **Open Graph.** The guide is passed around in queues and Discord servers far
+  more than it is searched for, and every unfurler that renders those links is
+  a server that never runs a line of the page — so the preview text is static
+  English in the markup rather than `data-i18n`, and `icons/og-cover.png`
+  (`tools/make-screenshots.mjs`) is the card image.
+
+`robots.txt` is a plain allow-all pointing at the sitemap. `sitemap.xml` is
+generated into `dist/` at deploy time by `tools/make-sitemap.mjs`, which reads
+its URLs back out of the staged pages' own `hreflang` links rather than
+keeping a second list to fall out of step.
+
 See [`docs/UPDATING.md`](docs/UPDATING.md) for the data schema and the periodic-refresh playbook (designed to be run by a scheduled Claude Code routine).
 
 ## Licensing
@@ -313,10 +464,11 @@ Two licences, because the repository holds two different kinds of thing.
 The data licence covers the editorial layer — the selection, the
 confirmed/expected/rumored calls, the crowd forecasts, the sources and check
 dates, and the compilation as a database. It does **not** cover the underlying
-facts, which nobody owns, nor the generated `data/hallplan/index.json` and
-`data/hallplan/hall-*.json`, which come from Koelnmesse's published hall-plan
-data and are not this project's to relicense (`outline.json` beside them is
-hand-written and *is* covered — none of it came from there).
+facts, which nobody owns, nor the generated `data/hallplan/index.json`,
+`data/hallplan/hall-*.json` and `data/hallplan/campus.json`, which come from
+Koelnmesse's published hall-plan data and are not this project's to relicense
+(`outline.json` beside them is hand-written and *is* covered — none of it came
+from there).
 [`data/README.md`](data/README.md) sets out the line in full.
 
 If that split looks fussy for a fan project: it is what keeps the repository

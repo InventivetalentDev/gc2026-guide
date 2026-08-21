@@ -18,7 +18,7 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-SITE="_headers css data fonts icons imprint.html index.html js manifest.de.webmanifest manifest.webmanifest map.html privacy.html sw.js"
+SITE="_headers css data fonts icons imprint.html index.html js manifest.de.webmanifest manifest.webmanifest map.html privacy.html robots.txt sw.js"
 
 # Repo furniture. CNAME used to sit here too — GitHub Pages' custom-domain
 # marker — until Pages went; Cloudflare takes its hostnames from the routes in
@@ -51,10 +51,25 @@ fi
 # cp -R below carries them.
 node tools/check-i18n.mjs
 
+# The same argument, pointed at the half of each page nobody looks at: the
+# JSON-LD event, the hreflang set, the canonical, the og:image. All of it is
+# hand-written about things that move, none of it shows on screen, and a
+# mistake in any of it looks exactly like a working site until it is somebody
+# else's search result.
+node tools/check-seo.mjs
+
 rm -rf dist
 mkdir dist
 for entry in $SITE; do
   cp -R "$entry" dist/
 done
+
+# sitemap.xml is the one file in dist/ with no counterpart in the repo. It is
+# generated rather than committed because it is derived twice over — its URLs
+# from the hreflang links in the staged pages, its lastmod from
+# data/meta.json — and a committed copy of something derived is a copy that
+# goes quietly wrong. Runs after the copy above for that reason: it reads the
+# pages as staged, not as authored.
+node tools/make-sitemap.mjs
 
 echo "staged $(find dist -type f | wc -l | tr -d ' ') files into dist/"

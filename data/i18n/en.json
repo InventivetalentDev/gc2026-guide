@@ -7,6 +7,7 @@
     "dates": "Aug 26–30, 2026",
     "tickets": "Online-only via the official gamescom shop — no on-site box office. Day tickets: Thu/Fri/Sun €31.50 (discounted €22.50), Saturday €41.00; evening tickets from 16:00 €10.50–13.00; family ticket €69.50–86.00; Wednesday Wildcard €65.50 (sold out Aug 5, 2026). Opening Night Live tickets are sold out; Saturday day tickets sold out too, as of Aug 14, 2026 — only the €13 evening ticket (from 16:00) is left for that day. Day tickets include free VRS public transport in the Cologne region.",
     "crowdTips": [
+      "The show floor itself has sold out to exhibitors for the first time in gamescom's 18-edition history — 233,000 m² and 1,600+ exhibitors. Expect this to be the busiest gamescom yet.",
       "Saturday day tickets are sold out (Aug 14, 2026) — do hands-on play Thursday or Sunday instead; only the evening ticket from 16:00 remains for Saturday.",
       "Wednesday's Wildcard ticket (entry from 13:00) is the quietest way into the hottest demos, but it sold out on Aug 5 — without one, Thursday morning is the next-best low-crowd window.",
       "On trade Wednesday, a trade badge doesn't open every door: several AAA booths run invited-press-only previews in the morning or skip the day entirely (Xbox 2026: booth opens Thursday; Capcom 2025: press-only until ~11:00). Check a booth's own channels before planning your Wednesday around it.",
@@ -182,7 +183,14 @@
     "services": "services",
     "studio": "studio",
     "walk-up": "walk-up",
-    "web games": "web games"
+    "web games": "web games",
+    "storage": "storage",
+    "drawing tablets": "drawing tablets",
+    "keyboards": "keyboards",
+    "accessories": "accessories",
+    "chairs": "chairs",
+    "collectibles": "collectibles",
+    "manga": "manga"
   },
   "countries": {
     "Andorra": "Andorra",
@@ -327,11 +335,16 @@
       "visitAdvice": "Don't look for PlayStation on the floor — play multi-platform PS5 titles at Xbox, Bandai Namco, SEGA and other publisher booths. A surprise ONL trailer is always possible."
     },
     "google-play": {
-      "description": "A stand near Xbox in Hall 7.1. Expect mobile and Google Play Games on PC partner titles, demo stations and giveaways — the specific lineup is not announced yet.",
-      "crowdNote": "Steady but modest traffic; queues mostly for merch and giveaways.",
+      "description": "A stand near Xbox in Hall 7.1 built around a rewards hub and a live arena for Fruit Ninja, plus multigaming stations for Dave the Diver, Subway Surfers City, eFootball, Wobbly Life and Asphalt Legends Unite. Google is also running a developer session on studio partnerships and retention on Aug 26.",
+      "crowdNote": "Steady but modest traffic; queues mostly for the arena and giveaways.",
       "visitAdvice": "Easy walk-in most of the day — convenient to combine with the Xbox booth in the same hall.",
       "games": {
-        "Partner mobile/PC titles": "No titles named yet."
+        "Fruit Ninja": "Live arena game — Halfbrick's mobile classic gets a competitive stage.",
+        "Dave the Diver": "Mintrocket's hit at a multigaming demo station.",
+        "Subway Surfers City": "Sybo's title at a multigaming demo station.",
+        "eFootball": "Konami's mobile football sim at a multigaming demo station.",
+        "Wobbly Life": "RubberBandGames/Curve Games title at a multigaming demo station.",
+        "Asphalt Legends Unite": "Gameloft's racer at a multigaming demo station."
       }
     },
     "capcom": {
@@ -385,12 +398,13 @@
       }
     },
     "ubisoft": {
-      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Anno 117 and The Division 2.",
+      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 and The Division 2.",
       "crowdNote": "One playable title plus a lounge format — moderate queues, no giant new AAA hands-on this year.",
       "visitAdvice": "Rayman queues are manageable before noon on weekdays. Community Lounge sessions are schedule-based — check Ubisoft's channels for timings.",
       "games": {
         "Rayman Legends Retold": "Demo: opening level, a new dragon-ride sequence and a classic musical level.",
         "Assassin's Creed Black Flag Resynced": "Community Lounge showcase of the Black Flag remake.",
+        "Assassin's Creed Shadows": "Community Lounge developer talk, not a demo station.",
         "Anno 117: Pax Romana": "Community Lounge sessions.",
         "Rainbow Six Siege": "Community Lounge sessions rather than a demo queue.",
         "The Division 2": "Live-service community sessions."
@@ -621,7 +635,7 @@
     },
     "korea-pavilion": {
       "description": "The Korea Creative Content Agency's umbrella stand for 13 small and mid-size Korean studios this year — consolidated into a single business-hall booth rather than the separate B2B/B2C pavilions of past shows. Krafton and Pearl Abyss show their own games elsewhere on the consumer floor.",
-      "accessNote": "Hall 2.2 — an open demo counter with the one-on-one publisher, investor and distributor meetings booked behind it.",
+      "accessNote": "Hall 3.2 — an open demo counter with the one-on-one publisher, investor and distributor meetings booked behind it.",
       "offers": [
         "On-site demos of the 13 participating studios' PC, console and mobile titles",
         "One-on-one meetings with international publishers, investors and distributors"
@@ -1446,6 +1460,116 @@
       "description": "The official gamescom merchandise shops, run by Campus Sportswear under the gamescomwear brand. The main shops are in the Hall 5.2 merchandise area, with smaller counters in Halls 6.1, 7.1, 8.1, 9.1, 10.1 and 10.2 — which is what those unnamed kiosks along the entertainment-hall aisles are.",
       "crowdNote": "The Hall 5.2 shops build queues; the in-hall counters stay short.",
       "visitAdvice": "Use whichever counter is in the hall you are already in rather than walking to Hall 5.2 for it."
+    },
+    "gateron": {
+      "description": "Mechanical keyboard switches from the brand behind most third-party switch sets on the market, registered under its legal entity Huizhou Jiadalong Electronic Technology — one of Hall 10.1's less obvious hardware-row stands.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "deepcool": {
+      "description": "PC cooling and case hardware on display in Hall 10.1's hardware row — coolers, fans and cases from the 2026 line.",
+      "crowdNote": "Steady component-shopper traffic, no real queue.",
+      "visitAdvice": "Any time; pair with the rest of the hardware row."
+    },
+    "lexar": {
+      "description": "Flash memory and SD/microSD cards in Hall 10.1's hardware row — storage for Switch 2, Steam Deck and handheld PCs.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "xppen": {
+      "description": "Drawing tablets and pen displays from the brand, registered under its legal entity Hanvon Ugee Technology — aimed at the show's digital-art and streaming crowd.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "epomaker": {
+      "description": "Mechanical keyboards from the brand's 2026 line, on display in Hall 10.1's hardware row.",
+      "crowdNote": "Steady hobbyist traffic, no real queue.",
+      "visitAdvice": "Any time; pair with the rest of the hardware row."
+    },
+    "iqunix": {
+      "description": "Mechanical keyboards from the brand's 2026 line, on display in Hall 10.1's hardware row.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "genki": {
+      "description": "Handheld gaming accessories — docks, cases and controllers — from the brand, registered under its legal entity Human Things.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "havit": {
+      "description": "Budget peripherals — keyboards, mice, headsets — from the brand, registered under its legal entity Guangzhou Havit Technology.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "karnox": {
+      "description": "Gaming and racing-sim chairs from the brand's 2026 line, on display in Hall 10.1's hardware row.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "diablo-chairs": {
+      "description": "Gaming chairs from the European brand, registered under its legal entity Domator24 — shares a stand with iiyama.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "iiyama": {
+      "description": "Gaming monitors from the established display brand — shares a stand with Diablo Chairs in Hall 10.1's hardware row.",
+      "crowdNote": "A quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "retro-games": {
+      "description": "Officially licensed retro-console recreations — THEC64 Mini, TheA500 Mini and similar — from the UK brand behind them, in Hall 10.2's retro corner.",
+      "crowdNote": "Nostalgia traffic from visitors who grew up on the originals; browsable, not a queue.",
+      "visitAdvice": "Combine with the rest of Hall 10.2's retro and family area."
+    },
+    "ravensburger": {
+      "description": "The German board-game and puzzle publisher's stand in Hall 5.2's Cards & Boards Area — new releases and demo tables.",
+      "crowdNote": "Family and hobbyist traffic; busiest around scheduled demo slots.",
+      "visitAdvice": "Any afternoon works; go early for a seat at a demo table."
+    },
+    "panini": {
+      "description": "Stickers and trading cards from the global collectibles publisher, in Hall 5.2's Cards & Boards Area.",
+      "crowdNote": "Steady collector traffic, busier around new set releases.",
+      "visitAdvice": "Any time; pair with the rest of Hall 5.2's card and collectible stands."
+    },
+    "bushiroad": {
+      "description": "Cardfight!! Vanguard and Weiss Schwarz publisher's stand in Hall 5.2's Cards & Boards Area — tournaments and demo tables for its TCG lineup.",
+      "crowdNote": "Dedicated TCG crowd; busiest during scheduled tournament slots.",
+      "visitAdvice": "Check the stand's own schedule for tournament times if you want to play."
+    },
+    "pegasus-spiele": {
+      "description": "The German board-game publisher and distributor's stand in Hall 5.2's Cards & Boards Area — new releases and demo tables.",
+      "crowdNote": "Family and hobbyist traffic; busiest around scheduled demo slots.",
+      "visitAdvice": "Any afternoon works; go early for a seat at a demo table."
+    },
+    "purearts": {
+      "description": "Licensed video-game statues and collectibles from the Canadian maker, in Hall 5.2's Cards & Boards Area.",
+      "crowdNote": "Browsable collector traffic, no real queue.",
+      "visitAdvice": "Any time; pair with the rest of Hall 5.2's collectible stands."
+    },
+    "tsume-art": {
+      "description": "Collectible statues from the Luxembourg-based maker, in Hall 5.1.",
+      "crowdNote": "Browsable collector traffic, no real queue.",
+      "visitAdvice": "Any time."
+    },
+    "fangamer": {
+      "description": "Officially licensed indie-game merchandise — Undertale, Stardew Valley and similar — from the well-known online shop, in Hall 5.1.",
+      "crowdNote": "Steady fan traffic for new drops; browsable otherwise.",
+      "visitAdvice": "Go early on the first public day for limited-run items."
+    },
+    "game-informer": {
+      "description": "The relaunched games-media outlet's booth in Hall 10.1, covering the show floor.",
+      "crowdNote": "A media stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already in the area."
+    },
+    "shueisha-games": {
+      "description": "The games arm of manga publisher Shueisha (Shonen Jump), with a stand in Hall 10.2 — its lineup for the show isn't announced yet.",
+      "crowdNote": "Unclear until a lineup is announced.",
+      "visitAdvice": "Check back closer to the show for what's playable."
+    },
+    "metanet": {
+      "description": "The Canadian indie studio behind the platformer N++, with a stand in Hall 10.2 — its show plans aren't announced yet.",
+      "crowdNote": "Unclear until a lineup is announced.",
+      "visitAdvice": "Check back closer to the show for what's playable."
     }
   }
 }

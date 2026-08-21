@@ -222,9 +222,56 @@ body {
 }
 
 /* ---- tabs: signage strip, not browser chrome ---- */
-.tabs-outer { border-top: 1px solid var(--rule-soft); }
+/* position: relative for the scroll cue below, which cannot live inside .tabs:
+   that element is the scroll port (an absolute child would scroll away with the
+   tabs) and it is the role="tablist", whose children are supposed to be tabs. */
+.tabs-outer { border-top: 1px solid var(--rule-soft); position: relative; }
 .tabs { display: flex; overflow-x: auto; scrollbar-width: none; padding: 0 24px; }
 .tabs::-webkit-scrollbar { display: none; }
+
+/* The row scrolls, and hiding its scrollbar (above) took away the only sign
+   that it does. Four labels measure ~534px against a 320–430px phone, and the
+   cut lands cleanly between two tabs, so the row reads as ending at "03 Event
+   info" — leaving "04 Updates" reachable only by a swipe nobody is invited to
+   make.
+
+   So the cut is made deliberate: a plate at whichever edge still has tabs past
+   it, carrying a chevron, scrolling the row when tapped. A plate rather than a
+   fade because a fade is a gradient, and this design does not have any — the
+   hard edge and the hairline are the same vocabulary as the hall plates.
+
+   Hidden from assistive tech (app.js sets aria-hidden and tabindex="-1"): a
+   keyboard user reaches every tab by tabbing, and the browser scrolls each
+   into view on focus, so the cue would be two extra stops in the middle of the
+   nav offering something already had. It is a pointer affordance for a pointer
+   problem.
+
+   Shown only when there is something past the edge; app.js toggles .on. */
+.tabs-cue {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 38px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  /* --ground, the page's own colour, so the plate reads as the row being cut
+     off rather than as a control sitting on top of it. */
+  background: var(--ground);
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.tabs-cue.on { display: flex; }
+.tabs-cue:hover { color: var(--ink); }
+/* The hairline is the cut: it stands between the plate and the tab it covers,
+   so the row is visibly continuing rather than ending. */
+.tabs-cue-end { right: 0; border-left: 1px solid var(--rule-soft); }
+.tabs-cue-start { left: 0; border-right: 1px solid var(--rule-soft); }
 
 .tab {
   background: none;
@@ -244,12 +291,19 @@ body {
   gap: 8px;
   transition: color .12s, border-color .12s;
 }
-/* `display: flex` above outranks the UA's `[hidden] { display: none }`, so the
-   queues tab would sit there all through the run-up with the attribute set and
-   no effect. Same fix the prompt bar, toast and share actions already carry. */
+/* .tab sets display:flex, which beats the UA sheet's [hidden] rule whatever
+   its specificity — so the Today and Live queues tabs,
+   hidden off-show, need saying twice. */
 .tab[hidden] { display: none; }
-.tab:first-child { padding-left: 0; }
+/* The row's left edge aligns with the content, whichever tab currently starts
+   it: the live tabs when the show is on,
+     Exhibitors the rest of the year. */
+.tab:first-child,
+.tab[hidden] + .tab { padding-left: 0; }
 .tab .tab-index { transition: color .12s; }
+/* Today wears a live dot rather than a number: it is not part of the standing
+   01-04 sequence, it is the mode that only exists while the show runs. */
+.tab-live { color: var(--signal); font-size: .7rem; }
 .tab:hover { color: var(--ink); }
 .tab.active { color: var(--ink); border-bottom-color: var(--signal); }
 .tab.active .tab-index { color: var(--signal); }
@@ -706,9 +760,9 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 .block-head .badge-age { margin-left: 9px; }
 .exh-id h3 .badge-age { margin-left: 6px; vertical-align: .2em; }
 
-/* The one hand-applied element in the layout, and deliberately the only one:
-   once per card it reads as a stamp, but repeated down every game row the
-   tilts land at different x positions and read as jitter. */
+/* The one hand-applied element in the layout, and deliberately the only one.
+   Once per card it reads as a stamp; repeated down every game row, the tilts
+   land at different x positions and read as jitter. */
 .stamp {
   display: inline-block;
   margin-left: 9px;
@@ -1130,6 +1184,12 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .queue-summary { flex: 1 1 100%; min-width: 0; }
 .queue-summary:empty,
 .queue-plan-live:empty { display: none; }
+/* Main's plan and route rows grew to six columns while this was out, and the
+   live figure is not one of them — it is a measurement about the row rather
+   than a field of it. Giving it a row of its own at every width keeps it out
+   of that column maths entirely. */
+.it-item > .queue-plan-live,
+.route-item > .queue-summary { grid-column: 1 / -1; }
 .queue-tracker {
   display: flex;
   flex-direction: column;
@@ -1405,6 +1465,16 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 
 /* ============================================================
+   planner — section jump nav
+   ============================================================ */
+/* Sits between the lede and section 01, eating into the lede's 32px so the
+   row reads as part of the intro rather than a section of its own. */
+.plan-jump { display: flex; gap: 6px; flex-wrap: wrap; margin: -12px 0 0; }
+.plan-jump:empty { display: none; }
+.jump-chip .section-num { font-size: .6rem; }
+.jump-chip:hover .section-num { color: var(--signal); }
+
+/* ============================================================
    planner — day board
    ============================================================ */
 .day-board { border: var(--border); border-radius: var(--radius); overflow: hidden; }
@@ -1442,11 +1512,60 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .day-detail { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .day-hours { font-family: var(--font-mono); font-size: .74rem; color: var(--ink); font-variant-numeric: tabular-nums; }
 .day-note { color: var(--ink-mid); font-size: .85rem; }
+/* The plan's per-day count, worn only by the five-days board (the plan's own
+   day groups list their stops right below the header). Under the access
+   badge, spanning the rest of the row. A button through to that day's stops
+   in the plan, dressed like the .reset text-buttons; justify-self keeps the
+   hit area on the words rather than the whole grid track. */
+.day-planned {
+  grid-column: 2 / -1;
+  justify-self: start;
+  margin-top: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--signal);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
 /* ============================================================
    planner — your plan, shared shell (see the lens blocks below)
    ============================================================ */
-#plan-section { scroll-margin-top: 140px; }
+/* Every jump-nav target clears the sticky header — the plan's day groups
+   included, which the day board's counts jump to; the mobile block below
+   shrinks this once the header stops being sticky.
+
+   --header-h is the masthead's measured height, published by app.js
+   (trackHeaderHeight) because the masthead has no fixed one: the install
+   button, the offline notice and the longer German strings each change it.
+   The fallback is what a stock English desktop masthead measures, for the
+   moment before the script runs. The 12px on top is breathing room — a
+   heading flush against the header's edge reads as clipped even when it is
+   whole.
+
+   #trade is not a jump-nav target but is scrolled to the same way: the toast
+   that turns trade mode on offers to show you the section it just filled.
+
+   The row controls take the same offset, and a gutter off the bottom edge as
+   well, because restoreFocus() (js/app.js) reveals one this way when a
+   re-render has carried it off screen — and focus you cannot see is the thing
+   that reveal exists to prevent, so landing it behind the masthead or flush
+   against the bottom edge would be no reveal at all. */
+#plan-section,
+#plan-board .it-group,
+#view-planner .section-title,
+#trade { scroll-margin-top: calc(var(--header-h, 161px) + 12px); }
+.bm, .mv, .day-chip, .src-btn { scroll-margin: calc(var(--header-h, 161px) + 12px) 0 24px; }
+/* Centered in .empty's bottom padding, so message and action read as one
+   block; invisible whenever the message is. */
+#plan-browse { display: block; margin: -48px auto 60px; }
 .plan-controls {
   display: flex;
   align-items: center;
@@ -1463,6 +1582,51 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   margin: -2px 0 12px;
 }
 
+/* The queue index, one cell in both lenses — crowdCell() writes it. It is the
+   number the plan sorts itself by, so it belongs next to the stop in either
+   arrangement, and it is the number a hand-arranged order is departing from.
+   Colour only at the top of the scale: 4 and 5 are the ones worth queueing
+   early for, and painting the calm end green would say the opposite. */
+.route-crowd,
+.it-crowd {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--ink-mid);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.route-crowd[data-level="4"], .it-crowd[data-level="4"] { color: var(--warn); }
+.route-crowd[data-level="5"], .it-crowd[data-level="5"] { color: var(--alert); }
+
+/* The two arrows that move a stop up or down its group. Same 20px square as
+   the mark buttons they sit beside: these are row controls, not a second
+   toolbar, and a row that shouted about its own position would be reading
+   the plan backwards. */
+.row-move { display: flex; gap: 4px; align-self: center; }
+.row-actions .row-move { margin-right: 4px; }
+.mv {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  color: var(--ink-dim);
+  font-size: .58rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .12s, border-color .12s, background .12s, opacity .12s;
+}
+.mv:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-dim); }
+/* Disabled, not hidden: an end of the list is a fact about the row, and a
+   control that vanished under the pointer would shift the two beside it. */
+.mv:disabled { opacity: .28; cursor: default; }
+
 /* ============================================================
    planner — your plan, day lens (itinerary)
    ============================================================ */
@@ -1470,13 +1634,19 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .it-group + .it-group { border-top: 1px solid var(--rule); }
 .it-group-head {
   display: grid;
-  grid-template-columns: 92px 130px 1fr;
+  /* the fourth column is the day's "Map →", which only the plan's own day
+     groups carry — the five-days board renders the same header without it
+     and simply leaves the column empty */
+  grid-template-columns: 92px 130px 1fr auto;
   gap: 0 18px;
   align-items: baseline;
   padding: 11px 18px;
   background: var(--ground-3);
   border-bottom: 1px solid var(--rule);
 }
+/* Placed rather than flowed, so the phone layout below can fold the hours
+   onto their own line underneath without the chip following them down. */
+.day-map { grid-row: 1; grid-column: -2 / -1; justify-self: end; align-self: center; }
 .it-group-head.unassigned { display: block; }
 .it-group-title {
   font-family: var(--font-mono);
@@ -1489,8 +1659,8 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 
 .it-item {
   display: grid;
-  grid-template-columns: minmax(150px, 1.1fr) minmax(180px, 1.35fr) minmax(100px, auto) auto 20px;
-  gap: 0 16px;
+  grid-template-columns: minmax(140px, 1.1fr) minmax(150px, 1.2fr) auto auto auto 20px;
+  gap: 0 14px;
   align-items: center;
   padding: 12px 18px;
   border-bottom: 1px solid var(--rule-soft);
@@ -1735,21 +1905,170 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   color: var(--ink-mid);
   font-variant-numeric: tabular-nums;
 }
-.route-crowd {
-  font-family: var(--font-mono);
-  font-size: .72rem;
-  font-weight: 700;
-  color: var(--ink-mid);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-.route-crowd[data-level="4"] { color: var(--warn); }
-.route-crowd[data-level="5"] { color: var(--alert); }
 .route-absent {
   margin-top: 12px;
   color: var(--ink-dim);
   font-size: .82rem;
 }
+
+/* ============================================================
+   preview bar — ?now= moved the clock
+   ============================================================ */
+/* Deliberately the loudest thing on the page and deliberately not --signal:
+   this is not the visitor's own emphasis, it is the page admitting it is
+   lying about the date. Warn ink on a warn wash, full bleed, above the
+   masthead. It scrolls away with the page, which is right — it is a
+   development affordance, not a standing alarm. */
+.preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  padding: 7px max(16px, env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--warn) 16%, var(--ground));
+  border-bottom: 1px solid color-mix(in srgb, var(--warn) 40%, var(--ground));
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--warn);
+}
+.preview-tag {
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.preview-when { color: var(--ink-mid); font-variant-numeric: tabular-nums; }
+.preview-exit {
+  margin-left: auto;
+  position: relative;
+  color: var(--warn);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+/* The same treatment the footer links got: 18px of mono type is a link to
+   read, not a link to tap, and this one is the way back out of a page
+   claiming to be a day it is not. It reaches 28px without moving, which is
+   past the 24 a fingertip wants. The sides stop at half the bar's 12px gap,
+   and both of its neighbours are plain text anyway, so nothing here can take
+   a tap meant for something else. */
+.preview-exit::after { content: ""; position: absolute; inset: -5px -6px; }
+.preview-exit:hover, .preview-exit:focus-visible { color: var(--ink); }
+
+/* ============================================================
+   today
+   ============================================================ */
+/* The show-day mode. It reuses the hall lens's board wholesale — same
+   .route-board, same rows — because it *is* the walking route, scoped to one
+   day. Only the header above it and the fold below are new.
+
+   One rule carries through from played tracking: nothing that measures what
+   is *done* takes --signal. The meter and the Done fold are muted; the one
+   orange thing on the screen is the stop you have not walked to yet. */
+.today-strip {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 0 18px;
+  align-items: center;
+  padding: 16px 18px;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--ground-2);
+}
+.today-when { display: flex; flex-direction: column; }
+.today-dow {
+  font-family: var(--font-poster);
+  font-size: 1.75rem; font-weight: 400; line-height: 1;
+  text-transform: uppercase; letter-spacing: .01em;
+}
+.today-date {
+  font-family: var(--font-mono);
+  font-size: .7rem; color: var(--ink-dim); font-variant-numeric: tabular-nums;
+}
+.today-status {
+  font-family: var(--font-mono);
+  font-size: .74rem;
+  letter-spacing: .04em;
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+/* Open is the only state worth a colour — it is the one that runs out. */
+.today-strip[data-state="open"] .today-status { color: var(--ok); }
+.today-strip[data-state="after"] .today-status { color: var(--ink-dim); }
+
+.today-progress { margin: 14px 0 24px; }
+.today-count {
+  font-family: var(--font-mono);
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-mid);
+  margin-bottom: 7px;
+}
+.today-meter {
+  height: 4px;
+  background: var(--rule-soft);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+/* Muted, never orange: this bar measures what is behind you. */
+.today-meter-fill { display: block; height: 100%; background: var(--ink-mid); }
+
+/* The one piece of advice Today gives, so it gets the emphasis colour the
+   done-counters deliberately do not. */
+.today-first {
+  margin-bottom: 16px;
+  padding: 10px 0 10px 13px;
+  border-left: 3px solid var(--signal);
+  font-size: .88rem;
+  line-height: 1.5;
+  color: var(--ink-mid);
+}
+.today-first strong { color: var(--ink); }
+.today-first-label {
+  font-family: var(--font-mono);
+  font-size: .64rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--signal);
+  margin-right: 8px;
+}
+/* Same warning voice as the plan's closed-day note, one level up the page. */
+.today-warn {
+  margin-bottom: 16px;
+  padding: 9px 13px;
+  border-left: 3px solid var(--warn);
+  background: color-mix(in srgb, var(--warn) 10%, var(--ground-2));
+  font-size: .8rem;
+  color: var(--warn);
+}
+
+.today-done { margin-top: 18px; }
+.today-done-summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: .66rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-dim);
+  padding: 6px 0;
+}
+.today-done-summary::-webkit-details-marker { display: none; }
+.today-done-summary::after {
+  content: "▾";
+  font-size: .7rem;
+  transition: transform .12s;
+}
+.today-done[open] .today-done-summary::after { transform: rotate(180deg); }
+.today-done-summary:hover { color: var(--ink); }
+.today-done .route-board { margin-top: 8px; }
+
+.today-unplaced {
+  margin-top: 18px;
+  font-size: .82rem;
+  color: var(--ink-dim);
+}
+.today-actions { display: flex; gap: 18px; margin-top: 20px; }
 
 /* ============================================================
    planner — tips
@@ -1854,8 +2173,9 @@ a.area-hall {
   /* A grid item is blockified, so without this the anchor spans its whole
      column — the full row width once the list goes single-column on a
      phone, where every tap in the empty half of that line would navigate.
-     The hit area stays the number. */
+     The hit area stays the number, padded out below. */
   justify-self: start;
+  position: relative;
   color: var(--signal);
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, var(--signal) 45%, transparent);
@@ -1864,6 +2184,17 @@ a.area-hall {
 }
 a.area-hall:hover,
 a.area-hall:focus-visible { text-decoration-color: currentColor; }
+/* Hall "5" sets eight pixels wide, which is a plate to read and not a plate
+   to hit — a fingertip covers three times that. The number keeps its size and
+   its place in the column (moving it would break the plates' alignment down
+   the list, which is half of what makes them scannable); an invisible box
+   around it takes the tap, at 24×24 for the narrowest of them.
+
+   Only these plates, and only because they are plates. A hall number inside a
+   planner row is a phrase in a line of text, where the line's own height is
+   the constraint and a padded-out box would start swallowing the taps meant
+   for the row it sits in. */
+a.area-hall::after { content: ""; position: absolute; inset: -6px -8px; }
 .area-name { font-weight: 600; font-size: .92rem; }
 .area-desc { color: var(--ink-mid); font-size: .85rem; }
 
@@ -1886,31 +2217,71 @@ a.area-hall:focus-visible { text-decoration-color: currentColor; }
 /* ============================================================
    updates timeline
    ============================================================ */
+.updates-toolbar {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.chip.kind-chip.active { background: var(--signal); border-color: var(--signal); color: var(--signal-ink); }
+
 .timeline { border-left: 1px solid var(--rule); padding-left: 26px; margin-left: 6px; }
 .timeline-entry { position: relative; padding-bottom: 30px; }
 .timeline-entry::before {
   content: "";
   position: absolute; left: -31px; top: 7px;
   width: 9px; height: 9px; border-radius: 50%;
-  background: var(--signal); border: 2px solid var(--ground);
+  background: var(--rule); border: 2px solid var(--ground);
 }
-.timeline-entry:not(:first-child)::before { background: var(--rule); }
-.timeline-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+/* Filled for the newest revision, and keyed on that rather than on being the
+   first entry drawn: with the kind filter on, the first entry drawn is the
+   newest one of *that kind*, and a lit dot there would say "latest revision"
+   about a revision three weeks old. */
+.timeline-entry[data-latest="true"]::before { background: var(--signal); }
+.timeline-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 8px; }
 .timeline-date { font-family: var(--font-mono); font-size: .88rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-.rev-tag {
+.rev-tag,
+.kind-tag,
+.change-tag {
   font-family: var(--font-mono);
   font-size: .62rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--signal); border: 1px solid var(--signal-wash); background: var(--signal-wash);
   padding: 1px 7px; border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  white-space: nowrap;
 }
+/* The revision number is the entry's name, not a signal, and it gave up the
+   orange when the kind tags arrived: colour in this head now means what kind
+   of work the revision was, and two orange plates side by side would have
+   said it twice with two different meanings. */
+.rev-tag { color: var(--ink-dim); border-color: var(--rule); }
+
+/* Three kinds told apart on the palette that is already here rather than on a
+   fourth hue: the green/amber/red run is severity throughout this app (queue
+   levels, crowd levels, unconfirmed data) and cyan/purple is which area a hall
+   is in, so borrowing either would have a tag claiming a meaning that is taken.
+   What is left is the signal orange, spent as it is everywhere else on "the
+   guide does something new", and two steps of the ink ramp. Content takes the
+   bright one because it is the kind people come to this page looking for — new
+   game information — and a fix, which changes nothing about the show, takes the
+   quiet one. */
+.kind-tag[data-kind="feature"],
+.change-tag[data-kind="feature"] { color: var(--signal); border-color: var(--signal-wash); background: var(--signal-wash); }
+.kind-tag[data-kind="content"],
+.change-tag[data-kind="content"] { color: var(--ink); border-color: var(--rule); background: var(--ground-3); }
+.kind-tag[data-kind="fix"],
+.change-tag[data-kind="fix"] { color: var(--ink-dim); border-color: var(--rule-soft); background: var(--ground-2); }
+
 .timeline-entry ul { list-style: none; }
 .timeline-entry li {
   color: var(--ink-mid); font-size: .88rem;
-  padding: 4px 0 4px 16px; position: relative;
+  padding: 4px 0; position: relative;
 }
-.timeline-entry li::before {
+/* The tag replaces the em-dash this list used to lead each bullet with — the
+   line still opens with a mark at the same left edge, and it now says
+   something. Untagged bullets keep the dash: see changeParts(). */
+.timeline-entry li:not([data-kind]) { padding-left: 16px; }
+.timeline-entry li:not([data-kind])::before {
   content: "—"; position: absolute; left: 0; color: var(--ink-dim);
 }
+.change-tag { margin-right: 9px; position: relative; top: -1px; }
 
 /* ============================================================
    footer
@@ -2287,11 +2658,26 @@ body.queue-prompt-open .toast { bottom: calc(112px + env(safe-area-inset-bottom)
   text-transform: uppercase;
   cursor: pointer;
   transition: border-color .12s, color .12s;
+  /* .lang-switch is an <a> (index.html) so that the German guide has an
+     address a crawler can follow; the underline that comes with that would
+     read as prose in a row of stamped controls. */
+  text-decoration: none;
 }
 .lang-switch:hover,
 .header-share:hover { border-color: var(--ink-mid); color: var(--ink); }
 
 .header-share { white-space: nowrap; }
+
+/* Share measured 60 by 22 and reaches 64 by 28. Commit 6181056 fixed it
+   against the language control, so its visible box must not move. Footer links
+   measured 15px tall and reach about 19px, not 24: the leading between wrapped
+   lines leaves only 2px above and below. Their sides stop inside the literal
+   middle dot and its surrounding spaces, so one link cannot take another's tap. */
+.header-share,
+.subtle-link { position: relative; }
+
+.header-share::after { content: ""; position: absolute; inset: -3px -2px; }
+.subtle-link::after { content: ""; position: absolute; inset: -2px -2px; }
 
 /* The footer copy runs as prose, so the backstop switcher there reads as
    one more link in the Imprint · Privacy row rather than a second button. */
@@ -2451,6 +2837,15 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .route-item { grid-template-columns: 1fr auto auto; row-gap: 4px; }
   .route-booth { grid-column: 1 / -1; grid-row: 2; }
   .route-crowd { grid-column: 2; grid-row: 1; }
+  /* Six columns do not fit a tablet, so the day row folds the same way the
+     hall row above it does: name, queue and the controls on the first line,
+     the address under them, the day chips under that. */
+  .it-item { grid-template-columns: minmax(120px, 1fr) auto auto 20px; row-gap: 7px; }
+  .it-loc { grid-column: 1 / -1; grid-row: 2; }
+  .it-crowd { grid-column: 2; grid-row: 1; }
+  .it-item .row-move { grid-column: 3; grid-row: 1; }
+  .it-days { grid-column: 1 / -1; grid-row: 3; justify-content: flex-start; }
+  .it-warn { grid-column: 1 / -1; grid-row: 4; }
   .route-item > .queue-summary { grid-column: 1 / -1; }
   .wristband-item { grid-template-columns: 1fr auto; }
   .wristband-loc,
@@ -2464,9 +2859,13 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   /* the full masthead is ~290px on a phone — far too much to pin above a
      long scrolling list, so it scrolls away here instead */
   .site-header { position: static; }
-  /* …and with nothing pinned on top, the sticky-header scroll offset would
-     just strand the route heading 140px down the screen */
-  #route-section { scroll-margin-top: 16px; }
+  /* …and with nothing pinned on top, the measured header offset above would
+     just strand a jumped-to heading a masthead's height down the screen */
+  #plan-section,
+  #plan-board .it-group,
+  #view-planner .section-title,
+  #trade,
+  .bm, .mv, .day-chip, .src-btn { scroll-margin-top: 16px; }
 
   /* The phone masthead. The control row dissolves and each button takes its
      own place in the grid's right column: share beside the wordmark, the
@@ -2476,8 +2875,8 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 
      The install prompt is the exception. It is the only one of the three
      wide enough ("App installieren") to squeeze the wordmark out of its own
-     row if it sat in that column, so it keeps a full-width line under the
-     dates, where its width costs nothing. */
+     row, so it keeps a full-width line under the dates, where its width
+     costs nothing. */
   .header-inner {
     align-items: center;
     column-gap: 8px;
@@ -2500,11 +2899,24 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .day-row { grid-template-columns: 76px 1fr; row-gap: 8px; }
   .day-access { grid-column: 2; }
   .day-detail { grid-column: 1 / -1; }
-  .it-group-head { grid-template-columns: 76px 1fr; row-gap: 8px; }
-  .it-item { grid-template-columns: minmax(110px, 1fr) minmax(0, 1.2fr) 20px; row-gap: 9px; }
+  /* full-width like the detail text above it — half-indented it reads as a
+     stray line rather than a fact of the day */
+  .day-planned { grid-column: 1 / -1; margin-top: 0; }
+  .it-group-head { grid-template-columns: 76px 1fr auto; row-gap: 8px; }
+  /* Day, access and the map chip share the top line; the hours take the
+     whole of the next one rather than the 76px column they would flow into. */
+  .it-group-head .day-detail { grid-column: 1 / -1; }
+  /* Same fold as the tablet block above, one notch narrower in column one. */
+  .it-item { grid-template-columns: minmax(96px, 1fr) auto auto 20px; row-gap: 9px; }
+  /* "Open now · closes 20:00 · 3h 40m left" will not share a line with the
+     weekday and the access badge at this width, and it is the half of the
+     strip that changes — so it takes the second row whole. */
+  .today-strip { grid-template-columns: auto 1fr; row-gap: 10px; }
+  .today-status { grid-column: 1 / -1; text-align: left; }
+  .today-actions { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .toolbar-row .row-label,
+  .updates-toolbar .row-label { flex-basis: 100%; }
   .queue-plan-live { grid-column: 1 / -1; }
-  .it-days { grid-column: 1 / -1; justify-content: flex-start; }
-  .toolbar-row .row-label { flex-basis: 100%; }
   /* let the summary text take a full line instead of squeezing into a column */
   .toolbar-summary { flex-wrap: wrap; row-gap: 4px; }
   .toolbar-summary .row-label { flex: 0 0 auto; }
@@ -2554,22 +2966,55 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
 
+/* ---- scroll anchoring ----
+
+   The browser keeps a page still while things load above the viewport by
+   picking a node that is in view and holding it there. Every list below is
+   replaced in one innerHTML write, which destroys whichever node it had
+   picked, and it then compensates for a shift that never happened: the page
+   crept a row up or down on every save, every reorder and every filter.
+   Opting the containers out leaves the anchor to be chosen from the stable
+   page around them, which is what a rebuild in place wants — the visitor
+   pressed a button that was on screen, so the view belongs exactly where they
+   left it. */
+#exhibitor-grid,
+#directory-list,
+#trade-list,
+#plan-board,
+#priority-list,
+#wristband-list,
+#day-guide { overflow-anchor: none; }
+
 /* ---- rendering cost ----
 
-   Every long list here is built in one innerHTML write, and laying all of it
-   out at once is most of what froze the first seconds on a phone: 127 cards,
-   up to 200 directory rows behind them. content-visibility lets the browser
-   skip layout and paint for everything below the fold until it is scrolled
-   toward, so the cost of a list tracks the viewport, not the dataset.
+   The two long lists here are built in one innerHTML write, and laying all of
+   them out at once is most of what froze the first seconds on a phone: 142
+   cards, up to 200 directory rows behind them. content-visibility lets the
+   browser skip layout and paint for everything below the fold until it is
+   scrolled toward, so the cost of a list tracks the viewport, not the dataset.
 
    The intrinsic sizes are rough per-item heights — they only steer the
    scrollbar's first guess and are replaced by real geometry once an item has
-   been on screen. Browsers without the property just render everything, which
-   is exactly the behaviour this replaces. The changelog timeline stays out:
-   its date dot is drawn 31px outside the entry's box, and the paint
-   containment this property brings would clip it off. */
-.card { content-visibility: auto; contain-intrinsic-size: auto 460px; }
-.dir-row { content-visibility: auto; contain-intrinsic-size: auto 60px; }
-.priority-item { content-visibility: auto; contain-intrinsic-size: auto 92px; }
-.it-item { content-visibility: auto; contain-intrinsic-size: auto 96px; }
-.route-item { content-visibility: auto; contain-intrinsic-size: auto 88px; }
+   been on screen — but rough has to mean the right order of magnitude. A
+   directory row is 80px stacked on a phone and 38px as a table row above
+   640px, and the single 60px estimate that covered both was wrong by 20px in
+   either direction, which is 4000px of scrollbar across 200 rows. Browsers
+   without the property just render everything, which is exactly the behaviour
+   this replaces. The changelog timeline stays out: its date dot is drawn 31px
+   outside the entry's box, and the paint containment this property brings
+   would clip it off.
+
+   The planner's own lists stay out too, which is a change of mind rather than
+   an oversight. They are short — a plan holds what one visitor saved, the
+   queue table is 23 rows — so there was never much layout to skip, and they
+   are rebuilt on every save, every reorder and every day assignment. Each
+   rebuild is a fresh set of elements, so every row off screen collapses back
+   to its estimate before being measured again, and the document snapped by as
+   much as 1655px in the frame after a plan render — under a visitor who was
+   reading the queue table below it. On a 142-stop plan, dropping the property
+   costs about 24ms per render on a desktop and saves about 110ms on a phone. */
+.card { content-visibility: auto; contain-intrinsic-size: auto 540px; }
+.dir-row { content-visibility: auto; contain-intrinsic-size: auto 38px; }
+@media (max-width: 640px) {
+  .dir-row { contain-intrinsic-size: auto 80px; }
+}

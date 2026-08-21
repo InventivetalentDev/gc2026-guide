@@ -34,6 +34,7 @@ const GCI18N = window.GCI18N || {
 };
 const t = GCI18N.t;
 const formatDate = GCI18N.formatDate || ((date) => String(date));
+const dayName = GCI18N.dayName || ((date) => String(date));
 /* Country and product-group names arrive in English from the generated
    data/directory.json; their display names live in the locale overlay the
    guide loads. The map fetches that overlay only for these two maps — see
@@ -52,15 +53,26 @@ const state = {
   index: null,          // data/hallplan/index.json
   areas: {},            // area key -> {label, colour, trade?, access?}
   outline: {},          // data/hallplan/outline.json — hall margins + doors
+  campus: null,         // data/hallplan/campus.json — the whole site, once fetched
   labels: {},           // {countries, dirGroups} from data/i18n/<lang>.json
   exhibitors: [],       // data/exhibitors.json
   trade: [],            // business-hall rows from data/directory.json, once loaded
   halls: new Map(),     // hall id -> hall json
+  rot: false,           // page-lifetime view; never a stored hall fact
+  rotChosen: false,     // the visitor pressed the button, so stop deciding for them
   byStand: new Map(),   // "hall:CODE" -> [exhibitor, …]
-  hall: null,           // current hall id
+  hall: null,           // current hall id, or OVERVIEW
   stands: [],           // render records for the current hall
+  plates: [],           // render records for the overview's hall plates
   marks: { saved: null, played: null },
+  itinerary: { exhibitors: new Map(), games: new Map() },
+  planRanks: new Map(),  // stop key -> position, the order the guide was left in
   sel: null,
+  /* the day the route overlay is showing: an ISO date, "none" for the stops
+     still waiting for a day, or null for "overlay off" */
+  day: null,
+  route: [],            // this hall's stops for that day, in plan order
+  labelsLayer: null,    // the drawn hall's label layer — the route line goes under it
 };
 
 /* ================= marks ================= */
@@ -68,7 +80,22 @@ const state = {
 function loadMarks() {
   state.marks.saved = GCMarks.readMarks("saved");
   state.marks.played = GCMarks.readMarks("played");
+  /* The plan rides along with the marks rather than being loaded on its own:
+     every caller here is reacting to "the lists may have moved", and a day
+     assignment — or a stop moved up the list — made in the guide is exactly
+     that kind of move.
+
+     Guarded for the same reason as the GCI18N shim above: a stale cached
+     js/marks.js without these reads must not stop the map booting. */
+  state.itinerary = GCMarks.readItinerary?.() || state.itinerary;
+  state.planRanks = GCMarks.readOrder ? GCMarks.orderRanks(GCMarks.readOrder()) : state.planRanks;
 }
+
+/* Where a booth sits in the plan, read exactly as the guide's hall lens reads
+   it: a booth is keyed by its own id there and here, so pin 3 is the third
+   row of the hall the pins were drawn from, arranged or not. */
+const exRank = (ex) =>
+  state.planRanks.get(GCMarks.stopKey("exhibitor", ex.id)) ?? GCMarks.UNRANKED;
 
 const exSaved = (ex) => GCMarks.hasSaved(state.marks.saved, ex);
 /* A booth reads as played when marked directly, or when every game you
@@ -78,6 +105,21 @@ const exPlayed = (ex) => {
   return state.marks.played.exhibitors.has(ex.id) ||
     (mine.length > 0 && mine.every((g) => state.marks.played.games.has(GCMarks.gameKey(g.title))));
 };
+
+/* Which show day(s) this exhibitor is planned for: their own assignment
+   plus those of any saved game standing here — the same union the plan
+   board's day lens files a stop under, so the sheet and the board name
+   the same days. Sorted, because ISO dates sort into show order. */
+function plannedDays(ex) {
+  const days = new Set();
+  const own = state.itinerary.exhibitors.get(ex.id);
+  if (own) days.add(own);
+  for (const g of GCMarks.savedGames(state.marks.saved, ex)) {
+    const day = state.itinerary.games.get(GCMarks.gameKey(g.title));
+    if (day) days.add(day);
+  }
+  return [...days].sort();
+}
 
 function toggleSaved(id) {
   loadMarks(); /* pick up another tab's changes before writing over them */
@@ -140,6 +182,13 @@ const offered = (ex) =>
    keeps an open sheet pointing at the same stand. */
 function redrawJoin() {
   buildJoin();
+  /* The overview draws no stands, but it counts them: a hall's saved
+     total is read through the join, so it moves when the join does — on
+     the chips as much as on the plates, which is refreshMarks' overview
+     branch rather than refreshCampus on its own. Trade rows landing on
+     an overview that was already up used to move the plates and leave
+     the chip row saying nothing at all about the business halls. */
+  if (onOverview()) return refreshMarks();
   if (!state.hall || !$("#map")) return;
   const code = state.sel ? [...state.sel.codes][0] : null;
   renderHall(state.hall);
@@ -244,19 +293,17 @@ function standRecord(hallId, s) {
 /* Which patch of floor a stand stands on, as a comparable key.
 
    Koelnmesse does not file the two levels corner-for-corner in the same
-   order. Gryphline's Hall 8.1 stands are the pair that showed it:
-   C-020 B-012 and its gallery agree byte for byte, while B-021 C-030 is
-   filed [90,10] [114,10] [114,40] [90,40] and B-021g C-030g is the same
-   rectangle written backwards, [90,40] [114,40] [114,10] [90,10]. So one
-   of Gryphline's two booths answered to a tap and the other returned an
-   empty "B-021g C-030g".
+   order. Gryphline's Hall 8.1 stands showed it: C-020 B-012 and its gallery
+   agree byte for byte, while B-021 C-030 is filed [90,10] [114,10] [114,40]
+   [90,40] and B-021g C-030g is the same rectangle written backwards,
+   [90,40] [114,40] [114,10] [90,10]. So one of Gryphline's two booths
+   answered to a tap and the other returned an empty "B-021g C-030g".
 
-   Comparing the literal coordinate string therefore matched only the
-   pairs that happened to agree — 65 of 134 across the show. This reduces
-   the corner ring to a canonical form instead: the smallest rotation of
-   the ring and of its reverse, which two polygons share exactly when
-   they are the same ring, whichever corner it starts from and whichever
-   way round it runs. */
+   Comparing the literal coordinate string matched only the pairs that
+   happened to agree — 65 of 134 across the show. This reduces the corner
+   ring to a canonical form instead: the smallest rotation of the ring and
+   of its reverse, which two polygons share exactly when they are the same
+   ring, whichever corner it starts from and whichever way round it runs. */
 function footprint(poly) {
   const ring = poly.map((p) => p.join());
   /* defensive: this data leaves the ring open, but a closing vertex would
@@ -274,18 +321,17 @@ function footprint(poly) {
 
 /* Koelnmesse files a stand's gallery level as a stand of its own, on
    exactly the same four corners: F-010 E-019 and F-010g E-019g are one
-   place, one floor above the other. Drawn as two stands the empty upper
-   one lands on top and swallows every tap, which is why tapping the
-   Indie Arena Booth answered "no exhibitor filed for this stand" while
-   the deep link to it was right all along.
+   place, one floor above the other. Drawn as two stands, the empty upper
+   one lands on top and swallows every tap — which is why tapping the Indie
+   Arena Booth answered "no exhibitor filed for this stand" while the deep
+   link to it was right all along.
 
    Same footprint means same place, so they become one stand: one shape,
-   every stand number, every name filed on either level. This joins stands
-   standing on the same corners only — a sub-stand that sits *inside* a
-   larger one (E-071a within E-071, 30 of them in hall 10.1) has a
-   footprint of its own and stays separate, which is what the painting
-   order below is for. 134 pairs across eleven halls; hall 10.1 alone
-   has 26. */
+   every stand number, every name filed on either level. This joins only
+   stands on the same corners — a sub-stand that sits *inside* a larger one
+   (E-071a within E-071, 30 of them in hall 10.1) has a footprint of its own
+   and stays separate, which is what the painting order below is for. 138
+   pairs across twelve halls; hall 10.1 alone has 26. */
 function mergeLevels(stands) {
   /* Which number a visitor reads on the stand: the one the exhibitors
      were filed against, and failing that the plain ground-floor number
@@ -326,6 +372,106 @@ async function loadHall(id) {
 
 const polyPath = (poly) => "M" + poly.map((p) => p[0] + " " + p[1]).join("L") + "Z";
 
+/* Decimal metre coordinates such as 1.3 otherwise come back from four
+   turns as 1.3000000000000114. Snapping subtraction noise below a
+   nanometre keeps a round trip exact without moving any filed point. */
+const snap = (v) => Math.round(v * 1e9) / 1e9;
+const rotatePoint = ([x, y], H) => [snap(H - y), x];
+
+/* The renderer must receive a new hall all at once. Rotating the cached
+   polygons in place would make the next turn start from the last view,
+   and booth identity reads from that unrotated cache too. */
+function rotateHallGeometry(hall) {
+  const [W, H] = hall.size;
+  return {
+    ...hall,
+    size: [H, W],
+    blocks: hall.blocks.map((poly) => poly.map((point) => rotatePoint(point, H))),
+    stands: hall.stands.map((stand) => ({
+      ...stand,
+      poly: stand.poly.map((point) => rotatePoint(point, H)),
+    })),
+  };
+}
+
+const rotateMargin = (m) => ({ n: m.w, e: m.n, s: m.e, w: m.s });
+
+/* `at` is the doorway's centre, so a reversed wall subtracts the centre
+   from the unrotated hall height. The span does not enter that subtraction.
+
+     n -> e, at unchanged
+     e -> s, at becomes H - at
+     s -> w, at unchanged
+     w -> n, at becomes H - at
+
+   This table is derived against edgeOf(): each new wall puts the door at
+   the rotated image of its old centre. H is the unrotated hall height. */
+function rotateDoors(doors, H) {
+  const edge = { n: "e", e: "s", s: "w", w: "n" };
+  return doors.map((door) => ({
+    ...door,
+    edge: edge[door.edge],
+    at: door.edge === "e" || door.edge === "w" ? snap(H - door.at) : door.at,
+  }));
+}
+
+/* Trade changes rebuild the hall and mark refreshes redraw its route from
+   the same numbers. Keep one turned copy per loaded hall instead of doing
+   the polygon work again on either path. */
+/* The whole picture in hall metres: the booth box, the hall around it, and the
+   room each wall needs beyond itself for its own name and a leg pointer's. One
+   implementation, because renderHall draws it and the rule below measures it,
+   and a second copy of this arithmetic would drift from the first. */
+function drawingBox([W, H], m, doors) {
+  const named = labelledEdges(doors);
+  const doored = new Set(doors.map((d) => d.edge));
+  const out = (k) => Math.max(GAP, doored.has(k) ? LEG_BAND : named.has(k) ? LBL_BAND : 0);
+  return {
+    ox: -(m.w + out("w")),
+    oy: -(m.n + out("n")),
+    vw: W + m.w + m.e + out("w") + out("e"),
+    vh: H + m.n + m.s + out("n") + out("s"),
+  };
+}
+
+/* Should this hall open turned? Two conditions, and both are needed.
+
+   The screen must be taller than it is wide. This is the problem the turn was
+   built for: a hall lying across a phone held upright. On a screen already
+   wider than it is tall there is no such problem to solve, and turning a hall
+   away from the orientation the official plan prints it in wants a reason
+   better than a few percent of scale. The button is still there for anyone who
+   wants it.
+
+   And the hall must actually come out bigger. Asking that directly, in the
+   same terms fitView() will use a moment later, beats reading the hall's aspect
+   ratio: halls 10.1 and 10.2 are taller than they are wide, so on a portrait
+   phone they are already the right way round and this leaves them alone, while
+   the other eleven gain about half again.
+
+   Rotating swaps the picture exactly. Walls move n->e->s->w->n, so the margins
+   and the label bands travel with them and the turned box is the upright one
+   with its sides exchanged. That is why one drawingBox() call answers both.
+
+   False whenever the stage has no size yet, which is the case during the first
+   layout. */
+function shouldTurn(id) {
+  const hall = state.halls.get(id);
+  const r = $("#stage")?.getBoundingClientRect();
+  if (!hall || !r?.width || !r?.height) return false;
+  if (r.width >= r.height) return false;
+  const { vw, vh } = drawingBox(hall.size, rawMarginOf(id), rawDoorsOf(id));
+  return Math.min(r.width / vh, r.height / vw) > Math.min(r.width / vw, r.height / vh);
+}
+
+const rotatedHalls = new Map();
+function hallGeometry(id) {
+  const hall = state.halls.get(id);
+  if (!state.rot || !hall) return hall;
+  if (!rotatedHalls.has(id)) rotatedHalls.set(id, rotateHallGeometry(hall));
+  return rotatedHalls.get(id);
+}
+
 function bbox(poly) {
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const [x, y] of poly) {
@@ -337,14 +483,13 @@ function bbox(poly) {
   return { x0, y0, x1, y1, w: x1 - x0, h: y1 - y0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
 }
 
-/* Set a name as large as the booth allows, by trying every way of
-   breaking it across one, two or three lines and keeping whichever fits
-   biggest. Breaking by character count instead — balance the halves,
-   done — reads fine on a square booth and fails on a narrow one: MOZA
-   Racing's stand is 4 m wide, so "MOZA Racing" on one line fitted at
-   0.6 m and got dropped as unreadable, where "MOZA / Racing" fits at
-   1.2 m. Names are short, so trying all the breaks is a handful of
-   candidates per booth. */
+/* Set a name as large as the booth allows, by trying every way of breaking
+   it across one, two or three lines and keeping whichever fits biggest.
+   Breaking by character count instead — balance the halves, done — reads
+   fine on a square booth and fails on a narrow one: MOZA Racing's stand is
+   4 m wide, so "MOZA Racing" on one line fitted at 0.6 m and got dropped as
+   unreadable, where "MOZA / Racing" fits at 1.2 m. Names are short, so
+   trying every break is a handful of candidates per booth. */
 function fitName(name, box, area) {
   const spaces = [];
   for (let i = 0; i < name.length; i++) if (name[i] === " ") spaces.push(i);
@@ -379,22 +524,21 @@ function fitName(name, box, area) {
 
    The size in the snapshot is no help on its own: it is the tight box
    around those contents, so an outline drawn on it touches the outermost
-   booth on all four sides by construction — which is exactly how this
-   started, and it looked shrink-wrapped. The hall around that box comes
-   from data/hallplan/outline.json instead: a margin per side, and the
-   doorways. Both are ours; see the note in that file for where each
-   number came from and how sure it is.
+   booth on all four sides — which is how this started, and it looked
+   shrink-wrapped. The hall around that box comes from
+   data/hallplan/outline.json instead: a margin per side, and the doorways.
+   Both are ours; see the note in that file for where each number came from
+   and how sure it is.
 
-   The outline carries the hall's area colour — the same colour as the
-   chip you tapped to get here, and the only other place on the map it
-   appears, so booth state stays the loud channel. The doors matter more
-   than they look: the halls connect to each other and to the Boulevard
-   at a handful of points, and knowing which end of hall 7 faces the
-   Boulevard is the difference between a 30 m walk and a 200 m one. A
-   door that leads into another hall we draw is a tap that goes there —
-   the hall row does the same job for a keyboard or a screen reader,
-   which is why this whole layer is aria-hidden rather than pretending
-   to be a second set of buttons. */
+   The outline carries the hall's area colour — the same colour as the chip
+   you tapped to get here, and the only other place on the map it appears,
+   so booth state stays the loud channel. The doors matter more than they
+   look: the halls connect to each other and to the Boulevard at a handful
+   of points, and knowing which end of hall 7 faces the Boulevard is the
+   difference between a 30 m walk and a 200 m one. A door leading into
+   another hall we draw is a tap that goes there. The hall row does the same
+   job for a keyboard or a screen reader, which is why this whole layer is
+   aria-hidden rather than pretending to be a second set of buttons. */
 
 /* Metres of clear space left outside the hall in the viewBox. The
    outline stroke is centred on the wall and the door brackets stand off
@@ -409,9 +553,14 @@ const NO_MARGIN = { n: 0, e: 0, s: 0, w: 0 };
 /* How far the wall stands off the booth box, per side. A hall may name
    its own; everything else takes the file's default, and a map with no
    file at all falls back to the box itself. */
+const rawMarginOf = (id) => ({
+  ...NO_MARGIN,
+  ...(state.outline.margin || {}),
+  ...(state.outline.halls?.[id]?.margin || {}),
+});
 function marginOf(id) {
-  const file = state.outline;
-  return { ...NO_MARGIN, ...(file.margin || {}), ...(file.halls?.[id]?.margin || {}) };
+  const margin = rawMarginOf(id);
+  return state.rot ? rotateMargin(margin) : margin;
 }
 
 /* One wall: where it runs, which way is out of the hall, and the span of
@@ -430,14 +579,27 @@ const EDGE_KEYS = ["n", "e", "s", "w"];
 
 const DOOR_DEPTH = 3.2;  /* how far a door's bracket stands off the wall */
 /* Door label size, in metres like every other label here. 7 m is the
-   ceiling fitName() gives a booth name, which makes this exactly as big
-   as the largest name on the map — so if any label is legible at a given
-   zoom, this one is, and the doors can be named from the widest band
-   rather than waiting for you to zoom in on a hall you are trying to
-   find your way out of. */
+   ceiling fitName() gives a booth name, so this is exactly as big as the
+   largest name on the map: if any label is legible at a given zoom, this
+   one is. The doors can then be named from the widest band, rather than
+   waiting for you to zoom in on a hall you are trying to find your way
+   out of. */
 const DOOR_FS = 7;
 const LBL_OFF = DOOR_DEPTH + 1.8;    /* label baseline, metres out from the wall */
 const LBL_BAND = LBL_OFF + DOOR_FS;  /* room a labelled wall needs beyond itself */
+
+/* A leg pointer's name — the hall a planned day leaves for — is set one line
+   further out again, in the same margin. It belongs to the day route rather
+   than to the building, but renderHall has to reserve room for it before any
+   day has been picked, so the band is declared up here with the door's.
+
+   Smaller than DOOR_FS on purpose: the door names where this opening goes,
+   which is true whatever is on screen; the leg names where *your* plan goes
+   through it, which is true only while a day is lit. The second should not
+   shout over the first. */
+const LEG_FS = 5;
+const LEG_OFF = LBL_BAND + 1.6;   /* leg name baseline, metres out from the wall */
+const LEG_BAND = LEG_OFF + LEG_FS;
 
 const hallOf = (to) => (to && to.startsWith("hall:") ? to.slice(5) : null);
 
@@ -470,9 +632,18 @@ function wallSegments(t0, t1, doors) {
   return out;
 }
 
-const doorsOf = (id) =>
-  (state.outline.halls?.[id]?.doors || [])
-    .filter((d) => EDGE_KEYS.includes(d.edge) && d.span > 0);
+const rawDoorsOf = (id) =>
+  (state.outline.halls?.[id]?.doors || []).filter(
+    (d) => EDGE_KEYS.includes(d.edge) && d.span > 0
+  );
+
+const doorsOf = (id) => {
+  const doors = rawDoorsOf(id);
+  if (!state.rot) return doors;
+  /* East and west reverse against the old height. hallGeometry() has
+     already swapped that dimension, so this one read stays on the source. */
+  return rotateDoors(doors, state.halls.get(id).size[1]);
+};
 
 /* Which walls will carry a name, so renderHall can leave room for it
    beyond them before it has drawn anything. */
@@ -556,12 +727,12 @@ function renderOutline(svg, id, W, H, m, doors) {
       el.setAttribute("y", py + edge.out[1] * LBL_OFF + (key === "s" ? DOOR_FS * 0.8 : 0));
     } else {
       /* Turned to run *along* an end wall rather than out from it. Set
-         across, "Boulevard" is 41 m of text against a hall 82 m deep —
-         it left the stage entirely at fit zoom, and the only way to make
-         room for the word would be to shrink the hall to a third of the
-         screen. Turned, it costs one line of depth instead. Reading
-         downward on the east wall and upward on the west is the usual
-         convention and keeps the glyphs on the outside in both cases. */
+         across, "Boulevard" is 41 m of text against a hall 82 m deep — it
+         left the stage entirely at fit zoom, and the only way to make room
+         would be to shrink the hall to a third of the screen. Turned, it
+         costs one line of depth instead. Reading downward on the east wall
+         and upward on the west is the usual convention and keeps the glyphs
+         on the outside in both cases. */
       el.setAttribute(
         "transform",
         `translate(${px + edge.out[0] * LBL_OFF} ${py}) rotate(${key === "e" ? 90 : -90})`
@@ -577,24 +748,31 @@ function renderOutline(svg, id, W, H, m, doors) {
 /* ================= hall rendering ================= */
 
 function renderHall(id) {
-  const hall = state.halls.get(id);
+  const hall = hallGeometry(id);
   const [W, H] = hall.size;
 
   const m = marginOf(id);
   const doors = doorsOf(id);
   /* The drawing is the booth box, plus the hall around it, plus room
-     beyond each wall: GAP for the outline's own stroke, or a whole line
-     of type on a wall that is named — the labels are drawn outside, and
-     the stage clips whatever the viewBox does not reserve. So the
-     picture starts outside the hall's north-west corner rather than at
-     the box's, and view.ox/oy carry that offset for everything that
-     works in hall metres. */
-  const named = labelledEdges(doors);
-  const out = (k) => Math.max(GAP, named.has(k) ? LBL_BAND : 0);
-  view.ox = -(m.w + out("w"));
-  view.oy = -(m.n + out("n"));
-  const vw = W + m.w + m.e + out("w") + out("e");
-  const vh = H + m.n + m.s + out("n") + out("s");
+     beyond each wall: GAP for the outline's own stroke, a whole line of
+     type on a wall that is named, and a second line on a wall with a
+     doorway in it, where the day route may put the hall it leaves for.
+     The labels are drawn outside, and the stage clips whatever the
+     viewBox does not reserve. So the picture starts outside the hall's
+     north-west corner rather than at the box's, and view.ox/oy carry
+     that offset for everything that works in hall metres.
+
+     The second line is reserved whether or not a day is lit, and even on
+     a wall no plan will ever point through. The overlay comes and goes
+     with a chip tap, long after this is decided; growing the picture
+     under someone who has zoomed into a booth would cost more than the
+     6 m of margin does, and a name pushed inside instead lands on the
+     stands the map is for. */
+  const box = drawingBox(hall.size, m, doors);
+  view.ox = box.ox;
+  view.oy = box.oy;
+  const vw = box.vw;
+  const vh = box.vh;
 
   const svg = document.createElementNS(SVGNS, "svg");
   svg.setAttribute("id", "map");
@@ -628,6 +806,7 @@ function renderHall(id) {
   const painting = [...hall.stands].sort((a, b) => (b.a || 0) - (a.a || 0));
 
   state.stands = [];
+  state.plates = [];
   for (const s of painting) {
     const rec = standRecord(id, s);
     const g = document.createElementNS(SVGNS, "g");
@@ -707,7 +886,10 @@ function renderHall(id) {
        taps, and counting stands must not count it twice. */
     lg.setAttribute("class", `stand-labels ${cls}`);
     g.setAttribute("role", "button");
-    g.setAttribute("aria-label", t("map.standAria", { name: name || t("map.stand"), nr: s.nr }));
+    /* Kept as written, because the route overlay appends a stop number to it
+       and has to be able to take that number back off again. */
+    rec.aria = t("map.standAria", { name: name || t("map.stand"), nr: s.nr });
+    g.setAttribute("aria-label", rec.aria);
 
     rec.g = g;
     rec.lg = lg;
@@ -721,6 +903,7 @@ function renderHall(id) {
      stays the topmost thing on the map. */
   renderOutline(svg, id, W, H, m, doors);
   svg.appendChild(labels);
+  state.labelsLayer = labels;
 
   $("#map")?.remove();
   $("#load").hidden = true;
@@ -806,7 +989,18 @@ function declutter() {
 
 /* re-apply saved/played classes without rebuilding the DOM */
 function refreshMarks() {
-  let saved = 0;
+  /* The overview has no stands to mark — what it carries is a saved count
+     per hall, which moves for the same reasons and is refreshed here for
+     the same one: everything that writes a mark ends up calling this. */
+  if (onOverview()) {
+    /* First, and not only before the chips: renderRoute is what drops a day
+       nobody planned, and both the plates under it and the chips above it now
+       count that day's stops rather than the whole saved list. */
+    renderRoute();
+    refreshCampus();
+    renderChips();
+    return;
+  }
   for (const rec of state.stands) {
     const isSaved = rec.exs.some(exSaved);
     const isPlayed = rec.exs.length > 0 && rec.exs.every(exPlayed);
@@ -814,9 +1008,19 @@ function refreshMarks() {
       el.classList.toggle("saved", isSaved);
       el.classList.toggle("played", isPlayed);
     }
-    if (isSaved) saved += 1;
   }
+  /* The overlay is a reading of the saved list and the plan, so it is redrawn
+     wherever those are: this runs after every hall render, every mark change
+     and every storage event. */
+  renderRoute();
   const covered = state.stands.filter((r) => r.exs.length).length;
+  /* The first two numbers describe the drawing — how many stands it holds and
+     how many of them the guide covers. The third describes your plan, and so
+     counts stops, the way the chip for this hall directly above it does. It
+     used to count lit rectangles, which put "5 saved" under a chip reading 2
+     for the Thursday holding Capcom and Nintendo: one hall, one screen, two
+     numbers for the same question. */
+  const saved = hallCountBy(state.hall, exSaved);
   $("#counts").textContent =
     t("map.counts", { n: state.stands.length, covered: covered || t("map.coveredNone") }) +
     (saved ? t("map.countsSaved", { n: saved }) : "");
@@ -898,20 +1102,83 @@ function setTrade(on) {
 
 const standsOf = (ex) => (ex.stands?.length ? ex.stands : [{ hall: ex.hall, booth: ex.booth }]);
 
-function hallSavedCount(id) {
+/* How much of your plan stands in one hall — the number on its chip, and,
+   summed over a building's levels, the number on its plate on the overview.
+
+   Stops, not stands. A card holding four stands in one hall (Nintendo does)
+   is one place you walk to, one row in the plan, one pin on the floor, and
+   so one here: this badge is read next to a hall name as "how much of mine
+   is in there", and every other number the guide prints about a saved list
+   answers that question in stops. Counting rectangles instead made the badge
+   mean one thing with a day picked and another without — hall 9 read ●5 on
+   the saved list and ●2 on the Thursday that held both its booths — and sent
+   the map's opening hall to whichever hall happened to hold the most
+   *stands*, past the one holding most of the plan.
+
+   The two branches count the same unit for the same reason. Which side of
+   the parse you are on decides how well the guide can see the hall, never
+   what a stop is. */
+function hallCountBy(id, counts) {
   const hall = state.halls.get(id);
   /* Not loaded yet — count from guide data alone. Reads through standsOf so
      a multi-stand trade record is counted in every hall it stands in, not
      only in the scalar `hall` a curated card carries. */
   if (!hall) {
     return [...state.exhibitors, ...state.trade].filter(
-      (ex) => exSaved(ex) && standsOf(ex).some((s) => String(s.hall) === id)
+      (ex) => counts(ex) && standsOf(ex).some((s) => String(s.hall) === id)
     ).length;
   }
-  let n = 0;
-  for (const s of hall.stands) if (standRecord(id, s).exs.some(exSaved)) n += 1;
-  return n;
+  const stops = new Set();
+  for (const s of hall.stands)
+    for (const ex of standRecord(id, s).exs) if (counts(ex)) stops.add(ex);
+  return stops.size;
 }
+
+const hallSavedCount = (id) => hallCountBy(id, exSaved);
+
+/* The same count with a day over it: how many of that day's stops stand in
+   this hall. With the overlay on, "which hall is today in" is the question
+   the row is being read for, and answering it with the whole saved list
+   would send you into halls you have nothing planned in. Same unit either
+   way, so the chip agrees with the number the route bar prints below it. */
+const hallStopCount = (id) =>
+  hallCountBy(
+    id,
+    (ex) =>
+      GCMarks.hasSaved(state.marks.saved, ex) &&
+      GCMarks.stopDays(state.marks.saved, state.itinerary, ex).has(state.day)
+  );
+
+/* Is the day scoping what the row counts? Whenever a day is picked — on a
+   hall, where the row says which halls that day is in, and on the overview,
+   where the plates directly under the row say the same thing and the two
+   disagreeing would be the worst of both readings. (The overview used to be
+   the exception, back when it carried no route of its own to agree with.)
+
+   One predicate rather than several `state.day` tests, because the number and
+   the name read off it: a chip printing the saved count while announcing "5
+   stops planned" is worse than either answer on its own. */
+const dayScoped = () => Boolean(state.day);
+const hallCount = (id) => (dayScoped() ? hallStopCount(id) : hallSavedCount(id));
+
+/* Every chip's count in one string, for telling "these numbers moved"
+   from "they did not" without rendering anything to find out. */
+const countsKey = () => state.index.halls.map((h) => hallCount(h.id)).join(",");
+
+/* The row's first chip, and the only one that is not a hall: it steps back
+   to the whole site. It leads rather than follows the halls because that is
+   the order the question comes in — where am I, then which hall — and it
+   carries no area colour, because it belongs to none of them.
+
+   Offered only once the layout is in hand (see loadCampus), so a chip that
+   would open nothing is never on screen. */
+const overviewChip = () =>
+  state.campus
+    ? `<button class="chip hall-chip campus-chip ${onOverview() ? "active" : ""}" type="button"
+        data-view="${OVERVIEW}" aria-label="${esc(t("map.overviewAria"))}">${esc(
+        t("map.overview")
+      )}</button>`
+    : "";
 
 /* One scrolling row, but grouped: the halls of an area sit behind that
    area's name in that area's colour, so the row doubles as the legend
@@ -920,7 +1187,7 @@ function hallSavedCount(id) {
    between chips. */
 function renderChips() {
   let last = null;
-  $("#halls").innerHTML = state.index.halls
+  $("#halls").innerHTML = overviewChip() + state.index.halls
     .map((h) => {
       const area = state.areas[h.area] || {};
       let head = "";
@@ -935,7 +1202,7 @@ function renderChips() {
             area.trade ? ` <i class="hall-group-trade">${esc(t("map.tradeOnlyLabel"))}</i>` : ""
           }</span>`;
       }
-      const n = hallSavedCount(h.id);
+      const n = hallCount(h.id);
       /* Screen readers get no group heading — the row is one flat list to
          them — so each chip names its own area, and the trade-only ones
          say so before you are taken there. */
@@ -943,7 +1210,7 @@ function renderChips() {
         t("where.hall", { hall: h.id }) +
         (area.label ? `, ${areaName(area)}` : "") +
         (area.trade ? t("map.tradeVisitorsOnly") : "") +
-        (n ? t("map.chipSavedAria", { n }) : "");
+        (n ? t(dayScoped() ? "map.chipPlannedAria" : "map.chipSavedAria", { n }) : "");
       return `${head}<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}" type="button"
         data-hall="${esc(h.id)}" style="--area:${esc(area.colour || "")}"
         aria-label="${esc(label)}">${esc(t("where.hall", { hall: h.id }))}${
@@ -951,6 +1218,1073 @@ function renderChips() {
       }</button>`;
     })
     .join("");
+}
+
+/* ================= the campus overview =================
+
+   Thirteen hall chips answer "take me to hall 7". They do not answer "where
+   *is* hall 7", which is the question someone standing at a gate with a
+   saved list actually has — and the doors on a hall's own outline answer it
+   only one wall at a time. So the row's first chip is the whole site: every
+   hall in its place, the Boulevard between them, the gates, and the count
+   of your saved booths on each hall. Tapping one opens it.
+
+   Drawn from data/hallplan/campus.json, Koelnmesse's own campus outline. It
+   is a diagram, not a plan — its halls are fitted to their slots rather
+   than drawn to scale, and the file's note says so at length — so nothing
+   here measures anything. What it is right about is which hall is where,
+   which is the whole job.
+
+   It renders into the same #map element a hall does, which gives it the
+   pan, the pinch, the zoom buttons and the fit button for free. Like the
+   hall's own door layer, the picture is aria-hidden: the chip row above it
+   is already the accessible list of halls, and a second one made of SVG
+   plates would only be the same halls said twice. */
+
+const OVERVIEW = "overview";
+const onOverview = () => state.hall === OVERVIEW;
+
+const CAMPUS_URL = "data/hallplan/campus.json";
+let campusRequest = null;
+
+/* Fetched once, after the first hall is on screen — never before it. The
+   overview is the second thing anyone looks at, and a hall is the first;
+   7 KB must not stand between a visitor and the hall they asked for.
+   Until it lands the chip is simply not offered, which is also what an
+   installed shell whose service worker predates this file gets. */
+function loadCampus() {
+  if (state.campus) return Promise.resolve(state.campus);
+  if (!campusRequest)
+    campusRequest = fetch(`${CAMPUS_URL}?v=${Date.now()}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((data) => {
+        state.campus = data;
+        renderChips(); /* the chip exists from here on */
+        return data;
+      })
+      .finally(() => {
+        campusRequest = null;
+      });
+  return campusRequest;
+}
+
+/* "Boulevard", "Confex", "North" — the campus file names a feature with a
+   key rather than a word, so the name is translated like everything else.
+   An unknown key draws nothing rather than a raw key on the map. */
+const placeLabel = (kind, key) => {
+  if (!key) return "";
+  const label = t(`map.${kind}.${key}`);
+  return label === `map.${kind}.${key}` ? "" : label;
+};
+
+/* Room reserved in the viewBox beyond the site, per side. Deep enough
+   north and south for a gate's name to be set outside the plan, and only
+   as deep east and west as a gate's dot needs — the drawing is fitted to
+   the width of the screen, so a margin there comes off the size of every
+   hall, and the two gates on those sides are named inside instead (see
+   gatesEl). */
+const CAMPUS_PAD = { n: 26, e: 12, s: 30, w: 12 };
+
+/* Secondary labels — the Boulevard, the Piazza, the Confex — are set at
+   one size wherever they fit and shrunk only when they do not. They name
+   the ground between the halls; scaling them with the shape would make
+   the Boulevard shout louder than hall 8. */
+const PLACE_FS = 11;
+const PLACE_MIN = 5;   /* below this it is a smudge — drop it instead */
+const GATE_FS = 11;    /* a gate is a destination; a passage is not */
+/* How wide a gate's name may be set. Above and below the site it lies in
+   the margin, where the only cost is a strip of empty stage; against the
+   east and west edges it is set back over the site itself, because the
+   drawing is always as wide as the screen allows and a margin there comes
+   straight off the size of every hall. */
+const GATE_RUN = { n: 130, s: 130, e: 90, w: 90 };
+
+/* A polygon's area centroid, which for the shapes in this file is a point
+   inside them. The bbox centre is not: the Boulevard is an L (its north
+   arm runs east along hall 8) and the centre of the box around it lands
+   in the empty ground beside hall 9. */
+function centroid(poly) {
+  let a = 0, cx = 0, cy = 0;
+  for (let i = 0; i < poly.length; i++) {
+    const [x0, y0] = poly[i];
+    const [x1, y1] = poly[(i + 1) % poly.length];
+    const w = x0 * y1 - x1 * y0;
+    a += w;
+    cx += (x0 + x1) * w;
+    cy += (y0 + y1) * w;
+  }
+  const box = bbox(poly);
+  if (!a) return [box.cx, box.cy];
+  return [cx / (3 * a), cy / (3 * a)];
+}
+
+/* Break a name over one or two lines at whichever size fits the run it is
+   set along, and say so when nothing legible fits. Every space is tried,
+   not just the last: "Entrance Hall 9" broken after the last one is
+   "Entrance Hall" over a lone "9", which is both wider and worse. */
+function fitPlace(name, run, cap = PLACE_FS) {
+  const candidates = [[name]];
+  for (let i = 0; i < name.length; i++)
+    if (name[i] === " ") candidates.push([name.slice(0, i), name.slice(i + 1)]);
+  let best = { lines: [name], fs: 0 };
+  for (const lines of candidates) {
+    const longest = Math.max(...lines.map((l) => l.length));
+    const fs = Math.min(cap, (run * 0.94) / (longest * 0.6));
+    if (fs > best.fs) best = { lines, fs };
+  }
+  return best;
+}
+
+function textEl(cls, x, y, fs, lines) {
+  const el = document.createElementNS(SVGNS, "text");
+  el.setAttribute("class", cls);
+  el.setAttribute("x", x);
+  el.setAttribute("y", y - ((lines.length - 1) * fs * 1.05) / 2);
+  el.setAttribute("font-size", fs);
+  lines.forEach((line, i) => {
+    const ts = document.createElementNS(SVGNS, "tspan");
+    ts.setAttribute("x", x);
+    if (i) ts.setAttribute("dy", fs * 1.05);
+    ts.textContent = line;
+    el.appendChild(ts);
+  });
+  return el;
+}
+
+/* The name of a piece of ground, set on it. Turned to run along it when
+   the shape is more than twice as tall as it is wide — the Boulevard is a
+   20-unit strip 160 long, and "Boulevard" set across it covers the halls
+   on both sides. */
+function placeEl(name, poly) {
+  const box = bbox(poly);
+  const turn = box.h > box.w * 2;
+  const { lines, fs } = fitPlace(name, turn ? box.h : box.w);
+  /* Too small to read, or too tall for the strip it is set on: the
+     Congress-Centrum's east wing is ten units wide on this diagram, and
+     two lines of type across it is a smudge with a name in it. */
+  if (fs < PLACE_MIN || lines.length * fs * 1.05 > (turn ? box.w : box.h)) return null;
+  const [cx, cy] = centroid(poly);
+  /* Built at the origin and moved by the transform, which is what lets it
+     be turned: an x/y pair cannot be rotated about itself. */
+  const el = textEl("campus-place", 0, fs * 0.36, fs, lines);
+  el.setAttribute("transform", `translate(${cx} ${cy}) rotate(${turn ? -90 : 0})`);
+  return el;
+}
+
+/* Which way a gate's name is set: its own compass point, whatever else is
+   nearby — "Entrance South" belongs below the plan, where someone arriving
+   at it is standing. A gate the snapshot names some other way is not drawn
+   rather than guessed at; there are four, and the tool says why. */
+const gateEdge = (id) => ({ north: "n", east: "e", south: "s", west: "w" }[id.replace("entrance-", "")]);
+
+/* The gates, as a dot each and a name.
+
+   North and south are named outside the drawing with a leader back to the
+   dot, the way a plan labels its edges. East and west are named inside it,
+   reading back over the site from the dot: they sit at the widest points of
+   a picture that is always fitted to the width of the screen, so a margin
+   out there would cost every hall a third of its size for two words. Set
+   over the halls, they need the halo the CSS gives them, and they land on
+   the passages either way.
+
+   There is one gate to an edge today, but two on one edge would set their
+   names on top of each other, so names sharing an edge are pushed apart
+   along it afterwards. The leader, or the dot beside the name, still says
+   which is which. */
+function gatesEl(gates, W, H) {
+  const g = document.createElementNS(SVGNS, "g");
+  g.setAttribute("class", "campus-gates");
+
+  const placed = [];
+  for (const gate of gates) {
+    const [x, y] = gate.at;
+    const dot = document.createElementNS(SVGNS, "circle");
+    dot.setAttribute("class", "campus-gate-dot");
+    dot.setAttribute("cx", x);
+    dot.setAttribute("cy", y);
+    dot.setAttribute("r", 4.5);
+    g.appendChild(dot);
+
+    const name = placeLabel("gate", gate.id);
+    const edge = gateEdge(gate.id);
+    if (!name || !edge) continue;
+    const fit = fitPlace(name, GATE_RUN[edge], GATE_FS);
+    const across = edge === "e" || edge === "w";
+    placed.push({
+      x, y, edge, across, ...fit,
+      /* where the name sits along its edge, before anything is pushed */
+      at: across ? y : x,
+      /* and how much of that edge it takes up */
+      span: across
+        ? fit.lines.length * fit.fs * 1.05
+        : Math.max(...fit.lines.map((l) => l.length)) * fit.fs * 0.6,
+    });
+  }
+
+  for (const edge of EDGE_KEYS) {
+    const mine = placed.filter((p) => p.edge === edge).sort((a, b) => a.at - b.at);
+    for (let i = 1; i < mine.length; i++)
+      mine[i].at = Math.max(mine[i].at, mine[i - 1].at + (mine[i - 1].span + mine[i].span) / 2 + 4);
+  }
+
+  for (const p of placed) {
+    const rise = ((p.lines.length - 1) * p.fs * 1.05) / 2;
+    let x, y, dir;
+    if (p.across) {
+      /* Back over the site from the dot when the dot is at that edge, and
+         out towards the edge when it is not: the Boulevard's own gate
+         stands in the middle of the site, where reading back over it would
+         set the name across hall 6. */
+      const room = p.edge === "e" ? W - p.x : p.x;
+      const back = p.edge === "e" ? "to-w" : "to-e";
+      const out = p.edge === "e" ? "to-e" : "to-w";
+      dir = room < GATE_RUN[p.edge] ? back : out;
+      x = dir === "to-w" ? p.x - 7 : p.x + 7;
+      y = p.at + p.fs * 0.36;
+    } else {
+      x = p.at;
+      dir = "";
+      /* stacked away from the plan, so a second line never grows back
+         over the halls */
+      y = p.edge === "n" ? -8 - rise : H + 8 + p.fs * 0.8 + rise;
+    }
+    if (!p.across || Math.abs(p.at - p.y) > 1) {
+      const line = document.createElementNS(SVGNS, "path");
+      line.setAttribute("class", "campus-gate-line");
+      line.setAttribute("d", `M${p.x} ${p.y}L${p.across ? x : p.at} ${p.across ? p.at : y}`);
+      g.appendChild(line);
+    }
+    /* The side it reads from is a class rather than a text-anchor
+       attribute: #map text sets that anchor in CSS, and a stylesheet beats
+       a presentation attribute however specific the element thinks it is. */
+    g.appendChild(textEl(`campus-gate-lbl ${dir}`, x, y, p.fs, p.lines));
+  }
+  return g;
+}
+
+function renderCampus(campus) {
+  const [W, H] = campus.size;
+  view.ox = -CAMPUS_PAD.w;
+  view.oy = -CAMPUS_PAD.n;
+  const vw = W + CAMPUS_PAD.w + CAMPUS_PAD.e;
+  const vh = H + CAMPUS_PAD.n + CAMPUS_PAD.s;
+
+  const svg = document.createElementNS(SVGNS, "svg");
+  svg.setAttribute("id", "map");
+  svg.setAttribute("viewBox", `${view.ox} ${view.oy} ${vw} ${vh}`);
+  svg.setAttribute("width", vw);
+  svg.setAttribute("height", vh);
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", t("map.campusAria"));
+
+  const ground = document.createElementNS(SVGNS, "g");
+  ground.setAttribute("class", "campus-ground");
+  ground.setAttribute("aria-hidden", "true");
+  const plates = document.createElementNS(SVGNS, "g");
+  plates.setAttribute("aria-hidden", "true");
+  const labels = document.createElementNS(SVGNS, "g");
+  labels.setAttribute("class", "campus-labels");
+  labels.setAttribute("aria-hidden", "true");
+
+  /* One name per named place, on the largest piece carrying it: the
+     Boulevard is filed in two lengths, and saying so twice on one spine
+     reads as two Boulevards. */
+  const named = new Map();
+  for (const f of campus.features) {
+    if (!f.place) continue;
+    const box = bbox(f.poly);
+    const best = named.get(f.place);
+    if (!best || box.w * box.h > best.w * best.h) named.set(f.place, { ...box, poly: f.poly });
+  }
+
+  for (const f of campus.features) {
+    if (f.kind === "hall") continue;
+    const p = document.createElementNS(SVGNS, "path");
+    p.setAttribute("class", `campus-ground-${f.kind}`);
+    p.setAttribute("d", polyPath(f.poly));
+    ground.appendChild(p);
+  }
+  for (const [place, shape] of named) {
+    const el = placeEl(placeLabel("place", place), shape.poly);
+    if (el) labels.appendChild(el);
+  }
+
+  state.plates = [];
+  for (const f of campus.features) {
+    if (f.kind !== "hall") continue;
+    const box = bbox(f.poly);
+    /* Which map a tap opens: the first level of this hall the guide
+       draws. A hall it draws none of — hall 1, hall 11 — is on the
+       diagram for orientation and takes no taps. */
+    const open = (f.levels || [])[0] || null;
+
+    const g = document.createElementNS(SVGNS, "g");
+    g.setAttribute("class", `campus-hall${open ? " is-open" : ""}`);
+    if (f.area) g.style.setProperty("--area", state.areas[f.area]?.colour || "");
+    const p = document.createElementNS(SVGNS, "path");
+    p.setAttribute("d", polyPath(f.poly));
+    g.appendChild(p);
+    if (open) {
+      /* Same trick as a door's fat invisible stroke: the plate itself is
+         under the label layer, so the tap target sits on top of both. */
+      const hit = document.createElementNS(SVGNS, "path");
+      hit.setAttribute("class", "campus-hall-hit");
+      hit.setAttribute("d", polyPath(f.poly));
+      hit.dataset.hall = open;
+      g.appendChild(hit);
+    }
+    plates.appendChild(g);
+
+    const lg = document.createElementNS(SVGNS, "g");
+    lg.setAttribute("class", `campus-hall-lbl${open ? " is-open" : ""}`);
+    const fs = Math.min(box.w / (f.id.length * 0.66), box.h * 0.46, 26);
+    const badgeFs = Math.max(7, fs * 0.42);
+    const num = textEl("campus-num", box.cx, box.cy + fs * 0.36, fs, [f.id]);
+    lg.appendChild(num);
+    /* The saved count, in the same ●n shorthand as the hall chips, under
+       the number and inside the plate — a count hanging off the bottom of
+       hall 7 reads as belonging to whatever is below it. Left empty rather
+       than absent so refreshCampus only ever sets text, and the number
+       rides up by half a badge to make room only while there is one. */
+    const saved = textEl(
+      "campus-saved",
+      box.cx,
+      Math.min(box.cy + fs * 0.36 + badgeFs * 0.95, box.y1 - badgeFs * 0.3),
+      badgeFs,
+      [""]
+    );
+    lg.appendChild(saved);
+    labels.appendChild(lg);
+    /* cx/cy is the area centroid, not the box centre: hall 8 is an L and the
+       middle of the box around it lands beside the building, which is where a
+       line drawn between plates would kink. x0/y0 is the corner a leg number
+       sits in, the same corner a stop pin takes on its stand. */
+    const [cx, cy] = centroid(f.poly);
+    state.plates.push({
+      id: f.id,
+      levels: f.levels || [],
+      open,
+      g,
+      lg,
+      num,
+      cx,
+      cy,
+      x0: box.x0,
+      y0: box.y0,
+      mid: box.cy + fs * 0.36,
+      up: box.cy + fs * 0.36 - badgeFs * 0.6,
+      saved: saved.firstChild,
+    });
+  }
+
+  svg.appendChild(ground);
+  svg.appendChild(plates);
+  labels.appendChild(gatesEl(campus.entrances || [], W, H));
+  svg.appendChild(labels);
+
+  $("#map")?.remove();
+  $("#load").hidden = true;
+  $("#stage").appendChild(svg);
+  refreshMarks();
+  fitView(svg, vw, vh);
+}
+
+/* The overview's half of refreshMarks: how many of your saved booths stand in
+   each hall, counted over every level of it the guide draws — or how many of
+   the chosen day's stops do, while the route is on. Through hallCount, so a
+   plate and the chip for the same hall are never two answers. */
+function refreshCampus() {
+  let total = 0;
+  let open = 0;
+  for (const plate of state.plates) {
+    const n = plate.levels.reduce((sum, id) => sum + hallCount(id), 0);
+    total += n;
+    if (plate.open) open += 1;
+    plate.saved.textContent = n ? `●${n}` : "";
+    plate.num.setAttribute("y", n ? plate.up : plate.mid);
+    for (const el of [plate.g, plate.lg]) el.classList.toggle("saved", n > 0);
+  }
+  $("#counts").textContent =
+    t("map.campusCounts", { n: open }) +
+    (total ? t(dayScoped() ? "map.countsPlanned" : "map.countsSaved", { n: total }) : "");
+}
+
+async function showOverview() {
+  const campus = state.campus || (await loadCampus().catch(() => null));
+  if (!campus) return; /* nothing to show, and the chip is gone by now */
+  if (onOverview() && $("#map")) return;
+  /* Before the hall changes, so the open sheet's stand is deselected in
+     the hall it belongs to rather than left with its outline lit. */
+  selectStand(null);
+  state.hall = OVERVIEW;
+  state.stands = [];
+  renderChips();
+  $("#halls .chip.active")?.scrollIntoView({ inline: "center", block: "nearest" });
+  renderAccess(OVERVIEW);
+  renderCampus(campus);
+  renderSourceNote();
+  history.replaceState(null, "", `#${OVERVIEW}`);
+}
+
+/* ================= the day route overlay =================
+
+   The plan board's day assignments, read back onto the floor. Pick a day and
+   every stop you placed on it that stands in this hall gets a numbered pin,
+   joined in order by a thin line.
+
+   Three things make it honest rather than decorative:
+
+   The order is the plan's own — whatever order you left the list in, or
+   busiest first with played stops sinking to the end while you have left it
+   alone — and both the comparator and the positions come from js/marks.js,
+   so pin 3 is the third row of the list it was read from. Two views of one
+   plan that disagreed about which stop is first would be worse than one
+   view.
+
+   The line is *not* a walking route and never claims to be. Nothing here
+   knows where the aisles run: the snapshot files stand blocks and stands, and
+   the doors are already our own reading. A shortest path drawn through
+   geometry we do not have would be a guess about the one thing on this page
+   a visitor would follow literally. So it is drawn thin and dashed, under the
+   labels, and the bar says what it is.
+
+   And a stop is a booth, not a stand. A card may hold several stands in one
+   hall; each of them carries the same number, because they are one stop you
+   walk to, and the line runs through the largest. */
+
+const PLAN_NONE = "none";  /* saved, but not yet placed on a day */
+const PIN_R = 4.2;         /* pin radius, in hall metres like every other mark here */
+
+/* Every day carrying at least one saved stop, plus whether anything is still
+   unplaced — the same set, from the same two stores, that the guide's plan
+   board offers as its day filter. Days sort by their ISO value, which is the
+   order the show runs in. */
+function planDays() {
+  const seen = new Set();
+  for (const ex of [...state.exhibitors, ...state.trade])
+    if (GCMarks.hasSaved(state.marks.saved, ex))
+      for (const day of GCMarks.stopDays(state.marks.saved, state.itinerary, ex)) seen.add(day);
+  return {
+    days: [...seen].filter((day) => day !== PLAN_NONE).sort(),
+    unplaced: seen.has(PLAN_NONE),
+  };
+}
+
+/* This hall's stops for the chosen day, numbered.
+
+   Built from the stands rather than from the exhibitor list, so a card
+   standing in two halls is a stop in both — the map already lights every
+   stand it holds, and the overlay has no business being narrower than the
+   colour it sits on top of. `recs` comes out largest-stand-first because
+   state.stands is in painting order. */
+function routeStops() {
+  if (!state.day) return [];
+  const stops = new Map();
+  for (const rec of state.stands) {
+    for (const ex of rec.exs) {
+      if (!stops.has(ex)) {
+        if (!GCMarks.hasSaved(state.marks.saved, ex)) continue;
+        if (!GCMarks.stopDays(state.marks.saved, state.itinerary, ex).has(state.day)) continue;
+        stops.set(ex, { ex, recs: [], played: exPlayed(ex) });
+      }
+      stops.get(ex).recs.push(rec);
+    }
+  }
+  const order = GCMarks.compareStops(exPlayed, GCI18N.lang, exRank);
+  return [...stops.values()]
+    .sort((a, b) => order(a.ex, b.ex))
+    .map((stop, i) => ({ ...stop, n: i + 1 }));
+}
+
+/* ---- the halls either side of this one ----
+
+   A day almost never fits in one hall. The pins above number the stops
+   standing in the hall on screen and stop at its walls, which leaves the
+   question the walls actually raise — "and then where?" — answered nowhere.
+
+   "Then" is the plan board's own hall order, which is ascending hall number:
+   the groups its hall lens lists, in the order it lists them. That is no more
+   a solved walking route than the line between the pins is; it is the order
+   the arranged list reads in, put on the floor. */
+
+/* "10.2" and "10.1" are both hall 10. A passage lands you in the building and
+   the storey is an escalator inside it, which nothing in the data files. */
+const hallBase = (id) => String(id).split(".")[0];
+
+/* The day's halls, in that order, with the count each carries. Counted with
+   hallStopCount, so a leg agrees with the chip for the same hall in the row
+   above rather than offering a second number for the same question. */
+function dayHalls() {
+  if (!state.day || !state.index) return [];
+  return state.index.halls
+    .map((h) => ({ id: h.id, n: hallStopCount(h.id) }))
+    .filter((h) => h.n > 0)
+    .sort((a, b) => parseFloat(a.id) - parseFloat(b.id));
+}
+
+/* Where the hall on screen sits in that order.
+
+   Measured by hall number rather than by position in the list, so a hall with
+   nothing planned in it still gets the two legs it stands between: someone
+   who walked into 8.1 on a day planned for 7.1 and 9.1 is exactly the person
+   who needs to be told which way is which. */
+function dayLegs(halls) {
+  const here = parseFloat(state.hall);
+  if (!halls.length || Number.isNaN(here)) return { prev: null, next: null };
+  const before = halls.filter((h) => h.id !== state.hall && parseFloat(h.id) < here);
+  const after = halls.filter((h) => h.id !== state.hall && parseFloat(h.id) > here);
+  return { prev: before[before.length - 1] || null, next: after[0] || null };
+}
+
+/* ---- and the way out toward them ----
+
+   Which building a door lands you in, as a graph node. Anything that is not a
+   hall — the Boulevard, a gate — is a place in its own right, because it is
+   how two halls that share no wall are joined. */
+const doorNode = (to) => {
+  const hall = hallOf(to);
+  return hall ? `hall:${hallBase(hall)}` : String(to || "") || null;
+};
+
+/* Every door in data/hallplan/outline.json as one undirected graph. Built per
+   call: it is seven halls and two dozen doors, and a cached copy would be one
+   more thing to invalidate when the file behind it is swapped by an update. */
+function doorGraph() {
+  const graph = new Map();
+  const join = (a, b) => {
+    if (!graph.has(a)) graph.set(a, new Set());
+    graph.get(a).add(b);
+  };
+  for (const [level, hall] of Object.entries(state.outline.halls || {})) {
+    const from = `hall:${hallBase(level)}`;
+    for (const door of hall.doors || []) {
+      const to = doorNode(door.to);
+      if (!to || to === from) continue;
+      join(from, to);
+      join(to, from);
+    }
+  }
+  return graph;
+}
+
+/* The doors on *this* hall's wall that start the way to another hall.
+
+   A breadth-first walk of the graph above, seeded with the openings this
+   storey actually files, so the answer is always a door you could walk to
+   from where you are standing — 10.2 files its own, and a first step borrowed
+   from 10.1 would point at a wall this floor has no opening in. Two halls
+   joined by a passage come out as that passage; hall 7 to hall 9 comes out as
+   hall 7's Boulevard doors, because the Boulevard is what the file says joins
+   them.
+
+   It counts doorways, not metres. There is no distance in this data and this
+   is not a shortest walk — it is the first step of one, which is the whole of
+   what it claims: leave by here.
+
+   null when nothing filed reaches that hall. Seven of the thirteen levels
+   have no doors at all, and an arrow at a wall we have never opened would be
+   an invention of exactly the kind decision 5b exists to avoid; the leg is
+   still named in the bar, where it costs no geometry to say. */
+function exitToward(level, target) {
+  const from = `hall:${hallBase(level)}`;
+  const goal = `hall:${hallBase(target)}`;
+  if (from === goal) return null;
+  const seeds = new Map();
+  for (const door of doorsOf(level)) {
+    const node = doorNode(door.to);
+    if (!node || node === from) continue;
+    if (!seeds.has(node)) seeds.set(node, []);
+    seeds.get(node).push(door);
+  }
+  if (seeds.has(goal)) return seeds.get(goal);
+  const graph = doorGraph();
+  const seen = new Set([from, ...seeds.keys()]);
+  /* Each frontier entry remembers the door it set out from, which is the
+     answer being looked for — the rest of the path is hall 9's business. */
+  let frontier = [...seeds.keys()].map((node) => [node, node]);
+  while (frontier.length) {
+    const next = [];
+    for (const [node, seed] of frontier)
+      for (const step of graph.get(node) || []) {
+        if (step === goal) return seeds.get(seed);
+        if (seen.has(step)) continue;
+        seen.add(step);
+        next.push([step, seed]);
+      }
+    frontier = next;
+  }
+  return null;
+}
+
+/* A door's mouth: the middle of the opening as drawn, which is the filed
+   centre clamped to the wall it is filed on (renderOutline clamps the same
+   way, and a door filed past the corner would otherwise be pointed at from
+   outside the hall). */
+function doorMouth(door, W, H, m) {
+  const edge = edgeOf(door.edge, W, H, m);
+  const a = Math.max(edge.t0, door.at - door.span / 2);
+  const b = Math.min(edge.t1, door.at + door.span / 2);
+  return { edge, at: (a + b) / 2 };
+}
+
+/* Two halls that share a passage put the leg's name on the wall twice: the
+   door is already labelled "Hall 6.1" out in the margin, and a chip inside
+   saying the same thing is the map repeating itself. The arrow alone is the
+   whole addition there — which way, through this one. */
+const legNamed = (mouth, label) => doorLabel(mouth.door.to) === label;
+
+/* Of the doors that start the way there, the one nearest the stop you are
+   leaving from. Hall 7's east wall has three openings onto the same
+   Boulevard; which of them is closest to stop 3 is a fact about geometry we
+   have, unlike anything beyond the wall. */
+function nearestMouth(doors, [x, y], W, H, m) {
+  let best = null;
+  for (const door of doors) {
+    const mouth = doorMouth(door, W, H, m);
+    const [mx, my] = mouth.edge.pt(mouth.at);
+    const d = Math.hypot(mx - x, my - y);
+    if (!best || d < best.d) best = { ...mouth, door, d };
+  }
+  return best;
+}
+
+/* The chosen day lives in the address bar, not in prefs: it is a question
+   about one visit ("show me Thursday"), the guide's own day filter is not
+   persisted either, and putting it in the URL is what lets the plan board's
+   "Map →" hand a day over (see mapLink in js/app.js). replaceState, like
+   every other write this page makes, so it never stuffs the back stack. */
+function writeDayParam() {
+  const url = new URL(location.href);
+  if (state.day) url.searchParams.set("day", state.day);
+  else url.searchParams.delete("day");
+  if (url.href !== location.href) history.replaceState(null, "", url.href);
+}
+
+/* Tapping the lit chip turns the overlay off — one control, the same language
+   as the day chips in the guide, where the active chip unassigns. */
+function pickDay(day) {
+  state.day = state.day === day ? null : day;
+  writeDayParam();
+  /* refreshMarks rather than renderRoute alone: the hall row's badges count
+     the chosen day's stops while one is on (hallCount), so the whole reading
+     of the saved list moves with the chip, not just the pins. */
+  refreshMarks();
+  /* That render rebuilt the chip row, so the button that was just pressed is
+     a different element — put focus back on it, the way the guide's own day
+     filter does, or a keyboard user is dropped at the top of the page. */
+  document.querySelector(`#route-days [data-route-day="${CSS.escape(day)}"]`)?.focus();
+  /* an open sheet carries the stop number, which just changed */
+  if (state.sel) selectStand(state.sel);
+}
+
+function renderRouteBar(offered) {
+  const bar = $("#route");
+  /* An installed shell one version old has no route bar; the overlay simply
+     doesn't appear, which is the same deal every other progressive addition
+     to this page gets. */
+  if (!bar) return;
+  bar.hidden = !offered.days.length;
+  if (bar.hidden) {
+    $("#route-days").innerHTML = "";
+    return; /* the status line is renderRoute's, hidden along with the bar */
+  }
+  /* Each chip says what tapping it does, not what it is — the lit one offers
+     to turn the overlay back off, which is the whole of this control. */
+  const chips = [
+    ...offered.days.map((day) => {
+      const name = GCI18N.dayName(day);
+      return [
+        day,
+        GCI18N.dayName(day, "short"),
+        t(state.day === day ? "map.routeDayOff" : "map.routeDayOn", { day: name }),
+      ];
+    }),
+    ...(offered.unplaced
+      ? [
+          [
+            PLAN_NONE,
+            t("plan.unassigned"),
+            t(state.day === PLAN_NONE ? "map.routeUnplacedOff" : "map.routeUnplacedOn"),
+          ],
+        ]
+      : []),
+  ];
+  $("#route-days").innerHTML = chips
+    .map(([day, label, title]) => {
+      const on = state.day === day;
+      return `<button class="day-chip${on ? " active" : ""}" type="button"
+        data-route-day="${esc(day)}" aria-pressed="${on}"
+        title="${esc(title)}" aria-label="${esc(title)}">${esc(label)}</button>`;
+    })
+    .join("");
+  for (const chip of document.querySelectorAll("#route-days .day-chip"))
+    chip.addEventListener("click", () => pickDay(chip.dataset.routeDay));
+}
+
+/* The legs, as two buttons beside the status line.
+
+   The map answers "which way out" with an arrow at a door, and can only
+   answer it where the outline files one — seven of the thirteen levels file
+   none. This says the same thing in words, for those halls and for a screen
+   reader, and it is a real control: the hall it names is one tap away, which
+   is what you wanted the moment you read it.
+
+   Rendered even when the pointer beside it could not be drawn, and never
+   instead of one: two halves of one answer, not a fallback. */
+function legButtons(legs) {
+  return [
+    [legs.prev, "map.legPrev", "map.legPrevAria"],
+    [legs.next, "map.legNext", "map.legNextAria"],
+  ]
+    .filter(([leg]) => leg)
+    .map(([leg, key, ariaKey]) => {
+      const aria = t(ariaKey, { hall: leg.id, n: leg.n });
+      return `<button class="map-route-leg" type="button" data-leg-hall="${esc(leg.id)}"
+        title="${esc(aria)}" aria-label="${esc(aria)}">${esc(
+        t(key, { hall: leg.id, n: leg.n })
+      )}</button>`;
+    })
+    .join("");
+}
+
+/* The bar's sentence and its two leg buttons, written together because the
+   buttons are the end of the sentence — "3 stops here, then hall 9.1". */
+function renderRouteStatus(html) {
+  const status = $("#route-status");
+  if (!status) return;
+  status.innerHTML = html;
+  for (const btn of status.querySelectorAll(".map-route-leg"))
+    btn.addEventListener("click", () => showHall(btn.dataset.legHall));
+}
+
+/* Wipe last render's verdicts before drawing this one: the overlay is rebuilt
+   whole rather than diffed, and a stand that has dropped off the route has to
+   lose its number in the accessible name as well as on screen. */
+function clearRoute(svg) {
+  svg?.querySelectorAll(".route-line, .route-pins, .route-legs").forEach((el) => el.remove());
+  for (const rec of state.stands) {
+    if (!rec.stop) continue;
+    rec.stop = null;
+    rec.g.classList.remove("stop");
+    rec.g.setAttribute("aria-label", rec.aria);
+  }
+  for (const plate of state.plates) {
+    if (!plate.leg) continue;
+    plate.leg = null;
+    plate.g.classList.remove("leg");
+    plate.lg.classList.remove("leg");
+  }
+}
+
+/* Where the route line meets a stop: the middle of its largest stand, which
+   is the one the pins are drawn from. */
+const stopPoint = (stop) => {
+  const box = bbox(stop.recs[0].data.poly);
+  return [box.cx, box.cy];
+};
+
+const PTR = 5.4;  /* leg arrowhead, in hall metres like every other mark here */
+
+/* One leg pointer: an arrowhead through the doorway, and the hall it leads to
+   named out in the margin beyond it.
+
+   The name is set the way a door's own name is — same margin, same rotation
+   on an end wall, one line further out (LEG_OFF) so the two never collide
+   however the doors on that wall are grouped. Outside is the only place on
+   this map with nothing to cover: inside, a name at a doorway lands on the
+   outermost stand row, which is the row the map exists to show. The room for
+   it is reserved when the hall is drawn, because this layer cannot grow the
+   picture it is drawn on (see renderHall).
+
+   aria-hidden, like the door layer under it and the pins over it: the two
+   buttons in the bar are the same two legs, already named, already tappable,
+   and by something that takes focus. */
+function legPointer({ leg, mouth, inbound }) {
+  const g = document.createElementNS(SVGNS, "g");
+  g.setAttribute("class", `route-leg-mark${inbound ? " in" : ""}`);
+
+  const { edge, at, door } = mouth;
+  const key = door.edge;
+  const [ox, oy] = edge.out;
+  const [mx, my] = edge.pt(at);
+  const dir = inbound ? -1 : 1;
+  /* The tip sits level with the outer edge of the door's own bracket, so the
+     two read as one mark rather than as an arrow standing beside a doorway.
+     An arrival is the same triangle turned around through it. */
+  const tx = mx + ox * DOOR_DEPTH * dir;
+  const ty = my + oy * DOOR_DEPTH * dir;
+  const bx = tx - ox * PTR * dir;
+  const by = ty - oy * PTR * dir;
+  const [px, py] = [-oy, ox]; /* along the wall */
+  const w = PTR * 0.44;
+  const head = document.createElementNS(SVGNS, "path");
+  head.setAttribute("class", "route-leg-head");
+  head.setAttribute("d", `M${tx} ${ty}L${bx + px * w} ${by + py * w}L${bx - px * w} ${by - py * w}Z`);
+  g.appendChild(head);
+
+  const label = t("where.hall", { hall: leg.id });
+  /* Nothing more to say: the wall's own label is this hall, the arrow says
+     which way through it, and the door under both is already a tap that goes
+     there (renderOutline). */
+  if (legNamed(mouth, label)) return g;
+
+  const el = document.createElementNS(SVGNS, "text");
+  el.setAttribute("class", `route-leg-lbl on-${key}`);
+  el.setAttribute("font-size", LEG_FS);
+  if (key === "n" || key === "s") {
+    el.setAttribute("x", mx);
+    /* glyphs sit above their baseline, so only a name below the wall has to
+       be pushed down by a line to clear it — the door labels' own rule */
+    el.setAttribute("y", my + oy * LEG_OFF + (key === "s" ? LEG_FS * 0.8 : 0));
+  } else {
+    /* Turned to run along an end wall, reading downward on the east and
+       upward on the west, for the reason the door labels are: set across, a
+       hall name is 25 m of type against a hall 82 m deep. */
+    el.setAttribute(
+      "transform",
+      `translate(${mx + ox * LEG_OFF} ${my}) rotate(${key === "e" ? 90 : -90})`
+    );
+  }
+  el.textContent = label;
+  g.appendChild(el);
+
+  /* Tappable like the door under it, and for the same reason: it is pointing
+     at a hall, and what you do with a hall you are being pointed at is go
+     there. Its own hit rect rather than the door's, because a Boulevard door
+     leads to the Boulevard and this leads to hall 9.1.
+
+     It runs from the wall out to the end of the name, and never a metre
+     inside it: everything in there is a stand, and a control that swallowed
+     taps meant for one would have taken more than it gave. */
+  const reach = Math.max((label.length * LEG_FS * 0.62) / 2, w) + 1.5;
+  const corner = (t0, depth) => {
+    const [x, y] = edge.pt(t0);
+    return [x + ox * depth, y + oy * depth];
+  };
+  const [x1, y1] = corner(at - reach, 0);
+  const [x2, y2] = corner(at + reach, LEG_BAND);
+  const hit = document.createElementNS(SVGNS, "rect");
+  hit.setAttribute("class", "route-leg-hit");
+  hit.setAttribute("x", Math.min(x1, x2));
+  hit.setAttribute("y", Math.min(y1, y2));
+  hit.setAttribute("width", Math.abs(x2 - x1));
+  hit.setAttribute("height", Math.abs(y2 - y1));
+  hit.dataset.hall = leg.id;
+  g.appendChild(hit);
+  return g;
+}
+
+function renderRoute() {
+  const offered = planDays();
+  const live = new Set([...offered.days, ...(offered.unplaced ? [PLAN_NONE] : [])]);
+  /* A day whose last stop was unsaved — or a ?day= for a day nobody planned —
+     would strand the overlay on an empty hall with no lit chip to clear it. */
+  if (state.day && (!offered.days.length || !live.has(state.day))) {
+    state.day = null;
+    writeDayParam();
+  }
+  renderRouteBar(offered);
+
+  const svg = $("#map");
+  clearRoute(svg);
+  const halls = dayHalls();
+  if (onOverview()) {
+    state.route = [];
+    renderCampusRoute(svg, halls);
+    return;
+  }
+  state.route = svg ? routeStops() : [];
+  const legs = dayLegs(halls);
+  const here = !state.day
+    ? `<span class="map-route-hint">${esc(t("map.routeHint"))}</span>`
+    : state.route.length
+      ? `${esc(t("map.routeStops", { n: state.route.length }))} <span class="map-route-hint">${esc(
+          t("map.routeOrderNote")
+        )}</span>`
+      : `<span class="map-route-hint">${esc(t("map.routeNoneHere"))}</span>`;
+  renderRouteStatus(here + legButtons(legs));
+  const hall = svg && hallGeometry(state.hall);
+  if (!hall) return;
+  const [W, H] = hall.size;
+  const m = marginOf(state.hall);
+
+  /* Where the plan comes in and where it goes out. Drawn even when this hall
+     holds none of the day's stops: which way out is the last useful thing a
+     hall you have nothing planned in can tell you. */
+  const pointers = [];
+  for (const [leg, inbound, stop] of [
+    [legs.prev, true, state.route[0]],
+    [legs.next, false, state.route[state.route.length - 1]],
+  ]) {
+    if (!leg) continue;
+    const doors = exitToward(state.hall, leg.id);
+    if (!doors?.length) continue;
+    const anchor = stop ? stopPoint(stop) : null;
+    const mouth = nearestMouth(doors, anchor || [W / 2, H / 2], W, H, m);
+    if (mouth) pointers.push({ leg, inbound, mouth, anchor });
+  }
+  if (!state.route.length && !pointers.length) return;
+
+  /* Under the labels, so the line never crosses out a booth name; over the
+     stands, so it is not hidden by the ones it runs across. One path for the
+     chain and both legs: a leg is the same line saying the same thing, run
+     from the stop the day leaves by to the door it leaves through. */
+  let d = state.route.length ? "M" + state.route.map((s) => stopPoint(s).join(" ")).join("L") : "";
+  for (const { mouth, anchor } of pointers) {
+    if (!anchor) continue;
+    const [mx, my] = mouth.edge.pt(mouth.at);
+    d += `M${anchor[0]} ${anchor[1]}L${mx} ${my}`;
+  }
+  if (d) {
+    const line = document.createElementNS(SVGNS, "path");
+    line.setAttribute("class", "route-line");
+    line.setAttribute("aria-hidden", "true");
+    line.setAttribute("d", d);
+    svg.insertBefore(line, state.labelsLayer);
+  }
+
+  /* Appended last, so the numbers sit above every name and every stand. The
+     layer is aria-hidden: the same numbers are already in each stand's own
+     accessible name, where they can be reached by the button that carries
+     them rather than as loose text in a graphic, and the legs beside them are
+     the two buttons in the bar. */
+  const pins = document.createElementNS(SVGNS, "g");
+  pins.setAttribute("class", "route-pins");
+  pins.setAttribute("aria-hidden", "true");
+  const total = state.route.length;
+  /* Painted last stop first, so where two pins on neighbouring stands overlap
+     at fit zoom the *earlier* number stays on top. Nothing is ever dropped —
+     a hidden pin is a lost stop, unlike a hidden label — and zooming in
+     separates them; this only decides which one you can read before you do. */
+  for (const stop of [...state.route].reverse()) {
+    /* Every stand the stop holds is lit and carries the stop's number in its
+       own accessible name — the whole footprint is the place you are walking
+       to, and a keyboard user landing on any part of it should hear which
+       stop it is. */
+    for (const rec of stop.recs) {
+      rec.stop = stop;
+      rec.g.classList.add("stop");
+      rec.g.setAttribute("aria-label", rec.aria + t("map.stopAria", { n: stop.n, total }));
+    }
+
+    /* The number itself is drawn once, on the same stand the route line runs
+       through (stopPoint takes recs[0], the largest). One stop is one number:
+       Nintendo files four stands in hall 9 and wore four discs all reading
+       "2", which is four stops on the floor and two in the bar above it. */
+    const box = bbox(stop.recs[0].data.poly);
+    /* Two digits need a wider disc, or "10" runs over its own edge. */
+    const r = PIN_R * (stop.n > 9 ? 1.18 : 1);
+    /* Pinned to the stand's north-west corner rather than its middle: the
+       middle is where its name is, and a route that covers the names it is
+       routing you between has cost more than it gave. A stand too small to
+       have a corner to spare simply wears the pin centred. */
+    const cx = box.x0 + Math.min(r * 0.6, box.w / 2);
+    const cy = box.y0 + Math.min(r * 0.6, box.h / 2);
+
+    const disc = document.createElementNS(SVGNS, "circle");
+    disc.setAttribute("class", `route-pin${stop.played ? " done" : ""}`);
+    disc.setAttribute("cx", cx);
+    disc.setAttribute("cy", cy);
+    disc.setAttribute("r", r);
+    const num = document.createElementNS(SVGNS, "text");
+    num.setAttribute("class", `route-pin-n${stop.played ? " done" : ""}`);
+    num.setAttribute("x", cx);
+    /* half a cap height below the centre — SVG text hangs off its baseline */
+    num.setAttribute("y", cy + r * 0.38);
+    num.setAttribute("font-size", r * 1.1);
+    num.textContent = stop.n;
+    pins.append(disc, num);
+  }
+  svg.appendChild(pins);
+
+  if (pointers.length) {
+    const marks = document.createElementNS(SVGNS, "g");
+    marks.setAttribute("class", "route-legs");
+    marks.setAttribute("aria-hidden", "true");
+    for (const p of pointers) marks.appendChild(legPointer(p));
+    svg.appendChild(marks);
+  }
+}
+
+/* ================= the day's halls, on the overview =================
+
+   The same reading one step back. On the site diagram a number is a hall and
+   not a stop — hall 6 first, then hall 9, then hall 10 — which is the one
+   thing thirteen chips in a row cannot say, however many of them carry a
+   count. It is the hall lens's grouping with the site drawn under it.
+
+   Both numberings are the plan board's own and neither is a walk: a pin
+   inside a hall is that hall group's row, a plate out here is that group's
+   place in the list of groups. */
+
+/* The day's levels collapsed onto the buildings, in the same order: 10.1 and
+   10.2 are one hall out here. The count on each plate already sums its levels
+   (refreshCampus), so a leg carries only its place in the order. */
+const dayBuildings = (halls) => [...new Set(halls.map((h) => hallBase(h.id)))];
+
+/* Those of them the diagram can draw, with the plate to draw on. Hall 1 and
+   hall 11 are on the diagram for orientation and the guide draws neither, so
+   nothing can be planned in them — but the sentence above counts the plan and
+   this counts the picture, and a hall missing from the artwork must cost the
+   picture a number, not the plan a hall. */
+const platedLegs = (buildings) =>
+  buildings
+    .map((id, i) => ({ id, leg: i + 1, plate: state.plates.find((p) => p.id === id) }))
+    .filter((leg) => leg.plate);
+
+function renderCampusRoute(svg, halls) {
+  const buildings = dayBuildings(halls);
+  const stops = halls.reduce((sum, h) => sum + h.n, 0);
+  renderRouteStatus(
+    !state.day
+      ? `<span class="map-route-hint">${esc(t("map.routeHintCampus"))}</span>`
+      : buildings.length
+        ? `${esc(t("map.routeHalls", { n: buildings.length }))} · ${esc(
+            t("map.routeStopsAll", { n: stops })
+          )} <span class="map-route-hint">${esc(t("map.routeOrderNote"))}</span>`
+        : `<span class="map-route-hint">${esc(t("map.routeNoneAnywhere"))}</span>`
+  );
+  const legs = svg ? platedLegs(buildings) : [];
+  if (!legs.length) return;
+
+  const marks = document.createElementNS(SVGNS, "g");
+  marks.setAttribute("class", "route-legs");
+  marks.setAttribute("aria-hidden", "true");
+
+  /* One hall is an order of one: a line through a single plate is a dot, and
+     a number on it reads "first of one", which is noise. The plate is lit
+     either way — that much is not about order, it is where the day is. */
+  const ordered = legs.length > 1;
+  if (ordered) {
+    const line = document.createElementNS(SVGNS, "path");
+    line.setAttribute("class", "route-line");
+    line.setAttribute("d", "M" + legs.map(({ plate }) => `${plate.cx} ${plate.cy}`).join("L"));
+    marks.appendChild(line);
+  }
+
+  for (const { plate, leg } of legs) {
+    plate.leg = leg;
+    for (const el of [plate.g, plate.lg]) el.classList.add("leg");
+    if (!ordered) continue;
+    /* The plate's north-west corner, the same corner a stop pin takes on its
+       stand — the middle of a plate is where its number and its count are. */
+    const r = PIN_R * 1.6 * (leg > 9 ? 1.18 : 1);
+    const cx = plate.x0 + r * 1.1;
+    const cy = plate.y0 + r * 1.1;
+    const disc = document.createElementNS(SVGNS, "circle");
+    disc.setAttribute("class", "route-pin");
+    disc.setAttribute("cx", cx);
+    disc.setAttribute("cy", cy);
+    disc.setAttribute("r", r);
+    const num = document.createElementNS(SVGNS, "text");
+    num.setAttribute("class", "route-pin-n");
+    num.setAttribute("x", cx);
+    num.setAttribute("y", cy + r * 0.38);
+    num.setAttribute("font-size", r * 1.1);
+    num.textContent = leg;
+    marks.append(disc, num);
+  }
+  svg.appendChild(marks);
 }
 
 /* ================= pan / zoom ================= */
@@ -1018,7 +2352,7 @@ let lastTap = { t: 0, x: 0, y: 0 };
 stage.addEventListener("dragstart", (e) => e.preventDefault());
 
 stage.addEventListener("pointerdown", (e) => {
-  if (e.target.closest("#sheet")) return;
+  if (e.target.closest("#sheet, .map-zoom")) return;
   e.preventDefault();
   stage.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1081,11 +2415,17 @@ function endPointer(e) {
       lastTap = { t: 0, x, y };
     } else {
       lastTap = { t: now, x, y };
-      /* A door into another hall goes there. Checked before the stand
-         underneath it, which is the whole reason its hit path is drawn on
-         top: tapping the passage out of hall 7 must not select the booth
-         standing beside it. */
-      const door = tap.target.closest?.(".hall-door-hit");
+      /* A door into another hall goes there, and so do a hall plate on the
+         overview and a leg pointer's chip — one path, because they are the
+         same gesture. All three are checked before the stand underneath
+         them, which is the whole reason their hit shapes are drawn on top:
+         tapping the passage out of hall 7 must not select the booth standing
+         beside it. The leg comes first of the three because it is drawn last
+         and means the most where they overlap — it is pointing at hall 9.1,
+         while the door it stands in is only pointing at the Boulevard. */
+      const door = tap.target.closest?.(
+        ".route-leg-hit, .hall-door-hit, .campus-hall-hit"
+      );
       if (door) showHall(door.dataset.hall);
       else {
         const g = tap.target.closest?.(".stand");
@@ -1103,6 +2443,87 @@ stage.addEventListener("wheel", (e) => {
   const rect = stage.getBoundingClientRect();
   zoomAt(e.clientX - rect.left, e.clientY - rect.top, Math.pow(1.0015, -e.deltaY));
 }, { passive: false });
+
+/* The buttons beside the gestures: a mouse without a wheel gesture has no
+   discoverable way in, and nothing at all offered the way back out to the
+   whole hall short of a dozen wheel notches. Steps are centred on the
+   stage, like a double tap in the middle; 1.6 per press walks the three
+   zoom bands in about four presses. Optional-chained like the sheet's
+   buttons, so a stale cached shell without them still boots this script. */
+function zoomStep(factor) {
+  const r = stage.getBoundingClientRect();
+  zoomAt(r.width / 2, r.height / 2, factor);
+}
+function fitCurrent() {
+  const map = $("#map");
+  if (map) fitView(map, +map.getAttribute("width"), +map.getAttribute("height"));
+}
+$("#zoom-in")?.addEventListener("click", () => zoomStep(1.6));
+$("#zoom-out")?.addEventListener("click", () => zoomStep(1 / 1.6));
+$("#zoom-fit")?.addEventListener("click", fitCurrent);
+
+/* map.html is network-first while this script and its stylesheet can arrive
+   from different cached revisions. Add the control here so old script never
+   leaves dead markup, then ask the CSS marker whether the new rule arrived.
+   A measurement was the wrong question because the button's size may change
+   independently of this guard. The check runs before a paint. */
+let rotBtn = null;
+
+/* Returns whether anything moved, so a caller can skip a redraw it does not
+   need. The button carries the state for a screen reader, so it is set here
+   rather than at each call site. */
+function setRotation(on) {
+  if (state.rot === on) return false;
+  state.rot = on;
+  rotBtn?.setAttribute("aria-pressed", String(on));
+  if (!on) rotatedHalls.clear();
+  return true;
+}
+
+/* Redraw the hall on screen at the current orientation, keeping the open
+   stand open. The campus overview has its own coordinate file: the turn
+   stays set for the next hall, but that separate drawing does not move. */
+function redrawRotation() {
+  if (onOverview() || !state.hall || !state.halls.has(state.hall) || !$("#map")) return;
+  const code = state.sel ? [...state.sel.codes][0] : null;
+  renderHall(state.hall);
+  if (!code) return;
+  const rec = state.stands.find((stand) => stand.codes.has(code));
+  if (rec) selectStand(rec);
+}
+
+/* The automatic choice, taken before a hall is drawn and again when the window
+   changes shape. It stops for good the moment the visitor presses the button:
+   they have looked at this hall and said which way they want it, which outranks
+   any rule this file could apply on top. */
+function autoRotate(id) {
+  return state.rotChosen ? false : setRotation(shouldTurn(id));
+}
+
+{
+  const controls = $(".map-zoom");
+  if (controls) {
+    const button = document.createElement("button");
+    button.className = "map-rotate-btn";
+    button.type = "button";
+    button.setAttribute("aria-label", t("map.rotate"));
+    button.setAttribute("aria-pressed", String(state.rot));
+    button.innerHTML =
+      '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" ' +
+      'fill="none" stroke="currentColor" stroke-width="1.6">' +
+      '<path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2v4h-4"/></svg>';
+    controls.appendChild(button);
+    if (getComputedStyle(button).getPropertyValue("--rotate-btn").trim() !== "1") {
+      button.remove();
+    } else {
+      rotBtn = button;
+      button.addEventListener("click", () => {
+        state.rotChosen = true;
+        if (setRotation(!state.rot)) redrawRotation();
+      });
+    }
+  }
+}
 
 /* ================= selection & sheet ================= */
 
@@ -1130,6 +2551,9 @@ function selectStand(rec, { zoom = false } = {}) {
     sheet.addEventListener("transitionend", () => {
       if (!sheet.classList.contains("open")) sheet.hidden = true;
     }, { once: true });
+    /* The stand goes with its sheet: what stays in the bar is the hall,
+       which is what the screen now shows. */
+    if (state.hall) history.replaceState(null, "", `#${state.hall}`);
     return;
   }
   rec.g.classList.add("sel");
@@ -1144,8 +2568,24 @@ function selectStand(rec, { zoom = false } = {}) {
     (s.a ? ` · ~${s.a} m²` : "");
 
   const badges = [];
+  /* First: on a numbered stand this is the thing you tapped to check. */
+  if (rec.stop)
+    badges.push(
+      `<span class="badge badge-stop">${esc(
+        t("map.stopBadge", { n: rec.stop.n, total: state.route.length })
+      )}</span>`
+    );
   if (rec.exs.some(exSaved))
     badges.push(`<span class="badge badge-saved">${esc(t("mark.saved"))}</span>`);
+  /* The day this stop is planned for, read from the same itinerary the plan
+     board writes — the map is where you stand when you wonder "was this a
+     Thursday thing?", and the answer should not cost a trip to the guide.
+     Weekday names come from the dates, like everywhere else (js/i18n.js). */
+  const days = [...new Set(rec.exs.flatMap(plannedDays))].sort();
+  if (days.length)
+    badges.push(`<span class="badge">${esc(
+      t("map.plannedFor", { days: days.map((d) => dayName(d, "short")).join(", ") })
+    )}</span>`);
   if (ex && ex.locationConfirmed === false)
     badges.push(`<span class="badge badge-unconf">${esc(t("map.unconfBadge"))}</span>`);
   if (rec.exs.length && rec.exs.every(exPlayed))
@@ -1253,10 +2693,25 @@ $("#sheet-close").addEventListener("click", () => selectStand(null));
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && state.sel) selectStand(null);
+  /* Browsing stands by keyboard is deliberately the guide's job (see
+     PLAN-hall-map.md, "deliberately not built") — but the zoom is a view
+     control, not stand browsing, and these are the keys every map answers
+     to. "=" is "+" unshifted on the common layouts. */
+  if (e.key === "+" || e.key === "=") zoomStep(1.6);
+  else if (e.key === "-" || e.key === "_") zoomStep(1 / 1.6);
+  else if (e.key === "0") fitCurrent();
 });
 
 window.addEventListener("storage", (e) => {
-  const keys = [...Object.values(GCMarks.MARK_KEYS), GCMarks.PREFS_KEY];
+  /* IT_KEY and ORDER_KEY too: assign a day on the plan board, or move a stop
+     up it, and an open sheet's "planned · Thu" — and the route overlay's
+     pins — follow without a reload, like the marks do. */
+  const keys = [
+    ...Object.values(GCMarks.MARK_KEYS),
+    GCMarks.PREFS_KEY,
+    GCMarks.IT_KEY,
+    GCMarks.ORDER_KEY,
+  ];
   if (e.key !== null && !keys.includes(e.key)) return;
   /* The guide writes prefs on nearly every interaction, so this fires far
      more often than a mark change and can easily land before the hall index
@@ -1282,12 +2737,25 @@ window.addEventListener("storage", (e) => {
    from the snapshot itself, so a re-run of tools/fetch-hallplan.mjs
    re-dates it without anyone remembering to. */
 function renderSourceNote() {
+  /* The overview is drawn from a different file with a different promise:
+     Koelnmesse's campus outline is theirs and dated like the booths, but
+     it is fitted to their artwork rather than measured, so the line that
+     credits it also has to say it is not to scale. */
+  if (onOverview() && state.campus) {
+    $("#srcnote").innerHTML =
+      `${esc(t("map.campusLayout"))}: <a href="${esc(state.campus.source)}" target="_blank" rel="noopener nofollow">${esc(
+        t("map.officialHallPlan")
+      )}</a> · ${esc(t("map.checkedOn", { date: formatDate(state.campus.fetched) }))} · ${esc(
+        t("map.campusNotToScale")
+      )}`;
+    return;
+  }
   const { source, fetched } = state.index;
   const date = formatDate(fetched);
   /* The doors are the one thing on this map that is not traceable to the
      official plan — it files no wall and no doorway — so the credit line
      stops short of claiming them. Per hall, not for the map as a whole:
-     five of the twelve have no doors filed yet, and a disclaimer about
+     seven of the thirteen have no doors filed yet, and a disclaimer about
      something that isn't on the screen is just a longer footer. */
   const ours = state.outline.halls?.[state.hall]?.doors?.length
     ? ` · ${esc(t("map.doorsApprox"))}`
@@ -1306,7 +2774,7 @@ async function showHall(id, { standCode = null } = {}) {
     state.sel = null;
     $("#sheet").classList.remove("open");
     renderChips();
-    /* Twelve halls no longer fit the row, so a hall opened from a deep
+    /* Thirteen halls no longer fit the row, so a hall opened from a deep
        link or a chip at the far end is scrolled to rather than left off
        screen. Only on a hall change: doing it from refreshMarks would
        yank the row back while someone is reading along it. */
@@ -1315,7 +2783,17 @@ async function showHall(id, { standCode = null } = {}) {
     renderSourceNote(); /* its door clause is per hall */
     if (!state.halls.has(id)) $("#load").hidden = false;
     await loadHall(id);
+    /* Before the draw, not after: renderHall reads the orientation to lay the
+       hall out, so deciding afterwards would draw it twice. */
+    autoRotate(id);
     renderHall(id);
+    /* The address bar always names the hall on screen. A chip or door tap
+       used to leave the previous stand's #hall/booth standing, so copying
+       the link — the whole reason the URL is the deep link — shared a place
+       you had already left. selectStand overwrites this with #hall/booth
+       when a stand was asked for; replaceState like there, because browsing
+       halls is one place in history, not a trail of them. */
+    history.replaceState(null, "", `#${id}`);
   }
   if (standCode) {
     const rec = state.stands.find((r) => r.codes.has(standCode));
@@ -1327,18 +2805,47 @@ const hallExists = (id) => Boolean(state.index?.halls.some((h) => h.id === id));
 
 $("#halls").addEventListener("click", (e) => {
   const chip = e.target.closest(".chip");
-  if (chip) showHall(chip.dataset.hall);
+  if (!chip) return;
+  if (chip.dataset.view === OVERVIEW) showOverview();
+  else if (chip.dataset.hall) showHall(chip.dataset.hall);
 });
 
 /* the address bar is an input too: a pasted #hall/stand link navigates */
 window.addEventListener("hashchange", () => {
   const [h, code] = location.hash.slice(1).split("/");
-  if (hallExists(h)) showHall(h, { standCode: code ? code.toUpperCase() : null });
+  if (h === OVERVIEW) showOverview();
+  else if (hallExists(h)) showHall(h, { standCode: code ? code.toUpperCase() : null });
 });
 
+/* Turning the phone is the case this exists for: a hall that had to be turned
+   to fit a portrait screen fits upright on a landscape one, and the other way
+   round. Only redraw when the answer actually changed; every other resize just
+   refits what is already there. */
 window.addEventListener("resize", () => {
-  const map = $("#map");
-  if (map) fitView(map, +map.getAttribute("width"), +map.getAttribute("height"));
+  if (!onOverview() && state.hall && autoRotate(state.hall)) redrawRotation();
+  else fitCurrent();
+});
+
+/* The ← is an <a href="./"> so it always works — middle-click, long-press,
+   copy the link. But followed as a link it reloads the guide from the top,
+   throwing away the scroll position and filters the visitor left behind to
+   check the map. When this page was opened *from* the guide, one step back
+   restores all of that (bfcache included), and it is always one step: hall
+   browsing here never pushes history, replaceState throughout. Direct and
+   external arrivals keep the plain link — there is nothing of theirs behind
+   them to go back to. */
+$(".map-back")?.addEventListener("click", (e) => {
+  let fromGuide = false;
+  try {
+    const ref = new URL(document.referrer);
+    fromGuide = ref.origin === location.origin && !ref.pathname.endsWith("/map.html");
+  } catch {
+    /* no referrer, or an unparseable one — a direct open */
+  }
+  if (fromGuide && history.length > 1) {
+    e.preventDefault();
+    history.back();
+  }
 });
 
 async function main() {
@@ -1366,14 +2873,25 @@ async function main() {
      lands, which is what the redraw in loadTrade() is for. */
   if (wantsTrade()) loadTrade();
 
+  /* A day handed over by the plan board's "Map →", or by a shared link.
+     Nothing is validated here: renderRoute drops a day nobody planned, which
+     is the same check a day losing its last stop has to pass anyway. */
+  state.day = new URLSearchParams(location.search).get("day") || null;
+
   /* deep link first, then the hall holding most of your saved stops,
      then the default */
   const [hallArg, code] = location.hash.slice(1).split("/");
+  if (hallArg === OVERVIEW) {
+    /* The one arrival that needs the layout before anything is drawn.
+       A failed fetch falls through to a hall, which is a map either way. */
+    await showOverview();
+    if (onOverview()) return prefetchRest();
+  }
   let start = hallExists(hallArg) ? hallArg : null;
   if (!start) {
     let best = 0;
     for (const h of index.halls) {
-      const n = hallSavedCount(h.id);
+      const n = hallCount(h.id);
       if (n > best) {
         best = n;
         start = h.id;
@@ -1381,11 +2899,37 @@ async function main() {
     }
   }
   await showHall(start || DEFAULT_HALL, { standCode: code ? code.toUpperCase() : null });
+  prefetchRest();
+}
 
-  /* Idle-prefetch the rest: 1–8 KB gzipped each, and the service worker
-     has them precached anyway — this just spares the parse on tap. */
-  const prefetch = () => {
-    for (const h of state.index.halls) loadHall(h.id).catch(() => {});
+/* Everything the map will want next, once the map it was asked for is on
+   screen. The campus layout is fetched straight away rather than at idle,
+   because until it lands the overview chip is not in the row at all and a
+   control that appears seconds later is worse than one that was always
+   there. The halls wait for idle: they are 1–8 KB gzipped each, the
+   service worker has them precached anyway, and this only spares the
+   parse on tap. */
+function prefetchRest() {
+  loadCampus().catch(() => {});
+  const prefetch = async () => {
+    const before = countsKey();
+    await Promise.all(state.index.halls.map((h) => loadHall(h.id).catch(() => {})));
+    /* And then say so. A hall's saved count is read from its own stands
+       once the plan is parsed and estimated from the guide's exhibitor
+       list until then, and the two disagree wherever one exhibitor holds
+       more than one stand in a hall: the estimate counts the exhibitor,
+       the truth counts the stands. Nothing else redraws those numbers,
+       so the estimate used to stand for the rest of the session — most
+       visibly on the overview, whose plates are the one screen whose
+       whole job is those counts. */
+    if (countsKey() === before) return;
+    if (onOverview()) refreshCampus();
+    /* The row is rebuilt seconds after the map settled, possibly under a
+       finger already scrolling it, so it is put back where it was. */
+    const row = $("#halls");
+    const at = row.scrollLeft;
+    renderChips();
+    row.scrollLeft = at;
   };
   "requestIdleCallback" in window
     ? requestIdleCallback(prefetch, { timeout: 4000 })

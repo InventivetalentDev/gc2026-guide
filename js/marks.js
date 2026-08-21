@@ -1,12 +1,15 @@
 /* gamescom 2026 guide — the few things the guide and the hall map must
    agree on, byte for byte.
 
-   Two pages now read and write the same saved/played lists and answer
-   the same question about the same booth. Anything they each kept their
-   own copy of would drift silently: a different `gameKey` normalisation
-   would strand game marks made on the other page, and a different booth
-   code normalisation would light up the wrong stand. So the storage
-   shape, the "is this saved" predicate and the booth-code normaliser
+   Two pages now read and write the same saved/played lists, answer the
+   same question about the same booth, and number the same stops. Anything
+   they each kept their own copy of would drift silently: a different
+   `gameKey` normalisation would strand game marks made on the other page,
+   a different booth code normalisation would light up the wrong stand,
+   and a different stop order would print numbers on the map that do not
+   match the list they came from. So the storage shapes, the "is this
+   saved" predicate, the booth-code normaliser and the plan's stop order —
+   both halves of it, the automatic rule and the order you moved it into —
    live here, and nothing else does — this is not a utility drawer.
 
    Loaded as a plain script before js/app.js and js/map.js (no build
@@ -113,6 +116,122 @@ const GCMarks = (() => {
   const hasSaved = (marks, ex) =>
     marks.exhibitors.has(ex.id) || savedGames(marks, ex).length > 0;
 
+  /* ---- the plan: which day a stop is on, and which stop comes first ----
+
+     The guide's plan board writes the day assignments; the map's route
+     overlay reads them back and numbers the stands from them. Both pages
+     therefore have to answer two questions the same way — "which day is
+     this stop on" and "which stop is number 1" — or the numbers drawn on
+     the floor stop matching the list they were read from, which is the
+     same class of silent drift boothCodes() is here to prevent.
+
+     The storage shape mirrors the marks above: item key -> ISO day date,
+     one day per item, keys matching the marks — exhibitor ids (dir: keys
+     included) and gameKey()d titles. Read-only here, like tradeMode: the
+     guide owns assigning a stop to a day, and validates on top of this (an
+     assignment is only live while its item is still saved and its date is
+     still a show day), because it is the page holding data/event.json and
+     "no schedule loaded" must not read as "no such day" — see loadItinerary
+     in js/app.js. A date shown raw on the map is still the date that was
+     chosen. The raw read is what both pages share. */
+  const IT_KEY = "gc2026.itinerary.v1";
+
+  function readItinerary() {
+    const pick = (raw, kind) => {
+      const src = raw && typeof raw[kind] === "object" && !Array.isArray(raw[kind]) ? raw[kind] : {};
+      return new Map(Object.entries(src).filter(([, date]) => typeof date === "string"));
+    };
+    try {
+      const raw = JSON.parse(localStorage.getItem(IT_KEY) || "{}");
+      return { exhibitors: pick(raw, "exhibitors"), games: pick(raw, "games") };
+    } catch {
+      /* corrupt entry, or storage blocked entirely (Safari private mode) */
+      return { exhibitors: new Map(), games: new Map() };
+    }
+  }
+
+  /* Which days a booth is planned for: its own assignment plus those of the
+     saved games shown there — the publisher is how you get to the game, so a
+     game placed on Friday puts its booth on Friday. "none" stands in for any
+     saved element still waiting for a day, so a stop is never dayless. */
+  function stopDays(saved, itinerary, ex) {
+    const days = new Set();
+    if (saved.exhibitors.has(ex.id)) days.add(itinerary.exhibitors.get(ex.id) || "none");
+    for (const g of savedGames(saved, ex))
+      days.add(itinerary.games.get(gameKey(g.title)) || "none");
+    return days;
+  }
+
+  /* ---- the order you put the plan in ----
+
+     The automatic order below answers "busiest first" well enough to open
+     with, and badly enough that anyone with a real morning planned wants to
+     argue with it: the 5/5 booth you are meeting a friend at second, the 2/5
+     one that opens an hour early. So the plan carries an order of its own,
+     and the automatic rule becomes what it falls back to.
+
+     One flat list of stop keys, in the order they are visited. A key is the
+     item as the marks store files it, prefixed by kind, because a booth and
+     a game can carry the same string and both are stops here:
+
+       "e:" + exhibitor id   ("e:dir:some-slug" for a business-hall booth)
+       "g:" + gameKey(title)
+
+     A booth's key ranks it in the hall lens and on the map; a game's key
+     ranks its row in the day lens. They share one list because they share
+     one plan — and because the day lens shows both kinds side by side and
+     has to sort them against each other.
+
+     Everything not in the list ranks UNRANKED and falls through to the
+     automatic rule, which is what an untouched plan does: the list is empty
+     until the first time somebody moves a stop, and a newly saved booth
+     lands at the end of its group rather than shouldering its way in. */
+  const ORDER_KEY = "gc2026.planorder.v1";
+  const UNRANKED = Number.MAX_SAFE_INTEGER;
+
+  const stopKey = (kind, key) => (kind === "game" ? "g:" : "e:") + key;
+
+  function readOrder() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(ORDER_KEY) || "[]");
+      return Array.isArray(raw) ? raw.filter((key) => typeof key === "string") : [];
+    } catch {
+      /* corrupt entry, or storage blocked entirely (Safari private mode) */
+      return [];
+    }
+  }
+
+  function writeOrder(keys) {
+    try {
+      localStorage.setItem(ORDER_KEY, JSON.stringify(keys));
+    } catch {
+      /* out of quota or storage denied — the order still holds for this session */
+    }
+  }
+
+  /* stop key -> position. Built once per render rather than scanned per
+     comparison: a 40-stop plan sorted by indexOf() is 1,600 string compares
+     for a list nobody can see all of. */
+  const orderRanks = (keys) => new Map(keys.map((key, i) => [key, i]));
+
+  /* The order stops are visited in, within one group — one hall, or one day.
+
+     Your own order first, and it is the whole answer once you have given one:
+     a stop you moved below a played one stays below it, because "I put it
+     there" outranks any rule this file could apply on top. Below that, the
+     automatic order: busiest first, anything already played sinking to the
+     end.
+
+     `played`, `lang` and `rank` are passed in rather than reached for — each
+     page already has its own copy of the played rule, of the active locale
+     and of which key a thing is filed under, and this file deliberately knows
+     about none of the three. */
+  const compareStops = (played, lang, rank) => (a, b) =>
+    (rank ? rank(a) - rank(b) : 0) ||
+    (played(a) ? 1 : 0) - (played(b) ? 1 : 0) ||
+    (b.crowd || 0) - (a.crowd || 0) ||
+    String(a.name).localeCompare(String(b.name), lang);
+
   /* Booth codes, from either side, reduced to a comparable set:
      the guide writes "A061/C060", Koelnmesse files "A-061 C-060", and
      both mean the same two stands.
@@ -134,5 +253,7 @@ const GCMarks = (() => {
   return {
     MARK_KEYS, PREFS_KEY, gameKey, readMarks, writeMarks, savedGames, hasSaved, boothCodes,
     DIR_PREFIX, dirKey, isDirKey, dirSlug, isBusinessHall, tradeMode, setTradeMode,
+    IT_KEY, readItinerary, stopDays, compareStops,
+    ORDER_KEY, UNRANKED, stopKey, readOrder, writeOrder, orderRanks,
   };
 })();

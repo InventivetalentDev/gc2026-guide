@@ -78,6 +78,52 @@
 }
 .map-halls .hall-chip { border-left: 3px solid var(--area, var(--rule)); }
 
+/* --- the plan's day chips ---
+   One row, the same .day-chip the guide uses for a day assignment, so
+   "Thursday" looks the same thing in both places. Hidden outright until
+   something has been placed on a day: an empty control on a page this
+   tight is worse than no control. */
+.map-route {
+  flex: none;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 7px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.map-route[hidden] { display: none; }
+.map-route-kicker {
+  flex: none;
+  font-family: var(--font-mono); font-size: .6rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+.map-route-days { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.map-route-days::-webkit-scrollbar { display: none; }
+.map-route-days .day-chip { flex: none; }
+/* Pushed to the far end on a wide bar, and allowed its own line on a narrow
+   one — it is a sentence, not a control, and it must never squeeze the
+   chips it describes. */
+.map-route-status {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: .66rem; line-height: 1.35;
+  color: var(--ink-mid);
+}
+.map-route-hint { color: var(--ink-dim); }
+/* The halls either side of this one in the day's order. Set like the status
+   sentence they end rather than like the day chips — those choose what the
+   map shows, these leave for another hall, and a control that navigates
+   should not look like one that filters. */
+.map-route-leg {
+  margin-left: 6px;
+  padding: 1px 6px;
+  font: inherit;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.map-route-leg:hover { border-color: var(--signal); color: var(--signal); }
+
 /* --- area access note --- */
 .map-access {
   flex: none;
@@ -142,6 +188,33 @@
 }
 .map-load[hidden] { display: none; }
 
+/* --- zoom controls ---
+   Pinch and wheel already do the job, but neither is discoverable with a
+   mouse alone, and neither offers the way back out — the fit button is
+   "show me the whole hall again", which a deep zoom otherwise costs a
+   dozen wheel notches. Under the sheet in the stack (z-index 2 vs 3), so
+   an open sheet wins the corner on a phone rather than fighting for it. */
+.map-zoom {
+  position: absolute; right: 10px; bottom: 10px; z-index: 2;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.map-zoom-btn,
+.map-rotate-btn {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border: 1px solid var(--rule); border-radius: var(--radius-sm);
+  /* translucent over the hall, like a control floating on a map should
+     be — the booth underneath stays legible through it */
+  background: color-mix(in srgb, var(--ground-2) 88%, transparent);
+  color: var(--ink-mid);
+  font-family: var(--font-mono); font-size: 1.15rem; line-height: 1;
+  cursor: pointer;
+}
+.map-zoom-btn:hover,
+.map-rotate-btn:hover { color: var(--ink); border-color: var(--ink-dim); }
+.map-rotate-btn { --rotate-btn: 1; }
+.map-rotate-btn[aria-pressed="true"] { color: var(--signal); border-color: var(--signal); }
+
 /* --- the hall itself --- */
 /* The structural blocks carry the area colour, washed down to a tint:
    enough to tell a business hall from an entertainment one at a glance,
@@ -156,6 +229,10 @@
 #map .stand.official path { fill: #232327; }
 #map .stand.covered path { fill: #2e2e33; }
 #map .stand.saved path { fill: var(--signal); stroke: #ff6a3d; }
+/* A numbered stop. Set before the unconf and sel rules on purpose: an
+   unconfirmed booth keeps its amber dashes even when it is stop 3, because
+   the caveat about the data outranks the decoration on top of it. */
+#map .stand.stop path { stroke: var(--ink); stroke-width: 1.8; }
 #map .stand.played { opacity: .45; }
 #map .stand.unconf path { stroke: var(--warn); stroke-dasharray: 5 4; }
 #map .stand.sel path { stroke: var(--ink); stroke-width: 2; }
@@ -203,6 +280,57 @@
    names' own ceiling instead (DOOR_FS in js/map.js), so they are legible
    wherever those are, and they sit outside the hall where there is
    nothing for them to cover. */
+
+/* --- the day route overlay ---
+   The order of the stops, not the way between them: nothing on this page
+   knows where the aisles run (see the block comment above renderRoute in
+   js/map.js), so the line is drawn as a hint and the pins carry the
+   meaning. Both are in the SVG, so both pan and zoom with the hall; the
+   strokes are non-scaling so they stay hairlines at every zoom. */
+#map .route-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 5;
+  stroke-linecap: round; stroke-linejoin: round;
+  opacity: .38;
+  pointer-events: none;
+}
+#map .route-pins { pointer-events: none; }
+#map .route-pin {
+  fill: var(--ground);
+  stroke: var(--signal);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+#map .route-pin-n {
+  fill: var(--signal);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+/* Played, and dimmed the way the stand under it already is. */
+#map .route-pin.done, #map .route-pin-n.done { opacity: .55; }
+
+/* --- where the day leaves this hall ---
+   The plan carries on past the wall, so the line does too: out to the
+   doorway the outline says starts the way there, an arrowhead through it,
+   and the hall it leads to named in the margin one line beyond the door's
+   own name. Both in the overlay's colour rather than the doors' ink,
+   because they belong to the day you picked and not to the building — the
+   hall has the same doors whichever chip is lit, and the name out here is
+   the only thing on this wall that would be a lie tomorrow. */
+#map .route-leg-head { fill: var(--signal); stroke: none; }
+#map .route-leg-lbl {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  fill: var(--signal);
+  letter-spacing: .04em;
+}
+#map .route-leg-hit { fill: transparent; stroke: none; cursor: pointer; }
+/* A hall the day passes through, on the overview: the plate is lit the way a
+   saved one is, one step brighter, and wears its place in the order. */
+#map .campus-hall.leg path { stroke: var(--signal); stroke-width: 2.4; }
+#map .campus-hall-lbl.leg .campus-num { fill: var(--ink); }
 
 #map text {
   pointer-events: none; user-select: none; -webkit-user-select: none;
@@ -254,6 +382,10 @@
   background: var(--signal); border-color: var(--signal); color: var(--signal-ink);
 }
 .map-sheet-badges .badge-unconf { border-color: var(--warn); color: var(--warn); }
+/* The stop number, worn the way the pin on the floor wears it. */
+.map-sheet-badges .badge-stop {
+  border-color: var(--signal); color: var(--signal); background: var(--signal-wash);
+}
 .map-sheet-who {
   margin-top: 9px; font-size: .84rem; color: var(--ink-mid); line-height: 1.45;
 }
@@ -295,7 +427,81 @@
 .map-note .lang-switch-link { color: var(--ink-mid); font: inherit; }
 .map-note .lang-switch-link:hover { color: var(--ink); }
 
+/* --- the campus overview ---
+   One step back from a hall: the whole site, every hall in its place, and
+   a tap on one opens it. Drawn into the same #map element a hall is, so
+   it inherits the pan, the pinch and the zoom buttons; everything below
+   is what a site diagram needs that a hall plan does not.
+
+   Hall plates carry their area colour like the chips do, but stronger
+   than a hall's own outline uses it — here the colour *is* the content
+   ("which of these can I walk into"), where inside a hall it is only the
+   frame around booth state. See the campus block in js/map.js. */
+
+/* Not a hall, and the row's one chip that isn't: the area edge every hall
+   chip carries would claim it belongs to one. */
+.map-halls .campus-chip { border-left-color: var(--ink-dim); }
+
+/* The ground between the halls, in one wash each. The Boulevard and the
+   Piazza are the walkable spine and read lightest; the passages that join
+   the halls are the same idea one step quieter; the Confex and the
+   Congress wings are buildings we do not draw inside of; the outdoor
+   areas are neither, and are drawn as ground rather than as structure. */
+#map .campus-ground-concourse { fill: var(--ground-3); stroke: var(--rule); }
+#map .campus-ground-passage { fill: var(--ground-2); stroke: var(--rule-soft); }
+#map .campus-ground-building { fill: var(--ground-2); stroke: var(--rule); }
+#map .campus-ground-outdoor {
+  fill: none; stroke: var(--rule); stroke-dasharray: 6 5;
+}
+
+/* A hall. Filled by its area, or neutral for one the guide draws no level
+   of — hall 1 and hall 11 are on the diagram so the halls around them
+   land in the right place, and they take no taps. */
+#map .campus-hall path { fill: var(--ground-2); stroke: var(--rule); }
+#map .campus-hall.is-open path { cursor: pointer; }
+@supports (color: color-mix(in srgb, red 20%, blue)) {
+  #map .campus-hall.is-open path {
+    fill: color-mix(in srgb, var(--area, transparent) 30%, var(--ground-3));
+    stroke: color-mix(in srgb, var(--area, var(--rule)) 60%, var(--rule));
+  }
+}
+/* A hall holding something you saved. Same signal as a saved booth, and
+   the same promise: this is where your list is. */
+#map .campus-hall.saved path { stroke: var(--signal); stroke-width: 2; }
+#map .campus-hall-hit { fill: transparent; stroke: none; cursor: pointer; }
+
+#map .campus-num {
+  font-family: var(--font-poster); fill: var(--ink-dim); letter-spacing: .02em;
+}
+#map .campus-hall-lbl.is-open .campus-num { fill: var(--ink); }
+#map .campus-saved { font-family: var(--font-mono); fill: var(--signal); font-weight: 700; }
+
+/* The named ground — Boulevard, Piazza, Confex. Quiet on purpose: they
+   are what you cross to reach a hall, not what you came for. */
+#map .campus-place {
+  font-family: var(--font-mono); fill: var(--ink-dim);
+  letter-spacing: .08em; text-transform: uppercase;
+}
+
+/* The gates. North and south are named outside the site with a leader
+   back to the spot, the way a plan labels its edges; east and west are
+   named over it, which is what the halo below is for. See gatesEl in
+   js/map.js for why the sides differ. */
+#map .campus-gate-dot { fill: var(--ink); stroke: var(--ground); stroke-width: 1.5; }
+#map .campus-gate-line { fill: none; stroke: var(--ink-dim); stroke-width: 1; opacity: .5; }
+#map .campus-gate-lbl {
+  font-family: var(--font-display); font-weight: 600; fill: var(--ink-mid);
+  /* The east and west names are set back over the site rather than in a
+     margin (see gatesEl) — the halo is what lets them cross a hall edge
+     or a passage and stay a word rather than a texture. */
+  paint-order: stroke;
+  stroke: var(--ground); stroke-width: 2.6; stroke-linejoin: round;
+}
+/* which side of its dot the name reads from — see gatesEl */
+#map .campus-gate-lbl.to-w { text-anchor: end; }
+#map .campus-gate-lbl.to-e { text-anchor: start; }
+
 @media (max-width: 400px) {
-  .map-bar, .map-halls { padding-left: 12px; padding-right: 12px; }
+  .map-bar, .map-halls, .map-route { padding-left: 12px; padding-right: 12px; }
   .map-note { padding-left: 12px; padding-right: 12px; }
 }

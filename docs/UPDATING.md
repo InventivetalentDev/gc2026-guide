@@ -17,7 +17,7 @@ This document is the playbook for refreshing the data — written so a scheduled
    `gamescom 2026 <exhibitor> lineup`, `gamescom 2026 booth`, `gamescom 2026 playable`,
    restricted to the last ~2 weeks.
    ⚠️ News only surfaces the AAA names. Community and mid-size booths (Aternos,
-   SCS Software, Behaviour, retro brands…) never make the press — they are only
+   SCS Software, Behaviour, retro brands…) never make the press, and are only
    findable in the directory sweep below.
 3. **Sweep the official exhibitor directory for new names** — this is now scripted.
    `tools/fetch-directory.py` walks the paginated AJAX endpoint (no session needed,
@@ -38,17 +38,17 @@ This document is the playbook for refreshing the data — written so a scheduled
    `groups`/`cats` at all, which means the trade list loses its category chips
    until the next full run; prefer the full sweep unless you are in a hurry.
 
-   Two of its stderr lines are worth reading rather than scrolling past:
+   Two of its stderr lines are worth reading:
    ```
    categories: 18 groups · 1621/1658 exhibitors tagged
    share tokens: 1038 identities, no collisions
    ```
-   The second is a real check, not decoration. Trade booths are saved and shared
-   under `dir:<slug>` keys, and the share format hashes every identity to a
-   5-character token; a token claimed twice is abandoned by both claimants, so
+   The second is a real check. Trade booths are saved and shared under
+   `dir:<slug>` keys, and the share format hashes every identity to a
+   5-character token. A token claimed twice is abandoned by both claimants, so
    those items silently stop riding share links. The tool mirrors `tok36()` from
    `js/app.js` and warns before such a dataset ships. If it ever does warn, the
-   fix is a wider `TOK_LEN` in `js/app.js` (a share-format change), not an edit
+   fix is a wider `TOK_LEN` in `js/app.js` — a share-format change, not an edit
    here.
 
    The search form ignores plain query parameters, but it does accept its whole
@@ -99,16 +99,42 @@ This document is the playbook for refreshing the data — written so a scheduled
    opening-hours table on
    <https://www.gamescom.global/en/info/trade-visitors>, which lists the business
    and entertainment areas in separate columns.
-7. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date) and increment `revision` — those two fields are all it holds. The footer note is prose like any other sentence and lives at `meta.note` in `data/i18n/en.json`.
+7. **Stamp `data/meta.json`**: set `lastChecked` to today (ISO date) on **every**
+   refresh, including one that found nothing. If the refresh did change something,
+   also set `lastUpdated` to today and increment `revision`. Those three fields are
+   all the file holds; the footer note is prose like any other sentence and lives at
+   `meta.note` in `data/i18n/en.json`.
 8. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
    human-readable bullet per meaningful change — this renders on the site's Updates tab.
    Skip trivia; write for visitors ("Ubisoft booth confirmed: Hall 6 B010"), not diffs.
+   Every bullet carries a `kind`, and `tools/check-i18n.mjs` fails the deploy if one doesn't:
+   - `content` — **what the guide knows about the show changed**: an exhibitor, booth,
+     lineup, hall, hours, ticket, link or source, whether added, confirmed, corrected or
+     removed. Every bullet of a plain data refresh is this one, including the ones that
+     start "Fixed:" — a booth filed at the wrong stand is show information corrected, and
+     someone scanning the Updates tab for new game info wants it in that scan.
+   - `feature` — **what the guide can do changed**: a new view, control or capability, or
+     an existing one deliberately redesigned.
+   - `fix` — **the guide was misbehaving and now isn't**: a wrong count on screen, a dead
+     tap target, a lost day assignment. Behaviour, never data — a wrong number the guide
+     *published* is `content`; a wrong number the guide *calculated* is `fix`.
+
+   The tags are what make the Updates tab scannable — a revision that added game
+   information has to read differently from one that moved a button. Revisions
+   themselves are never tagged: the timeline derives each entry's tags from its bullets,
+   so there is no summary line that can drift out of step with what is under it.
 9. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
    ```sh
    node -e "['exhibitors','event','meta','changelog'].forEach(f=>JSON.parse(require('fs').readFileSync('data/'+f+'.json')))"
    ```
 10. **Commit & push to `main`** with a message summarizing what changed, e.g.
    `data: Ubisoft booth confirmed Hall 6 B010; add Anno 118 as playable; bump rev 7`.
+   **A refresh that changed nothing still commits** — the new `lastChecked` is the
+   whole diff, and `data: sources re-checked, no changes` is the whole message. That
+   commit is the only thing that turns "we looked today" into something the site can
+   say, so skipping it is skipping the point of the run. No `revision` bump, no
+   changelog entry, nothing on the Updates tab: nothing changed, and the timeline is
+   for changes.
 
 ## Editorial rules
 
@@ -117,17 +143,17 @@ This document is the playbook for refreshing the data — written so a scheduled
   - `expected`: strongly implied (e.g. publisher confirmed + game launches in Sept/Oct)
   - `rumored`: our inference only — press speculation, past-year patterns
 - `locationConfirmed: false` + a hall value means "best guess (often from 2025 placement)". The UI marks the hall block amber and suffixes the booth with "· unconf."
-- **In `booth`, the slash joins the halves of one stand and the comma separates stands.** `A030/B029` is a single shared stand; `A030/B029, A040, A029` is LEGO's three. Both the map's highlight and the directory's "at &lt;host&gt;" label read this, so an exhibitor holding several stands needs all of them or the map calls the unlisted ones "not covered by the guide" — which is what happened to Ubisoft's second Hall 6.1 booth. Put the stand a visitor should walk to first: it is the one the card's plate deep-links to. `node tools/fetch-hallplan.mjs --report` names any stand filed under an exhibitor we cover whose card has not claimed it.
-- The tags `not exhibiting` and `offsite` are load-bearing for the hall view of the planner's "Your plan" board. Use those exact strings: `not exhibiting` excludes an entry from the route and lists it in the absent footnote only; `offsite` files a **hall-less** entry under the Offsite bucket. A `hall` value always wins over the `offsite` tag — an entry carrying both (Tencent runs a Hall 8.1 booth *and* the offsite Wassermannhalle exhibition) is routed to its hall, because that is the stop a visitor walks to.
-- `age` is the minimum age for an interactive demo **on the show floor**, not the USK or PEGI rating of the finished game. `ageStatus: "confirmed"` needs an exhibitor statement or official listing; a restriction inferred from the game's rating stays `"expected"`. Keep `age` numeric so lower gates remain expressible, but the current UI only filters and badges values `>= 18`. Use exhibitor-level `ageRestricted: true` only for a gated zone with no single game to attach it to — it is a hand-written assertion that the gate is real, so the UI treats it as confirmed and does *not* mark the booth "18+ expected".
+- **In `booth`, the slash joins the halves of one stand and the comma separates stands.** `A030/B029` is a single shared stand; `A030/B029, A040, A029` is LEGO's three. Both the map's highlight and the directory's "at &lt;host&gt;" label read this. So an exhibitor holding several stands needs all of them listed, or the map calls the unlisted ones "not covered by the guide" — which is what happened to Ubisoft's second Hall 6.1 booth. Put the stand a visitor should walk to first: it is the one the card's plate deep-links to. Run `node tools/fetch-hallplan.mjs --report` to list any stand filed under an exhibitor we cover whose card has not claimed it.
+- The tags `not exhibiting` and `offsite` are load-bearing for the hall view of the planner's "Your plan" board, so use those exact strings. `not exhibiting` excludes an entry from the route and lists it in the absent footnote only. `offsite` files a **hall-less** entry under the Offsite bucket. A `hall` value always wins over the `offsite` tag: an entry carrying both (Tencent runs a Hall 8.1 booth *and* the offsite Wassermannhalle exhibition) is routed to its hall, because that is the stop a visitor walks to.
+- `age` is the minimum age for an interactive demo **on the show floor**, not the USK or PEGI rating of the finished game. `ageStatus: "confirmed"` needs an exhibitor statement or official listing; a restriction inferred from the game's rating stays `"expected"`. Keep `age` numeric so lower gates remain expressible, though the current UI only filters and badges values `>= 18`. Use exhibitor-level `ageRestricted: true` only for a gated zone with no single game to attach it to. It is a hand-written assertion that the gate is real, so the UI treats it as confirmed and does *not* mark the booth "18+ expected".
 - The `Hide 18+` filter is a **browsing filter** ("don't show me demos I can't play"), not a content filter: it hides lineup rows, while descriptions, `visitAdvice` and tags stay as written and stay searchable. Don't write data on the assumption that a title is suppressed everywhere when it is hidden.
 - `platforms` is rendered on each game row as short codes (`XSX`, `SW2`, `PS5`…). Unknown values fall back to the uppercased string, so keep them short and consistent — see `PLATFORM_CODES` in `js/app.js` to add a new mapping.
 - Crowd scale: 1 calm · 2 light · 3 moderate · 4 busy (30–90 min queues) · 5 extreme (2 h+ queues, may cap lines early).
 - Don't remove the `sources` history; append. **`sources` is user-facing** — the ⓘ marker
-  in a card's foot opens the list, so every URL is one a visitor can be sent to. Keep
-  them deep links to the page that actually carries the claim rather than a site's front
-  page or a search result, drop one that has gone dead instead of leaving it to 404 on a
-  reader, and don't paste in a paywalled or login-walled URL as the only evidence for a
+  in a card's foot opens the list, so every URL is one a visitor can be sent to. Three
+  rules follow: keep them deep links to the page that actually carries the claim, not a
+  site's front page or a search result; drop a dead link rather than leaving it to 404
+  on a reader; and never make a paywalled or login-walled URL the only evidence for a
   booth. Non-`http(s)` entries are dropped by the UI without a word, so they read as
   missing evidence rather than as a note.
 - `officialUrl` is the only outbound link **in the card's own layout**, so it points at
@@ -143,26 +169,35 @@ This document is the playbook for refreshing the data — written so a scheduled
   still gamescom publishing about its own floor, which is what the rule protects; a
   vendor's shop is not.
 - `lastUpdated` is user-facing for the same reason — the sources dialog prints it as
-  "Last checked". Only move it when you actually re-checked that entry's sources.
+  "Last updated", so it means the day this entry's own facts last moved. Leave it
+  alone on an entry you re-read and had nothing to correct: the "somebody looked
+  today" half of the claim is `lastChecked` in `data/meta.json`, which is guide-wide,
+  moves on every refresh whatever it finds, and prints in the same dialog right after
+  the entry's own date ("Last updated Aug 12. Sources re-checked Aug 20."). That split
+  is deliberate — a per-entry date that moved whenever a sweep glanced past would stop
+  answering the question a visitor is asking, which is how old the *booth number* is.
 - `type: "experience"` is for booths whose draw is **something you do rather than a
   game you demo** — sim rigs, VR, a rideable robot, an RC drift track, head-only table
   tennis. Keep it broad on purpose: the specific flavour goes in `tags`
   (`sim racing`, `attraction`, `VR`), so next year's stunt needs no new type. A company
-  that merely *sells* hardware stays `hardware` even if you can touch it — MOZA is an
+  that merely *sells* hardware stays `hardware` even if you can touch it. MOZA is an
   experience because the booth is six bookable rigs; Corsair is hardware because the
-  booth is a product wall. Note gamescom's own directory makes a similar cut with its
+  booth is a product wall. gamescom's own directory makes a similar cut with its
   `Fun_More` partner type, which is a decent sanity check.
 - A brand registered on an exhibitor's official profile is **not** the same as an
   announced demo. It supports `status: "expected"` with a note saying so — not
   `confirmed`, and never `playable: true`. Several Hall 10 entries (Stage Tour,
   House Flipper 2, PROJECT BLITZ) rest on exactly this and say so in their notes.
 - **A game `title` is a user-facing key, so treat it like `id`.** Visitors save games and
-  mark them played by lowercased title, and day assignments in `gc2026.itinerary.v1`
+  mark them played by lowercased title, and both the day assignments in
+  `gc2026.itinerary.v1` and the hand-made stop order in `gc2026.planorder.v1`
   deliberately follow the same key — rename *Fable* to *Fable (2026)* and everyone who
   saved or played it silently loses that mark, on every booth showing it, and the rename
-  also orphans its day assignment. Correct an outright wrong title, but don't
+  also orphans its day assignment and the place they moved it to. Correct an outright wrong title, but don't
   re-punctuate, re-subtitle or "tidy" one that already works. The same key is why a title
   spelled identically at two booths (Alien: Isolation 2 at both Xbox and SEGA) is saved
+  and marked played at both at once. That is the intent, so keep shared titles spelled
+  the same across exhibitors.
   and marked played at both at once — which is the intent, so keep shared titles spelled
   the same across exhibitors. Live queues add one more consequence: a playable queue is
   keyed by the exhibitor id plus this normalized title. Renaming it during the show starts
@@ -213,6 +248,13 @@ official area names ("Indie Arena Booth"), "gamescom", "Opening Night Live", and
 the changelog — `data/changelog.json` is a transparency log rewritten every few
 days, and translating it would double the editorial cycle for the one surface
 nobody plans a day around. German readers get told so under the Updates lede.
+Its bullets' `kind` is the exception that proves it: the kinds are an enum, not
+prose, so their labels are translated like "rev {n}" is — a German reader gets
+"Messe-Infos" against an English bullet, and can still tell at a glance which
+revisions brought new show information.
+`imprint.html` and `privacy.html` are also English, though the footer links to
+them are labelled "Impressum" and "Datenschutz" — those are the words people
+look for, and § 5 DDG is about the imprint being easy to find.
 `imprint.html` is also English, though its footer link is labelled "Impressum" —
 the word people look for, and § 5 DDG is about it being easy to find.
 `privacy.html` is intentionally bilingual now: live queue reporting is the first
@@ -333,13 +375,12 @@ keep different opening hours.
   `open` = an open stand, staffed, walk up. `appointment` = a closed structure
   where meetings are booked in advance and there is nothing to see from the
   aisle. `mixed` = an open counter with closed meeting rooms behind it.
-  The two shapes are usually obvious from two facts that are already in the
-  data: how many exhibitors share the stand (`data/directory.json` — a national
-  pavilion has ten to seventy on one stand) and how big it is
-  (`data/hallplan/` — a 500 m² stand with a single occupant and no
-  co-exhibitors is a meeting building). Use those as evidence, not as a rule:
-  a small single-occupant stand in Hall 2.1 is an ordinary table booth you can
-  walk up to.
+  Two facts already in the data usually tell you which shape a booth is: how
+  many exhibitors share the stand (`data/directory.json` — a national pavilion
+  has ten to seventy on one stand) and how big it is (`data/hallplan/` — a
+  500 m² stand with a single occupant and no co-exhibitors is a meeting
+  building). Use those as evidence, not as a rule: a small single-occupant
+  stand in Hall 2.1 is an ordinary table booth you can walk up to.
 - **`dirSlug` claims a directory row.** The row then disappears from the trade
   list, because the card is the better answer, and a `dir:<slug>` key already
   saved by a visitor — from the map, or from a share link — is migrated onto
@@ -351,11 +392,11 @@ keep different opening hours.
   on appointments, not queues, and inventing a number for one would put a
   fiction in the list that most needs to be trusted.
 - **What earns a trade card is recognition, not size.** Stand area is a good
-  guide to whether a booth is open or closed and a terrible guide to whether
+  guide to whether a booth is open or closed, and a terrible guide to whether
   anyone is looking for it: Unity exhibits on 12 m², Reddit on 16, Cloudflare
   on 63, while the largest stands in the halls are closed compounds nobody can
   walk into. Pick the names a trade visitor would search for and be annoyed to
-  miss. Resist carding pavilions wholesale — there are 50 of them and forty
+  miss. Don't card pavilions wholesale — there are 50 of them, and forty
   near-identical cards would bury the twenty names worth surfacing.
 
 ### `data/event.json`
@@ -394,16 +435,40 @@ keep different opening hours.
 Weekday names are not stored at all — the app formats them from `date` in the
 reader's language, so "Wednesday" and "Mittwoch" are the same fact.
 
-`open`/`close` drive the planner and are the **public** hours; a trade badge gets
+`open`/`close` drive the planner and the Today tab's clock ("Open now · closes
+20:00 · 3h left") and are the **public** hours; a trade badge gets
 into the entertainment halls at 09:00 every day, which belongs in `hours` and the
 day `note` rather than in these two fields — and both of those are prose, so they
 live in `data/i18n/en.json`.
 
+`name`, `location`, `startDate`, `endDate` and the first and last entries in
+`days` are also copied by hand into the JSON-LD in `index.html`, which is what
+tells a search engine this site is a listing for a dated event. They are the
+only fields in this file with a second copy anywhere, so `tools/check-seo.mjs`
+compares the two on every build and fails the deploy if they have parted. If a
+build stops with `JSON-LD Event startDate is …`, the fix is to correct the
+block in `index.html` — the data file is the source, not the markup.
+
 ### `data/meta.json`
 
 ```jsonc
-{ "lastUpdated": "2026-08-06", "revision": 1 }
+{ "lastUpdated": "2026-08-06", "lastChecked": "2026-08-07", "revision": 1 }
 ```
+
+Two dates that answer two different questions, and only one of them moves on a
+quiet day. `lastUpdated` (with `revision`) is when the data last *changed*;
+`lastChecked` is when the guide last went back to its sources at all. A refresh
+that finds nothing moves `lastChecked` alone — that one-line diff is the whole
+commit, and it is what lets the footer and the sources dialog say the guide was
+re-checked yesterday rather than leave a page nobody has had to correct in a week
+looking abandoned. Keep `lastChecked` on or after `lastUpdated`; the UI prints it
+only when it is the later of the two, so an earlier date would silently say nothing.
+
+`lastUpdated` is also the `<lastmod>` on every URL in the generated
+`sitemap.xml`, so bumping it on a refresh is what tells search engines the
+exhibitor data moved and is worth re-crawling. `lastChecked` deliberately stays
+out of the sitemap: a daily `<lastmod>` on pages that did not change is a crawl
+budget spent on nothing, and a claim search engines learn to discount.
 
 ### `data/i18n/en.json` and `data/i18n/de.json`
 
@@ -464,11 +529,11 @@ refresh, and anything worth keeping belongs in `exhibitors.json` as a card inste
 }
 ```
 
-`slug` is **not decorative** — it is a saveable identity. A business-hall row is
+`slug` is a saveable identity, not a display detail. A business-hall row is
 saved, planned and shared as `dir:<slug>`, so a slug that changes upstream
 orphans somebody's saved booth the same way a renamed game `title` does. The
 slugs are Koelnmesse's own and some of them look wrong: `&why GmbH` is filed as
-`-whyassociacao_de_produt` and `Artifika Games` as
+`-whyassociacao_de_produt`, and `Artifika Games` as
 `muhammed_serkan_yildwestdeutscher_rundfu` — two truncated contact fields run
 together. Those are correct and resolve to the right profile; don't "fix" them.
 
@@ -491,16 +556,16 @@ check on a card's `booth`: the hall plan and the directory are separate feeds, a
 where they agree on an exhibitor's stands the number is about as sourced as it gets.
 
 It is written minified (~215 KB, ~48 KB over the wire) and is **not** in the service
-worker's precache list: it is fetched the first time a visitor opens the Full directory
-or turns on trade mode, and cached from then on by the generic `/data/` rule. Nobody
-pays for it who never opens it — which is why the trade setting is off by default, and
+worker's precache list. It is fetched the first time a visitor opens the Full directory
+or turns on trade mode, and cached from then on by the generic `/data/` rule. So nobody
+who never opens it pays for it — which is why the trade setting is off by default, and
 why precaching it for the consumer majority would be the wrong trade.
 
-One consequence worth keeping: because trade booths live in this file rather than in
+One consequence follows. Because trade booths live in this file rather than in
 `exhibitors.json`, a visitor who has saved one needs it loaded before their plan can
-show that stop. The guide therefore fetches it at boot whenever a saved key starts with
-`dir:` — regardless of the trade setting — and says so in the plan's empty state when it
-hasn't arrived yet. Never make that fetch conditional on the pref.
+show that stop. So the guide fetches it at boot whenever a saved key starts with `dir:`,
+regardless of the trade setting, and says so in the plan's empty state when it hasn't
+arrived yet. Never make that fetch conditional on the pref.
 
 ### `data/changelog.json` — array, newest first:
 
@@ -509,10 +574,19 @@ hasn't arrived yet. Never make that fetch conditional on the pref.
   {
     "date": "2026-08-07",
     "revision": 2,
-    "changes": ["One bullet per meaningful change, visitor-readable."]
+    "changes": [
+      // kind: "content" | "feature" | "fix" — the rule for picking one is in step 8
+      { "kind": "content", "text": "One bullet per meaningful change, visitor-readable." }
+    ]
   }
 ]
 ```
+
+The Updates tab reads the kinds twice: as a tag on each bullet, and — collected into the
+set of distinct kinds — as the tags on the revision itself, which is also what its filter
+row filters on. A bullet written as a bare string instead of an object still renders, with
+no tag: that is the one load an installed guide can pair a cached pre-tag changelog with
+this script, not a shape to author. `tools/check-i18n.mjs` rejects it in the repo.
 
 ## The offline cache
 
@@ -533,13 +607,12 @@ place it matters. The same applies to a **new language**: its
 `data/i18n/<lang>.json` and `js/i18n/<lang>.js` belong in `DATA` and `SHELL`
 respectively, or switching to it offline hands the visitor an empty guide.
 
-A caveat worth knowing when a change looks like it did not deploy: a visitor who
-already has the guide open is one load behind by design — the cached copy is served
-first and replaced in the background. So a CSS or JS change can take a couple of loads
-to appear on a device that has been there before. It is not stuck; closing the app and
-reopening it, or accepting the "newer version is ready" prompt,
-takes it immediately. What is *not* normal is never seeing it at all — that was a real
-bug in the caching, fixed in the same commit as this note.
+If a change looks like it did not deploy: a visitor who already has the guide open is
+one load behind by design — the cached copy is served first and replaced in the
+background. So a CSS or JS change can take a couple of loads to appear on a device that
+has been there before. It is not stuck. Closing the app and reopening it, or accepting
+the "newer version is ready" prompt, takes it immediately. What is *not* normal is never
+seeing it at all — that was a real caching bug, fixed in the same commit as this note.
 
 `/api/` is the exception to every cache strategy above. The fetch handler returns
 without calling `respondWith()` before it considers navigations or stale-while-
@@ -561,7 +634,8 @@ node tools/make-screenshots.mjs
 ## Refreshing the hall plans
 
 `data/hallplan/*.json` holds the booth outlines the Hall map draws — one
-file per hall level, snapshotted from Koelnmesse's own hall-plan data:
+file per hall level, plus the campus layout behind the map's Overview chip
+(see below) — snapshotted from Koelnmesse's own hall-plan data:
 
 ```sh
 node tools/fetch-hallplan.mjs      # no dependencies; ~10s
@@ -579,7 +653,7 @@ editorial updates above. Re-run it when:
   hall row automatically. A new hall needs one look at the rendered result:
   the mirror/rotation signs are a per-hall fact, and hall 2.1 already
   needed a `SIGN_FIX` entry to come out the right way up;
-- the map's credit date is old enough to be embarrassing.
+- the map's credit date has become noticeably old.
 
 The run also checks the two area colours — the fills the official plan
 gives the entertainment and business halls, which the map re-uses so the
@@ -630,12 +704,11 @@ runtime talks to Koelnmesse — visitors only ever fetch our own files.
 
 One file in that directory is hand-written, and `fetch-hallplan.mjs` neither
 reads nor writes it. The endpoint files stand blocks and stands and nothing
-else: there is no wall in the data and no doorway. Worse, the `size` it
-records is the *tight box around those contents*, so an outline drawn on it
-touches the outermost booth on all four sides by construction — which is
-what the map did at first, and it looked shrink-wrapped. This file supplies
-the two things that box cannot: how far the wall stands off it, and where the
-openings in it are.
+else: there is no wall in the data and no doorway. The `size` it records is
+the *tight box around those contents*, so an outline drawn on it touches the
+outermost booth on all four sides — which is what the map did at first, and it
+looked shrink-wrapped. This file supplies the two things that box cannot: how
+far the wall stands off it, and where the openings in it are.
 
 Coordinates are the hall's own metre frame, the same as its
 `hall-<id>.json` — x west to east, y north to south, 0 at the corner of the
@@ -651,9 +724,9 @@ top-level one applies everywhere; a hall may override it:
 It is a drawing allowance, not a measurement — nothing published measures it.
 It is shallowest at the north, where each of these halls files a 3 m-deep row
 of stands hard against the boundary, and deepest at the south, where the
-outermost thing is a full-depth stand block that needs a perimeter aisle
-behind it. Raise it if a hall still reads as shrink-wrapped; it changes only
-the drawing.
+outermost thing is a full-depth stand block needing a perimeter aisle behind
+it. Raise it if a hall still reads as shrink-wrapped; it changes only the
+drawing.
 
 **Doors** are one entry each:
 
@@ -679,6 +752,47 @@ the hall.** The doors came from the 2017 press hall plans, which draw the
 doorways directly and are read as fractions of each wall; the halls with no
 plan in that set borrow the spacing of the one next door. A number moved
 after actually standing in the doorway beats all of it.
+
+### The whole site in one picture — `data/hallplan/campus.json`
+
+The map's **Overview** chip draws every hall in its place with the Boulevard
+between them, and a tap on a hall opens it. That layout is snapshotted from
+the hall-plan *page* rather than the booth endpoint — the page carries a
+`hallen` array of campus outlines — so it has a switch of its own:
+
+```sh
+node tools/fetch-hallplan.mjs --campus   # the layout only, one request
+```
+
+A full run refreshes it too. It is separate because the two change for
+different reasons: booth geometry moves when an exhibitor does, the campus
+only when Koelnmesse rebuilds. Like the colour check, a page that no longer
+parses is a warning and not an error — a markup change at the source must not
+cost you a booth refresh, and the committed layout stays.
+
+**It is a diagram, not a plan.** Koelnmesse fits each hall to its slot on
+their own artwork rather than drawing it to scale, so neighbouring halls come
+out at different scales and no single number converts the file to metres. It
+is right about where a hall is and wrong about how big it is; the map says
+so in its credit line, and the file's `note` says it at length. A hall's real
+geometry is its `hall-<id>.json`, in true metres.
+
+Two tables in the tool are ours, and are the only editorial decisions here.
+`CAMPUS_PLACES` names the handful of features worth a name on a diagram
+(`B1` → `boulevard`), and `CAMPUS_ENTRANCES` picks the gates. It picks four of
+the six the source marks, and the comment above it says why: those markers come
+from Koelnmesse's traffic guide for the grounds, which is drawn once for every
+fair they host and names every way into the buildings. gamescom opens Nord,
+Ost, Süd and West, so a fifth dot drawn in the same style would read as a fifth
+way in. Both tables hold i18n keys, resolved client-side from `map.place.*` and
+`map.gate.*` in `js/i18n/<lang>.js`, so a name added to either needs a string
+in both languages and a `check-i18n --update` run. Everything else on the
+diagram is drawn as what its code says it is and carries no name.
+
+Adding a hall to `HALLS` puts it on the overview automatically: the tool
+records which levels the guide draws for each campus hall, and a plate with
+no level of ours is drawn dimmed and takes no taps. `campus.json` also has to
+stay named in `DATA` in `sw.js`, like every other file the map needs offline.
 
 ## Refreshing the webfonts
 
@@ -720,9 +834,13 @@ smaller `woff2` (and the variable-weight files) only to modern browsers. Re-chec
 > recent news, update data/*.json accordingly (new exhibitors, confirmed booths/halls,
 > lineup changes, crowd re-evaluation) — structure in the base files, all prose in
 > data/i18n/en.json. Then run `node tools/check-i18n.mjs`, translate whatever it
-> names into data/i18n/de.json, and re-run with `--update`. Bump data/meta.json,
-> validate JSON, then commit and push to main with a summary of changes. If nothing
-> changed, do nothing.
+> names into data/i18n/de.json, and re-run with `--update`. Set data/meta.json's
+> lastChecked to today either way, and bump lastUpdated + revision only if something
+> actually changed. Validate JSON, then commit and push to main. **Always commit**,
+> including on a run that found nothing: the lastChecked line is then the whole diff
+> and `data: sources re-checked, no changes` the whole message — that commit is what
+> makes the site's "sources re-checked" date true. No revision bump and no changelog
+> entry on such a run.
 
 Cadence: every 2–3 days until ~Aug 20, then daily through the show (booth numbers and
 demo lineups often land in the final week).
