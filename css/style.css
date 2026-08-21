@@ -241,7 +241,7 @@ body {
    hard edge and the hairline are the same vocabulary as the hall plates.
 
    Hidden from assistive tech (app.js sets aria-hidden and tabindex="-1"): a
-   keyboard user reaches all four tabs by tabbing, and the browser scrolls each
+   keyboard user reaches every tab by tabbing, and the browser scrolls each
    into view on focus, so the cue would be two extra stops in the middle of the
    nav offering something already had. It is a pointer affordance for a pointer
    problem.
@@ -1709,10 +1709,18 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .preview-when { color: var(--ink-mid); font-variant-numeric: tabular-nums; }
 .preview-exit {
   margin-left: auto;
+  position: relative;
   color: var(--warn);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+/* The same treatment the footer links got: 18px of mono type is a link to
+   read, not a link to tap, and this one is the way back out of a page
+   claiming to be a day it is not. It reaches 28px without moving, which is
+   past the 24 a fingertip wants. The sides stop at half the bar's 12px gap,
+   and both of its neighbours are plain text anyway, so nothing here can take
+   a tap meant for something else. */
+.preview-exit::after { content: ""; position: absolute; inset: -5px -6px; }
 .preview-exit:hover, .preview-exit:focus-visible { color: var(--ink); }
 
 /* ============================================================

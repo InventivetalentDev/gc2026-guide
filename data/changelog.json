@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-21",
+    "revision": 40,
+    "changes": [
+      { "kind": "fix", "text": "Today waits for your business-hall stops instead of walking past them. The trade directory is the largest file the guide loads and it lands a moment after the first screen is drawn — and until it did, a booth in halls 2\u20134 was simply missing from Today. If it was the only thing you had planned that day, Today said your trade data had not arrived yet and went on saying it. It fills itself in the moment the directory lands now, rather than waiting for you to leave the tab and come back." },
+      { "kind": "fix", "text": "Ticking off the last stop of the day no longer loses the keyboard's place. The line that takes the list's place \u2014 \u201cEverything you planned for Thursday is done\u201d \u2014 was written after the focus had already been put back, so it grew above the button the focus was on and pushed the focus ring off the bottom of the screen. It is written before the list is redrawn now, so the ring stays somewhere you can see it." },
+      { "kind": "fix", "text": "A day made entirely of business-hall booths opens on Today, the way any other day does. The trade directory is the last file to arrive, and until it did the guide could not see those stops at all \u2014 so it decided the day was empty and opened the exhibitor grid instead, to somebody already standing in hall 3. It reads the days straight off your plan now, which needs nothing downloaded." },
+      { "kind": "fix", "text": "Today cannot outlive the show. A phone left open on it across the last night of gamescom came back to Sunday's stops under a tab that was no longer there. It moves to the Visit planner now \u2014 the same place the guide sends anyone asking for Today on the other 360 days of the year." }
+    ]
+  },
+  {
+    "date": "2026-08-21",
     "revision": 39,
     "changes": [
       { "kind": "feature", "text": "New: a Today tab. It shows up on its own during the show — Aug 26–30 — and it is the guide reduced to one question: what is still on for today, and where do you walk next. Your stops for the day, in hall order, with the ones you have already ticked ✓ folded away at the bottom." },

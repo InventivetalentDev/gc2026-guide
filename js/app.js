@@ -2499,10 +2499,19 @@ function loadDirectory() {
       /* The expensive refreshes — 200 trade rows, the plan board — go
          straight to the DOM only for the view actually on screen. A view
          still holding its queued boot render needs nothing: that render runs
-         with the directory already in state. */
+         with the directory already in state.
+
+         Today belongs on this list for the same reason the plan board does,
+         and more urgently: directory.json is three times the size of the
+         exhibitor data, so on a first online load it lands after main() has
+         painted. Left off, a visitor who opened the app standing in a hall
+         keeps a Today missing its business-hall stops — and the "needs one
+         online load" line standing in for them — until they happen to leave
+         the tab and come back. */
       const work = [
         ["exhibitors", () => { renderTrade(); renderDirectory(); }],
         ["planner", () => { renderPriority(); renderPlan(); }],
+        ["today", renderToday],
       ];
       for (const [view, render] of work) {
         if (pendingViewRender.has(view)) continue;
@@ -4320,6 +4329,22 @@ function previewInstant() {
   return Number.isNaN(at.getTime()) ? null : at;
 }
 
+/* Where "back to the real date" goes: this address with `now` taken out of it
+   and everything else it carries left exactly as it was.
+
+   Dropping the whole query would be simpler and wrong. `?lang` is the one that
+   matters — js/i18n.js resolves it for the load and deliberately never
+   persists it, so a German link opened with ?now on it would exit into English
+   for anybody who has not used the switcher on purpose. The hash is passed in
+   rather than read here, because the href below is written once and the hash
+   moves under it every time the visitor changes tab. */
+const withoutPreview = (hash = "") => {
+  const params = new URLSearchParams(location.search);
+  params.delete("now");
+  const query = params.toString();
+  return location.pathname + (query ? `?${query}` : "") + hash;
+};
+
 /* Every read of "what time is it now" in the app goes through here, so the
    countdown in the masthead and the Today header can never tell a visitor two
    different things. (The .ics DTSTAMP deliberately does not: that field means
@@ -4463,15 +4488,16 @@ function renderPreviewBanner() {
   bar.classList.toggle("hidden", !at);
   if (!at) return;
   const { date, minutes } = showNow();
-  /* The href is the bare path — a correct destination for a middle-click, and
-     for a load where the handler in bindControls never ran. The hash is added
-     back at click time, because it moves while the banner is up and this
-     markup is only rebuilt when Today re-renders. */
+  /* The href stands on its own — a correct destination for a middle-click, and
+     for a load where the handler in bindControls never ran. Only the hash is
+     added back at click time, because it moves while the banner is up and this
+     markup is only rebuilt when Today re-renders; the rest of the address does
+     not move, so withoutPreview() can write it here. */
   bar.innerHTML = `<span class="preview-tag">${esc(t("preview.tag"))}</span>
     <span class="preview-when">${esc(
       t("preview.when", { day: dayName(date), date: formatDate(date), time: hhmm(minutes) })
     )}</span>
-    <a class="preview-exit" href="${esc(location.pathname)}">${esc(t("preview.exit"))}</a>`;
+    <a class="preview-exit" href="${esc(withoutPreview())}">${esc(t("preview.exit"))}</a>`;
 }
 
 function renderToday() {
@@ -4552,13 +4578,12 @@ function renderToday() {
       : "",
   ].join("");
 
-  keepingFocus($("#today-body"), () => {
-    $("#today-body").innerHTML = body;
-  });
-  const fold = $("#today-done");
-  if (fold) fold.addEventListener("toggle", () => (todayDoneOpen = fold.open));
-
-  const unplaced = unplacedCount();
+  /* Above the board before the board — see the note in renderItinerary. This
+     line sits between the header and the list, and it is written on the very
+     tick that empties the list. Written after the board instead, it grew 45px
+     above a button keepingFocus() had already put focus on and measured, and
+     the ring landed off screen — the one thing restoreFocus() exists to
+     prevent. */
   const empty = $("#today-empty");
   empty.classList.toggle("hidden", left > 0);
   empty.textContent = tradeDataPending()
@@ -4568,6 +4593,16 @@ function renderToday() {
       : savedCount()
         ? t("today.nothingToday", { day: dayName(d.date) })
         : t("today.emptyNoSaved");
+
+  keepingFocus($("#today-body"), () => {
+    $("#today-body").innerHTML = body;
+  });
+  const fold = $("#today-done");
+  if (fold) fold.addEventListener("toggle", () => (todayDoneOpen = fold.open));
+
+  /* Everything below the board follows it — nothing here can move the row
+     focus just landed on. */
+  const unplaced = unplacedCount();
   $("#today-unplaced").classList.toggle("hidden", unplaced === 0);
   $("#today-unplaced").textContent = unplaced ? t("today.unplaced", { n: unplaced }) : "";
   /* The plan is the way to fix an empty or a finished day; browsing is only
@@ -4969,11 +5004,11 @@ function resetFilters() {
 
 /* ---------- deferred view rendering ----------
 
-   Boot used to render all four views in one synchronous block, and the page
-   sat frozen — no scroll, no taps — until the whole thing finished. Only one
-   view is visible, so only that one has to be ready before first paint; the
-   other three are queued here and rendered either in idle time or the moment
-   their tab is opened, whichever comes first.
+   Boot used to render every view in one synchronous block, and the page sat
+   frozen — no scroll, no taps — until the whole thing finished. Only one view
+   is visible, so only that one has to be ready before first paint; the rest
+   are queued here and rendered either in idle time or the moment their tab is
+   opened, whichever comes first.
 
    The thunks are plain state→DOM renders, so running one late — or running
    it redundantly after a state change already re-rendered that view — is
@@ -5010,6 +5045,26 @@ const SAVED_ROUTE = "saved";
 
 const routeFor = (view) => (view === "exhibitors" && state.savedOnly ? SAVED_ROUTE : view);
 
+/* Today's stops whose data has not arrived yet.
+
+   A business-hall booth is saved under a `dir:` key and carries its day in the
+   itinerary — both localStorage, both readable the instant the app starts. It
+   only becomes a stop routeGroups() can see once data/directory.json lands,
+   and that file is three times the size of the exhibitor data, so on a first
+   online load it lands after the landing view has been chosen. Counted here,
+   a day made entirely of business booths is a full day rather than an empty
+   one, and Today says the data is still coming; left out, the guide sends
+   somebody standing in hall 3 to the exhibitor grid.
+
+   Zero once the directory is in, because routeGroups() knows better by then —
+   including about a `dir:` key that resolves to nothing at all. */
+const unarrivedStopsOn = (date) =>
+  state.directory
+    ? 0
+    : [...state.marks.saved.exhibitors].filter(
+        (key) => isDirKey(key) && assignedDay("exhibitor", key) === date
+      ).length;
+
 /* Where a bare address lands. On a show day that has stops on it, that is
    Today: someone opening the app mid-show is standing in a hall, not
    browsing. It leads only when it has something to lead with — an empty
@@ -5019,7 +5074,10 @@ function defaultRoute() {
   const day = showDay();
   if (!day) return VIEWS[0];
   const { groups, done } = routeGroups({ day: day.date, hidePlayed: true });
-  const stops = groups.reduce((n, group) => n + group.items.length, 0) + done.length;
+  const stops =
+    groups.reduce((n, group) => n + group.items.length, 0) +
+    done.length +
+    unarrivedStopsOn(day.date);
   return stops ? "today" : VIEWS[0];
 }
 
@@ -5288,9 +5346,9 @@ function bindControls() {
   $("#preview-bar")?.addEventListener("click", (e) => {
     if (!e.target.closest(".preview-exit")) return;
     e.preventDefault();
-    /* Same view, real clock. Dropping the query is a navigation, so the app
-       reboots without ?now rather than trying to unwind it in place. */
-    location.assign(location.pathname + location.hash);
+    /* Same view, same language, real clock. Losing ?now is a navigation, so
+       the app reboots without it rather than trying to unwind it in place. */
+    location.assign(withoutPreview(location.hash));
   });
   /* Today's two doors, pointing at the two things that can be wrong with it:
      an empty day is fixed in the plan, an empty list on the exhibitor grid. */
@@ -5311,7 +5369,14 @@ function bindControls() {
     /* Unconditional, not only while Today is open: a phone left running
        overnight wakes up on a day the tab did not exist for yet, and
        renderToday is also what puts the tab there. */
-    if (!document.hidden) renderToday();
+    if (document.hidden) return;
+    renderToday();
+    /* The reverse of that, once a year: a phone left open on Today across the
+       last night of the show wakes on a day the view is not for. renderToday
+       takes the tab away but cannot move anyone, so route back through
+       showView, which already owns the "is there a Today" rule and sends a
+       dead one to the planner. */
+    if (state.view === "today" && !showDay()) showView("today");
   });
   /* The lens chips are static markup, so a click never re-renders them out
      from under the pointer — only the board below swaps. */

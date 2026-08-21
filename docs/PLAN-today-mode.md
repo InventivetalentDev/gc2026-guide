@@ -124,7 +124,7 @@ layout — so the test is `offsetParent` **and** not inside `details:not([open])
 
 ### 6. `sw.js`
 
-`VERSION` to `v10`. A fifth tab and a fifth `<section>` in `index.html`, both
+`VERSION` to `v12`. A fifth tab and a fifth `<section>` in `index.html`, both
 driven entirely by `js/app.js`: mismatched halves fail in both directions, and a
 mode that exists for five days should not spend one of them waiting for a
 revalidation. The route is guarded in `showView()` as well, so the bad pairing
