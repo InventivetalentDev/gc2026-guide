@@ -13,7 +13,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Shareable saved lists** — move a plan to another device or send it to a friend with a link or scannable QR code
 - **Share the guide itself** — a Share button in the masthead opens a QR code big enough to hold up to the phone of whoever you are queueing with, plus the link to copy for posting it anywhere else
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
-- **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them. Each stop wears its queue index in both arrangements, and ▲▼ put the list in **the order you'll actually walk it** — the guide opens with busiest-queue-first and hands the order over the moment you disagree; the hall map numbers its pins from the same order
+- **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them. Each stop wears its queue index in both arrangements, and ▲▼ put the list in **the order you'll actually walk it** — the guide opens with busiest-queue-first and hands the order over the moment you disagree; the hall map numbers its pins from the same order. Either arrangement reaches the map from its own headings — a hall heading opens that hall, a day heading opens the whole site with that day lit
 - **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up. Tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. Entertainment halls and trade-only business halls are each washed in the colour the official plan gives that area, and the business ones are flagged as the door a consumer ticket does not open. Pick a day and that day's stops are pinned on the floor in your plan's own order — the one you arranged, or busiest first with played ones last until you do — so "Thursday, hall 7.1" is a picture rather than a list. It does not stop at the wall: the halls either side of this one in the plan are named in the bar, a tap from opening, and where a doorway is known to start the way there the route runs out to it and an arrow points through. The overview answers the same question for the whole site — every hall that day touches, lit and numbered in order. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens the map on that stand. It works offline like everything else
 - **Trade exhibitors**, behind one setting — "I have a trade badge", off by default. Switch it from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters and curated cards for the platforms, services and national pavilions standing there. Each booth says whether it is an open stand or a closed room you need an appointment for — the one thing that decides whether walking over is worth it. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
 - **Two-faced cards** for the twenty-odd exhibitors with a booth on each side of the show. Capcom demos in Hall 9.1 and takes meetings in 4.2; tap the small purple square in the corner of the hall plate and the card turns over to its business booth, tap the cyan one to turn it back. The square is the other booth's plate in miniature, in Koelnmesse's own colours — purple for the business halls, cyan for the entertainment ones — so a plate means the same thing here as on the official plan. The two booths stay separate stops in your plan, because they keep different hours
@@ -310,6 +310,26 @@ which day a stop is on, and which stop is number 1. Anything either page kept
 its own copy of would drift, and a map that numbered your Thursday differently
 from the list it read it off would be worse than no numbers at all.
 
+Every list in the app is drawn by replacing a container's `innerHTML` in one
+write — there is no diffing layer — and one rule falls out of that: **a rebuild
+must not move the page.** The visitor pressed a button that was on screen, so
+the view belongs where they left it when the press is over. Three things
+threaten that, and all three are handled where they arise rather than papered
+over afterwards:
+
+- `focus()` scrolls its element into view, and after a rebuild the element is
+  new, so the browser has no memory of it and centres it. `restoreFocus()` in
+  `js/app.js` puts focus back without the scroll, and reveals the control only
+  when the focus ring is actually showing — the keyboard case, where invisible
+  focus is the worse failure.
+- The browser's scroll anchoring holds a node in view to absorb content
+  loading above it. A wholesale rebuild destroys that node, so it corrects for
+  a shift that never happened; the rebuilt containers opt out with
+  `overflow-anchor: none`.
+- Anything above a list has to be written *before* the list, not after: focus
+  goes back mid-rebuild, and a header row that grows afterwards shoves the
+  control focus just landed on off the screen.
+
 One rule runs through the trade feature and is worth stating once: **the "I
 have a trade badge" setting gates discovery, never resolution.** It decides
 what the guide offers you. It never decides whether something you already
@@ -323,9 +343,9 @@ allowed to have. `docs/PLAN-trade-exhibitors.md` is the design record.
 | `data/exhibitors.json` | Array of exhibitors: location, games, tags, crowd forecast — structure only. `type: "trade"` cards are business-area booths and carry `offers` and an `access` value instead of a lineup and a queue index |
 | `data/directory.json` | The raw official exhibitor list (~1650 rows) with each row's product groups. Lazy-loaded — it backs the Full directory and the trade list. Generated by `tools/fetch-directory.py` |
 | `data/event.json` | Event structure: opening times, business-area hours, trade-day flags, areas |
-| `data/meta.json` | `lastUpdated`, `revision` |
+| `data/meta.json` | `lastUpdated` and `revision` — when the data last changed — plus `lastChecked`, the day the sources were last swept, which moves on every refresh whether or not it found anything. That is what lets a card nobody has had to correct in a week say so, instead of reading as a week stale |
 | `data/i18n/<lang>.json` | Every sentence a visitor reads, per language, keyed back to the files above |
-| `data/changelog.json` | Per-revision change notes, shown on the Updates tab (English only) |
+| `data/changelog.json` | Per-revision change notes, shown on the Updates tab (English only). Each bullet is tagged `content`, `feature` or `fix` — what the guide knows about the show, what it can do, what it was getting wrong — so "when did the game information last change" is one chip away rather than a read through every revision |
 | `data/hallplan/index.json`, `data/hallplan/hall-*.json` | Booth outlines per hall level, for the map. Generated by `tools/fetch-hallplan.mjs` from Koelnmesse's hall-plan data — booth *numbers* stay editorial in `exhibitors.json`, and the two are joined at load time |
 | `data/hallplan/outline.json` | How far each hall's wall stands off its booths, and where the doors in it are. Hand-written, and the one file in that directory the tool never touches: the official data files stand blocks and stands, never a wall or a doorway |
 | `data/hallplan/campus.json` | The whole site in one diagram — every hall in its place, the Boulevard between them, the passages and the gates — behind the map's Overview chip. Generated by the same tool from the hall-plan page's campus outlines, which are fitted to Koelnmesse's artwork rather than drawn to scale: right about where a hall is, wrong about how big it is, and it says so |

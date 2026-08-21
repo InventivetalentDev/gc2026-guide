@@ -227,6 +227,7 @@ window.GC_STRINGS.de = {
   "plan.lensHall": "Nach Halle",
   "plan.dayFilterAria": "Stopps eines einzelnen Tages zeigen",
   "plan.unassigned": "Ohne Tag",
+  "plan.dayMapAria": "{day} auf dem Hallenplan zeigen",
   "plan.savedHere": "Hier gemerkt",
   "plan.absentStop": "Nicht da — kein Stand",
   "plan.offsite": "Außerhalb des Messegeländes",
@@ -305,6 +306,13 @@ window.GC_STRINGS.de = {
     "Dieser Guide wird bis zur Messe alle paar Tage aktualisiert, sobald Aussteller ihre Spiele und Standorte bekannt geben. Was sich in welcher Revision geändert hat:",
   "updates.rev": "Rev. {n}",
   "updates.englishOnly": "Die Änderungsliste unten erscheint auf Englisch.",
+  "updates.filterLabel": "Zeigen",
+  "updates.kind.feature": "Funktion",
+  /* "Behoben", not "Fehlerbehebung": the tag is set inline at the head of every
+     bullet, and the long compound took a third of the line on a phone. */
+  "updates.kind.fix": "Behoben",
+  "updates.kind.content": "Messe-Infos",
+  "updates.noneOfKind": "Zu dieser Art sind noch keine Änderungen verzeichnet.",
 
   /* ---------- countdown & freshness ---------- */
   "countdown.days": "T−{n} Tag|T−{n} Tage",
@@ -385,7 +393,8 @@ window.GC_STRINGS.de = {
     "Termine, Öffnungszeiten, Tickets und Hallenbereiche auf dieser Seite stammen aus {n} Quelle.|Termine, Öffnungszeiten, Tickets und Hallenbereiche auf dieser Seite stammen aus {n} Quellen.",
   "sources.note.card":
     "Standort, Spiele und erwarteter Andrang in diesem Eintrag stammen aus {n} Quelle.|Standort, Spiele und erwarteter Andrang in diesem Eintrag stammen aus {n} Quellen.",
-  "sources.lastChecked": " Zuletzt geprüft am {date}.",
+  "sources.lastUpdated": " Zuletzt aktualisiert am {date}.",
+  "sources.lastChecked": " Quellen zuletzt geprüft am {date}.",
   "sources.caveat":
     "Das hier ist ein inoffizieller Guide. Standnummern und Spieleangebote können sich bis zur Messe ändern. Wenn ein Detail für deinen Tag wichtig ist, prüf es an der Quelle.",
 
@@ -469,6 +478,7 @@ window.GC_STRINGS.de = {
   "map.zoomIn": "Hineinzoomen",
   "map.zoomOut": "Herauszoomen",
   "map.zoomFit": "Ganze Halle zeigen",
+  "map.rotate": "Halle im Uhrzeigersinn drehen",
   "map.counts": "{n} Stände · {covered} im Guide",
   "map.countsSaved": " · {n} gemerkt",
   "map.countsPlanned": " · {n} geplant",

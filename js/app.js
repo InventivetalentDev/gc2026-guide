@@ -39,6 +39,12 @@ const state = {
   planLens: "day",
   /* hall-lens day filter: "all", an ISO day date, or "none" (unassigned) */
   planDay: "all",
+  /* which kind of change the Updates timeline is showing: "all" or one of
+     CHANGE_KINDS. Deliberately not in prefs — the other view preferences are
+     about how you like to read, and this one hides entries. A changelog that
+     came back next week still filtered to "fix", with no memory of having set
+     it, would be a transparency log quietly holding things back. */
+  updateKind: "all",
   /* hall ids the hall map can draw; filled from data/hallplan/index.json */
   mapHalls: new Set(),
   /* hall id -> official area key ("entertainment" | "business"), from the same
@@ -81,6 +87,10 @@ const GCI18N = window.GCI18N || {
 };
 const t = GCI18N.t;
 const formatDate = GCI18N.formatDate || ((date) => String(date));
+
+/* Dates in the data are ISO `YYYY-MM-DD`, so string order is date order.
+   "Strictly newer than", with a missing second date counting as older. */
+const isLaterDate = (a, b) => Boolean(a) && (!b || a > b);
 
 /* Category, crowd and age vocabularies are ids, not text — display labels
    live in js/i18n/<lang>.js under type.*, crowd.* and age.*. "experience"
@@ -437,6 +447,41 @@ function syncMarkUI() {
   });
 }
 
+/* Putting focus back must not move the page under the visitor.
+
+   focus() scrolls its element into view, and every element these renders hand
+   it is one innerHTML older than a second: the browser has no memory of where
+   it used to sit, so rather than leaving a control that is already on screen
+   alone it scrolls the thing to the middle of the viewport. That is where the
+   plan's jumps came from — assigning a stop to a day flung the board about
+   1500px, a played tick on the queue table about 1800px, and every reorder
+   crept the page by a row. The visitor pressed a button they could see; the
+   page has to still be where they left it when the press is over.
+
+   Keyboard users are the exception, and the reason this is not simply
+   preventScroll everywhere: focus they cannot see is worse than a scroll. When
+   the browser says the focus ring is showing (:focus-visible is exactly the
+   "was this a keyboard interaction" question, asked of the engine rather than
+   guessed at here) a control that landed off screen is brought back with the
+   smallest scroll that reveals it. */
+const canAskFocusVisible = (() => {
+  try {
+    document.documentElement.matches(":focus-visible");
+    return true;
+  } catch {
+    return false; // pre-2022 engine — no ring to keep in view either
+  }
+})();
+
+function restoreFocus(el) {
+  if (!el) return;
+  el.focus({ preventScroll: true });
+  if (!canAskFocusVisible || !el.matches(":focus-visible")) return;
+  const box = el.getBoundingClientRect();
+  const fold = window.innerHeight || document.documentElement.clientHeight;
+  if (box.bottom <= 0 || box.top >= fold) el.scrollIntoView({ block: "nearest" });
+}
+
 /* Re-rendering a list with innerHTML destroys the button that was just
    pressed, dropping keyboard focus back to the top of the page. Put it back on
    the equivalent button whenever one survives the re-render. When the whole row
@@ -481,11 +526,11 @@ function keepingFocus(container, render, fallback) {
     const partner = [...again.parentElement.children].find(
       (sib) => sib !== again && !sib.disabled && shown(sib)
     );
-    if (partner) return partner.focus();
-  } else if (shown(again)) return again.focus();
+    if (partner) return restoreFocus(partner);
+  } else if (shown(again)) return restoreFocus(again);
   if (index < 0) return;
   const buttons = buttonsNow();
-  (buttons[Math.min(index, buttons.length - 1)] || fallback)?.focus();
+  restoreFocus(buttons[Math.min(index, buttons.length - 1)] || fallback);
 }
 
 function renderMarkControls() {
@@ -1452,6 +1497,12 @@ function sourceParts(url) {
   }
 }
 
+/* Two dates, because they answer different questions and only one of them
+   moves on a quiet day: `updated` is when this entry's own facts last
+   changed, `checked` is when the guide last went back to its sources at all.
+   The refresh routine records the sweep in data/meta.json whether or not it
+   found anything, so a card nobody has had to correct in a week reads as
+   re-checked yesterday rather than as a week stale. */
 function sourcesSubject(kind, key) {
   if (kind === "event") {
     return {
@@ -1459,6 +1510,7 @@ function sourcesSubject(kind, key) {
       what: "event",
       sources: state.event?.sources,
       updated: state.meta?.lastUpdated,
+      checked: state.meta?.lastChecked,
     };
   }
   const ex = state.exhibitors.find((item) => item.id === key);
@@ -1468,6 +1520,7 @@ function sourcesSubject(kind, key) {
     what: "card",
     sources: ex.sources,
     updated: ex.lastUpdated,
+    checked: state.meta?.lastChecked,
   };
 }
 
@@ -1497,7 +1550,12 @@ function openSources(kind, key) {
   $("#sources-note").textContent =
     t(`sources.note.${subject.what}`, { n: list.length }) +
     (subject.updated
-      ? t("sources.lastChecked", { date: formatDate(subject.updated) })
+      ? t("sources.lastUpdated", { date: formatDate(subject.updated) })
+      : "") +
+    /* Only when the sweep is newer than the entry — the same date twice
+       would read as two claims about one day. */
+    (isLaterDate(subject.checked, subject.updated)
+      ? t("sources.lastChecked", { date: formatDate(subject.checked) })
       : "");
   $("#sources-list").innerHTML = list
     .map((url, i) => {
@@ -2330,7 +2388,7 @@ function renderFilters() {
       persistPrefs();
       renderFilters();
       renderExhibitors();
-      $(`#age-filters [data-age="${CSS.escape(age)}"]`)?.focus();
+      restoreFocus($(`#age-filters [data-age="${CSS.escape(age)}"]`));
     })
   );
 }
@@ -3086,7 +3144,7 @@ const isBusinessOpenDay = (d) => d?.business !== "closed";
    note:false — they repeat the advice paragraph a plan spanning five days
    would otherwise carry five times, one scroll above where it already reads
    in full. The facts you act on (day, access, hours) stay. */
-function dayHeaderInner(d, { note = true } = {}) {
+function dayHeaderInner(d, { note = true, map = false } = {}) {
   const [, month, day] = d.date.split("-");
   return `<span class="day-when">
       <span class="day-dow">${esc(shortDay(d.date))}</span>
@@ -3096,8 +3154,22 @@ function dayHeaderInner(d, { note = true } = {}) {
     <span class="day-detail">
       ${d.hours ? `<span class="day-hours">${esc(d.hours)}</span>` : ""}
       ${note && d.note ? `<span class="day-note">${esc(d.note)}</span>` : ""}
-    </span>`;
+    </span>${map ? dayMapLink(d) : ""}`;
 }
+
+/* The day lens's answer to the hall lens's "Map →" on each hall heading.
+
+   A day is not one hall, so it opens the overview rather than a hall: every
+   hall that day touches, lit and numbered in your plan's order, which is the
+   question a day heading raises and the only view that answers it whole. One
+   tap from there opens whichever hall you meant. The hall lens keeps its own
+   link pointed at its own hall, so between the two lenses both readings of
+   "show me this on the map" have a way there. */
+const dayMapLink = (d) =>
+  `<a class="route-hall-map day-map" href="${esc(
+    `map.html?day=${encodeURIComponent(d.date)}#overview`
+  )}" title="${esc(t("map.openTitle"))}"
+    aria-label="${esc(t("plan.dayMapAria", { day: dayName(d.date) }))}">${esc(t("map.cue"))}</a>`;
 
 /* Weekday names are derived from the date in the active language rather
    than hand-written per locale — see GCI18N.dayName. The short form is
@@ -3324,19 +3396,25 @@ function moveButtons(key, name, i, total) {
    calendar export writes it into an .ics file, where a link is just noise.
    A game shown at two booths links each of them separately. */
 function itineraryItemLocationHtml(item) {
+  /* The day this stop is on rides along to the map, the way the hall lens's
+     day filter already does (mapLink). This lens *is* a day filter — the row
+     sits under a Thursday heading — and a booth opened from it used to land
+     on a map with no day picked, asking for the day the visitor had just
+     been looking at. Null on an unassigned stop, which mapLink drops. */
+  const day = assignedDay(item.kind, item.key);
   if (item.kind === "game") {
     return item.at.length
       ? item.at
           .map(
             (ex) =>
-              `${esc(ex.name)} — ${hallLink(ex.hall, ex.booth, itineraryLocation(ex, { booth: false }))}`
+              `${esc(ex.name)} — ${hallLink(ex.hall, ex.booth, itineraryLocation(ex, { booth: false }), day)}`
           )
           .join(" · ")
       : t("plan.boothTba");
   }
   /* Where, and only where: the queue index used to be appended here and now
      has a cell of its own, in the column the hall lens keeps it in. */
-  return hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex));
+  return hallLink(item.ex.hall, item.ex.booth, itineraryLocation(item.ex), day);
 }
 
 /* Does this stop stand in the business area? Asked of the location, not of
@@ -3438,7 +3516,10 @@ function renderItinerary() {
        answerable without reading every stop. */
     const shut = dayItems.filter(stopOnClosedDay).length;
     groups.push(`<div class="it-group" data-it-date="${esc(d.date)}">
-      <div class="it-group-head" tabindex="-1">${dayHeaderInner(d, { note: false })}</div>
+      <div class="it-group-head" tabindex="-1">${dayHeaderInner(d, {
+        note: false,
+        map: true,
+      })}</div>
       ${
         shut
           ? `<p class="it-group-warn">${esc(
@@ -3449,6 +3530,17 @@ function renderItinerary() {
       ${dayItems.map((item, i) => itineraryItem(item, d.date, i, dayItems.length)).join("")}
     </div>`);
   }
+
+  /* Everything that sits *above* the board is written before the board is:
+     keepingFocus() puts focus back mid-rebuild, and anything above it that
+     grows afterwards pushes the control focus just landed on back off the
+     screen it was scrolled onto. The count is the one line up there that
+     moves with the plan. */
+  const placed = items.filter((item) => validDays.has(assignedDay(item.kind, item.key))).length;
+  $("#plan-count").textContent = items.length
+    ? t("plan.itemCount", { n: items.length }) +
+      (placed ? t("plan.placedSuffix", { n: placed }) : "")
+    : "";
 
   const board = $("#plan-board");
   keepingFocus(board, () => {
@@ -3470,11 +3562,6 @@ function renderItinerary() {
   /* Absent stops render inline here ("Absent — no booth"); the footnote is the
      hall lens's way of saying the same thing. */
   $("#plan-absent").classList.add("hidden");
-  const placed = items.filter((item) => validDays.has(assignedDay(item.kind, item.key))).length;
-  $("#plan-count").textContent = items.length
-    ? t("plan.itemCount", { n: items.length }) +
-      (placed ? t("plan.placedSuffix", { n: placed }) : "")
-    : "";
 }
 
 /* How many of the plan's items sit on each day — the five-days board wears
@@ -4031,6 +4118,13 @@ function renderRoute() {
   const hallCount = groups.filter((group) => group.key !== "offsite" && group.key !== "tba").length;
   const html = routeBoard(groups, { dayFilter });
 
+  /* Above the board before the board — see the note in renderItinerary. */
+  $("#plan-count").textContent =
+    t("route.stops", { n: stopCount }) +
+    " · " +
+    t("route.halls", { n: hallCount }) +
+    (played ? t("priority.playedSuffix", { n: played }) : "");
+
   keepingFocus(
     routeList,
     () => {
@@ -4057,11 +4151,6 @@ function renderRoute() {
     "hidden",
     stopCount > 0 || savedCount() > 0 || tradeDataPending()
   );
-  $("#plan-count").textContent =
-    t("route.stops", { n: stopCount }) +
-    " · " +
-    t("route.halls", { n: hallCount }) +
-    (played ? t("priority.playedSuffix", { n: played }) : "");
   /* Absent entries have no day to belong to; the footnote is an all-days fact. */
   $("#plan-absent").classList.toggle("hidden", absent.length === 0 || Boolean(dayFilter));
   $("#plan-absent").textContent = absent.length
@@ -4118,7 +4207,7 @@ function renderPlanDayFilter() {
       renderPlan();
       /* The render rebuilds the chip row — put focus back on the chip that
          was pressed, the way the age filter does. */
-      $(`#plan-day-filter [data-plan-day="${CSS.escape(chip.dataset.planDay)}"]`)?.focus();
+      restoreFocus($(`#plan-day-filter [data-plan-day="${CSS.escape(chip.dataset.planDay)}"]`));
     })
   );
 }
@@ -4146,12 +4235,14 @@ function renderPlan() {
   /* Before the board: this can reset a stranded state.planDay back to "all",
      and routeGroups() has to see the corrected value. */
   renderPlanDayFilter();
-  /* Same shell, restyled per lens; toggle (not className) so "hidden" and the
-     renderers' own state survive the swap. */
-  board.classList.toggle("it-board", !hall);
-  board.classList.toggle("route-board", hall);
-  hall ? renderRoute() : renderItinerary();
-  /* Export rides with the plan, not one lens — it always writes the full set
+
+  /* The two buttons in .plan-controls come next, and before the board rather
+     than after it, because that row sits above the board and each of them
+     appears for the first time on the very assignment or move that rebuilds
+     it. keepingFocus() puts focus back mid-rebuild; a control row that grows
+     after that shoves the button focus just landed on back off the screen.
+
+     Export rides with the plan, not one lens — it always writes the full set
      of day assignments, whichever arrangement is on screen. Same visibility
      test the itinerary section used: at least one item placed on a real day. */
   const validDays = new Set((state.event?.days || []).map((d) => d.date));
@@ -4163,6 +4254,12 @@ function renderPlan() {
      sorting itself has nothing to reset, and the button would be a control
      for a state nobody is in. */
   $("#plan-order-reset")?.classList.toggle("hidden", state.planOrder.length === 0);
+
+  /* Same shell, restyled per lens; toggle (not className) so "hidden" and the
+     renderers' own state survive the swap. */
+  board.classList.toggle("it-board", !hall);
+  board.classList.toggle("route-board", hall);
+  hall ? renderRoute() : renderItinerary();
 }
 
 /* ---------- Today ----------
@@ -4622,18 +4719,112 @@ function renderEvent() {
   $("#badge-toggle").addEventListener("click", () => setTrade(!state.trade, { announce: true }));
 }
 
-/* ---------- changelog ---------- */
+/* ---------- changelog ----------
+
+   Every bullet in data/changelog.json carries a `kind`, and this is the whole
+   reason it does: a revision that added game information reads the same as one
+   that moved a button around until something says which it was. The three are
+   what the update cycle actually produces — see docs/UPDATING.md for the rule
+   each is written to:
+
+     feature — what the guide can do changed
+     fix     — the guide was misbehaving and now isn't
+     content — what the guide knows about the show changed
+
+   A revision is never tagged in the data. Its kinds are the distinct kinds of
+   its bullets, derived here, so the two can't drift apart the way a
+   hand-maintained summary line would. */
+
+const CHANGE_KINDS = ["feature", "fix", "content"];
+
+/* A bullet written before the kinds existed is a bare string. That pairing is
+   real for one load — the JSON is served network-first but falls back to the
+   cached copy offline, so an installed guide can hold last week's changelog
+   against this week's script — and it renders untagged rather than throwing or
+   inventing a kind for prose nobody classified. */
+function changeParts(change) {
+  if (typeof change === "string") return { kind: null, text: change };
+  const kind = CHANGE_KINDS.includes(change?.kind) ? change.kind : null;
+  return { kind, text: String(change?.text ?? "") };
+}
+
+function kindTag(kind, cls) {
+  return `<span class="${cls}" data-kind="${esc(kind)}">${esc(t(`updates.kind.${kind}`))}</span>`;
+}
 
 function renderChangelog() {
   const entries = [...(state.changelog || [])].sort((a, b) => b.revision - a.revision);
-  $("#changelog").innerHTML = entries
+  const latest = entries[0]?.revision;
+  const present = new Set();
+  const rows = entries.map((e) => {
+    const changes = (e.changes || []).map(changeParts);
+    for (const c of changes) if (c.kind) present.add(c.kind);
+    /* The revision's own tags: the distinct kinds under it, in CHANGE_KINDS
+       order so every head reads left to right the same way. Taken from all of
+       its bullets, never from the ones a filter leaves showing — a log that hid
+       the fact that this revision also shipped a feature would be a worse
+       transparency log than the untagged one it replaces. */
+    return { entry: e, changes, kinds: CHANGE_KINDS.filter((k) => changes.some((c) => c.kind === k)) };
+  });
+
+  /* The row only offers kinds this changelog actually contains: a chip that
+     filters to nothing is a question the log can't answer. It stays hidden
+     entirely while nothing is tagged — the legacy pairing above. */
+  const kinds = CHANGE_KINDS.filter((k) => present.has(k));
+  const filters = $("#update-filters");
+  if (filters) {
+    if (!kinds.includes(state.updateKind)) state.updateKind = "all";
+    filters.innerHTML = ["all", ...kinds]
+      .map(
+        (kind) =>
+          `<button class="chip kind-chip ${state.updateKind === kind ? "active" : ""}" type="button"
+            data-kind="${esc(kind)}" aria-pressed="${state.updateKind === kind}">${esc(
+              kind === "all" ? t("filter.all") : t(`updates.kind.${kind}`)
+            )}</button>`
+      )
+      .join("");
+    filters.closest(".updates-toolbar")?.classList.toggle("hidden", kinds.length < 2);
+    $$("#update-filters .chip").forEach((chip) =>
+      chip.addEventListener("click", () => {
+        state.updateKind = chip.dataset.kind;
+        renderChangelog();
+        restoreFocus($(`#update-filters [data-kind="${CSS.escape(state.updateKind)}"]`));
+      })
+    );
+  }
+
+  const wanted = state.updateKind;
+  const visible = rows
+    .map((row) => ({
+      ...row,
+      shown: wanted === "all" ? row.changes : row.changes.filter((c) => c.kind === wanted),
+    }))
+    .filter((row) => row.shown.length);
+
+  if (!visible.length) {
+    $("#changelog").innerHTML = entries.length
+      ? `<p class="empty">${esc(t("updates.noneOfKind"))}</p>`
+      : "";
+    return;
+  }
+
+  $("#changelog").innerHTML = visible
     .map(
-      (e) => `<div class="timeline-entry">
+      ({ entry: e, kinds: revKinds, shown }) =>
+        `<div class="timeline-entry"${e.revision === latest ? ' data-latest="true"' : ""}>
         <div class="timeline-head">
           <span class="timeline-date">${esc(formatDate(e.date))}</span>
           <span class="rev-tag">${esc(t("updates.rev", { n: e.revision }))}</span>
+          ${revKinds.map((k) => kindTag(k, "kind-tag")).join("")}
         </div>
-        <ul>${(e.changes || []).map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
+        <ul>${shown
+          .map(
+            (c) =>
+              `<li${c.kind ? ` data-kind="${esc(c.kind)}"` : ""}>${
+                c.kind ? kindTag(c.kind, "change-tag") : ""
+              }${esc(c.text)}</li>`
+          )
+          .join("")}</ul>
       </div>`
     )
     .join("");
@@ -4735,6 +4926,11 @@ function renderFreshness() {
   const m = state.meta;
   $("#data-freshness").textContent =
     t("meta.freshness", { date: formatDate(m.lastUpdated), rev: m.revision }) +
+    /* The sentence the sources dialog prints, on the surface everyone sees
+       without opening a dialog — one claim about the sweep, one wording. */
+    (isLaterDate(m.lastChecked, m.lastUpdated)
+      ? t("sources.lastChecked", { date: formatDate(m.lastChecked) })
+      : "") +
     (m.note ? ` ${m.note}` : "");
 }
 
@@ -4913,7 +5109,126 @@ function showView(route, { push = true } = {}) {
   if (push) syncHash();
 }
 
+/* How far down the page a jumped-to heading has to start.
+
+   Every jump the planner offers — the nav chips, the five-days board tapping
+   into a day's group, "back to your plan" — lands its target under a sticky
+   masthead unless the scroll is offset by the masthead's height. That height
+   was written into the stylesheet as a number, and it was the wrong number:
+   161px of header against a 140px offset clipped the top of every heading
+   the guide has ever jumped to. Worse, it is not a constant. The install
+   button appears on the browsers that offer one, the offline notice appears
+   when the network goes, German sets the same row in longer words, and each
+   of those moves the header by a different amount.
+
+   So it is measured instead, on the element itself, and published as a
+   custom property the stylesheet offsets from. The media query that unpins
+   the header on phones overrides the offset there, so nothing has to be
+   measured twice or agreed with in two places.
+
+   ResizeObserver where there is one — every browser this guide targets has
+   had it since 2020 — and a resize listener as the floor, which catches the
+   orientation change that reflows the header even when nothing else fires. */
+function trackHeaderHeight() {
+  const header = $(".site-header");
+  if (!header) return;
+  const publish = () =>
+    document.documentElement.style.setProperty(
+      "--header-h",
+      `${Math.round(header.getBoundingClientRect().height)}px`
+    );
+  publish();
+  if ("ResizeObserver" in window) new ResizeObserver(publish).observe(header);
+  else window.addEventListener("resize", publish);
+}
+
+/* The tab row scrolls, and says so.
+
+   Four labels measure ~534px and no phone is that wide, so the row has always
+   scrolled — deliberately, with its scrollbar hidden, which on a phone is the
+   right call for a bar of four. What it cost is the only sign that scrolling
+   is a thing to do: the cut lands cleanly between two tabs, so the row reads
+   as ending at "03 Event info" and "04 Updates" is off the right of every
+   phone with nothing to suggest it exists.
+
+   A plate at the overflowing edge, then, carrying a chevron and scrolling the
+   row when tapped. Built here rather than written into index.html because it
+   is answering a question only the layout can answer — whether this row, in
+   this language, at this text size, on this screen, has anywhere left to go —
+   and because a shell that predates this script then simply has the row it
+   always had, rather than two plates nothing moves.
+
+   Appended to .tabs-outer rather than to .tabs: .tabs is the scroll port, so
+   an absolute child would scroll away with the tabs it is meant to sit over,
+   and it is the role="tablist", whose children are supposed to be tabs.
+
+   aria-hidden, and out of the tab order: every tab is reachable by tabbing and
+   the browser scrolls each into view as it takes focus, so a keyboard user has
+   already been given what this offers. Two extra stops in the middle of the
+   nav would be a cost with no matching gain. */
+function trackTabOverflow() {
+  const row = $(".tabs");
+  const outer = $(".tabs-outer");
+  if (!row || !outer) return;
+
+  const cues = ["start", "end"].map((side) => {
+    const cue = document.createElement("button");
+    cue.type = "button";
+    cue.className = `tabs-cue tabs-cue-${side}`;
+    cue.tabIndex = -1;
+    cue.setAttribute("aria-hidden", "true");
+    /* The map's leg buttons already say "the plan continues that way" with
+       these two ("◂ 6.1", "9.1 ▸"), and they are solid enough to read at a
+       glance where a thin chevron is not. Same glyph, same meaning. */
+    cue.textContent = side === "start" ? "◂" : "▸";
+    /* Most of a screenful, not all of it: leaving the tab you were reading in
+       view is what makes the second page read as the same row continued. */
+    cue.addEventListener("click", () =>
+      row.scrollBy({ left: (side === "start" ? -1 : 1) * row.clientWidth * 0.7, behavior: "smooth" })
+    );
+    outer.appendChild(cue);
+    return { side, el: cue };
+  });
+
+  /* The plates are absolutely positioned by css/style.css, which rides
+     stale-while-revalidate and can therefore be one version behind this
+     script. Without its rules these are two default-styled buttons sitting
+     under the masthead, which is worse than the row anyone already had — so
+     ask the stylesheet whether it has heard of them, and withdraw if not. */
+  if (getComputedStyle(cues[0].el).position !== "absolute") {
+    for (const { el } of cues) el.remove();
+    return;
+  }
+
+  /* A pixel of slack at each end: fractional layout widths and the browser's
+     own scroll snapping both leave scrollLeft a hair short of the end, which
+     would otherwise strand a chevron pointing at nothing. */
+  const sync = () => {
+    const room = row.scrollWidth - row.clientWidth;
+    for (const { side, el } of cues) {
+      const more = side === "start" ? row.scrollLeft > 1 : row.scrollLeft < room - 1;
+      el.classList.toggle("on", more);
+    }
+  };
+
+  sync();
+  row.addEventListener("scroll", sync, { passive: true });
+  /* The tabs themselves are observed, not just the row: switching language
+     rewrites all four labels in place, which changes what fits without
+     changing the row's own box at all. */
+  if ("ResizeObserver" in window) {
+    const ro = new ResizeObserver(sync);
+    ro.observe(row);
+    for (const tab of $$(".tab")) ro.observe(tab);
+  } else {
+    window.addEventListener("resize", sync);
+  }
+}
+
 function bindControls() {
+  trackHeaderHeight();
+  trackTabOverflow();
+
   /* One render per pause, not per keystroke: the grid plus both directory
      lists is too much DOM to rebuild at typing speed on a phone. The value is
      read when the timer fires, so a reset that clears the box mid-wait is
@@ -5043,7 +5358,7 @@ function bindControls() {
       renderExhibitors();
       /* Land on the plate that just became small — the way back — rather than
          dropping focus to the top of the page. */
-      $(`#exhibitor-grid [data-face="${CSS.escape(owner)}"]`)?.focus();
+      restoreFocus($(`#exhibitor-grid [data-face="${CSS.escape(owner)}"]`));
       return;
     }
     /* An arrow moves its row inside the group it is drawn in, and the group
@@ -5150,7 +5465,7 @@ function bindControls() {
       if (!chip) return;
       state.tradeCat = chip.dataset.tradeCat;
       renderTrade();
-      $(`#trade-cat-filters [data-trade-cat="${CSS.escape(state.tradeCat)}"]`)?.focus();
+      restoreFocus($(`#trade-cat-filters [data-trade-cat="${CSS.escape(state.tradeCat)}"]`));
     });
   }
 

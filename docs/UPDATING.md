@@ -99,16 +99,42 @@ This document is the playbook for refreshing the data — written so a scheduled
    opening-hours table on
    <https://www.gamescom.global/en/info/trade-visitors>, which lists the business
    and entertainment areas in separate columns.
-7. **Bump `data/meta.json`**: set `lastUpdated` to today (ISO date) and increment `revision` — those two fields are all it holds. The footer note is prose like any other sentence and lives at `meta.note` in `data/i18n/en.json`.
+7. **Stamp `data/meta.json`**: set `lastChecked` to today (ISO date) on **every**
+   refresh, including one that found nothing. If the refresh did change something,
+   also set `lastUpdated` to today and increment `revision`. Those three fields are
+   all the file holds; the footer note is prose like any other sentence and lives at
+   `meta.note` in `data/i18n/en.json`.
 8. **Append a `data/changelog.json` entry** (newest first) for the new revision, with a short
    human-readable bullet per meaningful change — this renders on the site's Updates tab.
    Skip trivia; write for visitors ("Ubisoft booth confirmed: Hall 6 B010"), not diffs.
+   Every bullet carries a `kind`, and `tools/check-i18n.mjs` fails the deploy if one doesn't:
+   - `content` — **what the guide knows about the show changed**: an exhibitor, booth,
+     lineup, hall, hours, ticket, link or source, whether added, confirmed, corrected or
+     removed. Every bullet of a plain data refresh is this one, including the ones that
+     start "Fixed:" — a booth filed at the wrong stand is show information corrected, and
+     someone scanning the Updates tab for new game info wants it in that scan.
+   - `feature` — **what the guide can do changed**: a new view, control or capability, or
+     an existing one deliberately redesigned.
+   - `fix` — **the guide was misbehaving and now isn't**: a wrong count on screen, a dead
+     tap target, a lost day assignment. Behaviour, never data — a wrong number the guide
+     *published* is `content`; a wrong number the guide *calculated* is `fix`.
+
+   The tags are what make the Updates tab scannable — a revision that added game
+   information has to read differently from one that moved a button. Revisions
+   themselves are never tagged: the timeline derives each entry's tags from its bullets,
+   so there is no summary line that can drift out of step with what is under it.
 9. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
    ```sh
    node -e "['exhibitors','event','meta','changelog'].forEach(f=>JSON.parse(require('fs').readFileSync('data/'+f+'.json')))"
    ```
 10. **Commit & push to `main`** with a message summarizing what changed, e.g.
    `data: Ubisoft booth confirmed Hall 6 B010; add Anno 118 as playable; bump rev 7`.
+   **A refresh that changed nothing still commits** — the new `lastChecked` is the
+   whole diff, and `data: sources re-checked, no changes` is the whole message. That
+   commit is the only thing that turns "we looked today" into something the site can
+   say, so skipping it is skipping the point of the run. No `revision` bump, no
+   changelog entry, nothing on the Updates tab: nothing changed, and the timeline is
+   for changes.
 
 ## Editorial rules
 
@@ -143,7 +169,13 @@ This document is the playbook for refreshing the data — written so a scheduled
   still gamescom publishing about its own floor, which is what the rule protects; a
   vendor's shop is not.
 - `lastUpdated` is user-facing for the same reason — the sources dialog prints it as
-  "Last checked". Only move it when you actually re-checked that entry's sources.
+  "Last updated", so it means the day this entry's own facts last moved. Leave it
+  alone on an entry you re-read and had nothing to correct: the "somebody looked
+  today" half of the claim is `lastChecked` in `data/meta.json`, which is guide-wide,
+  moves on every refresh whatever it finds, and prints in the same dialog right after
+  the entry's own date ("Last updated Aug 12. Sources re-checked Aug 20."). That split
+  is deliberate — a per-entry date that moved whenever a sweep glanced past would stop
+  answering the question a visitor is asking, which is how old the *booth number* is.
 - `type: "experience"` is for booths whose draw is **something you do rather than a
   game you demo** — sim rigs, VR, a rideable robot, an RC drift track, head-only table
   tennis. Keep it broad on purpose: the specific flavour goes in `tags`
@@ -210,6 +242,10 @@ official area names ("Indie Arena Booth"), "gamescom", "Opening Night Live", and
 the changelog — `data/changelog.json` is a transparency log rewritten every few
 days, and translating it would double the editorial cycle for the one surface
 nobody plans a day around. German readers get told so under the Updates lede.
+Its bullets' `kind` is the exception that proves it: the kinds are an enum, not
+prose, so their labels are translated like "rev {n}" is — a German reader gets
+"Messe-Infos" against an English bullet, and can still tell at a glance which
+revisions brought new show information.
 `imprint.html` and `privacy.html` are also English, though the footer links to
 them are labelled "Impressum" and "Datenschutz" — those are the words people
 look for, and § 5 DDG is about the imprint being easy to find.
@@ -401,12 +437,23 @@ block in `index.html` — the data file is the source, not the markup.
 ### `data/meta.json`
 
 ```jsonc
-{ "lastUpdated": "2026-08-06", "revision": 1 }
+{ "lastUpdated": "2026-08-06", "lastChecked": "2026-08-07", "revision": 1 }
 ```
+
+Two dates that answer two different questions, and only one of them moves on a
+quiet day. `lastUpdated` (with `revision`) is when the data last *changed*;
+`lastChecked` is when the guide last went back to its sources at all. A refresh
+that finds nothing moves `lastChecked` alone — that one-line diff is the whole
+commit, and it is what lets the footer and the sources dialog say the guide was
+re-checked yesterday rather than leave a page nobody has had to correct in a week
+looking abandoned. Keep `lastChecked` on or after `lastUpdated`; the UI prints it
+only when it is the later of the two, so an earlier date would silently say nothing.
 
 `lastUpdated` is also the `<lastmod>` on every URL in the generated
 `sitemap.xml`, so bumping it on a refresh is what tells search engines the
-exhibitor data moved and is worth re-crawling.
+exhibitor data moved and is worth re-crawling. `lastChecked` deliberately stays
+out of the sitemap: a daily `<lastmod>` on pages that did not change is a crawl
+budget spent on nothing, and a claim search engines learn to discount.
 
 ### `data/i18n/en.json` and `data/i18n/de.json`
 
@@ -512,10 +559,19 @@ arrived yet. Never make that fetch conditional on the pref.
   {
     "date": "2026-08-07",
     "revision": 2,
-    "changes": ["One bullet per meaningful change, visitor-readable."]
+    "changes": [
+      // kind: "content" | "feature" | "fix" — the rule for picking one is in step 8
+      { "kind": "content", "text": "One bullet per meaningful change, visitor-readable." }
+    ]
   }
 ]
 ```
+
+The Updates tab reads the kinds twice: as a tag on each bullet, and — collected into the
+set of distinct kinds — as the tags on the revision itself, which is also what its filter
+row filters on. A bullet written as a bare string instead of an object still renders, with
+no tag: that is the one load an installed guide can pair a cached pre-tag changelog with
+this script, not a shape to author. `tools/check-i18n.mjs` rejects it in the repo.
 
 ## The offline cache
 
@@ -755,9 +811,13 @@ smaller `woff2` (and the variable-weight files) only to modern browsers. Re-chec
 > recent news, update data/*.json accordingly (new exhibitors, confirmed booths/halls,
 > lineup changes, crowd re-evaluation) — structure in the base files, all prose in
 > data/i18n/en.json. Then run `node tools/check-i18n.mjs`, translate whatever it
-> names into data/i18n/de.json, and re-run with `--update`. Bump data/meta.json,
-> validate JSON, then commit and push to main with a summary of changes. If nothing
-> changed, do nothing.
+> names into data/i18n/de.json, and re-run with `--update`. Set data/meta.json's
+> lastChecked to today either way, and bump lastUpdated + revision only if something
+> actually changed. Validate JSON, then commit and push to main. **Always commit**,
+> including on a run that found nothing: the lastChecked line is then the whole diff
+> and `data: sources re-checked, no changes` the whole message — that commit is what
+> makes the site's "sources re-checked" date true. No revision bump and no changelog
+> entry on such a run.
 
 Cadence: every 2–3 days until ~Aug 20, then daily through the show (booth numbers and
 demo lineups often land in the final week).

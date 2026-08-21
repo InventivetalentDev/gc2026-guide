@@ -58,6 +58,8 @@ const state = {
   exhibitors: [],       // data/exhibitors.json
   trade: [],            // business-hall rows from data/directory.json, once loaded
   halls: new Map(),     // hall id -> hall json
+  rot: false,           // page-lifetime view; never a stored hall fact
+  rotChosen: false,     // the visitor pressed the button, so stop deciding for them
   byStand: new Map(),   // "hall:CODE" -> [exhibitor, …]
   hall: null,           // current hall id, or OVERVIEW
   stands: [],           // render records for the current hall
@@ -370,6 +372,106 @@ async function loadHall(id) {
 
 const polyPath = (poly) => "M" + poly.map((p) => p[0] + " " + p[1]).join("L") + "Z";
 
+/* Decimal metre coordinates such as 1.3 otherwise come back from four
+   turns as 1.3000000000000114. Snapping subtraction noise below a
+   nanometre keeps a round trip exact without moving any filed point. */
+const snap = (v) => Math.round(v * 1e9) / 1e9;
+const rotatePoint = ([x, y], H) => [snap(H - y), x];
+
+/* The renderer must receive a new hall all at once. Rotating the cached
+   polygons in place would make the next turn start from the last view,
+   and booth identity reads from that unrotated cache too. */
+function rotateHallGeometry(hall) {
+  const [W, H] = hall.size;
+  return {
+    ...hall,
+    size: [H, W],
+    blocks: hall.blocks.map((poly) => poly.map((point) => rotatePoint(point, H))),
+    stands: hall.stands.map((stand) => ({
+      ...stand,
+      poly: stand.poly.map((point) => rotatePoint(point, H)),
+    })),
+  };
+}
+
+const rotateMargin = (m) => ({ n: m.w, e: m.n, s: m.e, w: m.s });
+
+/* `at` is the doorway's centre, so a reversed wall subtracts the centre
+   from the unrotated hall height. The span does not enter that subtraction.
+
+     n -> e, at unchanged
+     e -> s, at becomes H - at
+     s -> w, at unchanged
+     w -> n, at becomes H - at
+
+   This table is derived against edgeOf(): each new wall puts the door at
+   the rotated image of its old centre. H is the unrotated hall height. */
+function rotateDoors(doors, H) {
+  const edge = { n: "e", e: "s", s: "w", w: "n" };
+  return doors.map((door) => ({
+    ...door,
+    edge: edge[door.edge],
+    at: door.edge === "e" || door.edge === "w" ? snap(H - door.at) : door.at,
+  }));
+}
+
+/* Trade changes rebuild the hall and mark refreshes redraw its route from
+   the same numbers. Keep one turned copy per loaded hall instead of doing
+   the polygon work again on either path. */
+/* The whole picture in hall metres: the booth box, the hall around it, and the
+   room each wall needs beyond itself for its own name and a leg pointer's. One
+   implementation, because renderHall draws it and the rule below measures it,
+   and a second copy of this arithmetic would drift from the first. */
+function drawingBox([W, H], m, doors) {
+  const named = labelledEdges(doors);
+  const doored = new Set(doors.map((d) => d.edge));
+  const out = (k) => Math.max(GAP, doored.has(k) ? LEG_BAND : named.has(k) ? LBL_BAND : 0);
+  return {
+    ox: -(m.w + out("w")),
+    oy: -(m.n + out("n")),
+    vw: W + m.w + m.e + out("w") + out("e"),
+    vh: H + m.n + m.s + out("n") + out("s"),
+  };
+}
+
+/* Should this hall open turned? Two conditions, and both are needed.
+
+   The screen must be taller than it is wide. This is the problem the turn was
+   built for: a hall lying across a phone held upright. On a screen already
+   wider than it is tall there is no such problem to solve, and turning a hall
+   away from the orientation the official plan prints it in wants a reason
+   better than a few percent of scale. The button is still there for anyone who
+   wants it.
+
+   And the hall must actually come out bigger. Asking that directly, in the
+   same terms fitView() will use a moment later, beats reading the hall's aspect
+   ratio: halls 10.1 and 10.2 are taller than they are wide, so on a portrait
+   phone they are already the right way round and this leaves them alone, while
+   the other eleven gain about half again.
+
+   Rotating swaps the picture exactly. Walls move n->e->s->w->n, so the margins
+   and the label bands travel with them and the turned box is the upright one
+   with its sides exchanged. That is why one drawingBox() call answers both.
+
+   False whenever the stage has no size yet, which is the case during the first
+   layout. */
+function shouldTurn(id) {
+  const hall = state.halls.get(id);
+  const r = $("#stage")?.getBoundingClientRect();
+  if (!hall || !r?.width || !r?.height) return false;
+  if (r.width >= r.height) return false;
+  const { vw, vh } = drawingBox(hall.size, rawMarginOf(id), rawDoorsOf(id));
+  return Math.min(r.width / vh, r.height / vw) > Math.min(r.width / vw, r.height / vh);
+}
+
+const rotatedHalls = new Map();
+function hallGeometry(id) {
+  const hall = state.halls.get(id);
+  if (!state.rot || !hall) return hall;
+  if (!rotatedHalls.has(id)) rotatedHalls.set(id, rotateHallGeometry(hall));
+  return rotatedHalls.get(id);
+}
+
 function bbox(poly) {
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const [x, y] of poly) {
@@ -451,9 +553,14 @@ const NO_MARGIN = { n: 0, e: 0, s: 0, w: 0 };
 /* How far the wall stands off the booth box, per side. A hall may name
    its own; everything else takes the file's default, and a map with no
    file at all falls back to the box itself. */
+const rawMarginOf = (id) => ({
+  ...NO_MARGIN,
+  ...(state.outline.margin || {}),
+  ...(state.outline.halls?.[id]?.margin || {}),
+});
 function marginOf(id) {
-  const file = state.outline;
-  return { ...NO_MARGIN, ...(file.margin || {}), ...(file.halls?.[id]?.margin || {}) };
+  const margin = rawMarginOf(id);
+  return state.rot ? rotateMargin(margin) : margin;
 }
 
 /* One wall: where it runs, which way is out of the hall, and the span of
@@ -525,9 +632,18 @@ function wallSegments(t0, t1, doors) {
   return out;
 }
 
-const doorsOf = (id) =>
-  (state.outline.halls?.[id]?.doors || [])
-    .filter((d) => EDGE_KEYS.includes(d.edge) && d.span > 0);
+const rawDoorsOf = (id) =>
+  (state.outline.halls?.[id]?.doors || []).filter(
+    (d) => EDGE_KEYS.includes(d.edge) && d.span > 0
+  );
+
+const doorsOf = (id) => {
+  const doors = rawDoorsOf(id);
+  if (!state.rot) return doors;
+  /* East and west reverse against the old height. hallGeometry() has
+     already swapped that dimension, so this one read stays on the source. */
+  return rotateDoors(doors, state.halls.get(id).size[1]);
+};
 
 /* Which walls will carry a name, so renderHall can leave room for it
    beyond them before it has drawn anything. */
@@ -632,7 +748,7 @@ function renderOutline(svg, id, W, H, m, doors) {
 /* ================= hall rendering ================= */
 
 function renderHall(id) {
-  const hall = state.halls.get(id);
+  const hall = hallGeometry(id);
   const [W, H] = hall.size;
 
   const m = marginOf(id);
@@ -652,14 +768,11 @@ function renderHall(id) {
      under someone who has zoomed into a booth would cost more than the
      6 m of margin does, and a name pushed inside instead lands on the
      stands the map is for. */
-  const named = labelledEdges(doors);
-  const doored = new Set(doors.map((d) => d.edge));
-  const out = (k) =>
-    Math.max(GAP, doored.has(k) ? LEG_BAND : named.has(k) ? LBL_BAND : 0);
-  view.ox = -(m.w + out("w"));
-  view.oy = -(m.n + out("n"));
-  const vw = W + m.w + m.e + out("w") + out("e");
-  const vh = H + m.n + m.s + out("n") + out("s");
+  const box = drawingBox(hall.size, m, doors);
+  view.ox = box.ox;
+  view.oy = box.oy;
+  const vw = box.vw;
+  const vh = box.vh;
 
   const svg = document.createElementNS(SVGNS, "svg");
   svg.setAttribute("id", "map");
@@ -888,7 +1001,6 @@ function refreshMarks() {
     renderChips();
     return;
   }
-  let saved = 0;
   for (const rec of state.stands) {
     const isSaved = rec.exs.some(exSaved);
     const isPlayed = rec.exs.length > 0 && rec.exs.every(exPlayed);
@@ -896,13 +1008,19 @@ function refreshMarks() {
       el.classList.toggle("saved", isSaved);
       el.classList.toggle("played", isPlayed);
     }
-    if (isSaved) saved += 1;
   }
   /* The overlay is a reading of the saved list and the plan, so it is redrawn
      wherever those are: this runs after every hall render, every mark change
      and every storage event. */
   renderRoute();
   const covered = state.stands.filter((r) => r.exs.length).length;
+  /* The first two numbers describe the drawing — how many stands it holds and
+     how many of them the guide covers. The third describes your plan, and so
+     counts stops, the way the chip for this hall directly above it does. It
+     used to count lit rectangles, which put "5 saved" under a chip reading 2
+     for the Thursday holding Capcom and Nintendo: one hall, one screen, two
+     numbers for the same question. */
+  const saved = hallCountBy(state.hall, exSaved);
   $("#counts").textContent =
     t("map.counts", { n: state.stands.length, covered: covered || t("map.coveredNone") }) +
     (saved ? t("map.countsSaved", { n: saved }) : "");
@@ -984,44 +1102,52 @@ function setTrade(on) {
 
 const standsOf = (ex) => (ex.stands?.length ? ex.stands : [{ hall: ex.hall, booth: ex.booth }]);
 
-function hallSavedCount(id) {
+/* How much of your plan stands in one hall — the number on its chip, and,
+   summed over a building's levels, the number on its plate on the overview.
+
+   Stops, not stands. A card holding four stands in one hall (Nintendo does)
+   is one place you walk to, one row in the plan, one pin on the floor, and
+   so one here: this badge is read next to a hall name as "how much of mine
+   is in there", and every other number the guide prints about a saved list
+   answers that question in stops. Counting rectangles instead made the badge
+   mean one thing with a day picked and another without — hall 9 read ●5 on
+   the saved list and ●2 on the Thursday that held both its booths — and sent
+   the map's opening hall to whichever hall happened to hold the most
+   *stands*, past the one holding most of the plan.
+
+   The two branches count the same unit for the same reason. Which side of
+   the parse you are on decides how well the guide can see the hall, never
+   what a stop is. */
+function hallCountBy(id, counts) {
   const hall = state.halls.get(id);
   /* Not loaded yet — count from guide data alone. Reads through standsOf so
      a multi-stand trade record is counted in every hall it stands in, not
      only in the scalar `hall` a curated card carries. */
   if (!hall) {
     return [...state.exhibitors, ...state.trade].filter(
-      (ex) => exSaved(ex) && standsOf(ex).some((s) => String(s.hall) === id)
-    ).length;
-  }
-  let n = 0;
-  for (const s of hall.stands) if (standRecord(id, s).exs.some(exSaved)) n += 1;
-  return n;
-}
-
-/* The same count with a day over it: how many of that day's stops stand in
-   this hall. With the overlay on, "which hall is today in" is the question
-   the row is being read for, and answering it with the whole saved list
-   would send you into halls you have nothing planned in.
-
-   Stops, not stands — the badge has to agree with the number the route bar
-   prints for the hall you are looking at, and a card holding two stands in
-   one hall is still one stop. */
-function hallStopCount(id) {
-  const planned = (ex) =>
-    GCMarks.hasSaved(state.marks.saved, ex) &&
-    GCMarks.stopDays(state.marks.saved, state.itinerary, ex).has(state.day);
-  const hall = state.halls.get(id);
-  if (!hall) {
-    return [...state.exhibitors, ...state.trade].filter(
-      (ex) => planned(ex) && standsOf(ex).some((s) => String(s.hall) === id)
+      (ex) => counts(ex) && standsOf(ex).some((s) => String(s.hall) === id)
     ).length;
   }
   const stops = new Set();
   for (const s of hall.stands)
-    for (const ex of standRecord(id, s).exs) if (planned(ex)) stops.add(ex);
+    for (const ex of standRecord(id, s).exs) if (counts(ex)) stops.add(ex);
   return stops.size;
 }
+
+const hallSavedCount = (id) => hallCountBy(id, exSaved);
+
+/* The same count with a day over it: how many of that day's stops stand in
+   this hall. With the overlay on, "which hall is today in" is the question
+   the row is being read for, and answering it with the whole saved list
+   would send you into halls you have nothing planned in. Same unit either
+   way, so the chip agrees with the number the route bar prints below it. */
+const hallStopCount = (id) =>
+  hallCountBy(
+    id,
+    (ex) =>
+      GCMarks.hasSaved(state.marks.saved, ex) &&
+      GCMarks.stopDays(state.marks.saved, state.itinerary, ex).has(state.day)
+  );
 
 /* Is the day scoping what the row counts? Whenever a day is picked — on a
    hall, where the row says which halls that day is in, and on the overview,
@@ -1977,7 +2103,7 @@ function renderRoute() {
         )}</span>`
       : `<span class="map-route-hint">${esc(t("map.routeNoneHere"))}</span>`;
   renderRouteStatus(here + legButtons(legs));
-  const hall = svg && state.halls.get(state.hall);
+  const hall = svg && hallGeometry(state.hall);
   if (!hall) return;
   const [W, H] = hall.size;
   const m = marginOf(state.hall);
@@ -2031,35 +2157,43 @@ function renderRoute() {
      a hidden pin is a lost stop, unlike a hidden label — and zooming in
      separates them; this only decides which one you can read before you do. */
   for (const stop of [...state.route].reverse()) {
+    /* Every stand the stop holds is lit and carries the stop's number in its
+       own accessible name — the whole footprint is the place you are walking
+       to, and a keyboard user landing on any part of it should hear which
+       stop it is. */
     for (const rec of stop.recs) {
       rec.stop = stop;
       rec.g.classList.add("stop");
       rec.g.setAttribute("aria-label", rec.aria + t("map.stopAria", { n: stop.n, total }));
-
-      const box = bbox(rec.data.poly);
-      /* Two digits need a wider disc, or "10" runs over its own edge. */
-      const r = PIN_R * (stop.n > 9 ? 1.18 : 1);
-      /* Pinned to the stand's north-west corner rather than its middle: the
-         middle is where its name is, and a route that covers the names it is
-         routing you between has cost more than it gave. A stand too small to
-         have a corner to spare simply wears the pin centred. */
-      const cx = box.x0 + Math.min(r * 0.6, box.w / 2);
-      const cy = box.y0 + Math.min(r * 0.6, box.h / 2);
-
-      const disc = document.createElementNS(SVGNS, "circle");
-      disc.setAttribute("class", `route-pin${stop.played ? " done" : ""}`);
-      disc.setAttribute("cx", cx);
-      disc.setAttribute("cy", cy);
-      disc.setAttribute("r", r);
-      const num = document.createElementNS(SVGNS, "text");
-      num.setAttribute("class", `route-pin-n${stop.played ? " done" : ""}`);
-      num.setAttribute("x", cx);
-      /* half a cap height below the centre — SVG text hangs off its baseline */
-      num.setAttribute("y", cy + r * 0.38);
-      num.setAttribute("font-size", r * 1.1);
-      num.textContent = stop.n;
-      pins.append(disc, num);
     }
+
+    /* The number itself is drawn once, on the same stand the route line runs
+       through (stopPoint takes recs[0], the largest). One stop is one number:
+       Nintendo files four stands in hall 9 and wore four discs all reading
+       "2", which is four stops on the floor and two in the bar above it. */
+    const box = bbox(stop.recs[0].data.poly);
+    /* Two digits need a wider disc, or "10" runs over its own edge. */
+    const r = PIN_R * (stop.n > 9 ? 1.18 : 1);
+    /* Pinned to the stand's north-west corner rather than its middle: the
+       middle is where its name is, and a route that covers the names it is
+       routing you between has cost more than it gave. A stand too small to
+       have a corner to spare simply wears the pin centred. */
+    const cx = box.x0 + Math.min(r * 0.6, box.w / 2);
+    const cy = box.y0 + Math.min(r * 0.6, box.h / 2);
+
+    const disc = document.createElementNS(SVGNS, "circle");
+    disc.setAttribute("class", `route-pin${stop.played ? " done" : ""}`);
+    disc.setAttribute("cx", cx);
+    disc.setAttribute("cy", cy);
+    disc.setAttribute("r", r);
+    const num = document.createElementNS(SVGNS, "text");
+    num.setAttribute("class", `route-pin-n${stop.played ? " done" : ""}`);
+    num.setAttribute("x", cx);
+    /* half a cap height below the centre — SVG text hangs off its baseline */
+    num.setAttribute("y", cy + r * 0.38);
+    num.setAttribute("font-size", r * 1.1);
+    num.textContent = stop.n;
+    pins.append(disc, num);
   }
   svg.appendChild(pins);
 
@@ -2328,6 +2462,69 @@ $("#zoom-in")?.addEventListener("click", () => zoomStep(1.6));
 $("#zoom-out")?.addEventListener("click", () => zoomStep(1 / 1.6));
 $("#zoom-fit")?.addEventListener("click", fitCurrent);
 
+/* map.html is network-first while this script and its stylesheet can arrive
+   from different cached revisions. Add the control here so old script never
+   leaves dead markup, then ask the CSS marker whether the new rule arrived.
+   A measurement was the wrong question because the button's size may change
+   independently of this guard. The check runs before a paint. */
+let rotBtn = null;
+
+/* Returns whether anything moved, so a caller can skip a redraw it does not
+   need. The button carries the state for a screen reader, so it is set here
+   rather than at each call site. */
+function setRotation(on) {
+  if (state.rot === on) return false;
+  state.rot = on;
+  rotBtn?.setAttribute("aria-pressed", String(on));
+  if (!on) rotatedHalls.clear();
+  return true;
+}
+
+/* Redraw the hall on screen at the current orientation, keeping the open
+   stand open. The campus overview has its own coordinate file: the turn
+   stays set for the next hall, but that separate drawing does not move. */
+function redrawRotation() {
+  if (onOverview() || !state.hall || !state.halls.has(state.hall) || !$("#map")) return;
+  const code = state.sel ? [...state.sel.codes][0] : null;
+  renderHall(state.hall);
+  if (!code) return;
+  const rec = state.stands.find((stand) => stand.codes.has(code));
+  if (rec) selectStand(rec);
+}
+
+/* The automatic choice, taken before a hall is drawn and again when the window
+   changes shape. It stops for good the moment the visitor presses the button:
+   they have looked at this hall and said which way they want it, which outranks
+   any rule this file could apply on top. */
+function autoRotate(id) {
+  return state.rotChosen ? false : setRotation(shouldTurn(id));
+}
+
+{
+  const controls = $(".map-zoom");
+  if (controls) {
+    const button = document.createElement("button");
+    button.className = "map-rotate-btn";
+    button.type = "button";
+    button.setAttribute("aria-label", t("map.rotate"));
+    button.setAttribute("aria-pressed", String(state.rot));
+    button.innerHTML =
+      '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" ' +
+      'fill="none" stroke="currentColor" stroke-width="1.6">' +
+      '<path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2v4h-4"/></svg>';
+    controls.appendChild(button);
+    if (getComputedStyle(button).getPropertyValue("--rotate-btn").trim() !== "1") {
+      button.remove();
+    } else {
+      rotBtn = button;
+      button.addEventListener("click", () => {
+        state.rotChosen = true;
+        if (setRotation(!state.rot)) redrawRotation();
+      });
+    }
+  }
+}
+
 /* ================= selection & sheet ================= */
 
 function zoomToStand(rec) {
@@ -2586,6 +2783,9 @@ async function showHall(id, { standCode = null } = {}) {
     renderSourceNote(); /* its door clause is per hall */
     if (!state.halls.has(id)) $("#load").hidden = false;
     await loadHall(id);
+    /* Before the draw, not after: renderHall reads the orientation to lay the
+       hall out, so deciding afterwards would draw it twice. */
+    autoRotate(id);
     renderHall(id);
     /* The address bar always names the hall on screen. A chip or door tap
        used to leave the previous stand's #hall/booth standing, so copying
@@ -2617,7 +2817,14 @@ window.addEventListener("hashchange", () => {
   else if (hallExists(h)) showHall(h, { standCode: code ? code.toUpperCase() : null });
 });
 
-window.addEventListener("resize", fitCurrent);
+/* Turning the phone is the case this exists for: a hall that had to be turned
+   to fit a portrait screen fits upright on a landscape one, and the other way
+   round. Only redraw when the answer actually changed; every other resize just
+   refits what is already there. */
+window.addEventListener("resize", () => {
+  if (!onOverview() && state.hall && autoRotate(state.hall)) redrawRotation();
+  else fitCurrent();
+});
 
 /* The ← is an <a href="./"> so it always works — middle-click, long-press,
    copy the link. But followed as a link it reloads the guide from the top,

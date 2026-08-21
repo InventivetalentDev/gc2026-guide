@@ -50,13 +50,32 @@
    ?lang=de instead of remembering the choice — a control that looks wrong and
    half-works, which is the case this number exists for.
 
-   v11 is Today: a fifth tab and a fifth <section> in index.html, both driven
+   v11 is three shell changes that landed behind v10 and each need a script
+   this cache would otherwise hand over a version late:
+
+   - the map's day route bar. map.html carries the <div id="route"> and every
+     line that fills it lives in js/map.js, with its bar, pins and legs in
+     css/map.css. Both ride stale-while-revalidate, so the returning visitor
+     got the new markup, the old script, and a bar that stays hidden.
+   - the plan board's "Reset order" button, the same shape one page over:
+     markup in index.html, handler in js/app.js.
+   - the masthead's measured height. app.js publishes --header-h and
+     style.css offsets every jump-nav target from it; held apart, the
+     stylesheet falls back to a number and the headings the planner jumps to
+     land under the header again.
+
+   None of the three breaks anything visibly — a hidden control is quieter
+   than a dead one — which is exactly why they would have gone unnoticed for
+   a load. The rule does not ask for damage, only that the halves have to
+   land together.
+
+   v12 is Today: a fifth tab and a fifth <section> in index.html, both driven
    entirely by js/app.js. Mismatched, the halves fail in both directions — an
    old script leaves the new tab hidden for a load, and a new script can route
    to a #view-today the old shell does not have. The second one is guarded in
    showView, but a mode that only exists for five days should not spend one of
    them waiting for a revalidation. */
-const VERSION = "v11";
+const VERSION = "v12";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
