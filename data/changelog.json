@@ -3,21 +3,15 @@
     "date": "2026-08-21",
     "revision": 37,
     "changes": [
+      { "kind": "feature", "text": "The hall map turns itself a quarter turn on a phone held upright. Halls are long and thin — hall 9 is 166 by 67 metres — so held upright the whole hall used to fit as a band across the middle of the screen, with the booth names shrunk to match. Now it opens on its side, filling the screen, with every name about half again as large. Turn the phone and it turns back." },
+      { "kind": "feature", "text": "Halls 10.1 and 10.2 are taller than they are wide, so they are left as they are — turning them would gain nothing. Nor does anything turn on a screen that is already wider than it is tall. The button under the zoom controls turns the hall by hand either way, and from the moment you press it the map stops deciding for you." },
+      { "kind": "feature", "text": "Nothing about the turn changes what a booth is. The hall is turned before it is drawn rather than after, so the names, the doors, the walls, your saved stands and the numbered pins of a planned day are all drawn the right way up — and a link to a booth number opens the same stand whichever way the hall faces." },
       { "kind": "content", "text": "Korea Pavilion (KOCCA) booth corrected: Hall 3.2, C050g/D051g — not Hall 2.2 as previously listed. Confirmed against the official exhibitor directory (12 participating Korean studios all filed at the same stand) and two independent press reports of KOCCA's own announcement." },
       { "kind": "content", "text": "Google Play's Hall 7.1 booth detailed: a live arena built around Fruit Ninja, plus multigaming demo stations for Dave the Diver, Subway Surfers City, eFootball, Wobbly Life and Asphalt Legends Unite." },
       { "kind": "content", "text": "Directory refresh: 1,751 registered exhibitors (up from 1,723), no share-token collisions." },
       { "kind": "content", "text": "22 new exhibitors added from the directory sweep — Hall 10.1's hardware row (Gateron, DeepCool, Lexar, XPPen, EPOMAKER, IQUNIX, Genki, HAVIT, KARNOX, Diablo Chairs, iiyama, Game Informer), Hall 5.1/5.2's Cards & Boards area (Ravensburger, Panini, Bushiroad, Pegasus Spiele, PureArts, Tsume Art, Fangamer), and Hall 10.2 (Retro Games Ltd, Shueisha Games, Metanet Software)." },
-      { "kind": "content", "text": "Gamescom's show floor has sold out to exhibitors for the first time in its 18-edition history — 233,000 m², 1,600+ exhibitors — folded into the crowd guidance on the Info tab." }
-    ]
-  },
-  {
-    "date": "2026-08-20",
-    "revision": 37,
-    "changes": [
-      "The hall map turns itself a quarter turn on a phone held upright. Halls are long and thin — hall 9 is 166 by 67 metres — so held upright the whole hall used to fit as a band across the middle of the screen, with the booth names shrunk to match. Now it opens on its side, filling the screen, with every name about half again as large. Turn the phone and it turns back.",
-      "Halls 10.1 and 10.2 are taller than they are wide, so they are left as they are — turning them would gain nothing. Nor does anything turn on a screen that is already wider than it is tall. The button under the zoom controls turns the hall by hand either way, and from the moment you press it the map stops deciding for you.",
-      "Nothing about the turn changes what a booth is. The hall is turned before it is drawn rather than after, so the names, the doors, the walls, your saved stands and the numbered pins of a planned day are all drawn the right way up — and a link to a booth number opens the same stand whichever way the hall faces.",
-      "The Share button and the footer links are easier to hit. Share was 22 pixels tall and the footer links 15, both under the 24 a fingertip wants. Neither has moved or changed size; the area that answers a tap around them has grown."
+      { "kind": "content", "text": "Gamescom's show floor has sold out to exhibitors for the first time in its 18-edition history — 233,000 m², 1,600+ exhibitors — folded into the crowd guidance on the Info tab." },
+      { "kind": "fix", "text": "The Share button and the footer links are easier to hit. Share was 22 pixels tall and the footer links 15, both under the 24 a fingertip wants. Neither has moved or changed size; the area that answers a tap around them has grown." }
     ]
   },
   {
