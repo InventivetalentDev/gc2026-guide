@@ -1,5 +1,16 @@
 [
   {
+    "date": "2026-08-21",
+    "revision": 37,
+    "changes": [
+      { "kind": "content", "text": "Korea Pavilion (KOCCA) booth corrected: Hall 3.2, C050g/D051g — not Hall 2.2 as previously listed. Confirmed against the official exhibitor directory (12 participating Korean studios all filed at the same stand) and two independent press reports of KOCCA's own announcement." },
+      { "kind": "content", "text": "Google Play's Hall 7.1 booth detailed: a live arena built around Fruit Ninja, plus multigaming demo stations for Dave the Diver, Subway Surfers City, eFootball, Wobbly Life and Asphalt Legends Unite." },
+      { "kind": "content", "text": "Directory refresh: 1,751 registered exhibitors (up from 1,723), no share-token collisions." },
+      { "kind": "content", "text": "22 new exhibitors added from the directory sweep — Hall 10.1's hardware row (Gateron, DeepCool, Lexar, XPPen, EPOMAKER, IQUNIX, Genki, HAVIT, KARNOX, Diablo Chairs, iiyama, Game Informer), Hall 5.1/5.2's Cards & Boards area (Ravensburger, Panini, Bushiroad, Pegasus Spiele, PureArts, Tsume Art, Fangamer), and Hall 10.2 (Retro Games Ltd, Shueisha Games, Metanet Software)." },
+      { "kind": "content", "text": "Gamescom's show floor has sold out to exhibitors for the first time in its 18-edition history — 233,000 m², 1,600+ exhibitors — folded into the crowd guidance on the Info tab." }
+    ]
+  },
+  {
     "date": "2026-08-20",
     "revision": 36,
     "changes": [
