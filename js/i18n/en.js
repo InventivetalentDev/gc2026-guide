@@ -290,6 +290,15 @@ window.GC_STRINGS.en = {
   "updates.rev": "rev {n}",
   /* Shown to German readers only — see data-i18n-only in index.html. */
   "updates.englishOnly": "",
+  /* The kind labels are chrome, not changelog prose, so they translate like
+     "rev {n}" does even though the bullets they mark stay English. Kept to one
+     word each: they are set in letterspaced uppercase mono and repeat down the
+     whole page. */
+  "updates.filterLabel": "Show",
+  "updates.kind.feature": "Feature",
+  "updates.kind.fix": "Fix",
+  "updates.kind.content": "Content",
+  "updates.noneOfKind": "No changes of that kind are recorded yet.",
 
   /* ---------- countdown & freshness ---------- */
   "countdown.days": "T−{n} day|T−{n} days",
@@ -369,7 +378,8 @@ window.GC_STRINGS.en = {
     "The dates, hours, tickets and hall areas on this page come from {n} source.|The dates, hours, tickets and hall areas on this page come from {n} sources.",
   "sources.note.card":
     "The location, lineup and queue call on this card come from {n} source.|The location, lineup and queue call on this card come from {n} sources.",
-  "sources.lastChecked": " Last checked {date}.",
+  "sources.lastUpdated": " Last updated {date}.",
+  "sources.lastChecked": " Sources re-checked {date}.",
   "sources.caveat":
     "This is an unofficial guide, and booth numbers and lineups keep changing until the doors open. If a detail decides your day, check it at the source.",
 

@@ -15,8 +15,9 @@
  * of that page had quietly stopped being reachable.
  *
  * lastmod is data/meta.json's lastUpdated — the date the exhibitor data was
- * last revised, which is the only thing about these pages that moves. Node
- * ≥18, no dependencies.
+ * last revised, which is the only thing about these pages that moves. Not
+ * lastChecked, which moves every refresh: a daily lastmod on pages that did
+ * not change is a crawl budget spent on nothing. Node ≥18, no dependencies.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
