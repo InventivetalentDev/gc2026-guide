@@ -420,7 +420,8 @@ keep different opening hours.
 Weekday names are not stored at all — the app formats them from `date` in the
 reader's language, so "Wednesday" and "Mittwoch" are the same fact.
 
-`open`/`close` drive the planner and are the **public** hours; a trade badge gets
+`open`/`close` drive the planner and the Today tab's clock ("Open now · closes
+20:00 · 3h left") and are the **public** hours; a trade badge gets
 into the entertainment halls at 09:00 every day, which belongs in `hours` and the
 day `note` rather than in these two fields — and both of those are prose, so they
 live in `data/i18n/en.json`.

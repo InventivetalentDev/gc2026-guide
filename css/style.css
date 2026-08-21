@@ -291,8 +291,17 @@ body {
   gap: 8px;
   transition: color .12s, border-color .12s;
 }
-.tab:first-child { padding-left: 0; }
+/* .tab sets display:flex, which beats the UA sheet's [hidden] rule whatever
+   its specificity — so the Today tab, hidden off-show, needs saying twice. */
+.tab[hidden] { display: none; }
+/* The row's left edge aligns with the content, whichever tab currently starts
+   it: Today when the show is on, Exhibitors the rest of the year. */
+.tab:first-child,
+.tab[hidden] + .tab { padding-left: 0; }
 .tab .tab-index { transition: color .12s; }
+/* Today wears a live dot rather than a number: it is not part of the standing
+   01-04 sequence, it is the mode that only exists while the show runs. */
+.tab-live { color: var(--signal); font-size: .7rem; }
 .tab:hover { color: var(--ink); }
 .tab.active { color: var(--ink); border-bottom-color: var(--signal); }
 .tab.active .tab-index { color: var(--signal); }
@@ -1673,6 +1682,157 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 
 /* ============================================================
+   preview bar — ?now= moved the clock
+   ============================================================ */
+/* Deliberately the loudest thing on the page and deliberately not --signal:
+   this is not the visitor's own emphasis, it is the page admitting it is
+   lying about the date. Warn ink on a warn wash, full bleed, above the
+   masthead. It scrolls away with the page, which is right — it is a
+   development affordance, not a standing alarm. */
+.preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  padding: 7px max(16px, env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--warn) 16%, var(--ground));
+  border-bottom: 1px solid color-mix(in srgb, var(--warn) 40%, var(--ground));
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--warn);
+}
+.preview-tag {
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.preview-when { color: var(--ink-mid); font-variant-numeric: tabular-nums; }
+.preview-exit {
+  margin-left: auto;
+  color: var(--warn);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.preview-exit:hover, .preview-exit:focus-visible { color: var(--ink); }
+
+/* ============================================================
+   today
+   ============================================================ */
+/* The show-day mode. It reuses the hall lens's board wholesale — same
+   .route-board, same rows — because it *is* the walking route, scoped to one
+   day. Only the header above it and the fold below are new.
+
+   One rule carries through from played tracking: nothing that measures what
+   is *done* takes --signal. The meter and the Done fold are muted; the one
+   orange thing on the screen is the stop you have not walked to yet. */
+.today-strip {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 0 18px;
+  align-items: center;
+  padding: 16px 18px;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--ground-2);
+}
+.today-when { display: flex; flex-direction: column; }
+.today-dow {
+  font-family: var(--font-poster);
+  font-size: 1.75rem; font-weight: 400; line-height: 1;
+  text-transform: uppercase; letter-spacing: .01em;
+}
+.today-date {
+  font-family: var(--font-mono);
+  font-size: .7rem; color: var(--ink-dim); font-variant-numeric: tabular-nums;
+}
+.today-status {
+  font-family: var(--font-mono);
+  font-size: .74rem;
+  letter-spacing: .04em;
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+/* Open is the only state worth a colour — it is the one that runs out. */
+.today-strip[data-state="open"] .today-status { color: var(--ok); }
+.today-strip[data-state="after"] .today-status { color: var(--ink-dim); }
+
+.today-progress { margin: 14px 0 24px; }
+.today-count {
+  font-family: var(--font-mono);
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-mid);
+  margin-bottom: 7px;
+}
+.today-meter {
+  height: 4px;
+  background: var(--rule-soft);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+/* Muted, never orange: this bar measures what is behind you. */
+.today-meter-fill { display: block; height: 100%; background: var(--ink-mid); }
+
+/* The one piece of advice Today gives, so it gets the emphasis colour the
+   done-counters deliberately do not. */
+.today-first {
+  margin-bottom: 16px;
+  padding: 10px 0 10px 13px;
+  border-left: 3px solid var(--signal);
+  font-size: .88rem;
+  line-height: 1.5;
+  color: var(--ink-mid);
+}
+.today-first strong { color: var(--ink); }
+.today-first-label {
+  font-family: var(--font-mono);
+  font-size: .64rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--signal);
+  margin-right: 8px;
+}
+/* Same warning voice as the plan's closed-day note, one level up the page. */
+.today-warn {
+  margin-bottom: 16px;
+  padding: 9px 13px;
+  border-left: 3px solid var(--warn);
+  background: color-mix(in srgb, var(--warn) 10%, var(--ground-2));
+  font-size: .8rem;
+  color: var(--warn);
+}
+
+.today-done { margin-top: 18px; }
+.today-done-summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: .66rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-dim);
+  padding: 6px 0;
+}
+.today-done-summary::-webkit-details-marker { display: none; }
+.today-done-summary::after {
+  content: "▾";
+  font-size: .7rem;
+  transition: transform .12s;
+}
+.today-done[open] .today-done-summary::after { transform: rotate(180deg); }
+.today-done-summary:hover { color: var(--ink); }
+.today-done .route-board { margin-top: 8px; }
+
+.today-unplaced {
+  margin-top: 18px;
+  font-size: .82rem;
+  color: var(--ink-dim);
+}
+.today-actions { display: flex; gap: 18px; margin-top: 20px; }
+
+/* ============================================================
    planner — tips
    ============================================================ */
 .tips { list-style: none; counter-reset: tip; border-top: 1px solid var(--rule); }
@@ -2441,6 +2601,12 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .it-group-head .day-detail { grid-column: 1 / -1; }
   /* Same fold as the tablet block above, one notch narrower in column one. */
   .it-item { grid-template-columns: minmax(96px, 1fr) auto auto 20px; row-gap: 9px; }
+  /* "Open now · closes 20:00 · 3h 40m left" will not share a line with the
+     weekday and the access badge at this width, and it is the half of the
+     strip that changes — so it takes the second row whole. */
+  .today-strip { grid-template-columns: auto 1fr; row-gap: 10px; }
+  .today-status { grid-column: 1 / -1; text-align: left; }
+  .today-actions { flex-direction: column; align-items: flex-start; gap: 12px; }
   .toolbar-row .row-label,
   .updates-toolbar .row-label { flex-basis: 100%; }
   /* let the summary text take a full line instead of squeezing into a column */

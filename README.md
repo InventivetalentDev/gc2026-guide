@@ -48,6 +48,27 @@ python3 -m http.server 8000
 
 (Opening `index.html` via `file://` won't work because the app fetches JSON.)
 
+One part of the guide can't be reached that way: the **Today** tab exists only on
+the five show days, so before Aug 26 there is nothing to click. `?now` moves the
+clock for one load, on whatever server you already have:
+
+| URL | |
+|---|---|
+| `?now` | the show's first day, an hour after the doors open |
+| `?now=14:30` | same day, that time in Cologne |
+| `?now=2026-08-29` | that day, an hour after its doors |
+| `?now=2026-08-29T19:45` | that day, 15 minutes before closing |
+
+It works anywhere the page does — a `file://`-adjacent IDE server, a phone on the
+LAN, the deployed site — and combines with the rest: `?now=2026-08-29#today`,
+`?now&lang=de`. Today only has stops if you gave some a day, so save a couple of
+booths in the planner first, or you'll get its empty state.
+
+A moved clock says so: a bar across the top of every page names the moment it is
+pretending to be, and links back out. It has to, because otherwise a screenshot of
+`?now=2026-08-27` is indistinguishable from the real Thursday. Like `?lang`, it wins
+for one load, is never stored, and never rides in a link the guide builds.
+
 ## Deploying
 
 Live on **Cloudflare Workers** as an assets-only Worker — static files served from
@@ -238,6 +259,42 @@ brings the saved list, the played marks and the day assignments over to `hallgui
 one step. Somebody who accepted an earlier notice gets asked once more, because what
 they accepted then was an address that has since moved on. See
 [`docs/DEPLOYING.md`](docs/DEPLOYING.md).
+
+### Today
+
+On the five show days a fifth tab appears at the front of the row, and the guide
+stops being a pre-show tool. **Today** is the walking route scoped to the day it
+actually is: your stops for today in hall order, the ones you have ticked `✓`
+folded away at the bottom, and a header that says whether the halls are open,
+what time they close and how long that leaves. When more than one stop is left it
+names the one with the worst queue, because that is the decision the morning
+actually turns on.
+
+It is a lens, not a fourth list. Today reads the saved list, the played marks,
+the day assignments and the order you put the plan in, and stores nothing of its
+own — reorder a hall in the planner and Today walks it that way. That has one
+consequence worth stating: a stop with no day can never appear on it. The count under the
+list says how many are in that position and leads to the planner, where they get
+one. Opening the guide mid-show lands on Today whenever the day has stops on it —
+an empty Today would be a worse front door than the exhibitor grid, so it only
+leads when it has something to lead with.
+
+Which day it is gets read in the show's own timezone rather than the device's, so
+a phone still set to another continent does not open Wednesday's plan on Thursday
+morning. The hours come from `open`/`close` in `data/event.json`, the same two
+fields the calendar export writes, so a schedule change stays a data edit. The
+clock is refreshed whenever the tab is opened or the app comes back to the
+foreground — a phone that spent an hour in a pocket must not come back saying
+"closes in 3h".
+
+The one thing it does not do is arrange. The reorder arrows stay on the planner,
+which shows the whole plan; Today shows one day with the played stops folded
+away, and arrows there would rearrange a list against stops you cannot see.
+
+Off-show none of it exists: the tab is gone, and `#today` lands on the planner
+rather than on a page explaining that gamescom is not running. That is also why
+there is no launcher shortcut for it — the manifest is a fixed, year-round
+artifact, and launchers truncate the list it already has.
 
 ## Architecture
 

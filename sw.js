@@ -67,8 +67,15 @@
    None of the three breaks anything visibly — a hidden control is quieter
    than a dead one — which is exactly why they would have gone unnoticed for
    a load. The rule does not ask for damage, only that the halves have to
-   land together. */
-const VERSION = "v11";
+   land together.
+
+   v12 is Today: a fifth tab and a fifth <section> in index.html, both driven
+   entirely by js/app.js. Mismatched, the halves fail in both directions — an
+   old script leaves the new tab hidden for a load, and a new script can route
+   to a #view-today the old shell does not have. The second one is guarded in
+   showView, but a mode that only exists for five days should not spend one of
+   them waiting for a revalidation. */
+const VERSION = "v12";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;

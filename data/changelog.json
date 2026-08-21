@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-21",
+    "revision": 39,
+    "changes": [
+      { "kind": "feature", "text": "New: a Today tab. It shows up on its own during the show — Aug 26–30 — and it is the guide reduced to one question: what is still on for today, and where do you walk next. Your stops for the day, in hall order, with the ones you have already ticked ✓ folded away at the bottom." },
+      { "kind": "feature", "text": "The top of it is a clock: today's access, its hours, and whether the halls are open right now, closing in three hours, or done for the day. Under that, how much of today you have got through — and, when there is a choice to make, which of the remaining stops has the worst queue." },
+      { "kind": "feature", "text": "It reads your existing plan and nothing else, so only stops you gave a day appear on it. Anything still without one is counted underneath with a way through to the planner." },
+      { "kind": "feature", "text": "Open the guide during the show and it starts on Today whenever the day has something on it. The rest of the year the tab is not there at all." }
+    ]
+  },
+  {
+    "date": "2026-08-21",
     "revision": 38,
     "changes": [
       { "kind": "fix", "text": "The plan stops moving under you. Placing a stop on a day used to fling the page about fifteen hundred pixels down the board, ticking one off as played on the queue table about eighteen hundred, and every ▲▼ nudged the whole page by a row — because putting the keyboard's focus back on the button you had just pressed also asked the browser to scroll to it, and after a redraw that button is a brand-new thing the browser thinks it has never shown you. It is put back without the scroll now. Arrange a day, tick things off, reorder a hall: the page stays exactly where you left it." },
