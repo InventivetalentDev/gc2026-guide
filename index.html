@@ -401,16 +401,21 @@
     </div>
     <nav class="tabs-outer" aria-label="Sections" data-i18n-attr="aria-label:nav.sections">
       <div class="wrap tabs" role="tablist">
-        <!-- Unnumbered and hidden by default: these two are not part of the
-             standing 01-04 sequence, they are the modes that exist only on the
-             five show days. js/app.js unhides each one (renderTodayTab,
-             syncQueueTab) when it applies. -->
+        <!-- Unnumbered and hidden by default: Today is not part of the
+             standing sequence, it is the mode that exists only on the five
+             show days. js/app.js unhides it (renderTodayTab) when it applies. -->
         <button class="tab" role="tab" aria-selected="false" data-view="today" hidden><span class="tab-index tab-live">●</span> <span data-i18n="tab.today">Today</span></button>
-        <button class="tab" role="tab" aria-selected="false" data-view="queues" hidden><span class="tab-index tab-live">●</span> <span data-i18n="tab.queues">Live queues</span></button>
         <button class="tab active" role="tab" aria-selected="true" data-view="exhibitors"><span class="tab-index">01</span> <span data-i18n="tab.exhibitors">Exhibitors</span></button>
         <button class="tab" role="tab" aria-selected="false" data-view="planner"><span class="tab-index">02</span> <span data-i18n="tab.planner">Visit planner</span></button>
         <button class="tab" role="tab" aria-selected="false" data-view="event"><span class="tab-index">03</span> <span data-i18n="tab.event">Event info</span></button>
         <button class="tab" role="tab" aria-selected="false" data-view="updates"><span class="tab-index">04</span> <span data-i18n="tab.updates">Updates</span></button>
+        <!-- Live queues is the one tab that changes place. Off-show it sits
+             here, last and numbered with the standing sequence, so the feature
+             can be found before the doors open rather than appearing out of
+             nowhere on Wednesday morning; the view it opens says when it goes
+             live. On a show day js/app.js (syncQueueTab) moves it up beside
+             Today and swaps the number for the live dot. -->
+        <button class="tab" role="tab" aria-selected="false" data-view="queues"><span class="tab-index">05</span> <span data-i18n="tab.queues">Live queues</span></button>
       </div>
     </nav>
   </header>
@@ -660,13 +665,19 @@
 
       <p class="queues-notice" id="queues-notice" role="status" aria-live="polite" hidden></p>
 
+      <!-- What the tab shows on the other 360 days: the sections below need a
+           show to report on, so off-show they are gone and this stands in for
+           them. Filled by js/app.js (renderQueuesPreview) rather than written
+           here, because it names the day the feature opens. -->
+      <div class="queues-preview" id="queues-preview" hidden></div>
+
       <section id="queues-mine-section" aria-labelledby="queues-mine-title" hidden>
         <h3 class="section-title" id="queues-mine-title"><span class="section-num">01</span> <span data-i18n="queues.mine">Queues you are in</span></h3>
         <p class="section-sub" data-i18n="queues.mineSub">Your timer runs on this device. Tell the queue you got in and the wait becomes a measurement everyone can see.</p>
         <div id="queues-mine" class="queues-list"></div>
       </section>
 
-      <section aria-labelledby="queues-report-title">
+      <section id="queues-report-section" aria-labelledby="queues-report-title">
         <h3 class="section-title" id="queues-report-title"><span class="section-num">02</span> <span data-i18n="queues.report">Report a queue</span></h3>
         <div class="queues-scope" id="queues-scope" hidden></div>
         <label class="field field-search queues-field">

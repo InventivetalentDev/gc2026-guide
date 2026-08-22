@@ -225,7 +225,12 @@ window.GC_STRINGS.de = {
     "Suche das Spiel, für das du anstehst. Gemerkte Stände aus dem Aussteller-Tab erscheinen hier zuerst.",
   "queues.emptySearch": "Nichts passt zu „{query}“.",
   "queues.emptyScoped": "An diesem Stand passt nichts zu „{query}“. Durchsuche alle Schlangen, um weiter zu suchen.",
-  "queues.noticeBeforeShow": "Die Live-Wartezeiten starten mit der Messe am 26. August.",
+  "queues.previewWhen": "Die Live-Wartezeiten starten am {day}, {date} — dem ersten Messetag.",
+  "queues.previewOver": "Die gamescom 2026 ist vorbei, und mit ihr die Live-Wartezeiten.",
+  "queues.previewHow":
+    "Während der Messe kann hier jede wartende Person eine Zeit starten und ungefähr angeben, wie viele Leute vorne stehen. Aus diesen Meldungen entsteht die Wartezeit, die auf den Standkarten und in deinem Plan steht.",
+  "queues.previewCost":
+    "Melden ist freiwillig und braucht kein Konto. Der Rest des Guides funktioniert genauso, ob du es nutzt oder nicht.",
   "queues.noticeClosed": "Die Messe ist gerade geschlossen, Meldungen pausieren. Live-Zahlen gibt es wieder zur Öffnung.",
   "queues.noticeOffline": "Keine Verbindung — keine Live-Zahlen. Eine Wartezeit, die du jetzt beendest, wird gespeichert und später gesendet.",
   "queue.leftOffline":
