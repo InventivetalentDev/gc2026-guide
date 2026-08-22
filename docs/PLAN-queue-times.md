@@ -664,9 +664,16 @@ a completed wait, mechanics metadata, the estimator's response through the
 60-second edge cache, and the app rendering it — all on one origin, with the
 API returning 404 for every non-`/api` path.
 
-Still required before production: create the two real D1 databases, replace
-the draft UUIDs, set independent admin secrets, apply remote migrations, run
-the documented time-controlled two-profile behavior loop locally, and complete
-the pre-show staging routing/admin checks. Repeat the real two-device/cache loop
-on staging once an Aug 26–30 access window opens. Those external checks are
-intentionally not claimed by the repository implementation.
+Done since: both D1 databases exist in `weur` with their ids committed, and
+both carry all three tracked migrations — verified object-for-object against
+the schema wrangler builds locally, with `d1_migrations` recorded so a later
+`migrations apply` is a no-op rather than a re-run.
+
+Still required before production: deploy the staging API and set its admin
+secret, run the documented time-controlled two-profile behavior loop locally,
+complete the pre-show staging routing/admin checks, then set production's own
+admin secret and merge — the merge is what deploys the production API and
+attaches its routes, and is therefore the first real test of a route beating a
+Custom Domain on a live zone. Repeat the two-device/cache loop on staging once
+an Aug 26–30 access window opens. Those external checks are intentionally not
+claimed by the repository implementation.

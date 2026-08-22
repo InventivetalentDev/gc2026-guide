@@ -111,11 +111,11 @@ redirect to `hallgui.de` (step 6). They are aliases, not origins.
    | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → Account ID |
 
 4. **Complete [Queue backend: first deployment](#queue-backend-first-deployment)**
-   first: create both D1 databases, replace and commit both draft UUIDs, apply
-   the migrations, verify staging, and set the production admin secret. Only
-   then push to `main` (or run the workflow by hand). The production workflow
-   can now migrate the real database before it creates or updates the Worker
-   and attaches `hallgui.de`.
+   first. Its steps 1 and 2 — both D1 databases, created, migrated and their
+   ids committed — are already done; what remains is deploying staging,
+   verifying it, and setting both admin secrets. Only then merge to `main`,
+   which is what deploys the production API and attaches its routes. The site
+   deploys on every push regardless and never waits on any of this.
 
 5. **Web Analytics** is enabled in the Cloudflare dashboard (Web Analytics →
    the `hallgui.de` site, automatic setup — repoint it there, it was set up
@@ -182,6 +182,14 @@ the API's own `gc2026-queues-api.<subdomain>.workers.dev` address belongs to
 production — it is not a staging environment. `wrangler-api.toml` defines an
 explicit `staging` Worker with no routes at all for that reason.
 
+**Steps 1 and 2 are already done.** Both databases exist, both are migrated,
+and their ids are committed. They are written out here because the next person
+to stand this up — next August, or after a teardown — starts from nothing.
+What is *not* done yet is step 3 onward: neither *API* Worker has been
+deployed — production or staging — and neither has an admin secret. The site
+Worker is unaffected and has been live throughout; splitting them is what
+makes that sentence possible.
+
 1. Install the pinned development tools and authenticate:
 
    ```sh
@@ -189,30 +197,65 @@ explicit `staging` Worker with no routes at all for that reason.
    npx wrangler login
    ```
 
-2. Create both databases in Western Europe. Wrangler prints each UUID. Replace
-   the placeholder in the top-level `QUEUE_DB` binding and the one in
-   `env.staging`'s `QUEUE_DB` binding, both in `wrangler-api.toml`:
+2. ~~Create both databases in Western Europe.~~ **Done, 2026-08-22**, both in
+   `weur`, both carrying all three tracked migrations, with their ids committed
+   in `wrangler-api.toml`:
+
+   | | database | id |
+   |---|---|---|
+   | production | `gc2026-queues` | `424b7933-9013-471a-8bae-e8927f406ede` |
+   | staging | `gc2026-queues-staging` | `1cfa05b9-ac73-4114-a6a0-f5a74948d864` |
+
+   To do it again from scratch:
 
    ```sh
    npx wrangler d1 create gc2026-queues --location weur
    npx wrangler d1 create gc2026-queues-staging --location weur
    ```
 
-   Do not point both environments at one UUID: a phone test that purges a queue
+   Do not point both environments at one id: a phone test that purges a queue
    must not purge the live show. Commit the resolved ids once created — CI
-   refuses to migrate while either is still the placeholder, so a forgotten
-   edit fails the deploy instead of quietly migrating nothing.
+   refuses to deploy the API while the production one is still the placeholder,
+   so a forgotten edit skips the deploy instead of binding a database that does
+   not exist.
 
-3. Apply the tracked migration to staging first and set its admin secret. The
-   secret prompt is interactive; never put the token in this repository or a
-   command argument.
+3. **Deploy staging and set its admin secret.** Two ways, and the first is the
+   one to reach for during the show:
+
+   **From a phone** — Actions → *Deploy the queue API to staging* → Run
+   workflow. `.github/workflows/staging.yml` tests, refuses a placeholder
+   database, applies any pending migrations and deploys `--env staging`, then
+   prints the workers.dev URL in the run summary. It touches neither the site
+   nor production: `--env staging` selects a Worker with its own database, its
+   own secret and no routes. Note that GitHub only offers `workflow_dispatch`
+   for workflows on the default branch, so this appears once the branch adding
+   it has merged.
+
+   **From a laptop** — the same thing, locally:
 
    ```sh
-   npm run db:migrate:staging
+   npm run db:migrate:staging   # a no-op while the schema is current
    npm test
    npm run deploy:api:staging
+   ```
+
+   Either way the admin secret is a separate, interactive step, because the
+   prompt is the point — the token must not enter this repository, a command
+   argument, or a workflow file:
+
+   ```sh
    npx wrangler secret put ADMIN_TOKEN --config wrangler-api.toml --env staging
    ```
+
+   Until it is set, `/api/admin/` serves its login shell and rejects every
+   token, which is indistinguishable from getting the password wrong. That is
+   the first thing to suspect if the console will not let you in.
+
+   Staging must be deployed at least once before pull request previews of the
+   API work at all: `wrangler versions upload` refuses against a Worker that
+   does not exist, so the preview job checks and skips with a notice until then
+   rather than failing every pull request for a reason that is nothing to do
+   with the pull request.
 
 4. Before the show window opens, run the full behavioral loop locally with the
    two-terminal setup below and two independent browser profiles: join the same
@@ -228,19 +271,28 @@ explicit `staging` Worker with no routes at all for that reason.
    it one would be impossible while both client and Worker correctly enforce
    the event calendar.
 
-5. Only after staging passes, migrate production and set its independent token:
+5. Only after staging passes, set production's own token — a different value
+   from staging's, so a token shared for a phone test is not the token that
+   moderates the show:
 
    ```sh
-   npm run db:migrate:production
+   npm run db:migrate:production   # a no-op while the schema is current
    npm test
    npx wrangler secret put ADMIN_TOKEN --config wrangler-api.toml
    ```
 
-   The GitHub token needs **D1 edit** permission for this. The workflow applies
-   pending production migrations before it deploys the API, and deploys the
-   site first of all — so a schema change is live before the code that needs it,
-   and the site never waits on the API. Keep migrations backward-compatible:
+   The production API itself is deployed by merging to `main`, not by hand:
+   `cloudflare.yml` deploys the site, applies pending production migrations,
+   then deploys the API — so a schema change is live before the code that reads
+   it, and the site never waits on the API. The GitHub token needs **D1 edit**
+   permission for the migration step. Keep migrations backward-compatible:
    rolling back Worker code does not roll back a D1 schema.
+
+   **That merge is also what first attaches the routes in step 6**, so it is
+   the moment the API becomes reachable on the public hostnames. The show's
+   calendar is the safety net either side of it: outside an Aug 26–30 window
+   every live read and ordinary write answers 403, so the API is inert until
+   the doors open even once it is live.
 
 6. **Attach the API's routes.** `npm run deploy:api` creates them from
    `wrangler-api.toml`, but each hostname must already be an active zone in
