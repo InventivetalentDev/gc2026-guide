@@ -119,6 +119,23 @@ routes = []
 [env.staging.observability]
 enabled = true
 
+# Hold the show calendar open. Without this, staging answers 403 to every live
+# read and every report until Aug 26 and 410 after Aug 30 — untestable for all
+# but five days of the year, which is no use for a proving ground.
+#
+# It relaxes the calendar only. The clock stays real, so elapsed waits, the
+# two-minute throttle and retention all behave exactly as they will in
+# production. (QUEUE_TEST_NOW, the local development fixture, must never be set
+# on a deployed Worker: its anchor is per-isolate, so isolates would disagree
+# about the time and write sessions that contradict each other.)
+#
+# A `vars` entry rather than a secret, deliberately: which environments hold
+# the door open is then reviewable in this file, and production not having it
+# is something you can see rather than something you have to trust. CI asserts
+# the production bundle carries no such var.
+[env.staging.vars]
+QUEUE_FORCE_OPEN = "staging-testing-only"
+
 [[env.staging.d1_databases]]
 binding = "QUEUE_DB"
 database_name = "gc2026-queues-staging"

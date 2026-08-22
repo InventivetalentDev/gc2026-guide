@@ -254,19 +254,46 @@ makes that sentence possible.
    thing to reach for is usually a pull request's own preview URL, which is
    per-PR and does not disturb what staging is serving.
 
-4. Before the show window opens, run the full behavioral loop locally with the
-   two-terminal setup below and two independent browser profiles: join the same
-   queue, update people-ahead after the throttle window, enter, and confirm the
-   other profile sees the aggregate after the cache window. On the real staging
-   hostname, verify environment isolation instead: live/report endpoints return
-   the intentional out-of-hours 403, and `/api/admin/` can authenticate, deny a
-   planted UUID, purge an empty queue, force/clear closure, and pause/resume
-   writes. A deployed staging Worker deliberately has no clock override.
+4. **Exercise staging, on any day of the year.** `QUEUE_FORCE_OPEN` in
+   `[env.staging.vars]` holds the show calendar open there, so the whole loop
+   can be rehearsed before Aug 26 and after Aug 30 — join, update people-ahead
+   past the throttle, enter, watch the aggregate appear, then work through
+   `/api/admin/`: authenticate, deny a planted UUID, purge an empty queue,
+   force and clear closure, pause and resume writes.
 
-   During an actual Aug 26–30 access window, repeat the two-device live loop on
-   staging as a launch-day check. This is not a pre-show deployment gate: making
-   it one would be impossible while both client and Worker correctly enforce
-   the event calendar.
+   ```sh
+   S=https://gc2026-queues-api-staging.<subdomain>.workers.dev
+   curl -sD - -o /dev/null "$S/api/queue/live" | sed -n '1p;/x-gc-queue-forced-open/Ip'
+   ```
+
+   The `X-GC-Queue-Forced-Open: 1` header is the confirmation that you are
+   talking to staging and that data outside show hours is intended rather than
+   a gate that has failed. Production never sends it, has no such var, and CI
+   fails the build if the production bundle ever acquires one.
+
+   It relaxes the **calendar only**. The clock stays real, so elapsed waits,
+   the two-minute throttle, the 60-second cache and retention all behave as
+   they will during the show — the point being that what you rehearse is the
+   real thing. `QUEUE_TEST_NOW`, the local fixture that moves the clock, must
+   never be set on a deployed Worker: its anchor is per-isolate, so isolates
+   would disagree about the time and write sessions contradicting each other.
+
+   To drive it through the actual app rather than curl, point the local proxy
+   at staging — the client's own dev override is localhost-only, so this is the
+   combination that works:
+
+   ```sh
+   API_ORIGIN=$S npm run dev
+   # then http://localhost:8000/?queue-dev=1
+   ```
+
+   Two independent browser profiles give you the two-device case: join the same
+   queue in both, and confirm the second sees the first's aggregate once the
+   cache window passes.
+
+   During an actual Aug 26–30 window, repeat the loop on staging as a
+   launch-day check — with the calendar genuinely open, that run also confirms
+   the gate itself rather than the override.
 
 5. Only after staging passes, set production's own token — a different value
    from staging's, so a token shared for a phone test is not the token that
@@ -446,7 +473,8 @@ During show hours, also join a low-risk test queue, verify the POST response is
 window. In DevTools → Application → Cache Storage, no `/api/` URL may appear.
 Visit `/api/admin/`, return to the guide, go offline and reload: the guide (not
 the admin shell) must still be the `./` navigation fallback. The live endpoint
-returns 403 outside an active show-hours window and 410 after the final window.
+returns 403 outside an active show-hours window and 410 after the final window
+(on **production**; staging holds the calendar open — see step 4).
 During a scheduled window, either status indicates a clock/timezone
 configuration fault, not an empty-data state.
 

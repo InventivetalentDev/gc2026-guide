@@ -12,7 +12,7 @@ import worker, {
   runCleanup,
 } from "../worker/index.js";
 import { handleAdminAction, handleAdminData, isAdminAuthorized } from "../worker/admin.js";
-import { buildQueueAllowlist, queueToken } from "../worker/core.js";
+import { buildQueueAllowlist, eventAccess, queueToken } from "../worker/core.js";
 
 const CLIENT = "123e4567-e89b-42d3-a456-426614174000";
 const queue = [...buildQueueAllowlist(exhibitors).values()][0];
@@ -362,6 +362,55 @@ describe("retention and routing", () => {
       handleLive(request, testEnv(), ctx, event, at("2026-08-30T20:30:01+02:00"))
     ).rejects.toMatchObject({ status: 410, code: "event_ended" });
     await waitOnExecutionContext(ctx);
+  });
+
+  it("holds the calendar open on staging, and only for the exact sentinel", async () => {
+    const ctx = createExecutionContext();
+    const request = new Request("https://hallgui.test/api/queue/live");
+    const staging = testEnv({ QUEUE_FORCE_OPEN: "staging-testing-only" });
+    const wellBefore = at("2026-08-20T04:00:00+02:00");
+    const afterTheShow = at("2026-08-30T20:30:01+02:00");
+
+    /* Both the out-of-hours 403 and the post-show 410 lift, or staging is
+       untestable before Aug 26 and dead after Aug 30. */
+    for (const when of [wellBefore, at("2026-08-26T08:29:59+02:00"), afterTheShow]) {
+      const response = await handleLive(request, staging, ctx, event, when);
+      expect(response.status).toBe(200);
+      /* Answering with data outside show hours is otherwise indistinguishable
+         from the gate being broken, so the response says why. */
+      expect(response.headers.get("X-GC-Queue-Forced-Open")).toBe("1");
+    }
+
+    /* Reporting too — a read-only staging proves nothing about the loop. */
+    const wrote = await handleReport(report({ kind: "joined", claimed: 10 }), staging, site, wellBefore);
+    expect(wrote.status).toBe(201);
+
+    /* Anything other than the sentinel is not a yes. A stray "0"/"false"/"1"
+       from a copied config must not read as one. */
+    for (const value of [undefined, "", "0", "false", "1", "true", "staging", "STAGING-TESTING-ONLY"]) {
+      await expect(
+        handleLive(request, testEnv({ QUEUE_FORCE_OPEN: value }), ctx, event, wellBefore)
+      ).rejects.toMatchObject({ status: 403, code: "outside_show_hours" });
+    }
+    await waitOnExecutionContext(ctx);
+  });
+
+  it("leaves the clock real when the calendar is forced open", () => {
+    /* The reason this is a calendar override and not a clock one: a deployed
+       Worker cannot use QUEUE_TEST_NOW, whose anchor is per-isolate module
+       state, without isolates disagreeing about the time. So `now` must pass
+       through untouched, and the verdict must keep the real date. */
+    const when = at("2026-08-20T04:00:00+02:00");
+    const forced = eventAccess(event, when, true);
+    const real = eventAccess(event, when, false);
+    expect(forced).toMatchObject({ allowed: true, phase: "open", forced: true });
+    expect(real).toMatchObject({ allowed: false });
+    expect(forced.date).toBe(real.date);
+    expect(forced.date).toBe("2026-08-20");
+    /* During the show it changes nothing at all, so staging and production
+       agree on the days that matter. */
+    const during = at("2026-08-27T12:00:00+02:00");
+    expect(eventAccess(event, during, true)).toEqual(eventAccess(event, during, false));
   });
 
   it("returns 410 after teardown when an old client replays a deferred completion", async () => {

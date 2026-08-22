@@ -21,6 +21,16 @@ import exhibitors from "../data/exhibitors.json";
 import event from "../data/event.json";
 
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/* Staging holds the show calendar open so it can be exercised on the other 360
+   days of the year. An exact sentinel rather than any truthy value, so a stray
+   `QUEUE_FORCE_OPEN=0` or `=false` cannot read as "yes"; declared in
+   wrangler-api.toml under [env.staging.vars] rather than as a secret, so that
+   which environments have it is reviewable in the diff, and production's not
+   having it is visible rather than merely believed. CI asserts the production
+   bundle carries no such var. */
+const FORCE_OPEN_SENTINEL = "staging-testing-only";
+const forceOpen = (env) => env?.QUEUE_FORCE_OPEN === FORCE_OPEN_SENTINEL;
 const CLIENT_HEADER = "X-GC-Queue-Client";
 const MAX_DEFERRED_SECONDS = 16 * 60 * 60;
 const JSON_HEADERS = {
@@ -334,7 +344,7 @@ async function outcomeSession(env, client, queue, body, kind, now, event) {
   if (deferred && closedAt < Number(session.last_reported)) {
     throw new HttpError(400, "deferred_before_last_update");
   }
-  if (deferred && !eventAccess(event, closedAt).allowed) {
+  if (deferred && !eventAccess(event, closedAt, forceOpen(env)).allowed) {
     throw new HttpError(400, "deferred_outside_show_hours");
   }
   const outcomePredicate = deferred ? "(outcome IS NULL OR outcome = 'abandoned')" : "outcome IS NULL";
@@ -398,7 +408,7 @@ export async function handleReport(request, env, site, now = nowSeconds()) {
   const body = await readJson(request);
   if (typeof body.kind !== "string") throw new HttpError(400, "kind_required");
   const queue = requireQueue(body, site.queues);
-  const access = eventAccess(site.event, now);
+  const access = eventAccess(site.event, now, forceOpen(env));
   const deferredEntered = body.kind === "entered" && body.deferred === true;
   /* After the documented post-show teardown, the D1 binding is gone. Return
      the intentional end-of-event response even to an old installed client
@@ -503,7 +513,7 @@ async function invalidateLive(request, ctx) {
 
 export async function handleLive(request, env, ctx, event, now = nowSeconds()) {
   if (request.method !== "GET") throw new HttpError(405, "method_not_allowed");
-  const access = eventAccess(event, now);
+  const access = eventAccess(event, now, forceOpen(env));
   if (access.phase === "after") throw new HttpError(410, "event_ended");
   if (!access.allowed) throw new HttpError(403, "outside_show_hours");
 
@@ -515,7 +525,13 @@ export async function handleLive(request, env, ctx, event, now = nowSeconds()) {
   const response = json(
     { at: now, queues: await getUncachedLive(env, now) },
     200,
-    { "Cache-Control": "public, max-age=60" }
+    {
+      "Cache-Control": "public, max-age=60",
+      /* Data outside show hours is otherwise indistinguishable from the gate
+         having failed. Say which Worker you are talking to before anyone
+         debugs the wrong one. */
+      ...(access.forced ? { "X-GC-Queue-Forced-Open": "1" } : {}),
+    }
   );
   if (globalThis.caches?.default) ctx.waitUntil(caches.default.put(key, response.clone()));
   return browserLiveResponse(response);

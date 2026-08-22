@@ -117,7 +117,7 @@ export function deferredReceiptDeadline(event) {
  * Classify an instant against the event in its own IANA time zone.
  * `phase` is stable enough for routing: only `after` maps to HTTP 410.
  */
-export function eventAccess(event, epochSeconds) {
+function showAccess(event, epochSeconds) {
   const days = Array.isArray(event?.days) ? [...event.days].sort((a, b) => a.date.localeCompare(b.date)) : [];
   if (days.length === 0) return { allowed: false, phase: "closed" };
   const timeZone = event.timeZone || "Europe/Berlin";
@@ -144,6 +144,29 @@ export function eventAccess(event, epochSeconds) {
     };
   }
   return { allowed: true, phase: "open", date: now.date, timeZone, ...window };
+}
+
+/* The show calendar, optionally held open.
+
+   `forceOpen` exists for the staging Worker, which is otherwise untestable for
+   all but five days of the year: every live read and every report answers 403
+   until Aug 26, so there is no way to rehearse the thing staging is for.
+
+   It relaxes the calendar and nothing else. The clock stays real, which is the
+   whole point of doing it this way — QUEUE_TEST_NOW cannot be used on a
+   deployed Worker, because its anchor is per-isolate module state and separate
+   isolates would disagree about the time, writing sessions whose elapsed
+   waits, throttle windows and retention ages contradict each other. Relaxing
+   the gate leaves every timestamp genuine and only changes whether the door
+   is shut.
+
+   The verdict keeps its real `date`, `timeZone` and window so anything reading
+   them still sees the truth, and carries `forced` so a response can say why it
+   answered at four in the morning. */
+export function eventAccess(event, epochSeconds, forceOpen = false) {
+  const verdict = showAccess(event, epochSeconds);
+  if (!forceOpen || verdict.allowed) return verdict;
+  return { ...verdict, allowed: true, phase: "open", forced: true };
 }
 
 export function median(values) {
