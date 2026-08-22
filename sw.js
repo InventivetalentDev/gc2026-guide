@@ -87,8 +87,20 @@
    sheet rather than its body, which walks the × off the top on the tallest
    ones. But this is the page a stranger's #hall/booth link opens, often
    once, in a hall with no reception — "one load late" is "never" often
-   enough here — and the fix is not whole until both halves have landed. */
-const VERSION = "v13";
+   enough here — and the fix is not whole until both halves have landed.
+
+   v14 is the card's action corner and the sheet the third row of it opens.
+   Save, Played and Share are one stacked column now, built by js/app.js and
+   laid out by css/style.css, and the sheet is a <dialog> in index.html that
+   only that script ever opens. All three ride stale-while-revalidate, and
+   every pairing across the change is visibly wrong in a different way: the
+   new script under the old stylesheet stacks three unstyled buttons where a
+   plate used to be, and the old script under the new one leaves two buttons
+   with no column to sit in. The dialog is the one half that fails quietly —
+   shareButton() renders nothing when the sheet is missing, so that pairing
+   is a card with two rows rather than a row that opens nothing — and that
+   guard is what makes this a layout bump rather than a dead-control one. */
+const VERSION = "v14";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;

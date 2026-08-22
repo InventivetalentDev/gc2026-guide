@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-08-22",
+    "revision": 44,
+    "changes": [
+      { "kind": "feature", "text": "Any booth can be sent to somebody on its own. The Share row in a card's corner hands out a link that opens the guide on that card \u2014 scrolled to it, lit for a moment \u2014 rather than at the top of a list of a hundred and eleven, which is the difference between sending someone a link and sending them a description. It is the same address the hall map has always used to send you to a card, so it works offline once the guide has been opened, and there is a QR code under the link for when the person you are telling is standing beside you. A card turned to its business booth shares the business booth rather than its owner, and a link naming a stand in halls 2\u20134 switches the trade exhibitors on to answer it instead of landing on an empty grid \u2014 the Badge row switches them straight back off." },
+      { "kind": "fix", "text": "The corner of a card is three rows now, one per thing you can do with a booth: Save, Played, Share. The tick that marks a booth played was the only control on the card with no word on it, which made the one thing that needed explaining the one thing that got none; it has its word now. And the Save button used to be as wide as whatever it currently said, so pressing it \u2014 Save becoming Saved, Merken becoming Gemerkt \u2014 moved the exhibitor's name under the thumb that had just pressed it. The column is a fixed width, so nothing is resized by being pressed and nothing beside it moves." },
+      { "kind": "fix", "text": "An exhibitor's name stays inside its own card on a small phone. Between the hall plate and the buttons there was about a thumb's width left for it, and a name with no room to wrap simply ran out underneath them \u2014 in German, where the buttons are wider, Capcom sat under the tick. The stacked corner is narrower than the pair it replaces, the category line above the name ends in an ellipsis rather than running off the end, and both give back what they can on the narrowest screens: about two words a line more of the name at the width most phones actually are." }
+    ]
+  },
+  {
+    "date": "2026-08-22",
     "revision": 43,
     "changes": [
       { "kind": "fix", "text": "A booth's details can be closed on a phone held sideways. The card was pinned to the map rather than to the screen, and the map is the first thing to run out of height when the phone turns \u2014 a 360-pixel screen leaves it about 130, and the card wants 200. So the top of the card went behind the hall chips, taking the booth's name and the \u00d7 that closes it with it, and the only way out of a card you had opened by accident was the back button. It is anchored to the screen now: never cut off, always stopping short of the header whatever it is holding, and a card with more in it than fits scrolls while the \u00d7 holds its corner." },

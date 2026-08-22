@@ -723,12 +723,19 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 }
 
 .exh-id { padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; justify-content: center; min-width: 0; }
+/* Both lines have to stay inside the column between the two plates. The
+   category is one unbreakable word in both languages — PUBLISHER, PUBLISHER
+   · SÜDKOREA — so on the narrowest phones it ends in an ellipsis rather
+   than running out under the action corner, and a name with no space in it
+   breaks rather than doing the same. */
+.exh-id .overline { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .exh-id h3 {
   font-family: var(--font-display);
   font-size: 1.18rem;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -.005em;
+  overflow-wrap: break-word;
 }
 
 .card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
@@ -1138,18 +1145,67 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 .bm-mark { font-size: .9rem; line-height: 1; }
 
-/* card head: a plate on the right edge, bracketing the hall plate on the left */
+/* A mark button with its word beside its glyph rather than the glyph alone. */
 .bm-wide { width: auto; height: auto; padding: 0 15px; }
-.exh-head .bm {
-  align-self: stretch;
-  height: auto;
+
+/* --- the action corner: three rows, one per thing you can do with a booth ---
+
+   It used to be two controls side by side, and the pair had two problems.
+   The ✓ was a bare glyph with no word on it, so the one control on the card
+   that needs explaining was the one that got no explanation; and the Save
+   button sized itself to its own label, so pressing it — "Save" becoming
+   "Saved", "Merken" becoming "Gemerkt" — moved the exhibitor's name under
+   the thumb that had just pressed it.
+
+   Stacked, they are one column of fixed width: every label fits, nothing
+   reflows when a state changes, and there is room for a third row without
+   taking any more of the name than the pair already did (the old pair ran
+   about 138px wide against this column's 104). The head grows about 30px
+   in exchange, which the hall plate spends on being a taller sign. */
+.exh-actions {
+  flex: 0 0 104px;
+  display: flex;
+  flex-direction: column;
   margin-left: auto;
-  border: none;
   border-left: 1px solid var(--rule-soft);
-  border-radius: 0;
 }
-.exh-head .bm:not(.bm-wide) { width: 28px; }
-.exh-head .bm + .bm { margin-left: 0; }
+.exh-actions .bm {
+  flex: 1 1 0;
+  width: auto;
+  height: auto;
+  min-height: 31px;
+  justify-content: flex-start;
+  gap: 7px;
+  /* A third of a character tighter than the small caps everywhere else in
+     the guide, which is what fits "Gespielt" — the longest of the eight
+     labels the two languages between them put in these rows — inside the
+     column without it having to grow into the exhibitor's name. */
+  letter-spacing: .08em;
+  padding: 0 11px;
+  border: none;
+  border-radius: 0;
+  text-align: left;
+}
+.exh-actions .bm + .bm { border-top: 1px solid var(--rule-soft); }
+/* The three glyphs line up in their own column, so the labels start at the
+   same place whether the row is showing a "+", a "−" or a "✓". */
+.exh-actions .bm-mark { flex: 0 0 11px; text-align: center; }
+.exh-actions .bm-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The border is gone, so hover has to be carried by the fill. Set rows keep
+   their own — an orange row does not get lighter for being pointed at. */
+.exh-actions .bm:not([aria-pressed="true"]):hover { background: var(--ground-3); color: var(--ink); }
+.card:hover .exh-actions .bm:not([aria-pressed="true"]):hover { background: var(--rule-soft); }
+
+/* On the narrowest phones the exhibitor's name is down to a word a line, so
+   the column gives back the eight pixels it can spare. The labels still fit:
+   what goes is the air around them. */
+@media (max-width: 380px) {
+  .exh-actions { flex-basis: 96px; }
+  .exh-actions .bm { padding: 0 9px; gap: 6px; font-size: .64rem; }
+  /* And the name's own gutters come in with them, which is what keeps a
+     short exhibitor name on one line at the width German needs most. */
+  .exh-id { padding-left: 10px; padding-right: 10px; }
+}
 .card[data-saved="true"] { border-color: var(--signal); }
 .card[data-played="true"] { border-color: var(--rule); }
 .card[data-played="true"] .card-body { opacity: .62; }
@@ -2286,6 +2342,16 @@ a.area-hall::after { content: ""; position: absolute; inset: -6px -8px; }
 }
 .share-qr-solo .share-qr-image { max-width: 260px; }
 .share-qr-solo p { text-align: center; max-width: 34ch; }
+
+/* One booth's sheet says which booth before it says anything else — the name
+   set like the sources sheet's subject, because it is answering the same
+   question about which of a hundred-odd cards this is, and the hall and
+   stand under it in the plate's own words. */
+.booth-share-where {
+  margin: 4px 0 16px;
+  color: var(--ink-mid);
+  font-size: .84rem;
+}
 
 /* ============================================================
    sources dialog
