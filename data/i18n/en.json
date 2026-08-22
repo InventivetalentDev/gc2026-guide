@@ -231,6 +231,7 @@
     "Malaysia": "Malaysia",
     "Malta": "Malta",
     "Mexico": "Mexico",
+    "Moldova": "Moldova",
     "Morocco": "Morocco",
     "Netherlands": "Netherlands",
     "New Zealand": "New Zealand",
@@ -1425,6 +1426,14 @@
       "description": "A large Hall 8.1 stand — roughly 610 m² at A011/B010, at the far end of the hall next to Square Enix — plus a business booth in Hall 2.1, for the British-Saudi studio, registered under the brand 'MGS'. Neither gamescom's listing nor the trade press names a game for it yet.",
       "crowdNote": "The booth size implies a real presence, but with no announced lineup the draw is unknown.",
       "visitAdvice": "Worth a look on your first pass down Hall 8.1 — it is one of the hall's bigger unknowns."
+    },
+    "mbc-game-studio-business": {
+      "description": "MBC Game Studio's business-hall stand, separate from its large Hall 8.1 showcase. Publishing and partnership meetings for the British-Saudi studio.",
+      "accessNote": "A single-code stand in Hall 2.1, filed under the studio alone rather than a shared pavilion.",
+      "offers": [
+        "Publishing and partnership meetings",
+        "Investor and press appointments"
+      ]
     },
     "the-district": {
       "description": "New for 2026: a competitive-gaming area of about 2,000 m² in Hall 8.1 plus roughly 1,000 m² in the reactivated outdoor area P8 behind the hall, with an esports stage at the back of the hall. Cologne's SK Gaming is the headline partner; REWE, Techniker Krankenkasse, Nestlé, Logitech, Deutsche Telekom, Philips, SanDisk, Subway and Esports Virtual Arenas are among the brands on the shared stand and around it.",

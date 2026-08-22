@@ -104,12 +104,12 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/google-uk-ltd",
     "games": [
-      { "title": "Fruit Ninja", "status": "expected", "playable": true, "platforms": ["Android"] },
-      { "title": "Dave the Diver", "status": "expected", "playable": true, "platforms": ["Android"] },
-      { "title": "Subway Surfers City", "status": "expected", "playable": true, "platforms": ["Android"] },
-      { "title": "eFootball", "status": "expected", "playable": true, "platforms": ["Android"] },
-      { "title": "Wobbly Life", "status": "expected", "playable": true, "platforms": ["Android"] },
-      { "title": "Asphalt Legends Unite", "status": "expected", "playable": true, "platforms": ["Android"] }
+      { "title": "Fruit Ninja", "status": "confirmed", "playable": true, "platforms": ["Android"] },
+      { "title": "Dave the Diver", "status": "confirmed", "playable": true, "platforms": ["Android"] },
+      { "title": "Subway Surfers City", "status": "confirmed", "playable": true, "platforms": ["Android"] },
+      { "title": "eFootball", "status": "confirmed", "playable": true, "platforms": ["Android"] },
+      { "title": "Wobbly Life", "status": "confirmed", "playable": true, "platforms": ["Android"] },
+      { "title": "Asphalt Legends Unite", "status": "confirmed", "playable": true, "platforms": ["Android"] }
     ],
     "tags": ["mobile", "platform"],
     "crowd": 2,
@@ -118,7 +118,7 @@
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
       "https://mobilegamer.biz/apple-and-google-look-set-to-up-their-presence-for-gamescom-2026/"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-22"
   },
   {
     "id": "capcom",
@@ -821,6 +821,24 @@
       "https://exhibitors.gamescom.global/en/exhibitor/mbc_game_studio_limi/"
     ],
     "lastUpdated": "2026-08-19"
+  },
+  {
+    "id": "mbc-game-studio-business",
+    "businessOf": "mbc-game-studio",
+    "name": "MBC Game Studio — business booth",
+    "type": "trade",
+    "hall": "2.1",
+    "booth": "A057",
+    "locationConfirmed": true,
+    "dirSlug": "mbc_game_studio_limi",
+    "country": "Saudi Arabia",
+    "access": "appointment",
+    "games": [],
+    "tags": ["closed stand"],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/mbc_game_studio_limi/"
+    ],
+    "lastUpdated": "2026-08-22"
   },
   {
     "id": "the-district",
@@ -1596,7 +1614,8 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/lego-gmbh",
     "games": [
-      { "title": "LEGO video game lineup (TBC)", "status": "expected", "playable": true, "platforms": ["Multi"] }
+      { "title": "LEGO video game lineup (TBC)", "status": "expected", "playable": true, "platforms": ["Multi"] },
+      { "title": "LEGO Skylines", "status": "rumored", "playable": null, "platforms": ["PC", "Consoles"] }
     ],
     "tags": ["family-friendly", "photo ops"],
     "crowd": 4,
@@ -1604,9 +1623,11 @@
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
       "https://bricksfanz.com/lego-games-returning-for-gamescom-2026/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
+      "https://www.vice.com/en/article/the-next-lego-game-could-be-confirmed-at-gamescom/",
+      "https://www.kitguru.net/tech-news/mustafa-mahmoud/leaked-lego-skylines-could-be-officially-announced-at-gamescom/"
     ],
-    "lastUpdated": "2026-08-17"
+    "lastUpdated": "2026-08-22"
   },
   {
     "id": "wizards-of-the-coast",
