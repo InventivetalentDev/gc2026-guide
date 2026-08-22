@@ -123,6 +123,20 @@ This document is the playbook for refreshing the data — written so a scheduled
    information has to read differently from one that moved a button. Revisions
    themselves are never tagged: the timeline derives each entry's tags from its bullets,
    so there is no summary line that can drift out of step with what is under it.
+
+   **One or two lines each, and never more than three.** A bullet is roughly 150
+   characters to a line on a desktop, so ~150 is the target and ~250 the ceiling; a
+   long list of exhibitor or game names is the only thing that earns the extra room,
+   and even then it splits per hall rather than running on. Say what changed and, if
+   it isn't obvious, what it is good for. Everything else goes:
+   - **No implementation.** Service workers, caches, `/api/` routes, focus rings,
+     re-renders, markup sizes, millisecond timings, pixel measurements. A visitor
+     cannot act on any of it. "Switching tabs is about twice as quick" is the whole
+     bullet; how it got that way belongs in the commit message.
+   - **No reason-it-was-broken essay.** A `fix` names the symptom and stops. The
+     history of the bug is for `git log`.
+   - **No labels quoted in both languages**, no restating what a button said before
+     and says now, and no arithmetic the reader didn't ask for.
 9. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
    ```sh
    node -e "['exhibitors','event','meta','changelog'].forEach(f=>JSON.parse(require('fs').readFileSync('data/'+f+'.json')))"
