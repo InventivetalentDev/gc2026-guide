@@ -2106,6 +2106,7 @@
   {
     "id": "aws-biz",
     "name": "Amazon Web Services",
+    "aka": ["AWS"],
     "type": "trade",
     "hall": "3.2",
     "booth": "A051",

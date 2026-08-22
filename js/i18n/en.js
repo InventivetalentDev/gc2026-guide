@@ -451,6 +451,13 @@ window.GC_STRINGS.en = {
   "updates.kind.content": "Content",
   "updates.noneOfKind": "No changes of that kind are recorded yet.",
 
+  /* Every exhibitor and game a bullet names is a link to its card (see
+     changeMarkup). The name is already in the sentence, so the label says
+     where the link goes rather than repeating it — and for a game it names
+     the booth, because that is the card that opens. */
+  "updates.refExhibitor": "Open the {exhibitor} card",
+  "updates.refGame": "Open {exhibitor}, showing {game}",
+
   /* ---------- countdown & freshness ---------- */
   "countdown.days": "T−{n} day|T−{n} days",
   "countdown.live": "● Live now",

@@ -137,6 +137,21 @@ This document is the playbook for refreshing the data — written so a scheduled
      history of the bug is for `git log`.
    - **No labels quoted in both languages**, no restating what a button said before
      and says now, and no arithmetic the reader didn't ask for.
+
+   **Names link themselves.** Every exhibitor and game the guide holds a card for is
+   marked in the bullet and linked to that card. The index is derived from
+   `data/exhibitors.json` (see `changelogRefs` in `js/app.js`), so nothing is marked
+   up by hand and a rename carries into the whole log at once. Two things follow for
+   whoever writes the bullet:
+   - **Spell a name the way its card files it.** Casing is forgiven — `KRAFTON` and
+     `Krafton` both land — and so is a company suffix the name can lose (`Focus` for
+     Focus Entertainment, `SCS` for SCS Software). An initialism is not: `AWS` only
+     reaches Amazon Web Services because that card carries `"aka": ["AWS"]`. If a
+     short form you keep writing never lights up, add it there rather than working
+     around it.
+   - **A name two cards claim stays plain text**, on purpose. EA Sports FC 27 is at
+     EA, Nintendo and The District, and the sentence cannot say which one it meant —
+     so name the booth too when the link is the point.
 9. **Validate**: every file must parse as JSON and satisfy the schema below. Quick check:
    ```sh
    node -e "['exhibitors','event','meta','changelog'].forEach(f=>JSON.parse(require('fs').readFileSync('data/'+f+'.json')))"
@@ -305,6 +320,8 @@ editing `en.json`; see [Keeping the German in sync](#keeping-the-german-in-sync)
   "booth": "B010",                 // string or null; "/" joins one stand's halves, "," separates stands
   "locationConfirmed": false,      // true only when officially published for 2026
   "officialUrl": "https://www.gamescom.global/en/exhibitor/xbox",  // optional: official profile, omit when there is none
+  "aka": ["AWS"],                  // optional: short forms the changelog writes that
+                                   // no rule derives from `name` — see step 8
   "ageRestricted": true,           // optional: booth-wide age gate when no game fits
   "games": [
     {
