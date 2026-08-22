@@ -623,7 +623,6 @@ window.GC_STRINGS.de = {
   "map.tradeOnlySuffix": ", nur Fach- und Medienbesucher",
   "map.tradeOnlyLabel": "nur Fach- und Medienbesucher",
   "map.showExhibitors": "Ich habe ein Business-Ticket — Aussteller zeigen",
-  "map.hideExhibitors": "Aussteller ausblenden",
   "map.showTrade": "Business-Aussteller zeigen",
   "map.gatedHint":
     "Business-Bereich — die meisten Aussteller erscheinen im Guide, wenn du Business-Aussteller einblendest",

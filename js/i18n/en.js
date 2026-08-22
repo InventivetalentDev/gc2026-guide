@@ -661,7 +661,6 @@ window.GC_STRINGS.en = {
   "map.tradeOnlySuffix": ", trade & media only",
   "map.tradeOnlyLabel": "trade only",
   "map.showExhibitors": "I have a badge — show exhibitors",
-  "map.hideExhibitors": "hide exhibitors",
   "map.showTrade": "show trade exhibitors",
   "map.gatedHint":
     "business area — most of these are in the guide with trade exhibitors on",

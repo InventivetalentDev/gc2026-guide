@@ -630,6 +630,54 @@ day too — the row is already inside the answer to "which day", and
 arriving on a map that asks for it again is a question the visitor just
 answered.
 
+### 11. Sideways is its own layout, and the sheet belongs to the screen
+
+A phone held sideways keeps every strip this page has and loses two
+thirds of the height they are sized against. Header, hall chips, day
+chips and the access banner come to about 180 px of a 360 px screen and
+the credit line takes another 48, which leaves the hall 130 px — and the
+stand sheet wants 200. The sheet was `position: absolute` inside
+`#stage`, which clips; a sheet taller than the stage lost its top edge to
+that clip, and its × with it, behind the strips above. The card could be
+opened and not closed.
+
+So the sheet is anchored to the viewport rather than to the stage, and
+lives outside `#stage` in the markup to say so. Three things fall out of
+that, in order of how much they matter:
+
+- **It is never clipped, and it is capped.** `max-height` stops it clear
+  of the header, so the way out of it is on the screen at every height
+  the page is read at; `.map-sheet-body` takes the overflow, so the ×
+  outside it stays in the corner however far the details scroll.
+- **It opens over the credit line** rather than stopping above it, which
+  is a strip of hall the map keeps.
+- **Sideways it is not a bottom sheet at all.** Under
+  `(max-height: 500px) and (min-width: 620px)` it takes the right-hand
+  edge, down to the hall chips and no further: the hall stays on screen
+  beside it, which is the whole point of having tapped a booth on a map,
+  and the row that changes halls stays tappable with a stand open. The
+  same block gives the strips back the padding they can spare, turns the
+  zoom column into a row along the other edge — four buttons stacked are
+  178 px, taller than the stage this shape leaves — and pads to
+  `env(safe-area-inset-left/right)`, which is where the notch is when the
+  phone is on its side.
+
+Leaving the sheet inside `#stage` and only making it `position: fixed`
+would clear the clip, but not the scroll: `#stage` is `touch-action:
+none`, and that applies down the whole subtree, fixed descendants
+included — a scrollable panel inside it takes a swipe and does nothing,
+measurably (a fixed `overflow-y: auto` box under a `touch-action: none`
+ancestor stays at `scrollTop` 0 through a touch drag that scrolls the
+same box 62 px when it is a sibling instead). The panel is not part of
+the gesture surface, so it does not live in it.
+
+Also rejected: measuring the strips in `js/map.js` and publishing their
+height as a custom property (the guide does this for its masthead, and it
+is the right answer when the number has to be exact — here nothing needs
+to be exact, only bounded); and leaving the sheet where it was and
+shrinking the strips alone, which buys about 30 px and still loses the ×
+on the shortest screens.
+
 ## Deliberately not built
 
 Search-on-map, played *toggling* from the map (it is shown, not editable —
@@ -809,12 +857,17 @@ Serve the repo root; clear `gc2026.saved.v1`.
     no doors, and drops "hall doors ours" from the credit line.
 10a. **Areas** — the hall row groups into Entertainment and Business
     behind a coloured swatch, the business group is flagged trade-only,
-    and the chips of a group carry that colour on their edge. Opening
-    2.1/2.2/3.2/4.1/4.2 shows the trade banner under the row and washes
-    the hall's blocks purple; every entertainment hall is cyan and shows
-    no banner. `node tools/fetch-hallplan.mjs` prints "colours: …
-    still match the official plan" — if it throws instead, Koelnmesse
-    repainted and `AREAS` needs the new value.
+    and the chips of a group carry that colour on their edge. With the
+    trade exhibitors off, opening 2.1/2.2/3.2/4.1/4.2 shows the trade
+    banner under the row and washes the hall's blocks purple; every
+    entertainment hall is cyan and shows no banner. Take the banner's
+    switch and it goes for good — none of the five shows it again, on
+    this visit or the next — until the guide's Badge row turns the
+    exhibitors back off, which brings it back on the hall already open
+    (through `storage`, without a reload). `node
+    tools/fetch-hallplan.mjs` prints "colours: … still match the
+    official plan" — if it throws instead, Koelnmesse repainted and
+    `AREAS` needs the new value.
 11. **Cross-links** — a card's hall plate opens that booth's sheet on the
     map; a plan-board hall header opens that hall; the sheet's "open in
     guide" lands on that card, even with "saved only" left on. Cards for
@@ -828,8 +881,9 @@ Serve the repo root; clear `gc2026.saved.v1`.
     its title and its accessible name; chips in hall 1 and the F-areas
     are still not links. In Event info, the areas list opens the map at
     the near end of a span — "5–10" at 5.1, "2–4" at 2.1 with the trade
-    banner up — an exact hall at itself, and 1 / 11.1 / "—" not at
-    all. The `.ics` export still contains no markup.
+    banner up if the exhibitors are off — an exact hall at itself, and
+    1 / 11.1 / "—" not at all. The `.ics` export still contains no
+    markup.
 12. **Offline** — airplane mode, reopen installed app → map, switch to a
     never-opened hall: renders from precache. Navigating straight to
     `map.html` offline serves the map, not the guide.
@@ -882,6 +936,26 @@ Serve the repo root; clear `gc2026.saved.v1`.
     both storeys. A day in a single hall lights its plate and draws
     neither number nor line. With no day picked the bar offers its own
     hint and everything reverts to saves.
+
+18. **Sideways** — open a stand's sheet on a phone in portrait and turn
+    the phone. The card becomes a panel down the right-hand edge, the
+    hall is still drawn beside it, and the × is in the panel's top
+    corner with nothing over it — `elementFromPoint` at the middle of
+    that button returns the button. Turn back and it is a bottom sheet
+    again, still open, still closable. At 844×390 the stage measures
+    about 240 px against the 160 it had, the zoom buttons are a row
+    along the bottom-left, and the hall chips are clear of the panel, so
+    another hall is one tap away with the panel up. On a screen too
+    narrow for a panel (568×320) it stays a capped bottom sheet and the
+    × is still reachable. A sheet with more in it than the cap allows
+    (620×290, Xbox in 7.1) scrolls inside `.map-sheet-body` while the ×
+    holds its corner.
+19. **The strips are one line each** — with a plan in storage, the day
+    bar is a single row at every width: the chips and the sentence
+    beside them scroll together rather than the sentence taking a row of
+    its own, and scrolling the bar to its end brings the whole sentence
+    into view (`scrollWidth > clientWidth` at 390 px, and the status's
+    right edge lands inside the bar's once scrolled).
 
 ## Open questions
 
