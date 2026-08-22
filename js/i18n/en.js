@@ -244,7 +244,12 @@ window.GC_STRINGS.en = {
     "Search for the game you are queueing for. Save booths on the Exhibitors tab and their queues show up here first.",
   "queues.emptySearch": "Nothing matches “{query}”.",
   "queues.emptyScoped": "Nothing at this booth matches “{query}”. Search all queues to look wider.",
-  "queues.noticeBeforeShow": "Live queues open when the show does, on 26 August.",
+  "queues.previewWhen": "Live queues open on {day}, {date} — the first day of gamescom.",
+  "queues.previewOver": "gamescom 2026 is over, and live queues closed with it.",
+  "queues.previewHow":
+    "While the show runs, anyone waiting can start a timer here and say roughly how many people are ahead of them. Those reports become the wait shown on the booth cards and in your plan.",
+  "queues.previewCost":
+    "Reporting is optional and needs no account. The rest of the guide works the same whether you use it or not.",
   "queues.noticeClosed": "The show is closed right now, so reports are paused. Live figures return when it opens.",
   "queues.noticeOffline": "No connection — live figures are unavailable. A wait you finish now is kept and sent when you are back online.",
   "queue.leftOffline":

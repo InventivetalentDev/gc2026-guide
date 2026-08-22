@@ -7,7 +7,7 @@
       { "kind": "feature", "text": "Waits reported by other visitors now sit beside the guide's forecast, with how many people reported and how long ago." },
       { "kind": "feature", "text": "Queue timing keeps working without reception — a wait you finish offline is sent once you are back online." },
       { "kind": "feature", "text": "No account needed to report: no names, no locations, and reports are only kept for the show." },
-      { "kind": "feature", "text": "Reporting has its own Live queues tab, so cards carry a single “Report a queue” link instead of buttons under every game. It appears while the show is on." },
+      { "kind": "feature", "text": "Reporting has its own Live queues tab, so cards carry a single “Report a queue” link instead of buttons under every game. The tab is there now and says which day it goes live." },
       { "kind": "fix", "text": "Queue details are saved by the “Done” button now — picking a queue type and walking away used to discard it." },
       { "kind": "fix", "text": "You can only track one queue at a time. Joining a new line asks whether to leave the one you are in, and records that you left it." }
     ]

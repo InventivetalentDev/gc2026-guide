@@ -306,17 +306,17 @@ body {
   transition: color .12s, border-color .12s;
 }
 /* .tab sets display:flex, which beats the UA sheet's [hidden] rule whatever
-   its specificity — so the Today and Live queues tabs,
-   hidden off-show, need saying twice. */
+   its specificity — so the Today tab, hidden off-show, needs saying twice. */
 .tab[hidden] { display: none; }
 /* The row's left edge aligns with the content, whichever tab currently starts
-   it: the live tabs when the show is on,
-     Exhibitors the rest of the year. */
+   it: Today when the show is on, Exhibitors the rest of the year. */
 .tab:first-child,
 .tab[hidden] + .tab { padding-left: 0; }
 .tab .tab-index { transition: color .12s; }
-/* Today wears a live dot rather than a number: it is not part of the standing
-   01-04 sequence, it is the mode that only exists while the show runs. */
+/* A live dot rather than a number marks the tabs that only mean something
+   while the show runs. Today always wears one; Live queues wears one on the
+   show days and takes its place in the standing 01-05 sequence off them, when
+   it is a description of what is coming rather than a live surface. */
 .tab-live { color: var(--signal); font-size: .7rem; }
 .tab:hover { color: var(--ink); }
 .tab.active { color: var(--ink); border-bottom-color: var(--signal); }
@@ -1423,6 +1423,28 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   color: var(--ink-mid);
   margin-bottom: 20px;
 }
+/* The off-show face of the tab. Bordered like the notice above it rather than
+   left as loose paragraphs, because it is standing in for two whole sections
+   and an unframed run of text reads as a page that failed to load. Its accent
+   is the signal colour, not the warning one: nothing is wrong here, the show
+   simply has not started. */
+.queues-preview {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--signal);
+  padding: 16px 18px;
+  max-width: 62ch;
+}
+.queues-preview p {
+  font-size: .88rem;
+  color: var(--ink-mid);
+  line-height: 1.6;
+}
+.queues-preview p + p { margin-top: 12px; }
+.queues-preview-when {
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .queues-scope {
   display: flex;
   align-items: center;

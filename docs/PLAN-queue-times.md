@@ -357,8 +357,12 @@ So they are separated. **The cards read**: each game row keeps its live figure
 and nothing else, the card foot keeps the worst-queue summary beside the
 forecast meter, and one link — *Report a queue →* — sits with them, carrying
 the exhibitor id (`#queues?ex=xbox`). **A fifth tab reports**: *Live queues*,
-appended as 05 so the other four keep the numbers regulars know, and hidden
-outside the show days like every other queue surface.
+appended as 05 so the other four keep the numbers regulars know. Unlike every
+other queue surface it is not hidden outside the show days — hiding it meant
+nobody learned the feature existed until the morning it started, which is the
+one morning nobody reads a tab strip. Off-show it stays at 05 and the view
+behind it says what it does and which day it opens; on a show day `syncQueueTab`
+moves it up beside *Today* and swaps the number for the live dot.
 
 The tab holds, in order: the queues you are in, with their timers and the three
 session actions; then a search box over all 162 queue identities. Untyped it

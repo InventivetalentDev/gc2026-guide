@@ -164,8 +164,10 @@ const PLATFORM_CODES = {
   tbc: "TBA",
 };
 
-/* "today" and "queues" are last so VIEWS[0] stays the default landing view;
-   both tabs sit first in the markup, and only exist while the show runs. */
+/* "today" and "queues" are last so VIEWS[0] stays the default landing view.
+   Today's tab sits first in the markup and only exists while the show runs;
+   the queues tab is always there, moving between the two ends of the strip
+   (see syncQueueTab). */
 const VIEWS = ["exhibitors", "planner", "event", "updates", "today", "queues"];
 
 async function loadData() {
@@ -5696,21 +5698,65 @@ function renderQueuesResults() {
   }
 }
 
-function renderQueuesNotice() {
+/* The next show day, counting today, or null once the last one is behind us. */
+function nextShowDay() {
+  const today = showNow().date;
+  return (state.event?.days || []).find((day) => day.date >= today) || null;
+}
+
+function renderQueuesNotice(live) {
   const notice = $("#queues-notice");
   if (!notice) return;
+  /* No before-the-show branch: off-show the panel below is the whole answer,
+     and a line above it saying the same thing is the same thing twice. */
   let message = "";
-  if (!QUEUES.visible()) message = t("queues.noticeBeforeShow");
-  else if (!QUEUES.canReport()) message = t("queues.noticeClosed");
-  else if (!QUEUES.connected()) message = t("queues.noticeOffline");
+  if (live) {
+    if (!QUEUES.canReport()) message = t("queues.noticeClosed");
+    else if (!QUEUES.connected()) message = t("queues.noticeOffline");
+  }
   notice.hidden = !message;
   notice.textContent = message;
 }
 
+/* Off-show, this replaces the two sections below it. They are a list of
+   queues you are in and a search over queues to report, and neither has an
+   honest thing to show before the doors open — every row would render its
+   controls empty. What a visitor in July needs instead is what the feature
+   does and the date it starts doing it. */
+function renderQueuesPreview(live) {
+  const panel = $("#queues-preview");
+  const mine = $("#queues-mine-section");
+  const report = $("#queues-report-section");
+  if (report) report.hidden = !live;
+  if (mine && !live) mine.hidden = true;
+  if (!panel) return;
+  panel.hidden = live;
+  if (live) {
+    panel.innerHTML = "";
+    return;
+  }
+  /* nextShowDay only answers whether the show is still ahead of us; the day
+     named is always the first, because that is the day the feature opens and
+     "the first day of gamescom" has to stay true. The two can disagree under
+     ?now, which moves the app's clock but not the queue module's. */
+  const opening = (state.event?.days || [])[0];
+  const when = nextShowDay() && opening
+    ? t("queues.previewWhen", { day: dayName(opening.date), date: formatDate(opening.date) })
+    : t("queues.previewOver");
+  panel.innerHTML = `<p class="queues-preview-when">${esc(when)}</p>
+    <p>${esc(t("queues.previewHow"))}</p>
+    <p>${esc(t("queues.previewCost"))}</p>`;
+}
+
 function renderQueues() {
   if (!QUEUES || !$("#view-queues")) return;
+  const live = QUEUES.visible();
+  renderQueuesPreview(live);
+  renderQueuesNotice(live);
+  /* Building the index walks every game at every booth. Off-show nothing
+     below reads it, so it waits for the day something does. */
+  if (!live) return;
   if (!queueIndex.length) buildQueueIndex();
-  renderQueuesNotice();
   renderQueuesMine();
   renderQueuesScope();
   renderQueuesResults();
@@ -5735,13 +5781,42 @@ function applyQueueScope(exhibitorId) {
   window.scrollTo(0, 0);
 }
 
-/* The tab is absent outside the show days, like every other queue surface. */
+/* Kept in step with the number in index.html, which is what a visitor sees
+   before this script has run. */
+const QUEUE_TAB_INDEX = "05";
+
+/* Every other queue surface is absent outside the show days, because there is
+   nothing live to put in it. The tab is the exception: hiding it meant nobody
+   found out live queues existed until the morning they started, which is the
+   one morning nobody is reading a tab strip. So it stays all year and changes
+   place instead — last and numbered 05 off-show, where the view behind it
+   explains what it will do and when, and up beside Today wearing the live dot
+   once the show is on. */
 function syncQueueTab() {
   const tab = $('.tab[data-view="queues"]');
-  if (!tab || !QUEUES) return;
-  const show = QUEUES.visible();
-  tab.hidden = !show;
-  if (!show && state.view === "queues") showView(VIEWS[0]);
+  const strip = tab?.parentElement;
+  if (!tab || !strip || !QUEUES) return;
+  const live = QUEUES.visible();
+
+  const index = tab.querySelector(".tab-index");
+  if (index) {
+    index.classList.toggle("tab-live", live);
+    index.textContent = live ? "\u25cf" : QUEUE_TAB_INDEX;
+  }
+
+  /* Live it belongs next to Today, off-show at the end. Both branches check
+     where the tab already is: this runs from the 30-second tick, and moving a
+     node is a remove and an insert, which would drop focus mid-keyboard-walk
+     on every one of them. */
+  const todayTab = strip.querySelector('.tab[data-view="today"]');
+  const target = live ? (todayTab ? todayTab.nextElementSibling : strip.firstElementChild) : null;
+  const moving = live ? target !== tab : strip.lastElementChild !== tab;
+  if (moving) {
+    const held = document.activeElement === tab;
+    if (live) strip.insertBefore(tab, target);
+    else strip.append(tab);
+    if (held) tab.focus({ preventScroll: true });
+  }
 }
 
 function refreshQueueSurfaces() {
@@ -6562,6 +6637,25 @@ function setHidePlayed(on) {
   refreshViews("planner");
 }
 
+/* Bring the selected tab inside the row's own viewport. The strip scrolls
+   sideways on a phone, and the tab at the far end of it is off screen there:
+   following a link to #queues — or to #updates, which has always been last —
+   would otherwise select a tab nobody can see. Measured with rects and moved
+   with scrollBy so it stays horizontal: scrollIntoView would also chase the
+   strip vertically from wherever the page happens to be sitting. Smooth to
+   match the ◂ ▸ cues, which nudge the same row the same way. */
+function scrollTabIntoView(tab) {
+  const row = tab?.parentElement;
+  if (!row || row.scrollWidth <= row.clientWidth + 1) return;
+  const edge = tab.getBoundingClientRect();
+  const view = row.getBoundingClientRect();
+  /* Stop a hair clear of the end, so the tab does not sit flush against the
+     cue plate that is covering that corner of the row. */
+  const pad = 28;
+  if (edge.left < view.left + pad) row.scrollBy({ left: edge.left - view.left - pad, behavior: "smooth" });
+  else if (edge.right > view.right - pad) row.scrollBy({ left: edge.right - view.right + pad, behavior: "smooth" });
+}
+
 function showView(route, { push = true } = {}) {
   const wantsSaved = route === SAVED_ROUTE;
   let name = wantsSaved ? "exhibitors" : route;
@@ -6573,12 +6667,13 @@ function showView(route, { push = true } = {}) {
      against a shell one version older that has no #view-today at all, and the
      activation below would throw on it (see the note in renderPlan). */
   if (name === "today" && !($("#view-today") && state.event && showDay())) name = "planner";
-  /* #queues is live in the same way, and guarded here for the same two
-     reasons: the tab does not exist off-show, and an older cached shell has no
-     #view-queues for the activation below to find. It falls back to the
-     exhibitor list rather than the planner — the queues view is a lens on the
-     booths, not on the plan. */
-  if (name === "queues" && !($("#view-queues") && QUEUES?.visible())) name = VIEWS[0];
+  /* #queues is reachable all year — off-show it explains itself rather than
+     going missing (see syncQueueTab). Only one guard is left, and it is the
+     one that has nothing to do with dates: a service worker can serve this
+     script against a shell one version older, which has no #view-queues for
+     the activation below to find. It falls back to the exhibitor list rather
+     than the planner — the queues view is a lens on the booths, not the plan. */
+  if (name === "queues" && !$("#view-queues")) name = VIEWS[0];
   state.view = name;
   /* A view whose boot render is still queued gets it now — opening the tab
      outruns the idle slot it was waiting for. */
@@ -6594,6 +6689,7 @@ function showView(route, { push = true } = {}) {
     const on = t.dataset.view === name;
     t.classList.toggle("active", on);
     t.setAttribute("aria-selected", String(on));
+    if (on) scrollTabIntoView(t);
   });
   /* Which view is holding focus, read before the swap. An inactive view hides
      by having its contents skipped rather than by leaving the layout (see
