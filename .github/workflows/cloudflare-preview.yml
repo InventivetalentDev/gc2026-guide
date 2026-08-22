@@ -16,10 +16,15 @@ name: Deploy PR previews to Cloudflare
 #          configuration rather than by a check. Uploading it to the top-level
 #          environment would hand unreviewed code the production database.
 #
-# The two previews are not wired to each other: `/api/*` is a zone route, and
-# workers.dev has no zones, so the site preview has no API behind it and the
-# queue tab shows its offline notice there. Reviewing the whole loop is what
-# staging is for.
+# A site preview cannot serve its own API. In production the two halves share
+# a hostname because the API claims `/api/*` there as a route, and routes
+# belong to zones — workers.dev is not one, so nothing can claim a path on a
+# preview URL. Left at that, every preview of a queue change was unreviewable.
+#
+# So the site preview borrows staging's API instead: opened with `?queue-dev=1`
+# it calls the staging Worker cross-origin, which staging alone permits and
+# only from *.workers.dev. Add the parameter to the link below to get a preview
+# with live queues behind it.
 #
 # The same-repository check on the job is the guard. A PR is arbitrary HTML
 # and JavaScript, and a preview publishes it, live and public, on a
@@ -107,10 +112,11 @@ jobs:
           [ -n "$version_url" ] && links="$links- $version_url — this push only"
 
           marker="<!-- cloudflare-preview-comment -->"
-          body=$(printf '%s\n\n%s\n\n%s\n\n%s' \
+          body=$(printf '%s\n\n%s\n\n%s\n\n%s\n\n%s' \
             "$marker" \
             "**Preview** of $SHA, uploaded as a version of the production Worker — deployed nowhere. hallgui.de does not change until this merges." \
             "$links" \
+            "Add \`?queue-dev=1\` to either link to review live queues: the preview then calls the staging queue API, and the queue surfaces appear outside the five show days. Without it the preview behaves exactly as production does today." \
             "The PR link is one origin across pushes, so the service worker updates there the way it does in production: the first load after a push can serve the one before. Reload once more, or use the per-push link, which is a fresh origin every time.")
 
           existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
@@ -231,7 +237,7 @@ jobs:
             "$marker" \
             "**Queue API preview** of $SHA, uploaded as a version of the *staging* API Worker." \
             "- $alias_url/api/queue/live" \
-            "It is bound to the staging database and the staging admin token, so nothing here can touch the show's data. The site preview above has no API behind it — \`/api/*\` is a zone route and workers.dev has no zones — so exercise the full loop on staging.")
+            "It is bound to the staging database and the staging admin token, so nothing here can touch the show's data. Add \`?queue-dev=1\` to the site preview link above and it will talk to this same staging API, which is how to review a queue change end to end.")
 
           existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
             --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)

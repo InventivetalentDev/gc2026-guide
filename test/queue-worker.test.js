@@ -364,10 +364,10 @@ describe("retention and routing", () => {
     await waitOnExecutionContext(ctx);
   });
 
-  it("holds the calendar open on staging, and only for the exact sentinel", async () => {
+  it("holds the calendar open on the proving ground, and only for the exact sentinel", async () => {
     const ctx = createExecutionContext();
     const request = new Request("https://hallgui.test/api/queue/live");
-    const staging = testEnv({ QUEUE_FORCE_OPEN: "staging-testing-only" });
+    const staging = testEnv({ QUEUE_STAGING: "proving-ground" });
     const wellBefore = at("2026-08-20T04:00:00+02:00");
     const afterTheShow = at("2026-08-30T20:30:01+02:00");
 
@@ -387,12 +387,65 @@ describe("retention and routing", () => {
 
     /* Anything other than the sentinel is not a yes. A stray "0"/"false"/"1"
        from a copied config must not read as one. */
-    for (const value of [undefined, "", "0", "false", "1", "true", "staging", "STAGING-TESTING-ONLY"]) {
+    for (const value of [undefined, "", "0", "false", "1", "true", "staging", "PROVING-GROUND"]) {
       await expect(
-        handleLive(request, testEnv({ QUEUE_FORCE_OPEN: value }), ctx, event, wellBefore)
+        handleLive(request, testEnv({ QUEUE_STAGING: value }), ctx, event, wellBefore)
       ).rejects.toMatchObject({ status: 403, code: "outside_show_hours" });
     }
     await waitOnExecutionContext(ctx);
+  });
+
+  it("lets only workers.dev previews call the queue endpoints cross-origin", async () => {
+    const staging = testEnv({ QUEUE_STAGING: "proving-ground" });
+    const preview = "https://pr-77-gc2026-guide.example.workers.dev";
+    const live = (origin, env, method = "GET") =>
+      worker.fetch(
+        new Request("https://api.test/api/queue/live", { method, headers: origin ? { Origin: origin } : {} }),
+        env,
+        createExecutionContext()
+      );
+
+    /* The preflight a preview's POST triggers, because it carries a custom
+       client header. It must be answered without the show calendar, the rate
+       limiter or a body ever coming into it. */
+    const flight = await worker.fetch(
+      new Request("https://api.test/api/queue/report", {
+        method: "OPTIONS",
+        headers: { Origin: preview, "Access-Control-Request-Method": "POST" },
+      }),
+      staging,
+      createExecutionContext()
+    );
+    expect(flight.status).toBe(204);
+    expect(flight.headers.get("Access-Control-Allow-Origin")).toBe(preview);
+    expect(flight.headers.get("Access-Control-Allow-Headers")).toContain("X-GC-Queue-Client");
+
+    const allowed = await live(preview, staging);
+    expect(allowed.headers.get("Access-Control-Allow-Origin")).toBe(preview);
+    /* Or one preview's cached copy is served to the next wearing its name. */
+    expect(allowed.headers.get("Vary")).toBe("Origin");
+
+    /* Production grants nothing, to anyone. */
+    expect((await live(preview, testEnv())).headers.get("Access-Control-Allow-Origin")).toBeNull();
+
+    /* Nor does staging, to anywhere that is not a preview. */
+    for (const origin of [
+      "https://evil.test",
+      "http://pr-1-gc2026-guide.example.workers.dev",
+      "https://workers.dev.evil.test",
+      "https://hallgui.de",
+    ]) {
+      expect((await live(origin, staging)).headers.get("Access-Control-Allow-Origin")).toBeNull();
+    }
+
+    /* The admin console is same-origin on this Worker and never needs the
+       grant, so it does not get one. */
+    const admin = await worker.fetch(
+      new Request("https://api.test/api/admin/data", { headers: { Origin: preview } }),
+      staging,
+      createExecutionContext()
+    );
+    expect(admin.headers.get("Access-Control-Allow-Origin")).toBeNull();
   });
 
   it("leaves the clock real when the calendar is forced open", () => {

@@ -254,9 +254,10 @@ makes that sentence possible.
    thing to reach for is usually a pull request's own preview URL, which is
    per-PR and does not disturb what staging is serving.
 
-4. **Exercise staging, on any day of the year.** `QUEUE_FORCE_OPEN` in
-   `[env.staging.vars]` holds the show calendar open there, so the whole loop
-   can be rehearsed before Aug 26 and after Aug 30 — join, update people-ahead
+4. **Exercise staging, on any day of the year.** `QUEUE_STAGING` in
+   `[env.staging.vars]` marks it the proving ground, which holds the show
+   calendar open there and lets preview sites reach it. So the whole loop can
+   be rehearsed before Aug 26 and after Aug 30 — join, update people-ahead
    past the throttle, enter, watch the aggregate appear, then work through
    `/api/admin/`: authenticate, deny a planted UUID, purge an empty queue,
    force and clear closure, pause and resume writes.
@@ -278,9 +279,10 @@ makes that sentence possible.
    never be set on a deployed Worker: its anchor is per-isolate, so isolates
    would disagree about the time and write sessions contradicting each other.
 
-   To drive it through the actual app rather than curl, point the local proxy
-   at staging — the client's own dev override is localhost-only, so this is the
-   combination that works:
+   To drive it through the actual app rather than curl, either open a pull
+   request preview with `?queue-dev=1` — which calls this same staging API
+   cross-origin, see *PR previews* — or point the local proxy at it, which
+   stays same-origin because the proxy forwards server-side:
 
    ```sh
    API_ORIGIN=$S npm run dev
@@ -361,7 +363,8 @@ deployed configuration. Production never accepts a browser-supplied clock.
 
 To check the *site* Worker's own routing rules — `html_handling`, the SPA
 fallback, precache behaviour — run it as it deploys instead:
-`npm run build && npx wrangler dev`. That serves `dist/` and has no API.
+`npm run build && npx wrangler dev`. That serves `dist/` and has no API behind
+it, which is the point — it is the site Worker exactly as deployed.
 
 ### Deploying from a laptop
 
@@ -403,10 +406,26 @@ The API job is path-filtered: it runs only when `worker/`, `wrangler-api.toml`
 or the two data files the Worker bundles have changed. A PR that only touches
 the client gets a site preview and nothing else.
 
-The preview site calls `/api/…` on its own `workers.dev` origin, where no route
-exists — so live queues are simply absent there. To exercise a client change
-against a real backend, use the two-terminal local setup above; to exercise an
-API change, call the API preview URL directly.
+**A site preview borrows staging's API.** On its own it could not have one:
+the two halves share a hostname in production because the API claims `/api/*`
+there as a *route*, routes belong to zones, and `workers.dev` is not a zone —
+so nothing can claim a path on a preview URL, and every preview of a queue
+change was unreviewable. Opened with `?queue-dev=1` the preview calls the
+staging Worker cross-origin instead, and shows the queue surfaces outside the
+five show days:
+
+```
+https://pr-<n>-gc2026-guide.<subdomain>.workers.dev/?queue-dev=1
+```
+
+Staging permits exactly those origins — `https://*.workers.dev`, and only for
+`/api/queue/*`, never `/api/admin` — because it is the proving ground and says
+so in its config. Production grants no cross-origin access to anyone and never
+takes this path, being nowhere near `workers.dev`. Without the parameter a
+preview behaves exactly as production does: same origin, no queue surfaces
+outside show hours.
+
+To exercise an API change on its own, call the API preview URL directly.
 
 A version is not a deployment. Nothing any real hostname serves changes until
 the merge lands on `main` and `cloudflare.yml` deploys it — `versions upload`

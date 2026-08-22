@@ -56,14 +56,14 @@ jobs:
           npx wrangler deploy --dry-run --config wrangler-api.toml --env="" \
             | tee /tmp/production-bindings.txt
 
-          # QUEUE_FORCE_OPEN holds the show calendar open so staging can be
-          # exercised outside the five show days. On production it would mean
-          # the API accepting reports at four in the morning, and the failure
-          # is silent — everything works, just when it should not. The bundle
-          # is asked directly rather than the file being grepped, because what
+          # QUEUE_STAGING marks the proving ground: it holds the show calendar
+          # open and lets *.workers.dev previews call the API cross-origin. On
+          # production either would be a hole, and both fail silently —
+          # everything works, just when and from where it should not. The
+          # bundle is asked directly rather than the file grepped, because what
           # matters is what a deploy would actually bind.
-          if grep -q 'QUEUE_FORCE_OPEN' /tmp/production-bindings.txt; then
-            echo "::error::The production API bundle carries QUEUE_FORCE_OPEN. It belongs to [env.staging.vars] only."
+          if grep -q 'QUEUE_STAGING' /tmp/production-bindings.txt; then
+            echo "::error::The production API bundle carries QUEUE_STAGING. It belongs to [env.staging.vars] only."
             exit 1
           fi
 

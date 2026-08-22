@@ -10,8 +10,32 @@ const GCQueues = (() => {
   const STORAGE_KEY = "gc2026.queue.v1";
   const STORE_LOCK = "gc2026.queue.store.v1";
   const REPORT_LOCK = "gc2026.queue.report.v1";
-  const API_LIVE = "/api/queue/live";
-  const API_REPORT = "/api/queue/report";
+  /* Same origin everywhere that matters: production reaches the API through a
+     route on its own hostname, and local development through the dev proxy.
+
+     The exception is a pull request preview of the site. It lives on
+     *.workers.dev, where the production arrangement cannot exist — a route
+     belongs to a zone, and workers.dev is not one — so a preview would have no
+     API behind it at all and the whole queue feature would be unreviewable.
+     There, and only with ?queue-dev=1 asked for explicitly, calls go to the
+     staging API cross-origin. Staging allows exactly these origins; production
+     allows none and never sees this path, because production is not on
+     workers.dev.
+
+     The account subdomain is read off the current hostname rather than
+     hardcoded: pr-77-gc2026-guide.<account>.workers.dev drops its first label
+     to give <account>.workers.dev. */
+  const STAGING_API_WORKER = "gc2026-queues-api-staging";
+
+  function apiOrigin() {
+    const host = location.hostname;
+    if (!host.endsWith(".workers.dev") || !devOverride()) return "";
+    const account = host.split(".").slice(1).join(".");
+    return account ? `https://${STAGING_API_WORKER}.${account}` : "";
+  }
+
+  const API_LIVE = () => `${apiOrigin()}/api/queue/live`;
+  const API_REPORT = () => `${apiOrigin()}/api/queue/report`;
   const CLIENT_HEADER = "X-GC-Queue-Client";
   const BOOTH = "_booth";
   const POLL_MS = 120000;
@@ -237,9 +261,16 @@ const GCQueues = (() => {
     notify("configure");
   }
 
+  /* Show the queue surfaces outside the five show days, for development and
+     for reviewing a pull request preview. Always opt-in via ?queue-dev=1 — on
+     workers.dev too, because the production site Worker answers on a
+     workers.dev address of its own and a deploy checked there must behave
+     exactly as the real hostnames do. */
   function devOverride() {
-    const local = location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "::1";
-    return local && new URLSearchParams(location.search).get("queue-dev") === "1";
+    const host = location.hostname;
+    const allowed =
+      host === "localhost" || host === "127.0.0.1" || host === "::1" || host.endsWith(".workers.dev");
+    return allowed && new URLSearchParams(location.search).get("queue-dev") === "1";
   }
 
   function zonedNow(now = new Date()) {
@@ -376,7 +407,7 @@ const GCQueues = (() => {
     lastRefresh = Date.now();
     liveRequest = (async () => {
       try {
-        const response = await fetchWithDeadline(API_LIVE);
+        const response = await fetchWithDeadline(API_LIVE());
         if (!response.ok) throw new Error(`queue live ${response.status}`);
         const payload = await response.json();
         if (!payload || typeof payload !== "object" || typeof payload.queues !== "object") {
@@ -469,7 +500,7 @@ const GCQueues = (() => {
   async function post(queueRef, body) {
     let response;
     try {
-      response = await fetchWithDeadline(API_REPORT, {
+      response = await fetchWithDeadline(API_REPORT(), {
         method: "POST",
         headers: { "Content-Type": "application/json", [CLIENT_HEADER]: await clientId() },
         body: JSON.stringify({ exhibitor: queueRef.exhibitor, game: queueRef.game, ...body }),

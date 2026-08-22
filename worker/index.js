@@ -22,15 +22,48 @@ import event from "../data/event.json";
 
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-/* Staging holds the show calendar open so it can be exercised on the other 360
-   days of the year. An exact sentinel rather than any truthy value, so a stray
-   `QUEUE_FORCE_OPEN=0` or `=false` cannot read as "yes"; declared in
-   wrangler-api.toml under [env.staging.vars] rather than as a secret, so that
-   which environments have it is reviewable in the diff, and production's not
-   having it is visible rather than merely believed. CI asserts the production
-   bundle carries no such var. */
-const FORCE_OPEN_SENTINEL = "staging-testing-only";
-const forceOpen = (env) => env?.QUEUE_FORCE_OPEN === FORCE_OPEN_SENTINEL;
+/* One flag for "this Worker is the proving ground", because the two things it
+   turns on are never wanted apart:
+
+     - the show calendar is held open, so staging can be exercised on the other
+       360 days of the year rather than only Aug 26-30;
+     - pull request preview sites on *.workers.dev may call it cross-origin,
+       which is the only way a preview of the *site* can have a queue API
+       behind it — previews are a different origin, and production's
+       same-origin arrangement is a zone route that workers.dev cannot have.
+
+   An exact sentinel rather than any truthy value, so a stray `=0` or `=false`
+   cannot read as "yes"; declared in wrangler-api.toml under
+   [env.staging.vars] rather than as a secret, so which environments are
+   proving grounds is reviewable in the diff and production's not being one is
+   visible rather than merely believed. CI asserts the production bundle
+   carries no such var. */
+const STAGING_SENTINEL = "proving-ground";
+const isProvingGround = (env) => env?.QUEUE_STAGING === STAGING_SENTINEL;
+
+/* Only preview sites, and only the endpoints a preview needs. `/api/admin` is
+   deliberately excluded: the console is served by this Worker and reached on
+   its own origin, so it never needs cross-origin permission and should not
+   have it. */
+const PREVIEW_ORIGIN = /^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.workers\.dev$/i;
+
+function previewCorsHeaders(request, env, pathname) {
+  if (!isProvingGround(env)) return null;
+  if (!pathname.startsWith("/api/queue/")) return null;
+  const origin = request.headers.get("Origin");
+  if (!origin || !PREVIEW_ORIGIN.test(origin)) return null;
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": `Content-Type, ${CLIENT_HEADER}`,
+    "Access-Control-Max-Age": "86400",
+    /* The live response is held in caches.default. These headers are attached
+       on the way out, after that cache, so a body cached for one preview
+       origin is never replayed to another carrying the first one's name. Vary
+       states the same contract for anything caching in between. */
+    Vary: "Origin",
+  };
+}
 const CLIENT_HEADER = "X-GC-Queue-Client";
 const MAX_DEFERRED_SECONDS = 16 * 60 * 60;
 const JSON_HEADERS = {
@@ -344,7 +377,7 @@ async function outcomeSession(env, client, queue, body, kind, now, event) {
   if (deferred && closedAt < Number(session.last_reported)) {
     throw new HttpError(400, "deferred_before_last_update");
   }
-  if (deferred && !eventAccess(event, closedAt, forceOpen(env)).allowed) {
+  if (deferred && !eventAccess(event, closedAt, isProvingGround(env)).allowed) {
     throw new HttpError(400, "deferred_outside_show_hours");
   }
   const outcomePredicate = deferred ? "(outcome IS NULL OR outcome = 'abandoned')" : "outcome IS NULL";
@@ -408,7 +441,7 @@ export async function handleReport(request, env, site, now = nowSeconds()) {
   const body = await readJson(request);
   if (typeof body.kind !== "string") throw new HttpError(400, "kind_required");
   const queue = requireQueue(body, site.queues);
-  const access = eventAccess(site.event, now, forceOpen(env));
+  const access = eventAccess(site.event, now, isProvingGround(env));
   const deferredEntered = body.kind === "entered" && body.deferred === true;
   /* After the documented post-show teardown, the D1 binding is gone. Return
      the intentional end-of-event response even to an old installed client
@@ -513,7 +546,7 @@ async function invalidateLive(request, ctx) {
 
 export async function handleLive(request, env, ctx, event, now = nowSeconds()) {
   if (request.method !== "GET") throw new HttpError(405, "method_not_allowed");
-  const access = eventAccess(event, now, forceOpen(env));
+  const access = eventAccess(event, now, isProvingGround(env));
   if (access.phase === "after") throw new HttpError(410, "event_ended");
   if (!access.allowed) throw new HttpError(403, "outside_show_hours");
 
@@ -587,6 +620,16 @@ async function fetchHandler(request, env, ctx) {
     throw new HttpError(404, "not_found");
   }
 
+  /* The preflight a preview's POST triggers, because it carries a custom
+     client header. Answered before anything else: it is a question about
+     permission, not a report, so it must not be rate limited, validated or
+     gated on the show calendar. */
+  if (request.method === "OPTIONS") {
+    const cors = previewCorsHeaders(request, env, url.pathname);
+    if (cors) return new Response(null, { status: 204, headers: cors });
+    throw new HttpError(405, "method_not_allowed");
+  }
+
   const now = resolveRequestNow(request, env);
   if (url.pathname.startsWith("/api/admin")) {
     return routeAdmin(request, env, ctx, now);
@@ -605,16 +648,33 @@ async function fetchHandler(request, env, ctx) {
   throw new HttpError(404, "not_found");
 }
 
+/* Attached on the way out rather than inside each handler, so that the live
+   response held in caches.default is stored without them and cannot be
+   replayed to a second preview origin wearing the first one's name. */
+function withPreviewCors(response, request, env, pathname) {
+  const cors = previewCorsHeaders(request, env, pathname);
+  if (!cors) return response;
+  const merged = new Response(response.body, response);
+  for (const [key, value] of Object.entries(cors)) merged.headers.set(key, value);
+  return merged;
+}
+
 export default {
   async fetch(request, env, ctx) {
+    const pathname = new URL(request.url).pathname;
     try {
-      return await fetchHandler(request, env, ctx);
+      return withPreviewCors(await fetchHandler(request, env, ctx), request, env, pathname);
     } catch (error) {
       if (error instanceof HttpError) {
         const headers = error.extra.retryAfter
           ? { "Retry-After": String(Math.max(1, Math.ceil(error.extra.retryAfter))) }
           : {};
-        return json({ error: error.code, ...error.extra }, error.status, headers);
+        return withPreviewCors(
+          json({ error: error.code, ...error.extra }, error.status, headers),
+          request,
+          env,
+          pathname
+        );
       }
       console.error(
         JSON.stringify({
@@ -624,7 +684,7 @@ export default {
           error: error instanceof Error ? error.message : String(error),
         })
       );
-      return json({ error: "internal_error" }, 500);
+      return withPreviewCors(json({ error: "internal_error" }, 500), request, env, pathname);
     }
   },
 

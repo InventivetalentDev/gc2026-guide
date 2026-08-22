@@ -119,22 +119,30 @@ routes = []
 [env.staging.observability]
 enabled = true
 
-# Hold the show calendar open. Without this, staging answers 403 to every live
-# read and every report until Aug 26 and 410 after Aug 30 — untestable for all
-# but five days of the year, which is no use for a proving ground.
+# Marks this Worker the proving ground, which turns on two things that are
+# never wanted apart and must never be true of production:
 #
-# It relaxes the calendar only. The clock stays real, so elapsed waits, the
-# two-minute throttle and retention all behave exactly as they will in
-# production. (QUEUE_TEST_NOW, the local development fixture, must never be set
-# on a deployed Worker: its anchor is per-isolate, so isolates would disagree
-# about the time and write sessions that contradict each other.)
+#   1. The show calendar is held open. Otherwise staging answers 403 to every
+#      live read and report until Aug 26 and 410 after Aug 30 — usable on five
+#      days of the year, which is no use for rehearsing anything beforehand.
+#      It relaxes the calendar only; the clock stays real, so elapsed waits,
+#      the two-minute throttle and retention behave exactly as they will during
+#      the show. (QUEUE_TEST_NOW, the local development fixture, must never be
+#      set on a deployed Worker: its anchor is per-isolate, so isolates would
+#      disagree about the time and write sessions contradicting each other.)
 #
-# A `vars` entry rather than a secret, deliberately: which environments hold
-# the door open is then reviewable in this file, and production not having it
+#   2. Pull request preview sites on *.workers.dev may call /api/queue/*
+#      cross-origin. A preview of the site has no API otherwise — production's
+#      same-origin arrangement is a zone route, and workers.dev is not a zone —
+#      which made every preview of a queue change unreviewable. /api/admin is
+#      excluded; the console is same-origin on this Worker and needs no grant.
+#
+# A `vars` entry rather than a secret, deliberately: which environments are
+# proving grounds is then reviewable in this file, and production not being one
 # is something you can see rather than something you have to trust. CI asserts
 # the production bundle carries no such var.
 [env.staging.vars]
-QUEUE_FORCE_OPEN = "staging-testing-only"
+QUEUE_STAGING = "proving-ground"
 
 [[env.staging.d1_databases]]
 binding = "QUEUE_DB"
