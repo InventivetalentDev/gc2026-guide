@@ -76,7 +76,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.123.0"
-          command: versions upload --preview-alias pr-${{ github.event.pull_request.number }} --message "PR #${{ github.event.pull_request.number }} @ ${{ github.event.pull_request.head.sha }}"
+          command: versions upload --preview-alias pr-${{ github.event.pull_request.number }} --message pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
 
       # One comment per PR, edited in place on every push; the marker is how
       # later runs find it again. The URLs are read out of wrangler's own
@@ -129,7 +129,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Did this PR touch the API?
+      - name: Should this PR get an API preview?
         id: changed
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
@@ -139,11 +139,23 @@ jobs:
           # these commits is necessarily present. Fetch both — `git diff A B`
           # compares two trees and needs no merge base, so depth 1 is enough.
           git fetch --depth=1 origin "$BASE" "$HEAD"
-          if git diff --name-only "$BASE" "$HEAD" \
-             | grep -qE '^(worker/|wrangler-api\.toml$|data/(exhibitors|event)\.json$)'; then
-            echo 'api=true' >> "$GITHUB_OUTPUT"
-          else
+          if ! git diff --name-only "$BASE" "$HEAD" \
+               | grep -qE '^(worker/|wrangler-api\.toml$|data/(exhibitors|event)\.json$)'; then
             echo 'api=false' >> "$GITHUB_OUTPUT"
+            echo "::notice::No API changes in this PR — skipping its preview."
+            exit 0
+          fi
+          # `versions upload` needs the staging Worker to already exist, and it
+          # cannot be deployed before its database is created. Until then this
+          # would fail on every pull request for a reason that is nothing to do
+          # with the pull request, so say so instead. Same placeholder test
+          # cloudflare.yml uses to skip the production API deploy.
+          staging_id="$(awk '/^\[env\.staging\]/ { seen = 1 } seen && /^database_id = / { print $3; exit }' wrangler-api.toml)"
+          if [ "$staging_id" = '"00000000-0000-0000-0000-000000000000"' ] || [ -z "$staging_id" ]; then
+            echo 'api=false' >> "$GITHUB_OUTPUT"
+            echo "::notice::The staging queue database is not provisioned yet, so there is no staging Worker to upload a version of. See docs/DEPLOYING.md, 'Queue backend: first deployment'."
+          else
+            echo 'api=true' >> "$GITHUB_OUTPUT"
           fi
 
       - uses: actions/setup-node@v4
@@ -176,7 +188,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.123.0"
-          command: versions upload --config wrangler-api.toml --env staging --preview-alias pr-${{ github.event.pull_request.number }} --message "PR #${{ github.event.pull_request.number }} @ ${{ github.event.pull_request.head.sha }}"
+          command: versions upload --config wrangler-api.toml --env staging --preview-alias pr-${{ github.event.pull_request.number }} --message pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
 
       - name: Comment the API preview URL on the PR
         if: steps.changed.outputs.api == 'true'
