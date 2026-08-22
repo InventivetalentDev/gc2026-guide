@@ -219,43 +219,40 @@ makes that sentence possible.
    so a forgotten edit skips the deploy instead of binding a database that does
    not exist.
 
-3. **Deploy staging and set its admin secret.** Two ways, and the first is the
-   one to reach for during the show:
-
-   **From a phone** — Actions → *Deploy the queue API to staging* → Run
-   workflow. `.github/workflows/staging.yml` tests, refuses a placeholder
-   database, applies any pending migrations and deploys `--env staging`, then
-   prints the workers.dev URL in the run summary. It touches neither the site
-   nor production: `--env staging` selects a Worker with its own database, its
-   own secret and no routes. Note that GitHub only offers `workflow_dispatch`
-   for workflows on the default branch, so this appears once the branch adding
-   it has merged.
-
-   **From a laptop** — the same thing, locally:
+3. **Deploy staging, once, from a laptop.** This is the only step in the whole
+   setup that has no automation behind it, deliberately: it happens once, and a
+   workflow that exists to be pressed a single time is a workflow to maintain
+   forever.
 
    ```sh
-   npm run db:migrate:staging   # a no-op while the schema is current
-   npm test
+   npx wrangler login              # once per machine
    npm run deploy:api:staging
-   ```
-
-   Either way the admin secret is a separate, interactive step, because the
-   prompt is the point — the token must not enter this repository, a command
-   argument, or a workflow file:
-
-   ```sh
    npx wrangler secret put ADMIN_TOKEN --config wrangler-api.toml --env staging
    ```
 
-   Until it is set, `/api/admin/` serves its login shell and rejects every
-   token, which is indistinguishable from getting the password wrong. That is
-   the first thing to suspect if the console will not let you in.
+   `deploy:api:staging` is `wrangler deploy --config wrangler-api.toml --env
+   staging`. It touches neither the site nor production and cannot: `--env
+   staging` selects a Worker with its own database, its own secret and no
+   routes at all, so it answers on workers.dev and nowhere else. The database
+   is already migrated, so `npm run db:migrate:staging` is a no-op — worth
+   running only after adding a migration.
 
-   Staging must be deployed at least once before pull request previews of the
-   API work at all: `wrangler versions upload` refuses against a Worker that
-   does not exist, so the preview job checks and skips with a notice until then
-   rather than failing every pull request for a reason that is nothing to do
-   with the pull request.
+   The secret is interactive because the prompt is the point: the token must
+   not enter this repository, a command argument or a workflow file. Until it
+   is set, `/api/admin/` serves its login shell and rejects every token, which
+   looks exactly like getting the password wrong — the first thing to suspect
+   when the console will not open.
+
+   **This is also what switches API pull request previews on.** `wrangler
+   versions upload` refuses against a Worker that has never been deployed, so
+   until this runs the preview job checks, skips with a notice and stays green
+   rather than failing every pull request for a reason that has nothing to do
+   with the pull request. After it, previews work by themselves and nothing
+   needs changing.
+
+   To redeploy staging later, run the same command — though during the show the
+   thing to reach for is usually a pull request's own preview URL, which is
+   per-PR and does not disturb what staging is serving.
 
 4. Before the show window opens, run the full behavioral loop locally with the
    two-terminal setup below and two independent browser profiles: join the same

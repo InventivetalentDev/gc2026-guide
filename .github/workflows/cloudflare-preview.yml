@@ -169,6 +169,9 @@ jobs:
       # ask, and skip with the answer rather than failing every pull request
       # with an error about the backend. Needs the toolchain above, so it
       # cannot live with the cheaper checks.
+      #
+      # This is a one-time condition, not a standing one: staging is deployed
+      # by hand once, and every preview after that just works.
       - name: Does the staging Worker exist yet?
         id: worker
         if: steps.changed.outputs.api == 'true'
@@ -181,7 +184,7 @@ jobs:
             echo 'exists=true' >> "$GITHUB_OUTPUT"
           else
             echo 'exists=false' >> "$GITHUB_OUTPUT"
-            echo "::notice::The staging API Worker has not been deployed yet, so there is no Worker to upload a version of. Run the 'Deploy the queue API to staging' workflow once."
+            echo "::notice::The staging API Worker has not been deployed yet, so there is no Worker to upload a version of. Deploy it once with 'npm run deploy:api:staging' — see docs/DEPLOYING.md. API previews start working by themselves after that."
           fi
 
       # The API's review is its test suite far more than its URL, so a failing
