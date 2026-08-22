@@ -198,6 +198,12 @@ This document is the playbook for refreshing the data — written so a scheduled
   spelled identically at two booths (Alien: Isolation 2 at both Xbox and SEGA) is saved
   and marked played at both at once. That is the intent, so keep shared titles spelled
   the same across exhibitors.
+  and marked played at both at once — which is the intent, so keep shared titles spelled
+  the same across exhibitors. Live queues add one more consequence: a playable queue is
+  keyed by the exhibitor id plus this normalized title. Renaming it during the show starts
+  a new queue while the old reports age out; changing `playable` creates or removes the
+  tracker. Treat either edit as a live-data migration and verify the moderation page after
+  deploy, rather than slipping it into an unrelated prose refresh.
 
 ## Keeping the German in sync
 
@@ -249,14 +255,22 @@ revisions brought new show information.
 `imprint.html` and `privacy.html` are also English, though the footer links to
 them are labelled "Impressum" and "Datenschutz" — those are the words people
 look for, and § 5 DDG is about the imprint being easy to find.
+`imprint.html` is also English, though its footer link is labelled "Impressum" —
+the word people look for, and § 5 DDG is about it being easy to find.
+`privacy.html` is intentionally bilingual now: live queue reporting is the first
+optional visitor action that reaches the backend, so its explanation and retention
+promise must be available in both languages whenever that feature changes.
 
 **Register:** German uses **du**, matching gamescom's own communication and the
 audience. Keep the English voice: informative, terse, no marketing.
 
 **Adding a language** means `js/i18n/<lang>.js`, `data/i18n/<lang>.json`, the
 `SUPPORTED` list in `js/i18n.js`, the two inline `<head>` scripts in
-`index.html` and `map.html`, and the `sw.js` precache lists. The switcher and
-`tools/check-i18n.mjs` pick it up from `SUPPORTED` on their own.
+`index.html` and `map.html`, and the `sw.js` precache lists. Also add the
+language button, resolution branch, translated article and footer row in
+`privacy.html`; that legal page is intentionally self-contained and does not
+load the app runtime. The app switcher and `tools/check-i18n.mjs` pick the new
+language up from `SUPPORTED` on their own.
 
 ## Schema
 
@@ -391,6 +405,7 @@ keep different opening hours.
 {
   "name": "gamescom 2026",
   "location": "Koelnmesse, Cologne",
+  "timeZone": "Europe/Berlin",   // IANA zone used by queue show-hours gates
   "startDate": "2026-08-26",       // used for the countdown
   "endDate": "2026-08-30",
   "days": [
@@ -598,6 +613,14 @@ background. So a CSS or JS change can take a couple of loads to appear on a devi
 has been there before. It is not stuck. Closing the app and reopening it, or accepting
 the "newer version is ready" prompt, takes it immediately. What is *not* normal is never
 seeing it at all — that was a real caching bug, fixed in the same commit as this note.
+
+`/api/` is the exception to every cache strategy above. The fetch handler returns
+without calling `respondWith()` before it considers navigations or stale-while-
+revalidate, so live and moderation responses always follow the Worker's own cache
+headers and can never replace the offline guide shell. Keep that early bypass ahead
+of `request.mode === "navigate"`. Any new browser queue script also belongs in
+`SHELL`, and a protocol/markup change that must land atomically requires a `VERSION`
+bump under the rule documented at the top of `sw.js`.
 
 Icons and manifest screenshots are generated, not hand-drawn, and only go stale if
 the design changes:

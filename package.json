@@ -1,0 +1,27 @@
+{
+  "name": "gc2026-guide",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tools/build-site.sh",
+    "check:client": "node --check js/queue.js && node --check js/app.js && node --check sw.js",
+    "dev": "node tools/dev-proxy.mjs",
+    "dev:api": "wrangler dev --config wrangler-api.toml",
+    "test": "npm run build && npm run check:client && vitest run",
+    "test:watch": "npm run build && vitest",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:api": "wrangler deploy --config wrangler-api.toml --env=\"\"",
+    "deploy:api:staging": "wrangler deploy --config wrangler-api.toml --env staging",
+    "db:migrate:local": "wrangler d1 migrations apply QUEUE_DB --config wrangler-api.toml --env=\"\" --local",
+    "db:migrate:production": "wrangler d1 migrations apply QUEUE_DB --config wrangler-api.toml --env=\"\" --remote",
+    "db:migrate:staging": "wrangler d1 migrations apply QUEUE_DB --config wrangler-api.toml --env staging --remote"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "0.20.3",
+    "vitest": "4.1.10",
+    "wrangler": "4.123.0"
+  }
+}

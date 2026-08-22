@@ -1,6 +1,7 @@
-name: Deploy to Cloudflare Workers
+name: Verify and deploy to Cloudflare Workers
 
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
@@ -9,32 +10,119 @@ permissions:
   contents: read
 
 concurrency:
-  group: cloudflare-workers
+  group: cloudflare-workers-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  verify-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # The same gate the Pages workflow has, widened to the hall plans and the
-      # manifest. A malformed JSON file does not fail loudly at runtime — it
-      # renders an empty guide — so it must not reach the edge.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install development tools
+        run: npm ci
+
+      # Malformed JSON renders an empty guide rather than a useful runtime
+      # error, so keep this cheap, explicit check alongside the behavioral
+      # suite. The i18n checker runs inside tools/build-site.sh via npm test.
       - name: Validate data files
         run: |
           for f in data/*.json data/hallplan/*.json manifest*.webmanifest; do
             python3 -m json.tool "$f" > /dev/null || exit 1
           done
 
-      # Copies the site into dist/, which is the Worker's asset directory.
-      - name: Stage the site
-        run: tools/build-site.sh
+      - name: Test Worker and stage site
+        run: npm test
 
-      # Both secrets are required; see docs/DEPLOYING.md for the token scopes.
-      - name: Deploy
+      - name: Assert server files are not public assets
+        run: |
+          test ! -e dist/worker
+          test ! -e dist/test
+          test ! -e dist/tools
+          test ! -e dist/package.json
+          test ! -e dist/wrangler.toml
+          test ! -e dist/wrangler-api.toml
+
+      # Both Workers: the site (assets, no script) and the queue API.
+      - name: Validate both Worker bundles and bindings
+        run: |
+          npx wrangler deploy --dry-run
+          npx wrangler deploy --dry-run --config wrangler-api.toml --env staging
+          npx wrangler deploy --dry-run --config wrangler-api.toml --env="" \
+            | tee /tmp/production-bindings.txt
+
+          # QUEUE_STAGING marks the proving ground: it holds the show calendar
+          # open and lets *.workers.dev previews call the API cross-origin. On
+          # production either would be a hole, and both fail silently —
+          # everything works, just when and from where it should not. The
+          # bundle is asked directly rather than the file grepped, because what
+          # matters is what a deploy would actually bind.
+          if grep -q 'QUEUE_STAGING' /tmp/production-bindings.txt; then
+            echo "::error::The production API bundle carries QUEUE_STAGING. It belongs to [env.staging.vars] only."
+            exit 1
+          fi
+
+      # The API is refused rather than deployed against the placeholder UUID
+      # that ships in the repository: a migrate against it fails deep in the
+      # run with a Cloudflare error, and a deploy would bind a database that
+      # does not exist. Saying so here keeps the site deploying regardless —
+      # the two are independent now, and a guide update must not wait on the
+      # queue backend being provisioned.
+      - name: Detect provisioned queue database
+        id: queue-db
+        run: |
+          # Only the top-level binding gates the production deploy. Reading the
+          # whole file would let an unprovisioned *staging* database block a
+          # production deploy, which is backwards — so stop at [env.staging].
+          production_id="$(awk '/^\[env\.staging\]/ { exit } /^database_id = / { print $3 }' wrangler-api.toml)"
+          if [ -z "$production_id" ]; then
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+            echo "::error::No top-level database_id found in wrangler-api.toml."
+            exit 1
+          elif [ "$production_id" = '"00000000-0000-0000-0000-000000000000"' ]; then
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+            echo "::notice::wrangler-api.toml still holds the placeholder database_id — skipping the API deploy. See docs/DEPLOYING.md."
+          else
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      # The site first, and on its own: it has no bindings, nothing to migrate
+      # and nothing that can fail because of the queue backend.
+      - name: Deploy the site
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.123.0"
           command: deploy
+
+      # Then the API, migrations before code: a migration must stay
+      # backward-compatible because rolling the Worker back does not roll D1
+      # back with it.
+      - name: Apply production D1 migrations
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && steps.queue-db.outputs.enabled == 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.123.0"
+          command: d1 migrations apply QUEUE_DB --remote --config wrangler-api.toml --env=""
+
+      # Deployed on every push, including data-only ones. The queue allowlist
+      # is bundled into this Worker from data/exhibitors.json, so a booth added
+      # to the site is not reportable until the API ships the same data — see
+      # the note at the top of worker/index.js.
+      - name: Deploy the queue API
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && steps.queue-db.outputs.enabled == 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.123.0"
+          command: deploy --config wrangler-api.toml --env=""

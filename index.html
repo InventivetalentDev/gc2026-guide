@@ -343,6 +343,23 @@
        on a page that is claiming to be a day it is not. -->
   <p class="preview-bar hidden" id="preview-bar" role="status"></p>
 
+  <!-- Keep the active-queue reminder near the start of the DOM so keyboard
+       users do not have to traverse the whole guide to reach its actions.
+       The separate status node announces a newly shown reminder without
+       moving focus away from whatever the visitor is doing. -->
+  <p class="sr-only" id="queue-prompt-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
+  <aside class="queue-prompt" id="queue-prompt" role="region" aria-labelledby="queue-prompt-title" hidden>
+    <div class="queue-prompt-copy">
+      <span class="overline" id="queue-prompt-title" data-i18n="queue.promptTitle">Still queueing?</span>
+      <p id="queue-prompt-text"></p>
+    </div>
+    <div class="queue-prompt-actions">
+      <button class="queue-action" id="queue-prompt-update" type="button" data-i18n="queue.action.update">Still waiting</button>
+      <button class="queue-action queue-action-primary" id="queue-prompt-entered" type="button" data-i18n="queue.action.entered">I'm in!</button>
+      <button class="queue-action" id="queue-prompt-left" type="button" data-i18n="queue.action.left">I left</button>
+    </div>
+  </aside>
+
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand" href="#exhibitors">
@@ -384,10 +401,12 @@
     </div>
     <nav class="tabs-outer" aria-label="Sections" data-i18n-attr="aria-label:nav.sections">
       <div class="wrap tabs" role="tablist">
-        <!-- Unnumbered and hidden by default: Today is not part of the standing
-             01-04 sequence, it is the mode that exists only on the five show
-             days. js/app.js unhides it (renderTodayTab) when it is one. -->
+        <!-- Unnumbered and hidden by default: these two are not part of the
+             standing 01-04 sequence, they are the modes that exist only on the
+             five show days. js/app.js unhides each one (renderTodayTab,
+             syncQueueTab) when it applies. -->
         <button class="tab" role="tab" aria-selected="false" data-view="today" hidden><span class="tab-index tab-live">●</span> <span data-i18n="tab.today">Today</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-view="queues" hidden><span class="tab-index tab-live">●</span> <span data-i18n="tab.queues">Live queues</span></button>
         <button class="tab active" role="tab" aria-selected="true" data-view="exhibitors"><span class="tab-index">01</span> <span data-i18n="tab.exhibitors">Exhibitors</span></button>
         <button class="tab" role="tab" aria-selected="false" data-view="planner"><span class="tab-index">02</span> <span data-i18n="tab.planner">Visit planner</span></button>
         <button class="tab" role="tab" aria-selected="false" data-view="event"><span class="tab-index">03</span> <span data-i18n="tab.event">Event info</span></button>
@@ -627,6 +646,39 @@
       </div>
       <div id="changelog" class="timeline"></div>
     </section>
+
+    <!-- ============ Live queues view ============
+         Reporting lives here rather than on the cards. Per-game controls put
+         two buttons under every playable title, which is twenty-four of them
+         on a card like Xbox's; the cards now carry the live figures alone and
+         send you here to report. Everything below is rendered by app.js. -->
+    <section id="view-queues" class="view">
+      <div class="lede">
+        <h2 data-i18n="queues.title">Live queues</h2>
+        <p data-i18n="queues.lede">Report the line you are standing in, and read what everyone else is reporting. Nothing here needs an account — reports carry a random ID for this device and nothing else.</p>
+      </div>
+
+      <p class="queues-notice" id="queues-notice" role="status" aria-live="polite" hidden></p>
+
+      <section id="queues-mine-section" aria-labelledby="queues-mine-title" hidden>
+        <h3 class="section-title" id="queues-mine-title"><span class="section-num">01</span> <span data-i18n="queues.mine">Queues you are in</span></h3>
+        <p class="section-sub" data-i18n="queues.mineSub">Your timer runs on this device. Tell the queue you got in and the wait becomes a measurement everyone can see.</p>
+        <div id="queues-mine" class="queues-list"></div>
+      </section>
+
+      <section aria-labelledby="queues-report-title">
+        <h3 class="section-title" id="queues-report-title"><span class="section-num">02</span> <span data-i18n="queues.report">Report a queue</span></h3>
+        <div class="queues-scope" id="queues-scope" hidden></div>
+        <label class="field field-search queues-field">
+          <span class="field-label" data-i18n="queues.searchLabel">Find the queue</span>
+          <input type="search" id="queues-search" autocomplete="off" placeholder="Game or booth…" data-i18n-attr="placeholder:queues.searchPlaceholder"
+            aria-describedby="queues-result-count">
+        </label>
+        <p class="result-count" id="queues-result-count" role="status" aria-live="polite" aria-atomic="true"></p>
+        <div id="queues-results" class="queues-list"></div>
+        <p class="empty" id="queues-empty" hidden></p>
+      </section>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -634,11 +686,11 @@
       <div class="footer-col">
         <p class="footer-strong" data-i18n="footer.unofficial">Unofficial fan-made guide.</p>
         <p data-i18n="footer.notAffiliated">Not affiliated with gamescom, Koelnmesse or game (the German games industry association).</p>
-        <p data-i18n="footer.storage">Your saved list stays in this browser — no account, no server; nothing leaves the device unless you share a link yourself.</p>
+        <p data-i18n="footer.storage">Your saved list stays in this browser. Queue reports are optional; only the queue facts and a random device ID are sent to the live service.</p>
         <p data-i18n-html="footer.createdBy">Created by <a class="subtle-link" href="https://inventivetalent.org">inventivetalent</a> with Claude Code. <a class="subtle-link" href="https://github.com/InventivetalentDev/gc2026-guide">Open Source</a>.</p>
         <p data-i18n-html="footer.feedback">Something wrong, missing or out of date? Send corrections to <a class="subtle-link" href="mailto:content@hallgui.de?subject=gamescom%20guide%20feedback">content@hallgui.de</a>.</p>
-        <!-- The legal pages stay English (see docs/UPDATING.md), but the
-             links to them are labelled in German: "Impressum" is the word a
+        <!-- Imprint stays English while privacy follows the selected language.
+             The links themselves are localized: "Impressum" is the word a
              German visitor looks for, and § 5 DDG is about it being easy to
              find. A second switcher lives here as the findability backstop
              for anyone who scrolled past the header. -->
@@ -656,6 +708,22 @@
       </div>
     </div>
   </footer>
+
+  <dialog class="sheet queue-dialog" id="queue-dialog" aria-labelledby="queue-dialog-title" aria-describedby="queue-dialog-subject">
+    <div class="sheet-head">
+      <div>
+        <span class="overline" data-i18n="queue.dialogOverline">Live queue</span>
+        <h2 id="queue-dialog-title" data-i18n="queue.dialogTitle">Queue report</h2>
+      </div>
+      <button class="sheet-close" id="close-queue" type="button" aria-label="Close queue report" data-i18n-attr="aria-label:queue.closeAria">×</button>
+    </div>
+    <div class="sheet-body">
+      <p class="queue-dialog-subject" id="queue-dialog-subject"></p>
+      <div class="queue-dialog-flow" id="queue-dialog-flow"></div>
+      <p class="queue-dialog-status" id="queue-dialog-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <button class="queue-dialog-done" id="queue-dialog-done" type="button" data-i18n="queue.done">Done</button>
+    </div>
+  </dialog>
 
   <dialog class="sheet" id="share-dialog" aria-labelledby="share-dialog-title" aria-describedby="share-count">
     <div class="sheet-head">
@@ -801,6 +869,7 @@
   <script src="js/i18n/de.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/marks.js"></script>
+  <script src="js/queue.js"></script>
   <script src="js/app.js"></script>
   <script src="js/qr.js" defer></script>
   <script src="js/pwa.js" defer></script>

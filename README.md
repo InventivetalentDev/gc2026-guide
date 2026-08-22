@@ -14,6 +14,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Share the guide itself** — a Share button in the masthead opens a QR code big enough to hold up to the phone of whoever you are queueing with, plus the link to copy for posting it anywhere else
 - **Share one booth** — every card's corner carries a Share row beside Save and Played. It hands out a link that opens the guide *on that card*, scrolled to it and lit for a moment, rather than at the top of a list of a hundred and eleven — so "Capcom is in 9.1" can be a link instead of a description. A card turned to its business booth shares the business booth, and a link naming one switches the trade exhibitors on to answer it
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
+- **Live queue times during the show** — a **Live queues** tab, open only while the show is on, that lists the lines you are standing in and searches all ~160 queues to report a new one; the cards themselves just show the figures, with one *Report a queue* link that opens the tab already narrowed to that booth. Optional reports under a random, resettable device id per playable game (or per booth where there is no playable lineup), server-side aggregation with report count and age, measured waits that can finish offline, and a phone-first moderation console
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them. Each stop wears its queue index in both arrangements, and ▲▼ put the list in **the order you'll actually walk it** — the guide opens with busiest-queue-first and hands the order over the moment you disagree; the hall map numbers its pins from the same order. Either arrangement reaches the map from its own headings — a hall heading opens that hall, a day heading opens the whole site with that day lit
 - **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up. Tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. Entertainment halls and trade-only business halls are each washed in the colour the official plan gives that area, and the business ones are flagged as the door a consumer ticket does not open. Pick a day and that day's stops are pinned on the floor in your plan's own order — the one you arranged, or busiest first with played ones last until you do — so "Thursday, hall 7.1" is a picture rather than a list. It does not stop at the wall: the halls either side of this one in the plan are named in the bar, a tap from opening, and where a doorway is known to start the way there the route runs out to it and an arrow points through. The overview answers the same question for the whole site — every hall that day touches, lit and numbered in order. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens the map on that stand. It works offline like everything else
 - **Trade exhibitors**, behind one setting — "I have a trade badge", off by default. Switch it from the Badge row at the top of the filters, from Event info, from the trade section itself, or from the map's business-area banner. It opens the business halls (2–4): ~820 booths the guide otherwise walks past, saveable and plannable like any other stop, with product-group filters and curated cards for the platforms, services and national pavilions standing there. Each booth says whether it is an open stand or a closed room you need an appointment for — the one thing that decides whether walking over is worth it. A booth saved there is a stop in the same plan as your Thursday demo queue, and the planner warns when one lands on a day the business area is shut
@@ -40,7 +41,7 @@ plain HTTP.
 
 ## Running locally
 
-It's a fully static site — no build step. Serve the repo root with any static server:
+For static UI and data work, serve the repo root with any static server:
 
 ```sh
 python3 -m http.server 8000
@@ -70,16 +71,42 @@ pretending to be, and links back out. It has to, because otherwise a screenshot 
 `?now=2026-08-27` is indistinguishable from the real Thursday. Like `?lang`, it wins
 for one load, is never stored, and never rides in a link the guide builds.
 
+## Running the queue API locally
+
+A plain static server has no live queue API. The API is a second Worker, and in
+production a route puts it on the same hostname as the site; locally a small
+proxy stands in for that route. Node 22+, then two terminals:
+
+```sh
+npm install
+cp .dev.vars.example .dev.vars
+npm run db:migrate:local
+
+npm run dev:api     # terminal 1 — the queue Worker on :8787
+npm run dev         # terminal 2 — site + /api proxy on :8000
+# open http://localhost:8000/?queue-dev=1
+```
+
+`npm run dev` serves the repository's real files, so an edit shows on reload
+with no build step in between. The example's paired clock values put the Worker
+inside the show window so the time-gated report flow can be exercised before
+Aug 26. They live only in the ignored local environment file, never in
+Wrangler's deployed configuration or a request field.
+
 ## Deploying
 
-Live on **Cloudflare Workers** as an assets-only Worker — static files served from
-the edge, no Worker script. `.github/workflows/cloudflare.yml` deploys every push to
-`main`; `wrangler.toml` is the whole configuration. There is still no build step:
-`tools/build-site.sh` copies the site into `dist/` for upload, because a Worker's
-asset directory has to hold the site and nothing else. Pull requests from branches
-in this repo each get a preview — a version of the same Worker on its own
-`workers.dev` URL, commented on the PR, deployed nowhere; forks deliberately do not
-([`docs/DEPLOYING.md`](docs/DEPLOYING.md), *PR previews*).
+Live on **Cloudflare Workers** as two Workers sharing every hostname: the site is
+static files served straight from the edge with no script at all, and a second
+Worker answers `/api/*` for live queues, backed by D1. A route beats a custom
+domain for the paths it covers, which is what puts them on one origin.
+`.github/workflows/cloudflare.yml` verifies pull requests and deploys `main`;
+`wrangler.toml` configures the site and `wrangler-api.toml` the API. Keeping them
+apart is what stops a pull request preview — which inherits its Worker's bindings
+— from ever running against the show's real database. There is still no client
+compile step: `tools/build-site.sh` copies the site into `dist/` for upload,
+while `worker/` remains server code outside the asset directory. Pull requests
+from branches in this repo each get a preview, deployed nowhere; forks
+deliberately do not ([`docs/DEPLOYING.md`](docs/DEPLOYING.md), *PR previews*).
 
 It runs there rather than on GitHub Pages because Pages gives a repository one custom
 domain and the guide answers on four: **`hallgui.de`**, plus `gamescom.guide`,
@@ -315,7 +342,11 @@ artifact, and launchers truncate the list it already has.
 
 ## Architecture
 
-All content lives in `data/` as JSON; the app (`index.html`, `js/app.js`, `css/`) is a thin renderer. **Updating the guide never requires code changes — only edit the JSON files.** `js/pwa.js` (install, update and offline state) and `sw.js` (caching) are separate from the renderer and untouched by data work.
+Editorial content lives in `data/` as JSON; the app (`index.html`, `js/app.js`,
+`js/queue.js`, `css/`) is a thin renderer. Ordinary guide updates still require only
+JSON edits. `worker/` owns the live queue API, D1 migration, estimator and moderation
+page; `js/pwa.js` and `sw.js` keep offline guide content separate from every `/api/`
+response.
 
 The hall map is a second page (`map.html`, `js/map.js`, `css/map.css`) rather
 than a fifth tab: it wants the whole viewport, and a full-screen pan/pinch
@@ -392,6 +423,7 @@ allowed to have. `docs/PLAN-trade-exhibitors.md` is the design record.
 | `data/hallplan/index.json`, `data/hallplan/hall-*.json` | Booth outlines per hall level, for the map. Generated by `tools/fetch-hallplan.mjs` from Koelnmesse's hall-plan data — booth *numbers* stay editorial in `exhibitors.json`, and the two are joined at load time |
 | `data/hallplan/outline.json` | How far each hall's wall stands off its booths, and where the doors in it are. Hand-written, and the one file in that directory the tool never touches: the official data files stand blocks and stands, never a wall or a doorway |
 | `data/hallplan/campus.json` | The whole site in one diagram — every hall in its place, the Boulevard between them, the passages and the gates — behind the map's Overview chip. Generated by the same tool from the hall-plan page's campus outlines, which are fitted to Koelnmesse's artwork rather than drawn to scale: right about where a hall is, wrong about how big it is, and it says so |
+| `worker/` | The live queue API Worker (deployed separately from the site, see `wrangler-api.toml`), estimator, phone moderation page and tracked D1 migrations; never copied into `dist/` |
 
 ### Languages
 
@@ -422,8 +454,9 @@ from the date in the reader's language.
 Two things stay English on purpose: proper nouns (game titles, exhibitor and
 area names — game titles are also the identity behind saved marks and share
 links, so translating them would break every link in circulation), and the
-changelog, which is rewritten every few days. `imprint.html` and `privacy.html`
-are English too, though their footer links read "Impressum" and "Datenschutz".
+changelog, which is rewritten every few days. `imprint.html` stays English;
+`privacy.html` contains both languages because queue reporting is the first optional
+visitor action that reaches the server.
 
 `js/i18n.js` is the whole runtime: language resolution, a ~45-line `t()` with
 interpolation and plurals, and a `data-i18n` pass over the static markup.
@@ -469,7 +502,7 @@ Two licences, because the repository holds two different kinds of thing.
 
 | | Licence | |
 |---|---|---|
-| **Code** — `index.html`, `map.html`, `js/`, `css/`, `sw.js`, `tools/` | [MIT](LICENSE) | Take it, fork it for another show, no conditions beyond the notice |
+| **Code** — `index.html`, `map.html`, `js/`, `css/`, `sw.js`, `worker/`, `test/`, `tools/` and Worker configuration | [MIT](LICENSE) | Take it, fork it for another show, no conditions beyond the notice |
 | **Data** — `data/` | [CC BY 4.0](data/LICENSE) | Credit *hallgui.de* and say when you took it |
 
 The data licence covers the editorial layer — the selection, the

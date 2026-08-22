@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#09090a">
-<title>Privacy · gamescom 2026 guide</title>
-<meta name="description" content="What the unofficial gamescom 2026 guide stores, what it sends, and what it does not collect.">
+<title>Privacy / Datenschutz · gamescom 2026 guide</title>
+<meta name="description" content="What the unofficial gamescom 2026 guide stores and sends / Welche Daten der inoffizielle gamescom-Guide speichert und sendet.">
 <meta name="robots" content="noindex">
 
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -30,24 +30,62 @@
 <link rel="preload" href="fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/style.css">
+<script>
+  (function () {
+    var supported = ["en", "de"];
+    var query = new URLSearchParams(location.search).get("lang");
+    var preferred = null;
+    try {
+      preferred = JSON.parse(localStorage.getItem("gc2026.prefs.v1") || "{}").lang;
+    } catch (e) {}
+    var browser = String((navigator.languages || [navigator.language || "en"])[0]).slice(0, 2);
+    var lang = supported.includes(query) ? query : supported.includes(preferred) ? preferred : supported.includes(browser) ? browser : "en";
+    document.documentElement.lang = lang;
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("[data-legal-lang]").forEach(function (node) {
+        node.hidden = node.dataset.legalLang !== lang;
+      });
+      document.querySelectorAll("[data-set-legal-lang]").forEach(function (button) {
+        button.setAttribute("aria-pressed", String(button.dataset.setLegalLang === lang));
+        button.addEventListener("click", function () {
+          var next = button.dataset.setLegalLang;
+          try {
+            var prefs = JSON.parse(localStorage.getItem("gc2026.prefs.v1") || "{}");
+            prefs.lang = next;
+            localStorage.setItem("gc2026.prefs.v1", JSON.stringify(prefs));
+          } catch (e) {}
+          var url = new URL(location.href);
+          url.searchParams.set("lang", next);
+          location.href = url.href;
+        });
+      });
+    });
+  })();
+</script>
 </head>
 <body class="legal-page">
 
 <header class="legal-bar">
   <div class="wrap">
     <a class="legal-back" href="./">← gamescom 2026 guide</a>
+    <span role="group" aria-label="Language / Sprache">
+      <button class="subtle-link" type="button" data-set-legal-lang="en" lang="en">English</button>
+      <span aria-hidden="true"> · </span>
+      <button class="subtle-link" type="button" data-set-legal-lang="de" lang="de">Deutsch</button>
+    </span>
   </div>
 </header>
 
 <main class="wrap" id="main">
-  <article class="legal-doc">
+  <article class="legal-doc" data-legal-lang="en" lang="en">
 
     <h1>Privacy</h1>
-    <p class="legal-updated">Information under Art. 13 GDPR · Last updated 14 August 2026</p>
+    <p class="legal-updated">Information under Art. 13 GDPR · Last updated 17 August 2026</p>
 
-    <p class="legal-lede">This guide has no accounts, no login, no comment fields and no server of its
-    own. Everything you save — your list, your itinerary, your filters — is written to your own
-    browser and never sent anywhere. Visitor numbers are counted in aggregate, without cookies.</p>
+    <p class="legal-lede">This guide has no accounts, login or comment fields. Your saved list,
+    itinerary, played marks and filters stay in your browser. If you voluntarily report a live queue,
+    that queue session is sent to the guide's small backend and kept only as described below. Visitor
+    numbers are counted in aggregate, without cookies.</p>
 
     <h2>Who is responsible</h2>
     <p>Haylee Schäfer, Wiesenstraße 7, 78112 St. Georgen, Germany ·
@@ -55,19 +93,23 @@
     Full details are in the <a href="imprint.html">imprint</a>.</p>
 
     <h2>What stays in your browser</h2>
-    <p>The guide is a static site. Saving an exhibitor, marking a game as played, building an
-    itinerary or changing a filter writes to <code>localStorage</code> on your device, under these
-    keys:</p>
+    <p>The guide's main interface and ordinary saved data remain on your device. Saving an
+    exhibitor, marking a game as played, building an itinerary or changing a filter writes to
+    <code>localStorage</code> under these keys:</p>
     <ul>
       <li><code>gc2026.saved.v1</code> — exhibitors and games you saved</li>
       <li><code>gc2026.played.v1</code> — games you marked as played</li>
       <li><code>gc2026.itinerary.v1</code> — your planned visit</li>
       <li><code>gc2026.prefs.v1</code> — view preferences, e.g. age filter and “hide played”</li>
+      <li><code>gc2026.queue.v1</code> — a random, resettable queue-reporting id, active local timers
+      and a completion waiting to reconnect, if you choose to report</li>
     </ul>
-    <p>This data is never transmitted to me or to anyone else. It is not a cookie and is not sent with
-    requests. Clearing your browser's site data for this domain deletes all of it, and uninstalling the
-    app or using private browsing has the same effect. Because it lives only on your device, I cannot
-    read, restore or delete it for you.</p>
+    <p>The saved, played, itinerary and preference entries are never transmitted to me or to anyone
+    else. Queue data is the explicit exception: only when you use a queue-report button are the
+    relevant fields from the queue entry sent. None of these entries is a cookie or is attached to
+    ordinary page requests. Clearing this domain's site data deletes the local copies, and
+    uninstalling the app or using private browsing has the same effect. I cannot read, restore or
+    delete the local-only entries for you.</p>
 
     <p>When you share your list, it is encoded into the part of the link after the <code>#</code>.
     Browsers never send that part to a server, so a shared list does not reach me, my host, or their
@@ -81,6 +123,26 @@
     information about you, and it is removed with the rest when you clear the site's data. Storing all
     of this is what makes the offline guide you asked for work at all, so under § 25 (2) TDDDG it needs
     no consent banner.</p>
+
+    <h2>Optional live queue reports</h2>
+    <p>If you choose “I'm in this queue”, the backend receives the exhibitor and game (or booth), a
+    random resettable device UUID, the elapsed-time and people-ahead buckets you tapped, optional queue
+    mechanics, and server timestamps. It receives outcomes such as entered, left or queue closed when
+    you report them. It receives no name, account, precise location, contacts, saved list or itinerary.
+    Reporting is entirely optional; reading the guide and its live aggregates does not create a queue
+    session.</p>
+    <p>The random id keeps one device to one open session and makes basic throttling and moderation
+    possible. It is not tied to an account, but a day of reports under one id can still sketch that
+    device's movement through the show. You can reset it by clearing this site's data. Cloudflare uses
+    the connection IP transiently for a loose flood limit; the guide does not store the IP with a
+    report or in its queue database.</p>
+    <p>An active timer keeps running locally without reception. If you tap “I'm in” offline, the device
+    stores the measured elapsed seconds and submits that one completion after connectivity returns.
+    Stale people-ahead, mechanics and closure reports are never queued for later delivery.</p>
+    <p>The purpose is to give visitors current, crowd-sourced waiting information and protect it from
+    obvious abuse. The legal basis is Art. 6 (1) (f) GDPR — the legitimate interests in operating this
+    optional fan service securely and helping visitors make time-sensitive choices. Fixed coarse
+    buckets, short retention, no account and an easily reset id limit the impact.</p>
 
     <h2>Hosting and delivery</h2>
     <p>The site runs on Cloudflare Workers and is delivered over Cloudflare's network (Cloudflare, Inc.,
@@ -120,7 +182,7 @@
       <li>No Google Analytics, no Google Fonts — the fonts are served from this domain</li>
       <li>No newsletter, contact form, or account of any kind</li>
       <li>No profiling and no automated decision-making under Art. 22 GDPR</li>
-      <li>No sale or sharing of personal data — there is none to sell</li>
+      <li>No sale of personal data and no use of queue reports for advertising</li>
     </ul>
 
     <h2>Transfers outside the EU</h2>
@@ -135,16 +197,20 @@
     <h2>How long data is kept</h2>
     <p>Server and security logs are retained by Cloudflare for a short period, typically a few days
     to a few weeks, and then deleted. Analytics data is aggregated and holds nothing that could
-    identify you. Data in your browser stays until you clear it.</p>
+    identify you. Queue sessions, updates, closure votes and moderation event data are pruned within
+    24 hours. Queue-mechanics votes, device-id denylist entries and the moderation audit log are kept
+    only through the show, after which the complete queue database is deleted. Data in your browser
+    stays until you clear it.</p>
 
     <h2>Your rights</h2>
     <p>You have the right to access (Art. 15), rectification (Art. 16), erasure (Art. 17), restriction
     of processing (Art. 18), data portability (Art. 20), and <strong>to object at any time to
     processing based on legitimate interest (Art. 21)</strong>. To exercise any of these, write to
     <a href="mailto:mail@inventivetalent.org">mail@inventivetalent.org</a>.</p>
-    <p>In practice there is a limit worth being honest about: since this site stores no identifiers and
-    keeps no records tied to you, I usually have no way to locate data belonging to a particular person,
-    and may not be able to answer an access request beyond what is written on this page (Art. 11 GDPR).</p>
+    <p>In practice there is a limit worth being honest about: queue reports carry only a random device
+    id and the other server data is not tied to an identity. Unless you provide that id while it still
+    exists, I usually have no way to locate records belonging to you, and may not be able to answer an
+    access request beyond what is written on this page (Art. 11 GDPR).</p>
     <p>You may also complain to a supervisory authority. The one responsible for me is the
     <a href="https://www.baden-wuerttemberg.datenschutz.de/" rel="noopener" target="_blank">State
     Commissioner for Data Protection and Freedom of Information Baden-Württemberg</a>.</p>
@@ -155,13 +221,138 @@
     <a href="https://github.com/InventivetalentDev/gc2026-guide" rel="noopener" target="_blank">public repository</a>.</p>
 
   </article>
+
+  <article class="legal-doc" data-legal-lang="de" lang="de" hidden>
+    <h1>Datenschutz</h1>
+    <p class="legal-updated">Information nach Art. 13 DSGVO · Stand: 17. August 2026</p>
+
+    <p class="legal-lede">Dieser Guide hat keine Konten, Anmeldung oder Kommentarfunktion.
+    Merkliste, Reiseplan, „gespielt“-Markierungen und Filter bleiben im Browser. Nur wenn du
+    freiwillig eine Warteschlange meldest, wird diese Sitzung an das kleine Backend des Guides
+    gesendet und wie unten beschrieben kurz gespeichert. Besucherzahlen werden ohne Cookies nur
+    zusammengefasst gezählt.</p>
+
+    <h2>Verantwortliche Person</h2>
+    <p>Haylee Schäfer, Wiesenstraße 7, 78112 St. Georgen, Deutschland ·
+    <a href="mailto:mail@inventivetalent.org">mail@inventivetalent.org</a>.
+    Die vollständigen Angaben stehen im <a href="imprint.html">Impressum</a>.</p>
+
+    <h2>Was in deinem Browser bleibt</h2>
+    <p>Folgende Einträge werden in <code>localStorage</code> auf deinem Gerät gespeichert:</p>
+    <ul>
+      <li><code>gc2026.saved.v1</code> — gemerkte Aussteller und Spiele</li>
+      <li><code>gc2026.played.v1</code> — als gespielt markierte Spiele</li>
+      <li><code>gc2026.itinerary.v1</code> — dein geplanter Besuch</li>
+      <li><code>gc2026.prefs.v1</code> — Ansichts- und Spracheinstellungen</li>
+      <li><code>gc2026.queue.v1</code> — falls du meldest: eine zufällige, zurücksetzbare Geräte-ID,
+      laufende lokale Timer und eine auf Verbindung wartende Abschlussmeldung</li>
+    </ul>
+    <p>Merkliste, gespielt-Markierungen, Reiseplan und Einstellungen werden nie übertragen.
+    Warteschlangendaten sind die ausdrückliche Ausnahme: Erst ein Klick auf eine Melde-Schaltfläche
+    sendet die dafür nötigen Felder. Diese Daten sind keine Cookies und werden normalen Seitenabrufen
+    nicht angehängt. Das Löschen der Website-Daten entfernt alle lokalen Einträge; ich kann sie weder
+    lesen noch wiederherstellen oder für dich löschen.</p>
+    <p>Eine geteilte Liste steckt ausschließlich im Teil des Links nach <code>#</code>. Diesen Teil
+    senden Browser nicht an einen Server. Eine eingehende Liste liegt nur bis zur Entscheidung oder
+    bis zum Schließen des Tabs in <code>sessionStorage</code>. Für die Offline-Funktion speichert der
+    Browser außerdem Seiten, Schriften, Symbole und Ausstellerdaten im Cache. Das sind Inhalte der App,
+    keine Angaben über dich. Diese technisch notwendigen Speicherungen brauchen nach § 25 Abs. 2 TDDDG
+    kein Einwilligungsbanner.</p>
+
+    <h2>Freiwillige Live-Warteschlangenmeldungen</h2>
+    <p>Wenn du „Ich stehe hier an“ auswählst, erhält das Backend den Aussteller und das Spiel (oder den
+    Stand), eine zufällige zurücksetzbare Geräte-UUID, die von dir gewählten groben Zeit- und
+    Personenanzahl-Stufen, optionale Angaben zur Art der Schlange sowie Server-Zeitstempel. Gemeldete
+    Ergebnisse wie „drin“, „gegangen“ oder „Schlange geschlossen“ werden ebenfalls verarbeitet. Nicht
+    übertragen werden Name, Konto, genauer Standort, Kontakte, Merkliste oder Reiseplan. Das Melden ist
+    vollständig freiwillig; das Lesen der Live-Zusammenfassung eröffnet keine Sitzung.</p>
+    <p>Die zufällige ID begrenzt ein Gerät auf eine offene Sitzung je Schlange und ermöglicht
+    Missbrauchsschutz. Sie gehört zu keinem Konto. Trotzdem kann ein Tag mit Meldungen unter derselben
+    ID grob zeigen, welche Schlangen dieses Gerät besucht hat. Durch Löschen der Website-Daten kannst
+    du die ID zurücksetzen. Cloudflare verarbeitet die Verbindungs-IP vorübergehend für eine lockere
+    Flutbegrenzung; der Guide speichert die IP weder bei Meldungen noch in seiner Warteschlangen-Datenbank.</p>
+    <p>Ein laufender Timer funktioniert ohne Empfang weiter. Tippst du offline auf „Ich bin drin“,
+    speichert das Gerät die gemessenen Sekunden und sendet genau diesen Abschluss nach Wiederherstellung
+    der Verbindung. Veraltete Personenanzahlen, Mechanik- und Schließungsmeldungen werden nie später
+    nachgesendet.</p>
+    <p>Zweck ist eine aktuelle, gemeinschaftlich erfasste Warteinformation und ihr Schutz vor einfachem
+    Missbrauch. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO — das berechtigte Interesse, diesen
+    freiwilligen Fan-Dienst sicher zu betreiben und zeitkritische Entscheidungen auf der Messe zu
+    erleichtern. Grobe feste Auswahlstufen, kurze Aufbewahrung, kein Konto und eine leicht
+    zurücksetzbare ID begrenzen die Auswirkungen.</p>
+
+    <h2>Hosting und Auslieferung</h2>
+    <p>Die Website läuft auf Cloudflare Workers und wird über das Netz von Cloudflare, Inc., 101
+    Townsend St., San Francisco, CA 94107, USA, ausgeliefert und gegen Angriffe geschützt. Dafür werden
+    technisch notwendige Verbindungsdaten verarbeitet: IP-Adresse, Zeit, angeforderte Seite,
+    verweisende Seite sowie Browsertyp und -sprache. Sie können kurz in Sicherheits- und Fehlerprotokollen
+    stehen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; Cloudflare ist Auftragsverarbeiter nach
+    Art. 28 DSGVO. Fehlgeschlagene Verbindungen kann der Browser zusätzlich an
+    <code>a.nel.cloudflare.com</code> melden.</p>
+
+    <h2>Besucherstatistik</h2>
+    <p><strong>Cloudflare Web Analytics</strong> zählt Seitenaufrufe über ein Skript von
+    <code>static.cloudflareinsights.com</code>. Der Dienst setzt keine Cookies, schreibt keine
+    Kennung auf dein Gerät, erstellt keinen Fingerabdruck und verfolgt dich nicht auf andere Websites.
+    Erfasst werden nur zusammengefasste Angaben wie Seite, Herkunftsseite, aus der nicht gespeicherten
+    IP abgeleitetes Land, grobe Geräte-/Browserklasse, Bildschirmgröße und Ladezeiten. Zweck und
+    Rechtsgrundlage sind das berechtigte Interesse nach Art. 6 Abs. 1 lit. f DSGVO, die Nutzung des
+    Projekts grob zu verstehen. Inhaltsblocker können das Skript sperren; der Guide funktioniert weiter.
+    Mehr dazu beschreibt <a href="https://developers.cloudflare.com/web-analytics/about/" rel="noopener" target="_blank">Cloudflare</a>.</p>
+
+    <h2>Was diese Website nicht tut</h2>
+    <ul>
+      <li>Keine Werbung, Werbenetzwerke oder Wiederansprache</li>
+      <li>Keine Social-Media-Einbettungen oder Tracker</li>
+      <li>Kein Google Analytics und keine Google Fonts</li>
+      <li>Kein Newsletter, Kontaktformular oder Benutzerkonto</li>
+      <li>Kein Profiling und keine automatisierte Entscheidung nach Art. 22 DSGVO</li>
+      <li>Kein Verkauf personenbezogener Daten und keine Werbenutzung der Wartemeldungen</li>
+    </ul>
+
+    <h2>Übermittlung außerhalb der EU</h2>
+    <p>Cloudflare ist ein US-Unternehmen und kann Verbindungsdaten außerhalb der EU verarbeiten. Das
+    Unternehmen ist nach dem EU–US Data Privacy Framework zertifiziert und verwendet ergänzend die
+    Standardvertragsklauseln der Europäischen Kommission (Art. 44 ff. DSGVO).</p>
+
+    <h2>Links zu anderen Websites</h2>
+    <p>Links führen unter anderem zu offiziellen gamescom-Seiten und Aussteller-Websites. Dort gilt die
+    jeweilige Datenschutzerklärung, auf die ich keinen Einfluss habe.</p>
+
+    <h2>Speicherdauer</h2>
+    <p>Cloudflare bewahrt Server- und Sicherheitsprotokolle kurz auf, typischerweise einige Tage bis
+    wenige Wochen. Analysedaten sind zusammengefasst. Warteschlangensitzungen, Aktualisierungen,
+    Schließungsstimmen und Moderationsereignisse werden innerhalb von 24 Stunden gelöscht. Stimmen zur
+    Warteschlangen-Mechanik, Einträge gesperrter Geräte-IDs und das Moderationsprotokoll bleiben nur bis
+    zum Ende der Messe; danach wird die gesamte Warteschlangen-Datenbank gelöscht. Browserdaten bleiben
+    bis zu deiner Löschung.</p>
+
+    <h2>Deine Rechte</h2>
+    <p>Du hast Rechte auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung
+    (Art. 18), Datenübertragbarkeit (Art. 20) und <strong>jederzeitigen Widerspruch gegen eine auf
+    berechtigte Interessen gestützte Verarbeitung (Art. 21)</strong>. Schreibe dafür an
+    <a href="mailto:mail@inventivetalent.org">mail@inventivetalent.org</a>.</p>
+    <p>Wartemeldungen tragen nur eine zufällige Geräte-ID; andere Serverdaten sind keiner Identität
+    zugeordnet. Ohne Mitteilung dieser ID, solange sie noch existiert, kann ich Datensätze in der Regel
+    keiner Person zuordnen (Art. 11 DSGVO). Beschwerden sind beim
+    <a href="https://www.baden-wuerttemberg.datenschutz.de/" rel="noopener" target="_blank">Landesbeauftragten
+    für Datenschutz und Informationsfreiheit Baden-Württemberg</a> möglich.</p>
+
+    <h2>Änderungen</h2>
+    <p>Ändert eine neue Funktion diese Angaben, wird diese Seite zusammen mit ihr aktualisiert. Das
+    Datum oben zeigt den Stand; die Historie liegt im
+    <a href="https://github.com/InventivetalentDev/gc2026-guide" rel="noopener" target="_blank">öffentlichen Repository</a>.</p>
+  </article>
 </main>
 
 <footer class="site-footer">
   <div class="wrap footer-col">
-    <p><a class="subtle-link" href="./">Back to the guide</a> ·
+    <p data-legal-lang="en" lang="en"><a class="subtle-link" href="./">Back to the guide</a> ·
        <a class="subtle-link" href="imprint.html">Imprint</a> ·
        <a class="subtle-link" href="mailto:content@hallgui.de?subject=gamescom%20guide%20feedback">Feedback &amp; corrections</a></p>
+    <p data-legal-lang="de" lang="de" hidden><a class="subtle-link" href="./">Zurück zum Guide</a> ·
+       <a class="subtle-link" href="imprint.html">Impressum</a> ·
+       <a class="subtle-link" href="mailto:content@hallgui.de?subject=gamescom%20guide%20feedback">Feedback &amp; Korrekturen</a></p>
   </div>
 </footer>
 

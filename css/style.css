@@ -306,10 +306,12 @@ body {
   transition: color .12s, border-color .12s;
 }
 /* .tab sets display:flex, which beats the UA sheet's [hidden] rule whatever
-   its specificity — so the Today tab, hidden off-show, needs saying twice. */
+   its specificity — so the Today and Live queues tabs,
+   hidden off-show, need saying twice. */
 .tab[hidden] { display: none; }
 /* The row's left edge aligns with the content, whichever tab currently starts
-   it: Today when the show is on, Exhibitors the rest of the year. */
+   it: the live tabs when the show is on,
+     Exhibitors the rest of the year. */
 .tab:first-child,
 .tab[hidden] + .tab { padding-left: 0; }
 .tab .tab-index { transition: color .12s; }
@@ -414,7 +416,7 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
 .field-sort { border-left: 1px solid var(--rule-soft); }
 .field-label { padding: 9px 16px 0; }
 
-#search, #sort {
+#search, #sort, #queues-search {
   background: none;
   border: none;
   color: var(--ink);
@@ -423,8 +425,8 @@ main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
   padding: 2px 16px 11px;
   width: 100%;
 }
-#search::placeholder { color: var(--ink-dim); }
-#search:focus-visible, #sort:focus-visible { outline-offset: -2px; }
+#search::placeholder, #queues-search::placeholder { color: var(--ink-dim); }
+#search:focus-visible, #sort:focus-visible, #queues-search:focus-visible { outline-offset: -2px; }
 #sort { cursor: pointer; font-size: .88rem; padding-right: 16px; }
 #sort option { background: var(--ground-2); color: var(--ink); }
 
@@ -1271,6 +1273,234 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .queue[data-level="3"] .queue-val { color: var(--warn); }
 .queue[data-level="4"] .queue-val, .queue[data-level="5"] .queue-val { color: var(--alert); }
 
+/* --- live queue reports: measurements, never another forecast meter --- */
+.queue { flex-wrap: wrap; }
+.queue-summary { flex: 1 1 100%; min-width: 0; }
+.queue-summary:empty,
+.queue-plan-live:empty { display: none; }
+/* Main's plan and route rows grew to six columns while this was out, and the
+   live figure is not one of them — it is a measurement about the row rather
+   than a field of it. Giving it a row of its own at every width keeps it out
+   of that column maths entirely. */
+.it-item > .queue-plan-live,
+.route-item > .queue-summary { grid-column: 1 / -1; }
+.queue-tracker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.queue-tracker:empty { display: none; }
+.game-queue {
+  grid-column: 1 / -1;
+  margin-top: 5px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--rule-soft);
+}
+/* One control per card now, sitting with the forecast meter rather than under
+   every game. Pushed to the end of the queue row so the reading (index, then
+   live figure) comes before the doing. */
+.queue-report {
+  margin-left: auto;
+  display: flex;
+}
+.queue-report:empty { display: none; }
+.queue-report-link {
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  text-decoration: none;
+  white-space: nowrap;
+  /* A 44px target without a 44px box: the row is already tight, so the reach
+     is bought with padding that does not push the meter around. The rule below
+     is what that padding cannot be allowed to move — a border-bottom would sit
+     at the far edge of it, a dozen pixels under the text and into whatever
+     follows. text-decoration hugs the glyphs however tall the box is, which is
+     the same reason .subtle-link uses it. */
+  padding: 10px 0;
+  margin: -10px 0;
+}
+.queue-report-link:hover,
+.queue-report-link:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-dim);
+  text-underline-offset: 3px;
+}
+.queue-report-link-active { color: var(--signal); }
+.queue-live {
+  display: flex;
+  align-items: baseline;
+  gap: 5px 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.queue-live-main {
+  color: var(--signal);
+  font-size: .78rem;
+  font-weight: 700;
+}
+.queue-live[data-tier="done"] .queue-live-main { color: var(--ok); }
+.queue-live[data-tier="sofar"] .queue-live-main { color: var(--warn); }
+.queue-live[data-tier="closed"] .queue-live-main { color: var(--alert); }
+.queue-live-detail {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+  color: var(--ink-dim);
+  font-size: .66rem;
+}
+.queue-live-unavailable {
+  color: var(--warn);
+  font-size: .7rem;
+}
+.queue-live-compact .queue-live-main { font-size: .7rem; white-space: nowrap; }
+.queue-live-at {
+  margin-left: 5px;
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  color: var(--ink-dim);
+}
+.queue-session,
+.queue-start-actions,
+.queue-session-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.queue-session { justify-content: space-between; }
+.queue-session-time {
+  font-family: var(--font-mono);
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.queue-action,
+.queue-choice,
+.queue-dialog-done {
+  min-height: 44px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-mid);
+  padding: 8px 11px;
+  font: inherit;
+  font-size: .76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.queue-action:hover,
+.queue-choice:hover,
+.queue-dialog-done:hover { color: var(--ink); border-color: var(--ink-dim); }
+.queue-action-primary,
+.queue-choice.active {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--signal-ink);
+}
+.queue-action:disabled,
+.queue-choice:disabled { opacity: .5; cursor: wait; }
+.queue-start-actions .queue-action,
+.queue-session-actions .queue-action { min-height: 44px; padding-block: 6px; }
+
+/* ============================================================
+   live queues view
+   ============================================================ */
+
+.queues-notice {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--warn);
+  padding: 10px 13px;
+  font-size: .82rem;
+  color: var(--ink-mid);
+  margin-bottom: 20px;
+}
+.queues-scope {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.queues-scope[hidden] { display: none; }
+.queues-scope-label {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .06em;
+  color: var(--ink-mid);
+}
+/* The toolbar's search input is borderless because `.toolbar` draws the box
+   around it. Standing on its own here, the field has to draw its own, or the
+   input falls back to the browser's default chrome and looks like raw HTML
+   next to everything else. */
+.queues-field {
+  max-width: 26rem;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--ground-2);
+  margin-bottom: 10px;
+}
+.queues-list { display: flex; flex-direction: column; }
+
+/* A row is three parts that stack on a phone and spread on a wide screen:
+   what the queue is, what it is doing, and what you can do about it. */
+.queue-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule-soft);
+}
+.queue-row:first-child { border-top: none; }
+.queue-row-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.15;
+  margin: 0;
+}
+.queue-row-sub,
+.queue-row-place {
+  margin: 2px 0 0;
+  font-size: .76rem;
+  color: var(--ink-dim);
+}
+.queue-row-place { font-family: var(--font-mono); letter-spacing: .04em; }
+.queue-row-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* The switch step's two buttons are sentences rather than chips, so they take
+   the full width and stack instead of sitting in a row and wrapping badly. */
+.queue-choice-wide { flex: 1 1 100%; text-align: left; }
+.queue-switch-held { margin: .3rem 0 .9rem; color: var(--ink-mid); font-size: .9rem; }
+/* Shorter than the shared 44px. These sit in a list where every row repeats
+   them, so full-height buttons make the list a wall; the dialog's chips and
+   the prompt bar keep the taller target, being one-off decisions. The 8px gap
+   above buys back the separation the height was providing. */
+.queue-row-actions .queue-action {
+  min-height: 34px;
+  padding: 5px 12px;
+  font-size: .74rem;
+}
+.queue-row-actions:empty { display: none; }
+.queue-live-none { font-size: .76rem; color: var(--ink-dim); }
+
+@media (min-width: 40rem) {
+  .queue-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 20px;
+  }
+  .queue-row-live { grid-column: 2; grid-row: 1; text-align: right; justify-content: flex-end; }
+  .queue-row-live .queue-live { justify-content: flex-end; }
+  .queue-row-actions { grid-column: 2; grid-row: 2; justify-content: flex-end; }
+}
+
 .advice { font-size: .82rem; color: var(--ink-mid); line-height: 1.5; }
 .advice-label {
   font-family: var(--font-mono);
@@ -1615,7 +1845,7 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .priority-table { border: var(--border); border-radius: var(--radius); overflow: hidden; }
 .priority-item {
   display: grid;
-  grid-template-columns: 40px minmax(150px, 1.1fr) 96px 2fr auto;
+  grid-template-columns: 40px minmax(150px, 1.1fr) 96px minmax(180px, 2fr) minmax(105px, auto) auto;
   gap: 0 16px;
   align-items: baseline;
   padding: 12px 18px;
@@ -1731,7 +1961,7 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 
 .route-item {
   display: grid;
-  grid-template-columns: minmax(150px, 1.2fr) minmax(110px, 1fr) auto auto;
+  grid-template-columns: minmax(150px, 1.2fr) minmax(110px, 1fr) auto minmax(105px, auto) auto;
   gap: 0 16px;
   align-items: baseline;
   padding: 12px 18px;
@@ -2230,6 +2460,65 @@ a.area-hall::after { content: ""; position: absolute; inset: -6px -8px; }
 
 .sheet-body { padding: 20px; }
 
+/* One reusable report sheet serves every game and booth queue. */
+.queue-dialog { width: min(620px, calc(100vw - 32px)); }
+.queue-dialog-subject {
+  margin-bottom: 16px;
+  color: var(--ink);
+  font-weight: 700;
+}
+.queue-dialog-flow { display: flex; flex-direction: column; gap: 16px; }
+.queue-dialog-step { display: flex; flex-direction: column; gap: 9px; }
+.queue-dialog-question { color: var(--ink-mid); font-size: .88rem; }
+.queue-choice-row { display: flex; gap: 7px; flex-wrap: wrap; }
+.queue-choice { min-width: 70px; }
+.queue-details {
+  margin-top: 5px;
+  padding-top: 13px;
+  border-top: 1px solid var(--rule-soft);
+}
+.queue-details summary {
+  color: var(--signal);
+  font-weight: 700;
+  cursor: pointer;
+}
+.queue-details > p { margin: 9px 0; color: var(--ink-dim); font-size: .8rem; }
+.queue-details .queue-choice-row + .queue-dialog-question { margin-top: 12px; }
+.queue-dialog-status {
+  min-height: 1.5em;
+  margin-top: 14px;
+  color: var(--ink-mid);
+  font-size: .8rem;
+}
+.queue-dialog-done { margin-top: 8px; background: var(--ink); color: var(--ground); }
+
+/* The refocus nudge is separate from the one-action toast. It appears without
+   moving focus and keeps all three outcomes reachable with one hand. */
+.queue-prompt {
+  position: fixed;
+  z-index: 90;
+  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  width: min(680px, calc(100vw - 32px));
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--ground-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--signal);
+  border-radius: var(--radius);
+  box-shadow: var(--plate-shadow);
+}
+.queue-prompt[hidden] { display: none; }
+.queue-prompt-copy { flex: 1 1 220px; min-width: 0; }
+.queue-prompt-copy p { margin-top: 2px; font-size: .84rem; }
+.queue-prompt-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.queue-prompt .queue-action { min-height: 44px; }
+body.queue-prompt-open .toast { bottom: calc(112px + env(safe-area-inset-bottom)); }
+
 /* ============================================================
    share saved list
    ============================================================ */
@@ -2586,6 +2875,14 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 .legal-page main { flex: 1; padding-top: 40px; padding-bottom: 64px; }
 .legal-bar { border-bottom: 1px solid var(--rule); padding: 16px 0; }
 .legal-bar .wrap { display: flex; align-items: baseline; gap: 14px; }
+.legal-bar [role="group"] { margin-left: auto; }
+.legal-bar button.subtle-link {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
 .legal-back {
   color: var(--ink-dim);
   text-decoration: none;
@@ -2640,6 +2937,7 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .footer-inner { grid-template-columns: 1fr 1fr; }
   .priority-item { grid-template-columns: 34px 1fr auto; row-gap: 4px; }
   .priority-loc, .priority-advice { grid-column: 2 / -1; }
+  .priority-item > .queue-summary { grid-column: 2 / -1; }
   .route-item { grid-template-columns: 1fr auto auto; row-gap: 4px; }
   .route-booth { grid-column: 1 / -1; grid-row: 2; }
   .route-crowd { grid-column: 2; grid-row: 1; }
@@ -2652,6 +2950,7 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .it-item .row-move { grid-column: 3; grid-row: 1; }
   .it-days { grid-column: 1 / -1; grid-row: 3; justify-content: flex-start; }
   .it-warn { grid-column: 1 / -1; grid-row: 4; }
+  .route-item > .queue-summary { grid-column: 1 / -1; }
   .wristband-item { grid-template-columns: 1fr auto; }
   .wristband-loc,
   .wristband-games { grid-column: 1 / -1; justify-self: start; }
@@ -2734,6 +3033,7 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .today-actions { flex-direction: column; align-items: flex-start; gap: 12px; }
   .toolbar-row .row-label,
   .updates-toolbar .row-label { flex-basis: 100%; }
+  .queue-plan-live { grid-column: 1 / -1; }
   /* let the summary text take a full line instead of squeezing into a column */
   .toolbar-summary { flex-wrap: wrap; row-gap: 4px; }
   .toolbar-summary .row-label { flex: 0 0 auto; }
@@ -2746,6 +3046,10 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .area-list li { grid-template-columns: 1fr; row-gap: 2px; }
   .sheet { width: calc(100vw - 24px); max-height: calc(100vh - 24px); }
   .sheet-head, .sheet-body { padding: 16px; }
+  .queue-prompt { align-items: stretch; flex-direction: column; }
+  .queue-prompt-copy { flex-basis: auto; }
+  .queue-prompt-actions { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .queue-prompt .queue-action { padding-inline: 6px; }
   .share-qr { grid-template-columns: 1fr; }
   .share-qr-image { max-width: 280px; margin: 0 auto; }
   .share-qr p { text-align: center; }

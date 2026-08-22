@@ -1,20 +1,42 @@
 # Deploying
 
-The guide is hosted on **Cloudflare Workers** as an assets-only Worker: a
-directory of static files served from the edge, with no Worker script.
-`.github/workflows/cloudflare.yml` deploys every push to `main`;
-`wrangler.toml` holds the whole configuration. `cloudflare-preview.yml`
-uploads every pull request from a branch in this repository as a preview
-version of the same Worker — see *PR previews* below, including why forks are
-deliberately left out.
+The guide is hosted on **Cloudflare Workers** as **two** Workers that meet at
+the edge:
 
-The site still has no build step. `tools/build-site.sh` copies it into `dist/`,
-which is the directory the Worker serves. An asset directory has to hold the
-site and nothing else: aimed at the repo root, a deploy would ship the docs and
-`wrangler dev` would reload forever on its own scratch files. The script
-classifies every top-level entry as site or not-site and fails if it meets one
-it does not recognise, so a new asset directory stops the deploy instead of
-404ing quietly.
+| Worker | Config | What it is |
+|---|---|---|
+| `gc2026-guide` | `wrangler.toml` | the site — a directory of static files, no script at all |
+| `gc2026-queues-api` | `wrangler-api.toml` | `worker/index.js`, the live queue API, with D1 behind it |
+
+They share every hostname. The site holds `hallgui.de` and the three draining
+names as **Custom Domains**; the API holds `<host>/api/*` on each of them as a
+**route**, and a route is matched ahead of a Custom Domain for the paths it
+covers. So `hallgui.de/api/queue/live` reaches the API and `hallgui.de/`
+reaches the site, on one origin, with no CORS anywhere and no change to the
+client — it still asks for `/api/…` relative to wherever it was loaded from.
+
+**Why two.** `cloudflare-preview.yml` uploads every pull request as a *version*
+of a Worker, and a version inherits that Worker's bindings and secrets. While
+the API lived inside the site Worker, that meant an unreviewed PR ran against
+the production database holding the show's data, with the real admin token. The
+site Worker now has no database to inherit and the API is previewed through its
+own staging environment, so no preview can reach production data at all. That
+is configuration rather than a guard: there is nothing to remember to check.
+
+The client has no build step. `tools/build-site.sh` copies it into `dist/`,
+which is the directory the site Worker serves, because an asset directory has to
+hold the site and nothing else — aimed at the repo root, a deploy would ship the
+docs and `wrangler dev` would reload forever on its own scratch files. The
+script classifies every top-level entry as site or not-site and fails if it
+meets one it does not recognise, so a new asset directory stops the deploy
+instead of 404ing quietly. `worker/`, `wrangler-api.toml`, `tools/`, tests and
+package metadata are explicitly classified as not-site and must never appear
+below `dist/`.
+
+`.github/workflows/cloudflare.yml` verifies pull requests and deploys `main` —
+site first, then the production migration, then the API.
+`cloudflare-preview.yml` previews both halves; see *PR previews* below,
+including why forks are deliberately left out.
 
 It moved off GitHub Pages for one reason: Pages serves a repository at exactly
 one custom domain, and the guide needs four — `hallgui.de` and the three
@@ -75,10 +97,11 @@ redirect to `hallgui.de` (step 6). They are aliases, not origins.
    each hostname still draining, and for the six alias names in step 6.
 
 2. **Create an API token** — Cloudflare dashboard → My Profile → API Tokens →
-   *Create Token* → the **Edit Cloudflare Workers** template. It carries the
-   permissions a deploy needs: Workers Scripts (edit) to upload, Workers Routes
-   (edit) plus DNS (edit) to attach the custom domain, and Zone (read). Scope it
-   to the account and to the zones the guide will be served from.
+   *Create Token* → start from the **Edit Cloudflare Workers** template, then
+   add **D1 (edit)** so CI can apply tracked migrations before the Worker is
+   deployed. The rest is Workers Scripts (edit), Workers Routes (edit), DNS
+   (edit) and Zone (read). Scope it to the account and to the zones the guide
+   will be served from.
 
 3. **Add two repository secrets** (Settings → Secrets and variables → Actions):
 
@@ -87,8 +110,12 @@ redirect to `hallgui.de` (step 6). They are aliases, not origins.
    | `CLOUDFLARE_API_TOKEN` | the token from step 2 |
    | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → Account ID |
 
-4. **Push to `main`**, or run the workflow by hand from the Actions tab. The
-   first deploy creates the Worker and attaches `hallgui.de`.
+4. **Complete [Queue backend: first deployment](#queue-backend-first-deployment)**
+   first. Its steps 1 and 2 — both D1 databases, created, migrated and their
+   ids committed — are already done; what remains is deploying staging,
+   verifying it, and setting both admin secrets. Only then merge to `main`,
+   which is what deploys the production API and attaches its routes. The site
+   deploys on every push regardless and never waits on any of this.
 
 5. **Web Analytics** is enabled in the Cloudflare dashboard (Web Analytics →
    the `hallgui.de` site, automatic setup — repoint it there, it was set up
@@ -137,46 +164,277 @@ redirect to `hallgui.de` (step 6). They are aliases, not origins.
    it. They serve the guide and show a move notice; redirecting them would
    strand every saved list built on them.
 
-   Redirects rather than routes in `wrangler.toml`, because a saved list is
-   per-origin: serving the guide on all ten names would mean ten separate
-   copies of everybody's plan, silently diverging. The fragment survives a 301
+   Redirects rather than more hostnames on the site Worker, because a saved
+   list is per-origin: serving the guide on all ten names would mean ten
+   separate copies of everybody's plan, silently diverging. The fragment survives a 301
    without being sent to the server, so `gc26.de/#s?t=…` still arrives whole.
 
    To repoint the whole set — next August, say — edit each zone's rule. Six
    zones is tedious rather than hard: the target string is identical on every
    one of them, so it is copy-paste with the hostname changed.
 
-Deploying from a laptop works the same way and needs no secrets — `npx wrangler
-login` once, then:
+## Queue backend: first deployment
+
+Use Node 22 or newer. Everything here drives the **API** Worker, so every
+Wrangler command carries `--config wrangler-api.toml`; the `npm run` wrappers
+below already do. Production and staging must have separate D1 databases, and
+the API's own `gc2026-queues-api.<subdomain>.workers.dev` address belongs to
+production — it is not a staging environment. `wrangler-api.toml` defines an
+explicit `staging` Worker with no routes at all for that reason.
+
+**Steps 1 and 2 are already done.** Both databases exist, both are migrated,
+and their ids are committed. They are written out here because the next person
+to stand this up — next August, or after a teardown — starts from nothing.
+What is *not* done yet is step 3 onward: neither *API* Worker has been
+deployed — production or staging — and neither has an admin secret. The site
+Worker is unaffected and has been live throughout; splitting them is what
+makes that sentence possible.
+
+1. Install the pinned development tools and authenticate:
+
+   ```sh
+   npm install
+   npx wrangler login
+   ```
+
+2. ~~Create both databases in Western Europe.~~ **Done, 2026-08-22**, both in
+   `weur`, both carrying all three tracked migrations, with their ids committed
+   in `wrangler-api.toml`:
+
+   | | database | id |
+   |---|---|---|
+   | production | `gc2026-queues` | `424b7933-9013-471a-8bae-e8927f406ede` |
+   | staging | `gc2026-queues-staging` | `1cfa05b9-ac73-4114-a6a0-f5a74948d864` |
+
+   To do it again from scratch:
+
+   ```sh
+   npx wrangler d1 create gc2026-queues --location weur
+   npx wrangler d1 create gc2026-queues-staging --location weur
+   ```
+
+   Do not point both environments at one id: a phone test that purges a queue
+   must not purge the live show. Commit the resolved ids once created — CI
+   refuses to deploy the API while the production one is still the placeholder,
+   so a forgotten edit skips the deploy instead of binding a database that does
+   not exist.
+
+3. **Deploy staging, once, from a laptop.** This is the only step in the whole
+   setup that has no automation behind it, deliberately: it happens once, and a
+   workflow that exists to be pressed a single time is a workflow to maintain
+   forever.
+
+   ```sh
+   npx wrangler login              # once per machine
+   npm run deploy:api:staging
+   npx wrangler secret put ADMIN_TOKEN --config wrangler-api.toml --env staging
+   ```
+
+   `deploy:api:staging` is `wrangler deploy --config wrangler-api.toml --env
+   staging`. It touches neither the site nor production and cannot: `--env
+   staging` selects a Worker with its own database, its own secret and no
+   routes at all, so it answers on workers.dev and nowhere else. The database
+   is already migrated, so `npm run db:migrate:staging` is a no-op — worth
+   running only after adding a migration.
+
+   The secret is interactive because the prompt is the point: the token must
+   not enter this repository, a command argument or a workflow file. Until it
+   is set, `/api/admin/` serves its login shell and rejects every token, which
+   looks exactly like getting the password wrong — the first thing to suspect
+   when the console will not open.
+
+   **This is also what switches API pull request previews on.** `wrangler
+   versions upload` refuses against a Worker that has never been deployed, so
+   until this runs the preview job checks, skips with a notice and stays green
+   rather than failing every pull request for a reason that has nothing to do
+   with the pull request. After it, previews work by themselves and nothing
+   needs changing.
+
+   To redeploy staging later, run the same command — though during the show the
+   thing to reach for is usually a pull request's own preview URL, which is
+   per-PR and does not disturb what staging is serving.
+
+4. **Exercise staging, on any day of the year.** `QUEUE_STAGING` in
+   `[env.staging.vars]` marks it the proving ground, which holds the show
+   calendar open there and lets preview sites reach it. So the whole loop can
+   be rehearsed before Aug 26 and after Aug 30 — join, update people-ahead
+   past the throttle, enter, watch the aggregate appear, then work through
+   `/api/admin/`: authenticate, deny a planted UUID, purge an empty queue,
+   force and clear closure, pause and resume writes.
+
+   ```sh
+   S=https://gc2026-queues-api-staging.<subdomain>.workers.dev
+   curl -sD - -o /dev/null "$S/api/queue/live" | sed -n '1p;/x-gc-queue-forced-open/Ip'
+   ```
+
+   The `X-GC-Queue-Forced-Open: 1` header is the confirmation that you are
+   talking to staging and that data outside show hours is intended rather than
+   a gate that has failed. Production never sends it, has no such var, and CI
+   fails the build if the production bundle ever acquires one.
+
+   It relaxes the **calendar only**. The clock stays real, so elapsed waits,
+   the two-minute throttle, the 60-second cache and retention all behave as
+   they will during the show — the point being that what you rehearse is the
+   real thing. `QUEUE_TEST_NOW`, the local fixture that moves the clock, must
+   never be set on a deployed Worker: its anchor is per-isolate, so isolates
+   would disagree about the time and write sessions contradicting each other.
+
+   To drive it through the actual app rather than curl, either open a pull
+   request preview with `?queue-dev=1` — which calls this same staging API
+   cross-origin, see *PR previews* — or point the local proxy at it, which
+   stays same-origin because the proxy forwards server-side:
+
+   ```sh
+   API_ORIGIN=$S npm run dev
+   # then http://localhost:8000/?queue-dev=1
+   ```
+
+   Two independent browser profiles give you the two-device case: join the same
+   queue in both, and confirm the second sees the first's aggregate once the
+   cache window passes.
+
+   During an actual Aug 26–30 window, repeat the loop on staging as a
+   launch-day check — with the calendar genuinely open, that run also confirms
+   the gate itself rather than the override.
+
+5. Only after staging passes, set production's own token — a different value
+   from staging's, so a token shared for a phone test is not the token that
+   moderates the show:
+
+   ```sh
+   npm run db:migrate:production   # a no-op while the schema is current
+   npm test
+   npx wrangler secret put ADMIN_TOKEN --config wrangler-api.toml
+   ```
+
+   The production API itself is deployed by merging to `main`, not by hand:
+   `cloudflare.yml` deploys the site, applies pending production migrations,
+   then deploys the API — so a schema change is live before the code that reads
+   it, and the site never waits on the API. The GitHub token needs **D1 edit**
+   permission for the migration step. Keep migrations backward-compatible:
+   rolling back Worker code does not roll back a D1 schema.
+
+   **That merge is also what first attaches the routes in step 6**, so it is
+   the moment the API becomes reachable on the public hostnames. The show's
+   calendar is the safety net either side of it: outside an Aug 26–30 window
+   every live read and ordinary write answers 403, so the API is inert until
+   the doors open even once it is live.
+
+6. **Attach the API's routes.** `npm run deploy:api` creates them from
+   `wrangler-api.toml`, but each hostname must already be an active zone in
+   Cloudflare and already served by the site Worker as a Custom Domain. Check
+   afterwards that both halves answer on the same name:
+
+   ```sh
+   curl -sI https://hallgui.de/ | head -1                    # the site
+   curl -sD - -o /dev/null https://hallgui.de/api/queue/live | head -1  # the API
+   ```
+
+   Every hostname needs its own route entry, the draining three included. A
+   hostname with a Custom Domain but no route is one where the site loads
+   and every report silently fails — the request reaches the site Worker,
+   which has no `/api` handler and answers with the SPA shell.
+
+### Local development
+
+The two Workers are one origin in production and two processes locally, so a
+small proxy stands in for the route. Two terminals:
 
 ```sh
-tools/build-site.sh && npx wrangler deploy
+cp .dev.vars.example .dev.vars   # once
+npm run db:migrate:local         # once
+npm run dev:api                  # terminal 1 — the API Worker on :8787
+npm run dev                      # terminal 2 — site + /api proxy on :8000
 ```
 
-`tools/build-site.sh && npx wrangler dev` serves `dist/` under the same routing
-rules as production, which is the way to check the routing itself. For ordinary
-work keep using `python3 -m http.server` in the repo root: it serves the real
-files, so an edit shows up on reload instead of after another `build-site.sh`.
+Then open `http://localhost:8000/?queue-dev=1`. `tools/dev-proxy.mjs` serves the
+repository's real files — so an edit shows on reload, with no `build-site.sh`
+in between — and forwards `/api/*` to the Worker. It is a development
+convenience with no counterpart at the edge; nothing in `dist/` or either
+Worker refers to it. If terminal 1 is not running it says so, rather than
+letting the page show an opaque network failure.
+
+The configured instant in `.dev.vars` is the local clock's starting point and
+advances with real elapsed time, so the two-minute throttle can be checked
+normally. It is honored only when the separate
+`QUEUE_TEST_CLOCK_ENABLED=local-development-only` opt-in is also present; both
+values live in the ignored local Worker environment and neither belongs in
+deployed configuration. Production never accepts a browser-supplied clock.
+
+To check the *site* Worker's own routing rules — `html_handling`, the SPA
+fallback, precache behaviour — run it as it deploys instead:
+`npm run build && npx wrangler dev`. That serves `dist/` and has no API behind
+it, which is the point — it is the site Worker exactly as deployed.
+
+### Deploying from a laptop
+
+Needs no secrets — `npx wrangler login` once, then:
+
+```sh
+npm run deploy                   # the site
+npm run db:migrate:production    # only when there is a pending migration
+npm run deploy:api               # the API
+```
+
+In that order, for the same reason CI uses it: the site never waits on the API,
+and the schema is in place before the code that reads it.
 
 ## PR previews
 
 `.github/workflows/cloudflare-preview.yml` uploads every pull request from a
-branch in this repository as a **version** of the production Worker — Workers'
-own preview system, not a second Worker — and comments two URLs on the PR:
+branch in this repository as a **version** — Workers' own preview system, not a
+throwaway Worker — and comments the URLs on the PR. It does that for each half
+separately, and the two are not previewed the same way:
 
-- `pr-<n>-gc2026-guide.<subdomain>.workers.dev` — the PR's alias, following
-  its newest push, so the link in the comment stays good for the life of the
+- **The site** becomes a version of the production site Worker,
+  `gc2026-guide`. That Worker has no database, no secret and no script, so a
+  version of it can inherit nothing worth protecting.
+- **The API** becomes a version of `gc2026-queues-api-staging`, via
+  `versions upload --config wrangler-api.toml --env staging`. A version
+  inherits its Worker's bindings, so previewing against staging is what puts
+  the staging database and the staging admin token behind a PR rather than the
+  production ones. This is the whole reason the two Workers are apart.
+
+Each gets two URLs:
+
+- `pr-<n>-<worker>.<subdomain>.workers.dev` — the PR's alias, following its
+  newest push, so the link in the comment stays good for the life of the
   review;
-- `<version>-gc2026-guide.<subdomain>.workers.dev` — that one push, frozen.
+- `<version>-<worker>.<subdomain>.workers.dev` — that one push, frozen.
+
+The API job is path-filtered: it runs only when `worker/`, `wrangler-api.toml`
+or the two data files the Worker bundles have changed. A PR that only touches
+the client gets a site preview and nothing else.
+
+**A site preview borrows staging's API.** On its own it could not have one:
+the two halves share a hostname in production because the API claims `/api/*`
+there as a *route*, routes belong to zones, and `workers.dev` is not a zone —
+so nothing can claim a path on a preview URL, and every preview of a queue
+change was unreviewable. Opened with `?queue-dev=1` the preview calls the
+staging Worker cross-origin instead, and shows the queue surfaces outside the
+five show days:
+
+```
+https://pr-<n>-gc2026-guide.<subdomain>.workers.dev/?queue-dev=1
+```
+
+Staging permits exactly those origins — `https://*.workers.dev`, and only for
+`/api/queue/*`, never `/api/admin` — because it is the proving ground and says
+so in its config. Production grants no cross-origin access to anyone and never
+takes this path, being nowhere near `workers.dev`. Without the parameter a
+preview behaves exactly as production does: same origin, no queue surfaces
+outside show hours.
+
+To exercise an API change on its own, call the API preview URL directly.
 
 A version is not a deployment. Nothing any real hostname serves changes until
 the merge lands on `main` and `cloudflare.yml` deploys it — `versions upload`
-does not even apply triggers, so the custom domains in `wrangler.toml` cannot
-move from a preview. It runs on the same two repository secrets as the deploy
-and needs no further token scope. `preview_urls = true` in `wrangler.toml` is
-what keeps the URLs answering: left unset it follows `workers_dev`, and it is
-pinned so that turning `workers_dev` off one day does not quietly take the
-preview system down with it.
+does not apply triggers, so neither the site's custom domains nor the API's
+routes can move from a preview. It runs on the same two repository secrets as
+the deploy and needs no further token scope. `preview_urls = true` in both
+configs is what keeps the URLs answering: left unset it follows `workers_dev`,
+and it is pinned so that turning `workers_dev` off one day does not quietly
+take the preview system down with it.
 
 **Fork PRs deliberately get no preview.** GitHub already withholds the
 repository secrets from fork-triggered runs; the workflow's same-repository
@@ -190,6 +448,7 @@ run exactly what the workflow runs, from a laptop:
 ```sh
 git fetch origin pull/<n>/head && git checkout FETCH_HEAD
 tools/build-site.sh && npx wrangler versions upload --preview-alias pr-<n>
+npx wrangler versions upload --config wrangler-api.toml --env staging --preview-alias pr-<n>
 ```
 
 Two behaviours to know before trusting a preview:
@@ -210,6 +469,9 @@ Two behaviours to know before trusting a preview:
 curl -sI https://hallgui.de/          | head -1   # HTTP/2 200
 curl -sI https://hallgui.de/map.html  | head -1   # HTTP/2 200 — not a 307
 curl -s  https://hallgui.de/data/meta.json | head -c 120
+curl -sD - -o /dev/null https://hallgui.de/api/queue/live | sed -n '1p;/cache-control/ip'
+curl -sD - -o /dev/null https://hallgui.de/api/not-a-route | head -1  # 404, never index.html
+curl -sD - -o /dev/null https://hallgui.de/api/admin/ | sed -n '1p;/cache-control/ip'
 curl -sI https://gc26.de/             | head -2   # HTTP/2 301 → https://hallgui.de/
 curl -s  https://hallgui.de/sitemap.xml | head -4 # generated at build, not committed
 curl -s  https://hallgui.de/robots.txt  | tail -1 # Sitemap: https://hallgui.de/sitemap.xml
@@ -224,6 +486,16 @@ comments there spell out the mechanism.
 
 Then open the site, load a hall map, turn the network off and reload. If the
 guide and the map both still come up, the shell cached correctly.
+
+During show hours, also join a low-risk test queue, verify the POST response is
+`no-store`, and watch a second device receive it within the 60-second edge
+window. In DevTools → Application → Cache Storage, no `/api/` URL may appear.
+Visit `/api/admin/`, return to the guide, go offline and reload: the guide (not
+the admin shell) must still be the `./` navigation fallback. The live endpoint
+returns 403 outside an active show-hours window and 410 after the final window
+(on **production**; staging holds the calendar open — see step 4).
+During a scheduled window, either status indicates a clock/timezone
+configuration fault, not an empty-data state.
 
 The last two lines are worth a look because `sitemap.xml` is the one file in
 `dist/` with no counterpart in the repo — `tools/build-site.sh` generates it,
@@ -365,7 +637,8 @@ draining. Someone who accepted at v1 is sitting on `gamescom.guide` with a
 remembered "yes"; someone who dismissed at v2 is still where they were with a
 remembered "no". Both need telling once more, and only once.
 
-`sw.js` bumps alongside it — `v7` for the `gc26.guide` move, `v8` for this one.
+`sw.js` bumps alongside it — `v7` for the `gc26.guide` move, `v8` for this one;
+`v9` is the live-queue client plus its load-bearing API cache bypass.
 Without that, the old `app.js` is served stale-while-revalidate on the first
 load back, and an `app.js` that has never heard of the new address cannot offer
 the move it exists to offer. Whenever `MOVED_KEY` changes, `VERSION` changes
@@ -385,3 +658,42 @@ change stop turning up.
 the previous one, which is the fastest way out of a bad data push. Reverting the
 commit on `main` and letting the workflow run is the durable fix — do that too,
 or the next push carries the same broken file back to the edge.
+
+A Worker rollback does not undo a D1 migration or resurrect rows removed by a
+moderation action. Migrations therefore stay additive/backward-compatible, and
+the previous Worker must remain able to run against the new schema. If the API
+itself is the incident, pausing writes in `/api/admin/` keeps reads available
+while the code rollback propagates.
+
+## After the show
+
+The privacy promise requires deletion, but delete in a recoverable order:
+
+1. Let the final close + 30-minute window pass and verify the deployed API now
+   returns 410 for live reads and ordinary writes without querying D1. A valid
+   deferred `entered` outcome is the deliberate exception: it may still close
+   its existing, server-anchored session after a phone regains reception.
+2. Keep D1 for the 24-hour retention horizon after the final window so the
+   last legitimate deferred outcomes can land and the hourly cleanup can remove
+   their device-linked rows. Then export anything genuinely needed for an
+   aggregate, non-device-linked postmortem, and remove that temporary export
+   once the postmortem is done.
+3. Confirm no open session remains. Remove both D1 bindings, the cron trigger
+   and the rate-limit bindings from `wrangler-api.toml`, remove the admin
+   secret, and deploy the API once more with `npm run deploy:api`. Verify that
+   ordinary requests and an old deferred completion both receive 410; the
+   Worker's missing-binding guard makes this an intentional end-of-event
+   response instead of a database error. CI detects the removed production
+   binding and skips its normal migration step for this teardown deploy. The
+   site Worker is not involved and needs no redeploy — this is the shape of the
+   split showing its worth at the end as well as the beginning.
+4. Only after that unbound deploy is live, delete the staging and production
+   D1 databases from the Cloudflare dashboard or with `wrangler d1 delete`,
+   recording the exact names you confirmed. This is destructive and Time
+   Travel is not a substitute for the stated deletion. Keep the client date
+   gate and API 410 behavior so an old installed PWA fails honestly rather
+   than falling through to the SPA shell.
+
+Do not delete D1 first: an installed client still carrying the pre-close script
+would turn a missing binding into a 500, while the staged 410 gives it the
+intentional, truthful end-of-event response.

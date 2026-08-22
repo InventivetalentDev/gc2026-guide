@@ -1,6 +1,20 @@
 [
   {
     "date": "2026-08-22",
+    "revision": 45,
+    "changes": [
+      { "kind": "feature", "text": "New: crowd-sourced live queue reports. Join a playable game's line with one tap, keep the measured wait on your phone, add a rough people-ahead count when you can, and close the session when you get in or leave." },
+      { "kind": "feature", "text": "Live chips now sit beside the guide's forecast without replacing it. They distinguish current queue flow, waits reported by people who just entered, and the minimum time people still in line have already waited — always with report count and age." },
+      { "kind": "feature", "text": "Queue sessions keep running offline. If you get in with no reception, that measured completion waits on this device and is submitted on reconnect; stale crowd counts and closure reports are deliberately never replayed." },
+      { "kind": "feature", "text": "A phone-first moderation page, random-device throttles, fixed report buckets and short report retention keep the five show days useful without adding accounts or collecting names or locations." },
+      { "kind": "fix", "text": "The service worker now leaves every /api/ response to the network, so live data and the moderation page can never be mistaken for offline guide content." },
+      { "kind": "feature", "text": "Live queue reporting moved off the cards and into its own Live queues tab. Per-game controls meant two buttons under every playable title — two dozen on a booth like Xbox's — so the cards now show the live figures alone with a single \"Report a queue\" link that opens the new tab already narrowed to that booth. The tab lists the lines you are standing in and searches every queue in the show; it appears when the show opens and goes away when it closes." },
+      { "kind": "fix", "text": "Queue details (how the line moves) are now sent by the same \"Done\" button that closes the report sheet, instead of a separate \"Save details\" button next to it. Picking a queue type and walking away used to discard it silently." },
+      { "kind": "fix", "text": "You can only track one queue at a time now. Telling the guide you have joined a new line asks whether to leave the one you are already in, naming it and how long you have been there — and records that you left it, instead of leaving a timer running on a line you walked away from." }
+    ]
+  },
+  {
+    "date": "2026-08-22",
     "revision": 44,
     "changes": [
       { "kind": "feature", "text": "Any booth can be sent to somebody on its own. The Share row in a card's corner hands out a link that opens the guide on that card \u2014 scrolled to it, lit for a moment \u2014 rather than at the top of a list of a hundred and eleven, which is the difference between sending someone a link and sending them a description. It is the same address the hall map has always used to send you to a card, so it works offline once the guide has been opened, and there is a QR code under the link for when the person you are telling is standing beside you. A card turned to its business booth shares the business booth rather than its owner, and a link naming a stand in halls 2\u20134 switches the trade exhibitors on to answer it instead of landing on an empty grid \u2014 the Badge row switches them straight back off." },

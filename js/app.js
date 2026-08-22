@@ -164,9 +164,9 @@ const PLATFORM_CODES = {
   tbc: "TBA",
 };
 
-/* "today" is last so VIEWS[0] stays the default landing view; the tab
-   itself sits first in the markup, and only exists while the show runs. */
-const VIEWS = ["exhibitors", "planner", "event", "updates", "today"];
+/* "today" and "queues" are last so VIEWS[0] stays the default landing view;
+   both tabs sit first in the markup, and only exist while the show runs. */
+const VIEWS = ["exhibitors", "planner", "event", "updates", "today", "queues"];
 
 async function loadData() {
   const bust = `?v=${Date.now()}`;
@@ -273,6 +273,19 @@ function mergeStrings(exhibitors, event, meta, strings) {
    draws the same plan on the floor. Everything below still calls
    loadMarks/persistMarks/gameKey by their old names. */
 const { MARK_KEYS, PREFS_KEY, IT_KEY, ORDER_KEY, gameKey } = GCMarks;
+/* Live queue transport/session state lives in its own optional plain script.
+   The guard is intentional: a service-worker transition can briefly pair a
+   new app.js with the previous shell, which did not load js/queue.js. */
+const QUEUES = window.GCQueues || null;
+const QUEUE_CLAIMS = [0, 10, 20, 30, 45, 60, 90, 120];
+const QUEUE_AHEAD = [10, 20, 30, 50, 75, 100, 150, 200];
+const QUEUE_TYPES = ["single", "pairs", "group", "wave"];
+const QUEUE_BATCHES = [2, 5, 10, 20, 50, 100];
+
+let queueDialogState = null;
+let queuePromptKey = null;
+let queueSurfaceGate = "";
+const pendingQueueActions = new Set();
 
 const loadMarks = (mark) => GCMarks.readMarks(mark);
 const persistMarks = (mark) => GCMarks.writeMarks(mark, state.marks[mark]);
@@ -852,6 +865,7 @@ function buildMoveLink() {
    hearing about hallgui.de. So: one more nudge each time the address changes,
    then quiet again. */
 const MOVED_KEY = "gc2026.moved.v3";
+let moveNoticeOffered = false;
 
 function moveNoticeAnswered() {
   try {
@@ -871,7 +885,12 @@ function rememberMoveNotice() {
 }
 
 function offerMove() {
-  if (!onLegacyHost() || moveNoticeAnswered()) return;
+  if (!onLegacyHost() || moveNoticeAnswered() || moveNoticeOffered) return;
+  /* Queue sessions cannot cross origins: their server anchor and deferred
+     completion live under this hostname's localStorage. Postpone the move
+     until they have finished instead of stranding a measurement mid-show. */
+  if (QUEUES && (QUEUES.sessions().length || QUEUES.pendingCount())) return;
+  moveNoticeOffered = true;
   const move = buildMoveLink();
   showToast(
     move ? t("moved.withList") : t("moved.plain"),
@@ -2052,6 +2071,193 @@ function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
+/* ---------- live queues ----------
+
+   The transport module only exposes facts. These helpers turn those facts
+   into the four surfaces that use them: a full tracker on a game/booth, the
+   worst live queue beside a card's forecast, and compact planner figures. */
+
+const queueForGame = (ex, game) =>
+  QUEUES && game?.playable === true ? QUEUES.queue(ex.id, gameKey(game.title)) : null;
+const boothQueue = (ex) => QUEUES?.queue(ex.id, QUEUES.BOOTH) || null;
+
+function queueEx(queue) {
+  return queue && state.exhibitors.find((ex) => ex.id === queue.exhibitor);
+}
+
+function queueGame(queue) {
+  const ex = queueEx(queue);
+  return queue?.game === QUEUES?.BOOTH
+    ? null
+    : (ex?.games || []).find((game) => gameKey(game.title) === queue?.game) || null;
+}
+
+function queueName(queue) {
+  const ex = queueEx(queue);
+  const game = queueGame(queue);
+  return game ? t("queue.nameGame", { game: game.title, exhibitor: ex?.name || queue.exhibitor }) : ex?.name || queue?.exhibitor || "";
+}
+
+const queueAttrs = (queue) =>
+  `data-queue-exhibitor="${esc(queue.exhibitor)}" data-queue-game="${esc(queue.game)}"`;
+
+function queueAge(age) {
+  const minutes = Math.max(0, Math.floor(Number(age || 0) / 60));
+  return minutes < 1 ? t("queue.ageNow") : t("queue.ageMinutes", { n: minutes });
+}
+
+function queueMechanics(live) {
+  if (!live?.qtype || !QUEUE_TYPES.includes(live.qtype)) return "";
+  const batch = Number(live.batch);
+  /* The Worker reports the median of fixed input buckets. With an even vote
+     count that aggregate can sit between two chips (for example 75 from 50
+     and 100), and is still a valid mechanics measurement. */
+  if (
+    (live.qtype === "group" || live.qtype === "wave") &&
+    Number.isInteger(batch) &&
+    batch >= QUEUE_BATCHES[0] &&
+    batch <= QUEUE_BATCHES.at(-1)
+  ) {
+    return t(`queue.mechanics.${live.qtype}Batch`, { n: batch });
+  }
+  return t(`queue.mechanics.${live.qtype}`);
+}
+
+function queueLiveMain(live) {
+  const estimate = Math.max(0, Math.round(Number(live?.est) || 0));
+  if (live?.closed) return t("queue.live.closed");
+  if (live?.how === "flow") return t("queue.live.flow", { n: estimate });
+  /* The server clamps an extreme measured wait and says so, because at the
+     ceiling the figure is a floor: "4 h+", not a flat four hours. */
+  if (live?.how === "done" && live.capped) {
+    return t("queue.live.doneCapped", { n: Math.max(1, Math.round(estimate / 60)) });
+  }
+  if (live?.how === "done") return t("queue.live.done", { n: estimate });
+  if (live?.how === "sofar") return t("queue.live.sofar", { n: estimate });
+  return "";
+}
+
+/* Empty when there is no current figure. The "why it is empty" question —
+   never reported, or reported and gone stale — is answered only in the queues
+   view, where it changes what you would do about it. Answering it on a card
+   put the word "unavailable" under every game of all seventy-six. */
+function queueLiveMarkup(queue, { compact = false } = {}) {
+  const live = QUEUES?.live(queue);
+  if (!live) return "";
+  const main = queueLiveMain(live);
+  if (!main) return "";
+  const reports = t("queue.reports", { n: Number(live.n) || 0 });
+  const mechanics = queueMechanics(live);
+  const detail = `<span class="queue-live-detail${compact ? " sr-only" : ""}">
+    <span>${esc(reports)}</span><span aria-hidden="true">·</span>
+    <span data-live-age ${queueAttrs(queue)}>${esc(queueAge(live.age))}</span>${
+      mechanics ? `<span aria-hidden="true">·</span><span>${esc(mechanics)}</span>` : ""
+    }
+  </span>`;
+  return `<span class="queue-live${compact ? " queue-live-compact" : ""}" data-tier="${esc(live.how)}">
+    <span class="queue-live-main">${esc(main)}</span>${detail}
+  </span>`;
+}
+
+function queueElapsedMarkup(queue, session) {
+  const minutes = Math.max(0, Math.floor(QUEUES.elapsed(session) / 60));
+  return `<span class="queue-session-time" data-queue-elapsed ${queueAttrs(queue)}>${esc(
+    t("queue.elapsed", { n: minutes })
+  )}</span>`;
+}
+
+/* A game row states its live figure and nothing else. Controls used to live
+   here — join and closed on every playable title, three more once you were in
+   the line — which on a twelve-game card like Xbox's put twenty-four buttons
+   under one lineup. Reporting moved to the Live queues view; a card now reads.
+
+   The unavailable notice goes with them. It made sense beside a control you
+   could no longer use; repeated down a card, and again on all seventy-six of
+   them, it is just the word "offline" seventy-six times. The queues view says
+   it once. */
+function queueTrackerInner(queue) {
+  if (!QUEUES?.visible() || !queue) return "";
+  return queueLiveMarkup(queue);
+}
+
+function queueTracker(queue, extraClass = "") {
+  if (!QUEUES?.visible() || !queue) return "";
+  return `<span class="queue-tracker${extraClass ? ` ${extraClass}` : ""}" data-queue-surface="tracker"
+    tabindex="-1" ${queueAttrs(queue)}>${queueTrackerInner(queue)}</span>`;
+}
+
+/* One control per card, next to the forecast meter, replacing every per-game
+   button. It carries the exhibitor so the queues view opens already narrowed
+   to this booth — an ordinary hash link, the same shape as the card deep-links
+   the map already emits, so Back returns to the card. */
+function queueReportLinkInner(ex) {
+  if (!QUEUES?.visible() || !ex) return "";
+  const mine = QUEUES.sessions().filter((entry) => entry.exhibitor === ex.id).length;
+  const label = mine ? t("queue.reportLinkActive", { n: mine }) : t("queue.reportLink");
+  return `<a class="queue-report-link${mine ? " queue-report-link-active" : ""}" href="#queues?ex=${encodeURIComponent(ex.id)}"
+    aria-label="${esc(t("queue.reportLinkAria", { exhibitor: ex.name }))}">${esc(label)}</a>`;
+}
+
+function queueReportLink(ex) {
+  /* The wrapper is emitted whenever the booth *has* queues, even before the
+     show opens and the contents appear. refreshQueueSurfaces() can only refill
+     surfaces that are already in the DOM, so a card rendered at 08:29 on the
+     Wednesday still gains its link when the gate flips at 08:30. */
+  if (!QUEUES || !ex || ex.type === "trade" || isAbsent(ex)) return "";
+  if (!QUEUES.queuesFor(ex).length) return "";
+  return `<span class="queue-report" data-queue-surface="report" data-queue-exhibitor="${esc(
+    ex.id
+  )}">${queueReportLinkInner(ex)}</span>`;
+}
+
+function queueSummaryInner(ex, compact = false) {
+  if (!QUEUES?.visible()) return "";
+  const worst = QUEUES?.worst(ex);
+  return worst ? queueLiveMarkup(worst.queue, { compact }) : "";
+}
+
+function queueSummary(ex, { compact = false, kind = "summary" } = {}) {
+  if (!QUEUES?.visible() || !ex || ex.type === "trade" || isAbsent(ex)) return "";
+  return `<span class="queue-summary${compact ? " queue-summary-compact" : ""}" data-queue-surface="${esc(
+    kind
+  )}" data-queue-exhibitor="${esc(ex.id)}" data-queue-compact="${compact}">${queueSummaryInner(ex, compact)}</span>`;
+}
+
+function compareQueueEntries(a, b) {
+  if (a.live.closed !== b.live.closed) return a.live.closed ? -1 : 1;
+  return (Number(b.live.est) || 0) - (Number(a.live.est) || 0) ||
+    (Number(b.live.newest) || 0) - (Number(a.live.newest) || 0);
+}
+
+function itemQueueEntry(item) {
+  if (!QUEUES || !item) return null;
+  if (item.kind === "exhibitor") return QUEUES.worst(item.ex);
+  return item.at
+    .map((ex) => {
+      const queue = QUEUES.queue(ex.id, item.key);
+      return queue ? { queue, live: QUEUES.live(queue) } : null;
+    })
+    .filter((entry) => entry?.live)
+    .sort(compareQueueEntries)[0] || null;
+}
+
+function itemQueueInner(item) {
+  if (!QUEUES?.visible()) return "";
+  const entry = itemQueueEntry(item);
+  if (!entry) return "";
+  const at = item.kind === "game" && item.at.length > 1 ? queueEx(entry.queue)?.name : "";
+  return `${queueLiveMarkup(entry.queue, { compact: true })}${
+    at ? `<span class="queue-live-at">${esc(t("queue.atExhibitor", { exhibitor: at }))}</span>` : ""
+  }`;
+}
+
+function itemQueueSummary(item) {
+  if (!QUEUES?.visible() || !item || (item.kind === "exhibitor" && (item.ex.type === "trade" || isAbsent(item.ex)))) return "";
+  return `<span class="queue-plan-live" data-queue-surface="item" data-queue-item-kind="${esc(
+    item.kind
+  )}" data-queue-item-key="${esc(item.key)}">${itemQueueInner(item)}</span>`;
+}
+
 /* ---------- keyed lists ----------
 
    innerHTML is the expensive way to change a list. Handed the exhibitor grid
@@ -2444,7 +2650,7 @@ const boothAgeStatus = (ex) =>
     ? "confirmed"
     : "expected";
 
-function gameRow(g) {
+function gameRow(ex, g) {
   const status = g.status || "expected";
   const plat = platformCodes(g.platforms);
   /* "confirmed" is the default state — labelling all 23 rows of a big booth
@@ -2467,6 +2673,7 @@ function gameRow(g) {
     ${markButton("played", "game", key, g.title)}
     ${markButton("saved", "game", key, g.title)}
     ${g.note ? `<span class="game-note">${esc(g.note)}</span>` : ""}
+    ${g.playable === true ? queueTracker(queueForGame(ex, g), "game-queue") : ""}
   </li>`;
 }
 
@@ -2542,7 +2749,16 @@ function card(ex) {
   const isOpen = state.expanded.has(ex.id);
   /* A saved game never hides behind "+ 12 more" — the whole point of saving it
      is not having to go looking for it again. */
-  const tail = isOpen ? [] : games.slice(4).filter((g) => isSaved("game", gameKey(g.title)));
+  const tail = isOpen
+    ? []
+    : games
+        .slice(4)
+        .filter(
+          (g) =>
+            isSaved("game", gameKey(g.title)) ||
+            Boolean(QUEUES?.session(queueForGame(ex, g))) ||
+            Boolean(QUEUES?.pendingFor(queueForGame(ex, g)))
+        );
   const shown = isOpen ? games : [...games.slice(0, 4), ...tail];
   const hidden = games.length - shown.length;
   const moreBtn =
@@ -2584,7 +2800,7 @@ function card(ex) {
                     : ""
                 }${hasAdult(ex) && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</span>
               </div>
-              <ul class="games">${shown.map(gameRow).join("")}</ul>
+              <ul class="games">${shown.map((game) => gameRow(ex, game)).join("")}</ul>
               ${moreBtn}
             </div>`
           : trade?.list || ""
@@ -2607,6 +2823,8 @@ function card(ex) {
           aria-label="${esc(t("card.queueAria", { n: crowd }))}"
           title="${esc(ex.crowdNote || "")}"><i></i><i></i><i></i><i></i><i></i></span>
         <span class="queue-val">${crowd ? `${crowd}/5` : "—"} ${esc(crowdLabel(crowd))}</span>
+        ${queueSummary(ex)}
+        ${queueReportLink(ex)}
       </div>`
       }
       ${
@@ -3893,6 +4111,7 @@ function itineraryItem(item, group, i, total) {
     </span>
     <span class="it-loc">${itineraryItemLocationHtml(item)}</span>
     ${crowdCell("it-crowd", item.crowd, itemInBusinessArea(item))}
+    ${itemQueueSummary(item)}
     ${itineraryDayChips(item)}
     ${moveButtons(GCMarks.stopKey(item.kind, item.key), item.name, i, total)}
     ${markButton("saved", item.kind, item.key, item.name)}
@@ -4181,6 +4400,7 @@ function renderPriority() {
             : esc(t("plate.tba"))
         }</span>
         <span class="priority-advice">${esc(e.visitAdvice || e.crowdNote || "")}</span>
+        ${queueSummary(e, { compact: true, kind: "priority" })}
         <span class="row-actions">
           ${markButton("played", "exhibitor", e.id, e.name)}
           ${markButton("saved", "exhibitor", e.id, e.name)}
@@ -4463,6 +4683,7 @@ function routeRow(ex, { dayFilter = null, group = "", index = 0, total = 0 } = {
     <span class="route-name">${esc(ex.name)}${dayFilter ? "" : routeDayTags(ex)}</span>
     <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation, dayFilter)}${unconf}</span>
     ${crowdCell("route-crowd", ex.crowd || 0, inBusinessArea(ex))}
+    ${queueSummary(ex, { compact: true, kind: "route" })}
     <span class="row-actions">
       ${moveButtons(key, ex.name, index, total)}
       ${markButton("played", "exhibitor", ex.id, ex.name)}
@@ -5285,6 +5506,731 @@ function renderChangelog() {
     .join("");
 }
 
+/* ---------- live queue interaction ---------- */
+
+function queueFromElement(el) {
+  return QUEUES?.queue(el?.dataset.queueExhibitor, el?.dataset.queueGame) || null;
+}
+
+function queueItem(kind, key) {
+  return itineraryItems().find((item) => item.kind === kind && item.key === key) || null;
+}
+
+/* ---------- the Live queues view ----------
+
+   One searchable list of every reportable queue, replacing the controls that
+   used to hang off each game row. Built once per data load: 162 entries at
+   revision 29, small enough to filter on every keystroke without the debounce
+   the exhibitor grid needs, because only this list re-renders. */
+
+let queueIndex = [];
+let queueScopeEx = null;
+let queueQuery = "";
+
+function buildQueueIndex() {
+  queueIndex = [];
+  if (!QUEUES) return;
+  for (const ex of state.exhibitors) {
+    for (const queue of QUEUES.queuesFor(ex)) {
+      const game = queueGame(queue);
+      queueIndex.push({
+        queue,
+        ex,
+        title: game ? game.title : ex.name,
+        /* A booth queue is the booth, so repeating the name as a subtitle
+           would read "Nintendo — Nintendo". */
+        subtitle: game ? ex.name : "",
+        haystack: [game?.title || "", ex.name, ex.hall || "", ex.booth || "", ...(ex.tags || [])]
+          .join(" ")
+          .toLowerCase(),
+        lead: (game ? game.title : ex.name).toLowerCase(),
+      });
+    }
+  }
+  queueIndex.sort((a, b) => byName(a.title, b.title));
+}
+
+/* Ranked so a typed title beats a booth that merely mentions it: exact lead,
+   then lead prefix, then a word start anywhere, then any substring. Pure, and
+   deliberately no fuzzy matching — "hlo" should not offer Halo to somebody
+   standing in front of a sign. */
+function matchQueues(query, entries) {
+  const needle = String(query || "").trim().toLowerCase();
+  if (!needle) return [];
+  const scored = [];
+  for (const entry of entries) {
+    let score = -1;
+    if (entry.lead === needle) score = 0;
+    else if (entry.lead.startsWith(needle)) score = 1;
+    else if (new RegExp(`\\b${needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).test(entry.haystack)) score = 2;
+    else if (entry.haystack.includes(needle)) score = 3;
+    if (score >= 0) scored.push({ entry, score });
+  }
+  return scored
+    .sort((a, b) => a.score - b.score || byName(a.entry.title, b.entry.title))
+    .map(({ entry }) => entry);
+}
+
+/* The one place the empty states are worth telling apart. "No reports yet" is
+   an invitation — you could be the first. A figure that has aged out is not:
+   the queue was being reported and has gone quiet, and saying "no reports"
+   there would be a lie. The stale case is only claimed while connected, since
+   offline everything looks stale and the notice at the top already says so. */
+function queueLiveRowCell(queue) {
+  const markup = queueLiveMarkup(queue);
+  if (markup) return markup;
+  const stale = QUEUES.connected() && QUEUES.unavailable(queue);
+  return `<span class="queue-live ${stale ? "queue-live-unavailable" : "queue-live-none"}">${esc(
+    t(stale ? "queue.liveUnavailable" : "queue.noReports")
+  )}</span>`;
+}
+
+function queueRowMarkup(entry) {
+  const { queue, ex } = entry;
+  const name = queueName(queue);
+  const active = QUEUES.session(queue);
+  const pending = QUEUES.pendingFor(queue);
+  const canReport = QUEUES.canReport();
+  const place = ex.hall
+    ? t(ex.booth ? "where.hallDotBooth" : "where.hall", { hall: ex.hall, booth: ex.booth || "" })
+    : ex.booth || "";
+
+  let actions = "";
+  if (pending) {
+    actions = `<span class="queue-session-time">${esc(t("queue.pendingCompletion"))}</span>`;
+  } else if (active) {
+    actions = `${queueElapsedMarkup(queue, active)}
+      <span class="queue-session-actions">
+        ${
+          canReport
+            ? `<button class="queue-action" type="button" data-queue-action="update" ${queueAttrs(queue)}
+                aria-label="${esc(t("queue.action.updateAria", { queue: name }))}">${esc(t("queue.action.update"))}</button>`
+            : ""
+        }
+        <button class="queue-action queue-action-primary" type="button" data-queue-action="entered" ${queueAttrs(queue)}
+          aria-label="${esc(t("queue.action.enteredAria", { queue: name }))}">${esc(t("queue.action.entered"))}</button>
+        <button class="queue-action" type="button" data-queue-action="left" ${queueAttrs(queue)}
+          aria-label="${esc(t("queue.action.leftAria", { queue: name }))}">${esc(t("queue.action.left"))}</button>
+      </span>`;
+  } else if (canReport) {
+    actions = `<span class="queue-session-actions">
+      <button class="queue-action queue-action-primary" type="button" data-queue-action="join" ${queueAttrs(queue)}
+        aria-label="${esc(t("queue.action.joinAria", { queue: name }))}">${esc(t("queue.action.join"))}</button>
+      <button class="queue-action" type="button" data-queue-action="closed" ${queueAttrs(queue)}
+        aria-label="${esc(t("queue.action.closedAria", { queue: name }))}">${esc(t("queue.action.closed"))}</button>
+    </span>`;
+  }
+
+  return `<article class="queue-row" ${queueAttrs(queue)}>
+    <div class="queue-row-head">
+      <h4 class="queue-row-title">${esc(entry.title)}</h4>
+      ${entry.subtitle ? `<p class="queue-row-sub">${esc(entry.subtitle)}</p>` : ""}
+      ${place ? `<p class="queue-row-place">${esc(place)}</p>` : ""}
+    </div>
+    <div class="queue-row-live">${queueLiveRowCell(queue)}</div>
+    <div class="queue-row-actions">${actions}</div>
+  </article>`;
+}
+
+function renderQueuesMine() {
+  const section = $("#queues-mine-section");
+  const list = $("#queues-mine");
+  if (!section || !list) return;
+  const open = QUEUES.sessions()
+    .map((entry) => queueIndex.find((row) => row.queue.exhibitor === entry.exhibitor && row.queue.game === entry.game))
+    .filter(Boolean)
+    .sort((a, b) => Number(QUEUES.session(b.queue)?.joinedAt || 0) - Number(QUEUES.session(a.queue)?.joinedAt || 0));
+  const pending = queueIndex.filter((row) => QUEUES.pendingFor(row.queue));
+  const rows = [...open, ...pending.filter((row) => !open.includes(row))];
+  section.hidden = rows.length === 0;
+  list.innerHTML = rows.map((entry) => queueRowMarkup(entry)).join("");
+  /* "Queues you are in" is absent whenever you are in none, which left the one
+     remaining section numbered 02 with no 01 above it. The numbers count what
+     is on screen, not what the markup happens to contain. */
+  const reportNum = $("#queues-report-title .section-num");
+  if (reportNum) reportNum.textContent = section.hidden ? "01" : "02";
+}
+
+function renderQueuesScope() {
+  const scope = $("#queues-scope");
+  if (!scope) return;
+  const ex = queueScopeEx && state.exhibitors.find((entry) => entry.id === queueScopeEx);
+  scope.hidden = !ex;
+  scope.innerHTML = ex
+    ? `<span class="queues-scope-label">${esc(t("queues.scopedTo", { exhibitor: ex.name }))}</span>
+       <button class="chip" type="button" id="queues-scope-clear">${esc(t("queues.showAll"))}</button>`
+    : "";
+}
+
+function renderQueuesResults() {
+  const list = $("#queues-results");
+  const count = $("#queues-result-count");
+  const empty = $("#queues-empty");
+  if (!list || !count || !empty) return;
+
+  const scoped = queueScopeEx ? queueIndex.filter((entry) => entry.ex.id === queueScopeEx) : queueIndex;
+  /* Scoped to a booth, the whole (short) list is the answer and typing
+     narrows it. Unscoped, an untyped list of 162 queues is not a useful
+     starting point, so the saved list stands in for it. */
+  let rows;
+  let heading = "";
+  if (queueQuery) {
+    rows = matchQueues(queueQuery, scoped);
+    heading = t("queues.countMatches", { n: rows.length });
+  } else if (queueScopeEx) {
+    rows = scoped;
+    heading = t("queues.countMatches", { n: rows.length });
+  } else {
+    rows = queueIndex.filter((entry) => isSaved("exhibitor", entry.ex.id) || isSaved("game", entry.queue.game));
+    heading = rows.length ? t("queues.countSaved", { n: rows.length }) : "";
+  }
+
+  const shown = rows.slice(0, 40);
+  list.innerHTML = shown.map((entry) => queueRowMarkup(entry)).join("");
+  count.textContent = heading;
+  empty.hidden = shown.length > 0;
+  if (!shown.length) {
+    empty.textContent = queueQuery
+      ? t(queueScopeEx ? "queues.emptyScoped" : "queues.emptySearch", { query: queueQuery })
+      : t("queues.emptyDefault");
+  }
+}
+
+function renderQueuesNotice() {
+  const notice = $("#queues-notice");
+  if (!notice) return;
+  let message = "";
+  if (!QUEUES.visible()) message = t("queues.noticeBeforeShow");
+  else if (!QUEUES.canReport()) message = t("queues.noticeClosed");
+  else if (!QUEUES.connected()) message = t("queues.noticeOffline");
+  notice.hidden = !message;
+  notice.textContent = message;
+}
+
+function renderQueues() {
+  if (!QUEUES || !$("#view-queues")) return;
+  if (!queueIndex.length) buildQueueIndex();
+  renderQueuesNotice();
+  renderQueuesMine();
+  renderQueuesScope();
+  renderQueuesResults();
+}
+
+/* Narrow the view to one booth, or clear it. Landing scoped also clears any
+   stale query, so arriving from a card never shows another booth's matches. */
+function applyQueueScope(exhibitorId) {
+  const ex = exhibitorId && state.exhibitors.find((entry) => entry.id === exhibitorId);
+  queueScopeEx = ex ? ex.id : null;
+  queueQuery = "";
+  const search = $("#queues-search");
+  if (search) search.value = "";
+  renderQueues();
+  /* Arriving from a card link is a view change, not a scroll: the card that
+     sent you here can be a long way down the grid, and switching tabs keeps
+     the offset, which lands you in the middle of the queue list. Only the
+     link and a deep link reach here — the tab itself replaces the hash rather
+     than changing it — and on a deep link the page is already at the top, so
+     this costs nothing there. No smooth scroll: a tab switch is instant
+     everywhere else in the app. */
+  window.scrollTo(0, 0);
+}
+
+/* The tab is absent outside the show days, like every other queue surface. */
+function syncQueueTab() {
+  const tab = $('.tab[data-view="queues"]');
+  if (!tab || !QUEUES) return;
+  const show = QUEUES.visible();
+  tab.hidden = !show;
+  if (!show && state.view === "queues") showView(VIEWS[0]);
+}
+
+function refreshQueueSurfaces() {
+  if (!QUEUES) return;
+  queueSurfaceGate = `${QUEUES.visible()}:${QUEUES.canReport()}`;
+  $$('[data-queue-surface]').forEach((surface) => {
+    const focused = surface.contains(document.activeElement) ? document.activeElement : null;
+    const action = focused?.dataset.queueAction;
+    let html = "";
+    if (surface.dataset.queueSurface === "tracker") {
+      html = queueTrackerInner(queueFromElement(surface));
+    } else if (surface.dataset.queueSurface === "item") {
+      html = itemQueueInner(queueItem(surface.dataset.queueItemKind, surface.dataset.queueItemKey));
+    } else if (surface.dataset.queueSurface === "report") {
+      const ex = state.exhibitors.find((entry) => entry.id === surface.dataset.queueExhibitor);
+      html = ex ? queueReportLinkInner(ex) : "";
+    } else {
+      const ex = state.exhibitors.find((entry) => entry.id === surface.dataset.queueExhibitor);
+      html = ex ? queueSummaryInner(ex, surface.dataset.queueCompact === "true") : "";
+    }
+    surface.innerHTML = html;
+    if (action) {
+      const queue = queueFromElement(focused);
+      const selector = queue
+        ? `[data-queue-action="${CSS.escape(action)}"][data-queue-exhibitor="${CSS.escape(
+            queue.exhibitor
+          )}"][data-queue-game="${CSS.escape(queue.game)}"]`
+        : `[data-queue-action="${CSS.escape(action)}"]`;
+      const replacement = surface.querySelector(selector);
+      if (replacement) replacement.focus({ preventScroll: true });
+      else if (surface.matches('[tabindex]')) surface.focus({ preventScroll: true });
+    }
+  });
+  /* The queues view is rendered whole rather than through surfaces: its rows
+     appear and disappear as sessions open and close, which a per-surface
+     refresh cannot express. Only while it is the visible tab — rebuilding a
+     hidden list on every 30-second tick is work nobody sees. */
+  syncQueueTab();
+  if (state.view === "queues") renderQueues();
+}
+
+function updateQueueTimes() {
+  if (!QUEUES) return;
+  $$('[data-queue-elapsed]').forEach((el) => {
+    const queue = queueFromElement(el);
+    const session = QUEUES.session(queue);
+    if (!session) return;
+    el.textContent = t("queue.elapsed", { n: Math.max(0, Math.floor(QUEUES.elapsed(session) / 60)) });
+  });
+  let freshnessExpired = false;
+  $$('[data-live-age]').forEach((el) => {
+    const live = QUEUES.live(queueFromElement(el));
+    if (live) el.textContent = queueAge(live.age);
+    else freshnessExpired = true;
+  });
+  /* Ticks normally touch text nodes only. Crossing a tier's freshness
+     boundary is the exception: replace the small queue surfaces so the old
+     number becomes unavailable even after polling stops at closing time. */
+  if (freshnessExpired) refreshQueueSurfaces();
+}
+
+function queueClaimLabel(value) {
+  return t(`queue.claim.${value}`);
+}
+
+function queueAheadLabel(value) {
+  return value === 200 ? t("queue.ahead.200") : t("queue.ahead.value", { n: value });
+}
+
+function queueDialogAhead() {
+  return `<div class="queue-dialog-step">
+    <p class="queue-dialog-question">${esc(t("queue.aheadQuestion"))}</p>
+    <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.aheadAria"))}">
+      ${QUEUE_AHEAD.map(
+        (value) => `<button class="queue-choice" type="button" data-queue-dialog-action="ahead" data-value="${value}">${esc(
+          queueAheadLabel(value)
+        )}</button>`
+      ).join("")}
+      <button class="queue-choice" type="button" data-queue-dialog-action="ahead-none">${esc(
+        t("queue.aheadSkip")
+      )}</button>
+    </div>
+  </div>`;
+}
+
+/* No save button of its own: "Done" at the foot of the dialog commits whatever
+   is picked here. It used to have one, and the two buttons read as a choice —
+   the instinct is to reach for the primary action at the bottom, which closed
+   the dialog and dropped the mechanics on the floor. Chips cannot submit on tap
+   the way the claim and ahead rows do, because `meta` is one report per device
+   and queue per day: the type and its batch size have to travel together. */
+function queueDialogDetails() {
+  if (queueDialogState?.metaSaved) return "";
+  const selected = queueDialogState?.qtype || "";
+  const wantsBatch = selected === "group" || selected === "wave";
+  return `<details class="queue-details"${queueDialogState.detailsOpen ? " open" : ""}>
+    <summary>${esc(t("queue.details"))}</summary>
+    <p>${esc(t("queue.detailsHelp"))}</p>
+    <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.typeAria"))}">
+      ${QUEUE_TYPES.map(
+        (value) => `<button class="queue-choice${selected === value ? " active" : ""}" type="button"
+          data-queue-dialog-action="qtype" data-value="${value}" aria-pressed="${selected === value}">${esc(
+            t(`queue.type.${value}`)
+          )}</button>`
+      ).join("")}
+    </div>
+    ${
+      wantsBatch
+        ? `<p class="queue-dialog-question">${esc(t("queue.batchQuestion"))}</p>
+          <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.batchAria"))}">
+            ${QUEUE_BATCHES.map(
+              (value) => `<button class="queue-choice${queueDialogState.batch === value ? " active" : ""}" type="button"
+                data-queue-dialog-action="batch" data-value="${value}" aria-pressed="${
+                  queueDialogState.batch === value
+                }">~${value}</button>`
+            ).join("")}
+          </div>`
+        : ""
+    }
+  </details>`;
+}
+
+function renderQueueDialog() {
+  const dialog = $("#queue-dialog");
+  if (!dialog || !queueDialogState) return;
+  $("#queue-dialog-subject").textContent = queueName(queueDialogState.queue);
+  const flow = $("#queue-dialog-flow");
+  if (queueDialogState.mode === "switch") {
+    const held = queueDialogState.held;
+    const heldQueue = held && QUEUES.queue(held.exhibitor, held.game);
+    const minutes = Math.max(0, Math.floor(QUEUES.elapsed(held) / 60));
+    flow.innerHTML = `<div class="queue-dialog-step">
+      <p class="queue-dialog-question">${esc(t("queue.switchQuestion"))}</p>
+      <p class="queue-switch-held">${esc(
+        t("queue.switchHeld", { queue: heldQueue ? queueName(heldQueue) : held.exhibitor, n: minutes })
+      )}</p>
+      <div class="queue-choice-row">
+        <button class="queue-choice queue-choice-wide" type="button" data-queue-dialog-action="switch">${esc(
+          t("queue.switchConfirm")
+        )}</button>
+        <button class="queue-choice queue-choice-wide" type="button" data-queue-dialog-action="cancel">${esc(
+          t("queue.switchCancel")
+        )}</button>
+      </div>
+    </div>`;
+  } else if (queueDialogState.mode === "join") {
+    flow.innerHTML = `<div class="queue-dialog-step">
+      <p class="queue-dialog-question">${esc(t("queue.claimQuestion"))}</p>
+      <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.claimAria"))}">
+        ${QUEUE_CLAIMS.map(
+          (value) => `<button class="queue-choice" type="button" data-queue-dialog-action="claim" data-value="${value}">${esc(
+            queueClaimLabel(value)
+          )}</button>`
+        ).join("")}
+      </div>
+    </div>`;
+  } else if (queueDialogState.mode === "update") {
+    flow.innerHTML = queueDialogAhead();
+  } else {
+    flow.innerHTML = `${queueDialogState.aheadDone ? "" : queueDialogAhead()}${queueDialogDetails()}`;
+  }
+  flow.querySelectorAll("button").forEach((button) => {
+    button.disabled = button.disabled || queueDialogState.busy;
+  });
+  const details = flow.querySelector(".queue-details");
+  details?.addEventListener("toggle", () => {
+    if (queueDialogState) queueDialogState.detailsOpen = details.open;
+  });
+  $("#queue-dialog-status").textContent = queueDialogState.status || "";
+  $("#queue-dialog-done").hidden = queueDialogState.mode !== "details";
+}
+
+let queueDialogInvoker = null;
+
+function otherOpenSession(queue) {
+  if (!QUEUES || !queue) return null;
+  const here = QUEUES.queueKey(queue.exhibitor, queue.game);
+  return (
+    QUEUES.sessions().find((entry) => QUEUES.queueKey(entry.exhibitor, entry.game) !== here) || null
+  );
+}
+
+function openQueueDialog(queue, mode, invoker = null, held = null) {
+  const dialog = $("#queue-dialog");
+  if (!dialog || !queue) return;
+  queueDialogInvoker = invoker;
+  queueDialogState = {
+    queue,
+    held,
+    mode,
+    busy: false,
+    status: "",
+    aheadDone: false,
+    qtype: "",
+    batch: null,
+    detailsOpen: false,
+    metaSaved: false,
+  };
+  renderQueueDialog();
+  dialog.showModal();
+  requestAnimationFrame(() => dialog.querySelector(".queue-choice")?.focus());
+}
+
+const QUEUE_ERROR_KEYS = {
+  network_unavailable: "queue.offlineNotSent",
+  completion_pending: "queue.errorCompletionPending",
+  deferred_rejected: "queue.errorCompletionExpired",
+  update_too_soon: "queue.errorTooSoon",
+  update_conflict: "queue.errorTooSoon",
+  closure_too_soon: "queue.errorTooSoon",
+  meta_already_reported: "queue.errorMetaReported",
+  no_open_session: "queue.errorExpired",
+  session_already_closed: "queue.errorExpired",
+  writes_paused: "queue.errorPaused",
+  outside_show_hours: "queue.errorHours",
+  event_ended: "queue.errorHours",
+  client_denied: "queue.errorDenied",
+  unknown_queue: "queue.errorUnavailable",
+};
+
+const queueError = (error) => {
+  if (error?.queueOffline) return error.message;
+  if (error?.status === 429 || error?.code === "session_limit" || error?.code === "rate_limited") {
+    return t("queue.errorRate");
+  }
+  const key = QUEUE_ERROR_KEYS[error?.code];
+  return key ? t(key) : t("queue.error", { error: error?.message || t("queue.errorUnknown") });
+};
+
+function requireQueueDelivery(result) {
+  if (!result?.dropped) return result;
+  const error = new Error(t("queue.offlineNotSent"));
+  error.queueOffline = true;
+  throw error;
+}
+
+function focusQueueFallback(queue) {
+  const tracker = queue
+    ? $(`[data-queue-surface="tracker"][data-queue-exhibitor="${CSS.escape(
+        queue.exhibitor
+      )}"][data-queue-game="${CSS.escape(queue.game)}"]`)
+    : null;
+  if (tracker?.getClientRects().length) tracker.focus({ preventScroll: true });
+  else $('.tab[role="tab"][aria-selected="true"]')?.focus({ preventScroll: true });
+}
+
+async function submitQueueDialog(action, value) {
+  if (!queueDialogState || queueDialogState.busy) return;
+  if (action === "qtype") {
+    queueDialogState.qtype = value;
+    queueDialogState.batch = null;
+    renderQueueDialog();
+    $(`#queue-dialog-flow [data-queue-dialog-action="qtype"][data-value="${CSS.escape(value)}"]`)?.focus();
+    return;
+  }
+  if (action === "cancel") {
+    $("#queue-dialog").close();
+    return;
+  }
+  if (action === "switch") {
+    /* Only the confirmation is local — the old session is closed by the join
+       itself, so nothing is lost if they abandon the flow here. */
+    queueDialogState.mode = "join";
+    queueDialogState.held = null;
+    renderQueueDialog();
+    $("#queue-dialog-flow .queue-choice")?.focus();
+    return;
+  }
+  if (action === "batch") {
+    queueDialogState.batch = Number(value);
+    renderQueueDialog();
+    $(`#queue-dialog-flow [data-queue-dialog-action="batch"][data-value="${CSS.escape(String(value))}"]`)?.focus();
+    return;
+  }
+
+  const stateAtSubmit = queueDialogState;
+  stateAtSubmit.busy = true;
+  stateAtSubmit.status = t("queue.sending");
+  renderQueueDialog();
+  let failed = false;
+  try {
+    if (action === "claim") {
+      requireQueueDelivery(await QUEUES.report(stateAtSubmit.queue, "joined", { claimed: Number(value) }));
+      stateAtSubmit.mode = "details";
+      stateAtSubmit.status = t("queue.joinedSuccess");
+    } else if (action === "ahead" || action === "ahead-none") {
+      const body = action === "ahead" ? { ahead: Number(value) } : {};
+      requireQueueDelivery(await QUEUES.report(stateAtSubmit.queue, "update", body));
+      if (stateAtSubmit.mode === "update") {
+        const dialog = $("#queue-dialog");
+        if (queueDialogState === stateAtSubmit && dialog.open) dialog.close();
+        showToast(t("queue.updatedSuccess"));
+        return;
+      }
+      stateAtSubmit.aheadDone = true;
+      stateAtSubmit.status = t("queue.updatedSuccess");
+    } else if (action === "done") {
+      const body = { qtype: stateAtSubmit.qtype };
+      if (stateAtSubmit.batch) body.batch = stateAtSubmit.batch;
+      requireQueueDelivery(await QUEUES.report(stateAtSubmit.queue, "meta", body));
+      stateAtSubmit.metaSaved = true;
+      const dialog = $("#queue-dialog");
+      if (queueDialogState === stateAtSubmit && dialog.open) dialog.close();
+      showToast(t("queue.detailsSaved"));
+      return;
+    }
+  } catch (error) {
+    failed = true;
+    stateAtSubmit.status = queueError(error);
+  } finally {
+    if (queueDialogState === stateAtSubmit) {
+      stateAtSubmit.busy = false;
+      renderQueueDialog();
+      if ($("#queue-dialog").open) {
+        if (failed) {
+          $("#queue-dialog-flow button:not([disabled])")?.focus();
+        } else if (action === "claim") $("#queue-dialog-flow .queue-choice")?.focus();
+        else if (action === "ahead" || action === "ahead-none" || action === "meta") {
+          $("#queue-dialog-done")?.focus();
+        }
+      }
+    }
+  }
+}
+
+async function runQueueAction(queue, action, source = null) {
+  if (!queue) return;
+  const promptSource = Boolean(source?.closest("#queue-prompt"));
+  const actionGroup = action === "entered" || action === "left" ? "outcome" : action;
+  const pendingKey = `${QUEUES.queueKey(queue.exhibitor, queue.game)}:${actionGroup}`;
+  if (pendingQueueActions.has(pendingKey)) return;
+  if (action === "join" || action === "update") {
+    queuePromptKey = null;
+    renderQueuePrompt(false);
+    /* One line at a time. Joining closes whatever else is open — the Worker
+       does that regardless — so say which line is about to end rather than
+       ending it behind their back. */
+    const held = action === "join" ? otherOpenSession(queue) : null;
+    openQueueDialog(queue, held ? "switch" : action, source, held);
+    return;
+  }
+  pendingQueueActions.add(pendingKey);
+  if (source) {
+    source.disabled = true;
+    source.setAttribute("aria-busy", "true");
+  }
+  try {
+    const result = await QUEUES.report(queue, action);
+    queuePromptKey = null;
+    if (action === "entered" && result.queued) showToast(t("queue.enteredDeferred"));
+    else if (action === "left" && result.dropped) showToast(t("queue.leftOffline"));
+    else if (result.dropped) showToast(t("queue.offlineNotSent"));
+    else showToast(t(`queue.${action}Success`));
+    if (action === "closed") QUEUES.refresh({ force: true });
+  } catch (error) {
+    showToast(queueError(error));
+  } finally {
+    pendingQueueActions.delete(pendingKey);
+    if (source?.isConnected) {
+      source.disabled = false;
+      source.removeAttribute("aria-busy");
+    }
+    refreshQueueSurfaces();
+    renderQueuePrompt(true);
+    if (promptSource && $("#queue-prompt")?.hidden) {
+      requestAnimationFrame(() => focusQueueFallback(queue));
+    }
+  }
+}
+
+function renderQueuePrompt(allowNew) {
+  const prompt = $("#queue-prompt");
+  const announcement = $("#queue-prompt-announcement");
+  if (!prompt || !QUEUES?.visible()) {
+    if (prompt) prompt.hidden = true;
+    if (announcement) announcement.textContent = "";
+    document.body.classList.remove("queue-prompt-open");
+    return;
+  }
+  const previousKey = queuePromptKey;
+  let session = queuePromptKey
+    ? QUEUES.sessions().find((entry) => QUEUES.queueKey(entry.exhibitor, entry.game) === queuePromptKey)
+    : null;
+  if (!session && allowNew) {
+    session = QUEUES.promptCandidate();
+    queuePromptKey = session ? QUEUES.queueKey(session.exhibitor, session.game) : null;
+  }
+  const queue = session ? QUEUES.queue(session.exhibitor, session.game) : null;
+  if (!session || !queue) {
+    prompt.hidden = true;
+    if (announcement) announcement.textContent = "";
+    document.body.classList.remove("queue-prompt-open");
+    return;
+  }
+  const minutes = Math.max(0, Math.floor(QUEUES.elapsed(session) / 60));
+  const message = t("queue.prompt", { queue: queueName(queue), n: minutes });
+  $("#queue-prompt-text").textContent = message;
+  if (allowNew && queuePromptKey !== previousKey && announcement) {
+    announcement.textContent = `${t("queue.promptTitle")} ${message}`;
+  }
+  const update = $("#queue-prompt-update");
+  update.hidden = !QUEUES.canReport();
+  for (const [id, action] of [
+    ["#queue-prompt-update", "update"],
+    ["#queue-prompt-entered", "entered"],
+    ["#queue-prompt-left", "left"],
+  ]) {
+    const button = $(id);
+    button.dataset.queueExhibitor = queue.exhibitor;
+    button.dataset.queueGame = queue.game;
+    button.setAttribute("aria-label", t(`queue.action.${action}Aria`, { queue: queueName(queue) }));
+  }
+  prompt.hidden = false;
+  document.body.classList.add("queue-prompt-open");
+}
+
+function bindQueueControls() {
+  if (!QUEUES || !$("#queue-dialog")) return;
+
+  /* No debounce, unlike the exhibitor search: that one rebuilds the grid and
+     both directory lists, this one rebuilds at most forty rows. */
+  const search = $("#queues-search");
+  search?.addEventListener("input", () => {
+    queueQuery = search.value.trim();
+    renderQueuesResults();
+  });
+  /* The scope chip is replaced on every render, so the listener lives on its
+     container rather than the button. */
+  $("#queues-scope")?.addEventListener("click", (event) => {
+    if (!event.target.closest("#queues-scope-clear")) return;
+    queueScopeEx = null;
+    renderQueuesScope();
+    renderQueuesResults();
+    search?.focus();
+  });
+
+  const dialog = $("#queue-dialog");
+  bindDialogDismiss(dialog, $("#close-queue"));
+  dialog.addEventListener("close", () => {
+    const invoker = queueDialogInvoker;
+    const queue = queueDialogState?.queue;
+    queueDialogState = null;
+    queueDialogInvoker = null;
+    if (invoker?.isConnected && !invoker.closest("[hidden]")) {
+      invoker.focus({ preventScroll: true });
+    }
+    else if (queue) focusQueueFallback(queue);
+  });
+  $("#queue-dialog-done").addEventListener("click", () => {
+    /* Only a round trip when there is something to send. With no mechanics
+       picked this stays the plain dismiss it has always been. */
+    if (queueDialogState?.qtype && !queueDialogState.metaSaved) submitQueueDialog("done");
+    else dialog.close();
+  });
+  $("#queue-dialog-flow").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-queue-dialog-action]");
+    if (button) submitQueueDialog(button.dataset.queueDialogAction, button.dataset.value);
+  });
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-queue-action]");
+    if (!button || button.closest("#queue-prompt")) return;
+    runQueueAction(queueFromElement(button), button.dataset.queueAction, button);
+  });
+  for (const [id, action] of [
+    ["#queue-prompt-update", "update"],
+    ["#queue-prompt-entered", "entered"],
+    ["#queue-prompt-left", "left"],
+  ]) {
+    $(id).addEventListener("click", (event) => runQueueAction(queueFromElement(event.currentTarget), action, event.currentTarget));
+  }
+  window.addEventListener("gcqueueschange", (event) => {
+    if (event.detail?.reason === "tick") {
+      if (`${QUEUES.visible()}:${QUEUES.canReport()}` !== queueSurfaceGate) refreshQueueSurfaces();
+      updateQueueTimes();
+      renderQueuePrompt(false);
+      offerMove();
+      return;
+    }
+    refreshQueueSurfaces();
+    updateQueueTimes();
+    renderQueuePrompt(["start", "focus", "storage"].includes(event.detail?.reason));
+    offerMove();
+    if (event.detail?.reason === "replay" && event.detail.rejected?.length) {
+      showToast(queueError(event.detail.rejected[0]));
+    }
+  });
+  renderQueuePrompt(true);
+}
+
 /* ---------- misc ---------- */
 
 const toast = $("#toast");
@@ -5451,6 +6397,7 @@ const viewRender = {
   event: renderEvent,
   updates: renderChangelog,
   today: renderToday,
+  queues: renderQueues,
 };
 
 /* Re-render the views a change reaches, but pay for the one on screen only.
@@ -5626,6 +6573,12 @@ function showView(route, { push = true } = {}) {
      against a shell one version older that has no #view-today at all, and the
      activation below would throw on it (see the note in renderPlan). */
   if (name === "today" && !($("#view-today") && state.event && showDay())) name = "planner";
+  /* #queues is live in the same way, and guarded here for the same two
+     reasons: the tab does not exist off-show, and an older cached shell has no
+     #view-queues for the activation below to find. It falls back to the
+     exhibitor list rather than the planner — the queues view is a lens on the
+     booths, not on the plan. */
+  if (name === "queues" && !($("#view-queues") && QUEUES?.visible())) name = VIEWS[0];
   state.view = name;
   /* A view whose boot render is still queued gets it now — opening the tab
      outruns the idle slot it was waiting for. */
@@ -5654,6 +6607,10 @@ function showView(route, { push = true } = {}) {
   $$(".view").forEach((v) => v.classList.remove("active"));
   $(`#view-${name}`).classList.add("active");
   if (focusedIn && !focusedIn.classList.contains("active")) focused.blur();
+  /* Like Today, and unlike the standing views, this one is a snapshot of live
+     state rather than of the dataset: sessions opened and figures arrived
+     while it was hidden, and the idle render queue only ever fires once. */
+  if (name === "queues") renderQueues();
   if (push) syncHash();
 }
 
@@ -5924,6 +6881,7 @@ function bindControls() {
   bindSiteShare();
   bindBoothShare();
   bindSourcesDialog();
+  bindQueueControls();
   /* One delegated listener covers every +, ✓, day, share and sources button
      in every view, including the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
@@ -6083,6 +7041,9 @@ function bindControls() {
     const landing = parseHash();
     showView(incoming ? SAVED_ROUTE : landing.route);
     if (incoming) offerIncomingWhenReady(incoming);
+    /* `?ex=` means "this booth" on both views, and each reads it its own way:
+       the grid scrolls to the card, the queues view narrows to its lines. */
+    else if (landing.route === "queues") applyQueueScope(landing.params.get("ex"));
     else focusExhibitor(landing.params.get("ex"));
   });
 }
@@ -6112,6 +7073,9 @@ async function main() {
      waits for loadData: it is validated against the show days, which only
      exist once data/event.json is in (see loadItinerary). */
   state.itinerary = loadItinerary();
+  /* Same reason: the queue vocabulary is derived from the exhibitors, and the
+     show-day gate from event.json. */
+  QUEUES?.configure({ event: state.event, exhibitors: state.exhibitors });
   /* After the itinerary, so a day assignment stored under the old key is
      still there to be carried across — and after loadData, which brings the
      cards those keys migrate onto. */
@@ -6157,7 +7121,14 @@ async function main() {
   delete document.documentElement.dataset.booting;
   for (const view of VIEWS) if (view !== first) queueViewRender(view, viewRender[view]);
   showView(route, { push: false });
-  if (!incoming) focusExhibitor(landing.params.get("ex"));
+  syncQueueTab();
+  /* Live data is deliberately last and unawaited: the static guide has
+     already rendered, so a dead hall connection can never hold first paint. */
+  QUEUES?.start();
+  if (!incoming) {
+    if (route === "queues") applyQueueScope(landing.params.get("ex"));
+    else focusExhibitor(landing.params.get("ex"));
+  }
   if (offer) offerIncomingWhenReady(offer);
   /* Last, so an import prompt is the thing on screen when both apply — that one
      is priority anyway, and it carries the only Add/Undo the visitor gets. */

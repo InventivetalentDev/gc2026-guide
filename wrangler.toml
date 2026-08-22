@@ -1,7 +1,12 @@
-# Cloudflare Workers deployment for the gamescom 2026 guide.
+# Cloudflare Workers deployment for the gamescom 2026 guide — the site.
 #
-# The site is static, so this is an assets-only Worker: no `main` script, just a
-# directory of files served from Cloudflare's edge.
+# Assets only: a directory of static files served from the edge, with no Worker
+# script and no bindings of any kind. The live queue API is a second Worker
+# (wrangler-api.toml) that claims `/api/*` on these same hostnames with routes,
+# which are matched ahead of the Custom Domains below. Same origin, no CORS.
+#
+# Nothing here can reach a database or a secret, which is what makes a pull
+# request preview of this Worker harmless — see the note on preview_urls.
 #
 # That directory is dist/, staged from the repo root by tools/build-site.sh —
 # run it before deploying. The site still has no build step; dist/ is a copy
@@ -11,7 +16,7 @@
 # The full setup and domain-cutover runbook is in docs/DEPLOYING.md.
 
 name = "gc2026-guide"
-compatibility_date = "2026-08-14"
+compatibility_date = "2026-08-17"
 
 # gc2026-guide.<subdomain>.workers.dev — the URL a deploy can be checked on
 # before any domain points at it, and the one that still answers if a custom
@@ -23,9 +28,13 @@ workers_dev = true
 # looked at: `wrangler versions upload` gives a PR a version of this same
 # Worker at pr-<n>-gc2026-guide.<subdomain>.workers.dev, with production and
 # its hostnames untouched — a version is not a deployment, and an upload does
-# not apply triggers. Left unset this follows workers_dev, so it is pinned
-# true here: turning workers_dev off (above) should not quietly take the
-# preview system down with it.
+# not apply triggers. That is the whole story only because this Worker has no
+# bindings: a version of it inherits nothing, so a preview is the static site
+# and nothing else. (`/api/*` does not answer on a preview, since routes are
+# a property of zones; the queue tab degrades to its offline notice there.
+# The API previews separately — wrangler-api.toml.) Left unset this follows
+# workers_dev, so it is pinned true: turning workers_dev off (above) should
+# not quietly take the preview system down with it.
 preview_urls = true
 
 [assets]
@@ -58,6 +67,12 @@ html_handling = "none"
 # exact file match is answered with index.html, so "/" serves the guide and an
 # unknown path renders the app rather than a bare 404.
 not_found_handling = "single-page-application"
+
+# Kept from before the split. It is not a binding and grants nothing — the
+# site Worker still has request metrics worth having, and dropping it would
+# have been a silent change to monitoring rather than part of the split.
+[observability]
+enabled = true
 
 # The home address. Everything the guide says about itself — the canonical
 # links, the share links, content@hallgui.de — points here. It has no year in

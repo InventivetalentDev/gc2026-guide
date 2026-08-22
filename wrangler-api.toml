@@ -1,0 +1,172 @@
+# Cloudflare Worker for the live queue API — the guide's only server.
+#
+# Deployed separately from the site, which is an assets-only Worker with no
+# script (wrangler.toml). They meet at the edge rather than inside one Worker:
+# the routes below claim `/api/*` on each hostname the guide answers on, and a
+# route beats the site's Custom Domain for the paths it matches. Same origin,
+# so the client still calls `/api/…` relative and there is no CORS anywhere.
+#
+# Why they are apart at all: .github/workflows/cloudflare-preview.yml uploads
+# every pull request as a *version* of a Worker, and a version inherits that
+# Worker's bindings and secrets. While the API lived in the site Worker, that
+# meant a PR preview ran unreviewed code against the production database with
+# the real admin token. Now the site Worker has no database to inherit, and
+# this one is previewed through its staging environment (see below), so no
+# preview can reach the show's data at all. Configuration rather than a guard.
+#
+# The full runbook is in docs/DEPLOYING.md.
+
+name = "gc2026-queues-api"
+main = "worker/index.js"
+# Matches the site's. Not merely tidiness: the workerd bundled with the
+# pinned Wrangler trails the calendar, and a newer date here makes
+# `wrangler dev` refuse to start (see the same note in vitest.config.mjs).
+compatibility_date = "2026-08-17"
+compatibility_flags = ["nodejs_compat"]
+
+# The API's own address, for checking a deploy before the routes are believed
+# and for reaching it if a zone is mid-move.
+workers_dev = true
+
+# Pull request previews of this Worker go to the staging environment, never
+# here (see the preview workflow). Pinned for the same reason as the site's:
+# left unset it follows workers_dev, so turning that off should not silently
+# take previews with it.
+preview_urls = true
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "QUEUE_DB"
+database_name = "gc2026-queues"
+# Created 2026-08-22, weur. CI refuses to migrate a placeholder, so this being
+# a real id is also what turns the production API deploy on.
+database_id = "424b7933-9013-471a-8bae-e8927f406ede"
+migrations_dir = "worker/migrations"
+
+# Hourly retention sweep. Rows live 23 hours, so an hourly cron keeps the
+# 24-hour promise on the privacy page with an hour to spare.
+[triggers]
+crons = ["0 * * * *"]
+
+# Deliberately loose: venue Wi-Fi and mobile carrier NATs put thousands of
+# legitimate visitors behind a handful of addresses. The per-device throttles
+# in the Worker do the fine-grained work; this only catches scripted floods.
+[[ratelimits]]
+name = "IP_WRITE_LIMITER"
+namespace_id = "2026081701"
+
+[ratelimits.simple]
+limit = 20
+period = 60
+
+[[ratelimits]]
+name = "ADMIN_AUTH_LIMITER"
+namespace_id = "2026081702"
+
+[ratelimits.simple]
+limit = 60
+period = 60
+
+# ---------------------------------------------------------------------------
+# Routes: `/api/*` on every hostname that serves the guide.
+#
+# These are routes, not Custom Domains, and that is the whole mechanism. The
+# site Worker holds each of these hostnames as a Custom Domain; a route is
+# matched first for the paths it covers, so `hallgui.de/api/queue/live` reaches
+# this Worker while `hallgui.de/` and everything else reaches the site.
+#
+# Every hostname needs its own entry. The client asks for `/api/…` relative to
+# wherever it was loaded from, so a hostname without a route here is a hostname
+# where reporting quietly fails — including the three that are still draining.
+# ---------------------------------------------------------------------------
+
+[[routes]]
+pattern = "hallgui.de/api/*"
+zone_name = "hallgui.de"
+
+[[routes]]
+pattern = "gamescom.guide/api/*"
+zone_name = "gamescom.guide"
+
+[[routes]]
+pattern = "gc26.guide/api/*"
+zone_name = "gc26.guide"
+
+[[routes]]
+pattern = "gc2026.inventivetalent.org/api/*"
+zone_name = "inventivetalent.org"
+
+# ---------------------------------------------------------------------------
+# Staging: the proving ground, and the home of pull request previews.
+#
+# A separate Worker with its own database, its own admin secret and its own
+# rate-limit namespaces. It takes no routes — it is reached on its workers.dev
+# address — so it cannot answer for any hostname the public uses.
+#
+# `wrangler versions upload --env staging` is what the preview workflow runs,
+# which makes a PR a version of *this* Worker. The bindings a preview inherits
+# are therefore the staging ones, by construction rather than by a check.
+# ---------------------------------------------------------------------------
+
+[env.staging]
+name = "gc2026-queues-api-staging"
+workers_dev = true
+preview_urls = true
+routes = []
+
+[env.staging.observability]
+enabled = true
+
+# Marks this Worker the proving ground, which turns on two things that are
+# never wanted apart and must never be true of production:
+#
+#   1. The show calendar is held open. Otherwise staging answers 403 to every
+#      live read and report until Aug 26 and 410 after Aug 30 — usable on five
+#      days of the year, which is no use for rehearsing anything beforehand.
+#      It relaxes the calendar only; the clock stays real, so elapsed waits,
+#      the two-minute throttle and retention behave exactly as they will during
+#      the show. (QUEUE_TEST_NOW, the local development fixture, must never be
+#      set on a deployed Worker: its anchor is per-isolate, so isolates would
+#      disagree about the time and write sessions contradicting each other.)
+#
+#   2. Pull request preview sites on *.workers.dev may call /api/queue/*
+#      cross-origin. A preview of the site has no API otherwise — production's
+#      same-origin arrangement is a zone route, and workers.dev is not a zone —
+#      which made every preview of a queue change unreviewable. /api/admin is
+#      excluded; the console is same-origin on this Worker and needs no grant.
+#
+# A `vars` entry rather than a secret, deliberately: which environments are
+# proving grounds is then reviewable in this file, and production not being one
+# is something you can see rather than something you have to trust. CI asserts
+# the production bundle carries no such var.
+[env.staging.vars]
+QUEUE_STAGING = "proving-ground"
+
+[[env.staging.d1_databases]]
+binding = "QUEUE_DB"
+database_name = "gc2026-queues-staging"
+# Created 2026-08-22, weur. Deliberately not the production id above: a phone
+# test that purges a queue must not purge the live show.
+database_id = "1cfa05b9-ac73-4114-a6a0-f5a74948d864"
+migrations_dir = "worker/migrations"
+
+[env.staging.triggers]
+crons = ["0 * * * *"]
+
+[[env.staging.ratelimits]]
+name = "IP_WRITE_LIMITER"
+namespace_id = "2026081711"
+
+[env.staging.ratelimits.simple]
+limit = 20
+period = 60
+
+[[env.staging.ratelimits]]
+name = "ADMIN_AUTH_LIMITER"
+namespace_id = "2026081712"
+
+[env.staging.ratelimits.simple]
+limit = 60
+period = 60

@@ -1,0 +1,9 @@
+# Copy to .dev.vars for local Worker development only. .dev.vars is ignored.
+# Production and staging tokens must be set with `wrangler secret put`.
+ADMIN_TOKEN=local-development-only
+
+# Start at Aug 26, 2026 13:30 in Europe/Berlin, then advance with real elapsed
+# time. This lets the gated flow and two-minute throttle be exercised before
+# the show; the Worker never accepts a request-supplied clock.
+QUEUE_TEST_CLOCK_ENABLED=local-development-only
+QUEUE_TEST_NOW=2026-08-26T11:30:00Z

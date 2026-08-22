@@ -33,6 +33,11 @@
    the new address, and the one nudge they were owed does not fire until some
    later load. The bump is what makes it the first one.
 
+   v9 adds live queues. Its /api/ bypass has to arrive with the matching
+   client: an older worker would otherwise put a queue response into the
+   stale-while-revalidate shell cache, and an admin navigation could replace
+   the guide's own "./" fallback.
+
    So the rule is narrower than "bump on every deploy": bump when a shell file
    has to be believed rather than merely eventually refreshed.
 
@@ -99,8 +104,15 @@
    with no column to sit in. The dialog is the one half that fails quietly —
    shareButton() renders nothing when the sheet is missing, so that pairing
    is a card with two rows rather than a row that opens nothing — and that
-   guard is what makes this a layout bump rather than a dead-control one. */
-const VERSION = "v14";
+   guard is what makes this a layout bump rather than a dead-control one.
+
+   v15 is live queues: a sixth tab and section in index.html, js/queue.js
+   beside app.js, and — the load-bearing one — the /api/ bypass in this file.
+   An older worker has no bypass, so it would put a live queue response into
+   the stale-while-revalidate shell cache and answer the next reader with a
+   minute-old wait as though it were current; an admin navigation would
+   replace the guide's own "./" fallback outright. */
+const VERSION = "v15";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
@@ -124,6 +136,7 @@ const SHELL = [
   "js/i18n/en.js",
   "js/i18n/de.js",
   "js/marks.js",
+  "js/queue.js",
   "js/app.js",
   "js/map.js",
   "js/qr.js",
@@ -356,6 +369,12 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  /* Live and admin responses own their cache contract at the Worker. They
+     must never enter Cache Storage here — especially admin navigations,
+     which pageKey() would otherwise classify as the guide shell. Returning
+     without respondWith() lets the browser go straight to the network. */
+  if (url.pathname === "/api" || url.pathname.startsWith("/api/")) return;
 
   if (request.mode === "navigate") {
     event.respondWith(handleNavigation(request));
