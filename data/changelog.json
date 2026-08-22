@@ -259,14 +259,16 @@
     "date": "2026-08-15",
     "revision": 23,
     "changes": [
-      { "kind": "feature", "text": "New: trade exhibitors. Turn on \"I have a trade badge\" and the ~820 business-hall booths become saveable, plannable stops — with their own list, product-group filters, curated cards and map coverage. Off by default; a consumer ticket does not open halls 2–4." },
-      { "kind": "feature", "text": "The switch is a Badge row at the top of the filters — Consumer or Trade & media — and it is repeated under \"Your badge\" in Event info. Same control both ways round, so turning it off is as quick as turning it on." },
-      { "kind": "feature", "text": "The hall map carries the switch too, in the purple business-area banner, and in the stand details when you tap a business booth the guide is not yet showing you. Fix: business-hall booths no longer stay on the map after trade exhibitors are switched back off." },
-      { "kind": "content", "text": "52 curated business-area cards. The B2B names first, because they were missing from the guide entirely: Cloudflare, AWS, servers.com, G-Core, Unity, CurseForge & Overwolf, Xsolla, Keywords, Sumo Digital, Virtuos, Denuvo, Sensor Tower, IGN & Humble Bundle, Fandom, Reddit, Opera, Owlchemy, Poki, Blacknut, Kakao Games, NVIDIA, the IGDA and Women in Games International." },
+      { "kind": "feature", "text": "New: trade exhibitors. Turn on “I have a trade badge” and the ~820 business-hall booths become saveable, plannable stops. Off by default — a consumer ticket does not open halls 2–4." },
+      { "kind": "feature", "text": "The switch is a Badge row at the top of the filters — Consumer or Trade & media — and it is repeated under “Your badge” in Event info. Same control both ways round, so turning it off is as quick as turning it on." },
+      { "kind": "feature", "text": "It is on the hall map too, in the business-area banner and in a business booth's details. Fix: those booths no longer stay on the map after the switch goes off." },
+      { "kind": "content", "text": "52 curated business-area cards, starting with the B2B names the guide was missing entirely: Cloudflare, AWS, servers.com, G-Core, Unity, CurseForge & Overwolf, Xsolla, Keywords, Sumo Digital, Virtuos." },
+      { "kind": "content", "text": "Also Denuvo, Sensor Tower, IGN & Humble Bundle, Fandom, Reddit, Opera, Owlchemy, Poki, Blacknut, Kakao Games, NVIDIA, the IGDA and Women in Games International." },
       { "kind": "content", "text": "Plus the national pavilions (Spain/ICEX, GamingMalta, Denmark/NIMBI, the UK collective, the Nordic & Baltic stand, Games Hubs Hessen)." },
-      { "kind": "feature", "text": "Exhibitors with a booth on both sides of the show — Capcom, Ubisoft, Xbox, Nintendo, Bandai Namco, CD Projekt, KRAFTON, Atari, HoYoverse, Focus, GIANTS, Razer, Corsair, Samsung, Raw Fury, Coffee Stain, Bloober, SCS, Wargaming and more — now have one card you can turn over. Tap the small purple square in the corner of the hall plate and the card switches to its business booth; tap the orange one to switch back." },
+      { "kind": "feature", "text": "Exhibitors with a booth on both sides of the show now have one card you can turn over: tap the purple square in the hall plate for the business booth, the orange one to go back." },
+      { "kind": "feature", "text": "That covers Capcom, Ubisoft, Xbox, Nintendo, Bandai Namco, CD Projekt, KRAFTON, Atari, HoYoverse, Focus, GIANTS, Razer, Corsair, Samsung, Raw Fury, Coffee Stain, Bloober, SCS, Wargaming and more." },
       { "kind": "feature", "text": "Purple means business area throughout, taken from the official hall plan's own colour for those halls — the same one the map washes them with." },
-      { "kind": "feature", "text": "The two booths stay separate stops in your plan, because they keep different hours: the business area shuts after Friday while the consumer halls run all weekend. Assign a business-hall stop to Saturday or Sunday and the planner warns you — on the row, in the day header, and in the calendar export." },
+      { "kind": "feature", "text": "The two booths stay separate stops in your plan, because the business area shuts after Friday while the consumer halls run all weekend. Put a business-hall stop on Saturday or Sunday and the planner warns you." },
       { "kind": "content", "text": "Every trade booth says whether you can walk up or need an appointment. Almost all of them are walk-up; only about twenty of the 821 are closed meeting compounds." },
       { "kind": "feature", "text": "Exhibitor rows now carry the official product-group tags (Development, Service firms, eSports…), filterable in the trade list." },
       { "kind": "content", "text": "Hall map: the business halls fill in. Hall 2.1 went from almost no coverage to 60 of its 78 stands named, and tapping one shows the exhibitor, its country and its product groups." },
@@ -277,8 +279,8 @@
     "date": "2026-08-14",
     "revision": 22,
     "changes": [
-      { "kind": "content", "text": "The business halls are on the map. Halls 2.1, 2.2, 3.2, 4.1 and 4.2 are drawn booth by booth like the rest, which is 366 more stands and most of the Full directory — so a row in hall 3.2 now opens on its stand instead of stopping at plain text. They open under a banner saying what they are: trade and media badge only, and closed after Friday. A consumer ticket still does not open that door; the map just stops pretending the hall isn't there." },
-      { "kind": "feature", "text": "Halls are colour-coded by area, in the same colours the official plan uses: cyan for the entertainment halls your ticket opens, purple for the trade-only business ones. The hall row groups them under those colours and the hall's own structure is washed in it, so it takes no reading to tell which kind of hall you are in. Saved booths are still orange over everything." },
+      { "kind": "content", "text": "The business halls are on the map. Halls 2.1, 2.2, 3.2, 4.1 and 4.2 are drawn booth by booth like the rest — 366 more stands — under a banner saying what they are: trade and media badge only, closed after Friday." },
+      { "kind": "feature", "text": "Halls are colour-coded by area, in the official plan's own colours: cyan for the entertainment halls your ticket opens, purple for the trade-only business ones. Saved booths stay orange over both." },
       { "kind": "content", "text": "Booth outlines were re-checked against Koelnmesse's data while adding them: the retro block at A-020 in hall 10.2 now names the exhibitors on both its levels, five of which were missing." }
     ]
   },
@@ -286,32 +288,33 @@
     "date": "2026-08-14",
     "revision": 21,
     "changes": [
-      { "kind": "feature", "text": "Share list now asks who the link is for. Someone else gets your saved list alone — your progress through it is not theirs. Another of my devices brings your day plan and played marks along too, and on arrival offers to replace that device's list instead of adding to it, so removing a booth or moving it to another day finally carries across your own devices. The prompt counts what a replace would remove before anything is touched, and Undo puts all of it back." },
-      { "kind": "feature", "text": "Shared links are much shorter, which brings the QR code back: a 30-stop list had quietly outgrown it as the guide's data doubled, and now fits again with its whole day plan riding along. Links shared before this change keep working." }
+      { "kind": "feature", "text": "Share list now asks who the link is for. Someone else gets your saved list alone — your progress through it is not theirs." },
+      { "kind": "feature", "text": "Another of your own devices gets the day plan and played marks too, and is offered a replace rather than a merge, so removals and moved days finally carry across. Undo puts it all back." },
+      { "kind": "feature", "text": "Shared links are much shorter, which brings the QR code back: a 30-stop list had outgrown it, and fits again now with its day plan riding along. Older links keep working." }
     ]
   },
   {
     "date": "2026-08-14",
     "revision": 20,
     "changes": [
-      { "kind": "content", "text": "Booth numbers for four booths that had none: SEGA / Atlus (Hall 7.1, A031 and A041/B040), Square Enix (8.1 A021), Plaion (9.1 B030/C031) and Embark Studios (6.1 B041/A040 and B051/A050). All four were on Koelnmesse's own hall plan the whole time." },
-      { "kind": "content", "text": "Exhibitors with more than one stand now list all of them. Ubisoft has a second, smaller booth across the aisle in Hall 6.1 (B020); Nintendo holds four stands in 9.1, LEGO three, and Headis, Gryphline and KRAFTON two each. Tapping any of them on the map now names the exhibitor instead of saying the stand is not covered." },
-      { "kind": "fix", "text": "Fixed: tapping a booth with an upper floor reported \"no exhibitor filed for this stand\" — the Indie Arena Booth, Razer, Bilibili, Tencent, Gryphline, Infold, PXN, 8BitDo and Eclipse Glow Games, plus 25 booths the guide has no card for. Koelnmesse files the gallery as a second stand on the same outline, and that empty upper one was catching every tap. The two are now one booth, and its sheet names both stand numbers." }
+      { "kind": "content", "text": "Booth numbers for four booths that had none: SEGA / Atlus (7.1 A031, A041/B040), Square Enix (8.1 A021), Plaion (9.1 B030/C031) and Embark Studios (6.1 B041/A040, B051/A050)." },
+      { "kind": "content", "text": "Exhibitors with more than one stand now list all of them: Ubisoft has a second Hall 6.1 booth (B020), Nintendo holds four stands in 9.1, LEGO three, and Headis, Gryphline and KRAFTON two each." },
+      { "kind": "fix", "text": "Fixed: tapping a booth with an upper floor said “no exhibitor filed for this stand” — the Indie Arena Booth, Razer, Bilibili, Tencent and Gryphline among them. The two levels are one booth now, naming both stand numbers." }
     ]
   },
   {
     "date": "2026-08-14",
     "revision": 19,
     "changes": [
-      { "kind": "feature", "text": "Every booth number in the Full directory now opens the hall map on that exact stand — so a studio with no card of its own is one tap from knowing where it stands, not just which hall it is in. Booths in the business halls stay plain text; a consumer ticket does not open those doors." },
-      { "kind": "feature", "text": "The halls and booth numbers named in Your plan, Queue priority and the 18+ wristband list are links to the map too. Tapping \"Hall 9.1\" on a stop takes you to that booth, not just that hall — and a game shown at two booths links to both. In the by-hall walking order, the header still opens the whole hall and each stop's booth number opens its stand." }
+      { "kind": "feature", "text": "Every booth number in the Full directory now opens the hall map on that exact stand, so a studio with no card of its own is one tap from knowing where it stands. Business-hall booths stay plain text." },
+      { "kind": "feature", "text": "Halls and booth numbers in Your plan, Queue priority and the 18+ wristband list are links to the map too: tapping “Hall 9.1” on a stop takes you to that booth, not just that hall." }
     ]
   },
   {
     "date": "2026-08-14",
     "revision": 18,
     "changes": [
-      { "kind": "feature", "text": "New: a Hall map. Every hall you can visit is drawn booth by booth, with names on the booths instead of the blank white boxes the official plan gives you — and your saved booths lit up in orange so you can see your day laid out in the hall." },
+      { "kind": "feature", "text": "New: a Hall map. Every hall you can visit is drawn booth by booth, with names on the booths rather than the blank boxes the official plan gives you, and your saved booths lit orange." },
       { "kind": "feature", "text": "Tap the hall plate on any exhibitor card to jump straight to that booth on the map; tap a booth on the map to see its lineup, queue forecast and save it. Saving works the same in both directions." },
       { "kind": "feature", "text": "The map works offline like the rest of the guide — all seven halls are stored on your device, which is the point when reception dies inside Koelnmesse." },
       { "kind": "content", "text": "Booth outlines come from Koelnmesse's official hall-plan data, credited and dated at the foot of the map." }
@@ -321,12 +324,14 @@
     "date": "2026-08-13",
     "revision": 17,
     "changes": [
-      { "kind": "content", "text": "22 new booths from a full sweep of Hall 10 — the half of the show that never makes the news. MOZA Racing runs six sim-racing and flight rigs at 10.1 A022 and takes free bookings online before the show, which is the difference between sitting down and watching." },
-      { "kind": "content", "text": "New category, Experiences & Activities, for booths where the draw is something you do rather than a game you demo: MOZA's rigs, Kawasaki's rideable CORLEO robot at 10.1 D010, XelerateVR, an RC drift track and Headis in 10.2, and the gamescom LAN area." },
-      { "kind": "content", "text": "Hall 10.1's retro corner is now covered properly: the revived Commodore (C059/B050, showing the C64 Ultimate), MicroProse (A060/B061) and Embracer Freemode at F061, whose RedOctane team is behind the new Guitar Hero-style Stage Tour." },
-      { "kind": "content", "text": "Hardware row added: Corsair, PNY, Thermaltake, ASRock, PXN's wheels, 8BitDo in 10.2, and the genuinely strange hi-fi corner at A070 where konsolenfan.de hosts Yamaha, Genelec, ELAC and Canton. Logitech G's second stand now carries its booth number (10.1 E074/F077)." },
+      { "kind": "content", "text": "22 new booths from a full sweep of Hall 10 — the half of the show that never makes the news. MOZA Racing runs six sim-racing and flight rigs at 10.1 A022, bookable free online before the show." },
+      { "kind": "content", "text": "New category, Experiences & Activities, for booths where the draw is something you do rather than a game you demo: MOZA's rigs, Kawasaki's CORLEO robot (10.1 D010), XelerateVR, an RC drift track and Headis." },
+      { "kind": "content", "text": "Hall 10.1's retro corner is covered properly now: the revived Commodore (C059/B050, showing the C64 Ultimate), MicroProse (A060/B061) and Embracer Freemode (F061)." },
+      { "kind": "content", "text": "Hardware row added: Corsair, PNY, Thermaltake, ASRock, PXN's wheels and 8BitDo, plus the hi-fi corner at A070 where konsolenfan.de hosts Yamaha, Genelec, ELAC and Canton." },
+      { "kind": "content", "text": "Logitech G's second stand now carries its booth number: 10.1 E074/F077." },
       { "kind": "content", "text": "Also new: Raw Fury, RocketWerkz, Frozen District, AREA 35, and A MAZE.'s experimental-games PlayGround in 10.2. A gamescom Campus entry explains that about half of Hall 10.1 is recruiting and education, not demos." },
-      { "kind": "feature", "text": "New Full directory section under the exhibitor grid: all 1,630 booths registered with gamescom, searchable by name, hall and booth number. Indie Arena Booth and other shared stands name the booth their studios sit on, so a studio you can't find in the guide is still findable on the floor. It only downloads when you open it." }
+      { "kind": "feature", "text": "New Full directory section under the exhibitor grid: all 1,630 booths registered with gamescom, searchable by name, hall and booth number. It only downloads when you open it." },
+      { "kind": "feature", "text": "Shared stands like the Indie Arena Booth name the booth their studios sit on, so a studio with no card of its own is still findable on the floor." }
     ]
   },
   {
@@ -334,7 +339,7 @@
     "revision": 16,
     "changes": [
       { "kind": "feature", "text": "New: every exhibitor card now shows where its information came from — the ⓘ marker next to the official-page link opens the list of sources behind that booth's location, lineup and queue call." },
-      { "kind": "feature", "text": "Each list says when the entry was last checked, so a booth still marked \"unconf.\" can be verified at the source before you plan a day around it." },
+      { "kind": "feature", "text": "Each list says when the entry was last checked, so a booth still marked “unconf.” can be verified at the source before you plan a day around it." },
       { "kind": "feature", "text": "The Event info tab carries the same marker for the dates, hours, ticket prices and hall areas on that page." }
     ]
   },
@@ -344,7 +349,7 @@
     "changes": [
       { "kind": "feature", "text": "The planner's itinerary and Route by hall are now one section — Your plan: the same saved stops, arranged by day or by hall with one tap instead of two near-identical lists stacked on the page." },
       { "kind": "feature", "text": "The hall view now reads your day assignments: every stop shows which day it's planned for, and once anything is placed, day chips filter the route to a single day — your Thursday, in walking order." },
-      { "kind": "feature", "text": "A saved game keeps listing every booth running it in the single-day route, so \"pick the shorter queue\" works inside a day plan too." },
+      { "kind": "feature", "text": "A saved game keeps listing every booth running it in the single-day route, so “pick the shorter queue” works inside a day plan too." },
       { "kind": "feature", "text": "Nothing about your data moved: saved list, day assignments and played marks are untouched, and the arrangement you pick is remembered on this device like the other view preferences." }
     ]
   },
@@ -364,7 +369,7 @@
     "revision": 13,
     "changes": [
       { "kind": "content", "text": "Focus Entertainment's Hall 6.1 booth (B060/C061) is confirmed on Focus' own gamescom exhibitor profile, not just third-party trackers — no need to double-check it before you go." },
-      { "kind": "content", "text": "Grinding Gear Games' Path of Exile 2 booth (Hall 6.1, B031) is likewise confirmed on GGG's own gamescom profile; GGG also streams a new content reveal on gamescom's official Twitch channel Aug 25, 20:00 CEST, ahead of the show-floor demo." }
+      { "kind": "content", "text": "Grinding Gear Games' Path of Exile 2 booth (Hall 6.1, B031) is confirmed on GGG's own gamescom profile. GGG also streams a content reveal on gamescom's Twitch channel Aug 25, 20:00 CEST." }
     ]
   },
   {
@@ -380,14 +385,14 @@
     "revision": 11,
     "changes": [
       { "kind": "content", "text": "Booth cards now link to the exhibitor's official gamescom page, where the exhibitor publishes its own booth program, stage times and trailers — 46 of the 53 booths have one." },
-      { "kind": "content", "text": "No link on CD Projekt Red, Take-Two/Rockstar, THQ Nordic, Wargaming and Kuro Games (not registered as exhibitors), on AMD (co-registered on the shared Hall 7.1 community stand rather than under its own name), or on Samsung (gamescom has switched its profile page off)." }
+      { "kind": "content", "text": "No link on CD Projekt Red, Take-Two/Rockstar, THQ Nordic, Wargaming or Kuro Games (not registered as exhibitors), on AMD (co-registered on a shared Hall 7.1 stand) or on Samsung (profile page switched off)." }
     ]
   },
   {
     "date": "2026-08-12",
     "revision": 10,
     "changes": [
-      { "kind": "content", "text": "Trade Wednesday reality-check added: a trade badge doesn't open every booth on Aug 26 — some big exhibitors reserve the morning (or the whole day) for invited press. Notes added to the day planner, crowd tips and affected exhibitor entries." },
+      { "kind": "content", "text": "Trade Wednesday reality-check: a trade badge doesn't open every booth on Aug 26 — some exhibitors reserve the morning, or the whole day, for invited press. Noted in the day planner, crowd tips and affected entries." },
       { "kind": "content", "text": "Xbox booth hours corrected per Xbox Wire: Thu/Fri 10:00–20:00, Sat/Sun 9:00–20:00 — the booth is closed on trade Wednesday apart from the evening FanFest (its Wednesday has traditionally been an invited-press preview)." },
       { "kind": "content", "text": "Capcom: in 2025 the booth admitted only press until ~11:00 on Wednesday — trade visitors should plan Wednesday visits for late morning onwards." }
     ]
