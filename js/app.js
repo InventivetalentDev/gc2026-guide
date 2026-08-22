@@ -193,6 +193,7 @@ async function loadData() {
   ]);
   mergeStrings(exhibitors, event, meta, strings);
   state.exhibitors = exhibitors;
+  invalidateDerived();
   state.event = event;
   state.meta = meta;
   state.changelog = changelog;
@@ -419,44 +420,54 @@ function onMarksChanged({ rebuild = false } = {}) {
   if (rebuild || state.savedOnly || state.hidePlayed) renderExhibitors();
   else syncMarkUI();
   renderMarkControls();
-  renderPriority();
-  renderWristband();
-  /* A bookmark toggle can add or remove whole plan stops, so the plan board
-     cannot use the grid's patch-in-place shortcut. keepingFocus() restores
-     its buttons. */
-  renderPlan();
-  /* The ✓ that fires this is most often pressed on Today itself, where it
-     moves the row from the list into the Done fold. */
-  renderToday();
+  /* A bookmark toggle can add or remove whole plan stops, so neither the plan
+     board nor Today can use the grid's patch-in-place shortcut — they are
+     rebuilt. keepingFocus() restores their buttons. Whichever of the two is
+     not on screen waits for an idle slot; the ✓ that fires this is most often
+     pressed on Today itself, where it moves the row into the Done fold. */
+  refreshViews("planner", "today");
 }
 
 /* Bring already-rendered buttons and their rows back in sync with the sets,
    without touching the surrounding markup. */
 function syncMarkUI() {
+  /* One tick moves one button; the walk exists for the handful of places the
+     same item is drawn twice. Writing an attribute back at the value it
+     already holds still costs a style invalidation, so every write here is
+     guarded — on a page holding the grid, the trade list and the plan that is
+     several hundred elements left alone instead of dirtied. */
+  const setAttr = (el, name, value) => {
+    if (el.getAttribute(name) !== value) el.setAttribute(name, value);
+  };
+  const setData = (el, name, value) => {
+    if (el.dataset[name] !== value) el.dataset[name] = value;
+  };
   $$('[data-mark]').forEach((btn) => {
     const { mark, bmKind: kind, bmKey: key, bmName: name } = btn.dataset;
-    const marked = isMarked(mark, kind, key);
-    const label = markLabel(mark, kind, name, marked);
-    btn.setAttribute("aria-pressed", String(marked));
-    btn.setAttribute("aria-label", label);
-    btn.setAttribute("title", label);
-    btn.querySelector(".bm-mark").textContent = mark === "played" ? "✓" : marked ? "−" : "+";
+    const marked = String(isMarked(mark, kind, key));
+    if (btn.getAttribute("aria-pressed") === marked) return;
+    const label = markLabel(mark, kind, name, marked === "true");
+    setAttr(btn, "aria-pressed", marked);
+    setAttr(btn, "aria-label", label);
+    setAttr(btn, "title", label);
+    btn.querySelector(".bm-mark").textContent =
+      mark === "played" ? "✓" : marked === "true" ? "−" : "+";
     const text = btn.querySelector(".bm-text");
-    if (text) text.textContent = markText(mark, marked);
+    if (text) text.textContent = markText(mark, marked === "true");
     const row = btn.closest(".game");
-    if (row) row.dataset[mark] = String(marked);
+    if (row) setData(row, mark, marked);
   });
   $$("#exhibitor-grid .card").forEach((el) => {
-    const ex = state.exhibitors.find((e) => e.id === el.dataset.id);
+    const ex = exhibitorById(el.dataset.id);
     if (ex) {
-      el.dataset.saved = String(hasSaved(ex));
-      el.dataset.played = String(hasPlayed(ex));
+      setData(el, "saved", String(hasSaved(ex)));
+      setData(el, "played", String(hasPlayed(ex)));
     }
   });
   /* The corner plate reports the *other* face's saved state, which a patch of
      this card's own buttons would otherwise leave stale. */
   $$("[data-face-other]").forEach((btn) => {
-    btn.dataset.faceSaved = String(isSaved("exhibitor", btn.dataset.faceOther));
+    setData(btn, "faceSaved", String(isSaved("exhibitor", btn.dataset.faceOther)));
   });
 }
 
@@ -514,6 +525,8 @@ function keepingFocus(container, render, fallback) {
       ? `.bm[data-mark="${CSS.escape(el.dataset.mark)}"][data-bm-kind="${CSS.escape(el.dataset.bmKind)}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
       : el.dataset.srcKind
       ? `.src-btn[data-src-kind="${CSS.escape(el.dataset.srcKind)}"][data-src-key="${CSS.escape(el.dataset.srcKey)}"]`
+      : el.dataset.shareEx
+      ? `.bm-share[data-share-ex="${CSS.escape(el.dataset.shareEx)}"]`
       : el.classList.contains("more-games")
         ? `.more-games[data-id="${CSS.escape(el.dataset.id)}"]`
         : null;
@@ -529,6 +542,11 @@ function keepingFocus(container, render, fallback) {
   const index = sel ? buttonsNow().indexOf(el) : -1;
   render();
   if (!sel) return;
+  /* Nothing took focus away. The lists are reconciled rather than rebuilt now
+     (see renderKeyed), so most renders leave the pressed button exactly where
+     it was — and re-focusing it would only cost the forced layout inside
+     restoreFocus for nothing. */
+  if (document.activeElement === el) return;
   const again = container.querySelector(sel);
   /* An arrow that has just carried its stop to the end of its group comes
      back disabled, and focus() on a disabled button goes nowhere — land on
@@ -1068,10 +1086,7 @@ function unresolvedNote(n) {
 function renderBookmarkViews() {
   renderExhibitors();
   renderMarkControls();
-  renderPriority();
-  renderWristband();
-  renderPlan();
-  renderToday();
+  refreshViews("planner", "today");
 }
 
 /* The snapshot covers all three lists so Undo puts back exactly what was
@@ -1367,12 +1382,12 @@ function renderShareDialog() {
   status.textContent = "";
 }
 
-/* Copy and OS-share are identical in both share sheets — only the ids and
-   the sheet's title differ — so the wiring lives once.
+/* Copy and OS-share are identical in all three share sheets — only the ids
+   and the sheet's title differ — so the wiring lives once.
 
    A refused clipboard is not an error state: it falls back to selecting the
    link, which is what a person would have done unaided, and says so. */
-function bindLinkActions({ input, copy, native, status, titleKey }) {
+function bindLinkActions({ input, copy, native, status, title }) {
   const say = (message) => {
     status.textContent = message;
   };
@@ -1392,7 +1407,7 @@ function bindLinkActions({ input, copy, native, status, titleKey }) {
 
   native.addEventListener("click", async () => {
     try {
-      await navigator.share({ title: t(titleKey), url: input.value });
+      await navigator.share({ title: title(), url: input.value });
     } catch (err) {
       /* Closing the OS sheet without picking anything is a choice, not a
          failure, and reporting it would call every dismissal a problem. */
@@ -1430,7 +1445,7 @@ function bindShareDialog() {
     copy: $("#copy-share-link"),
     native: $("#native-share"),
     status: $("#share-status"),
-    titleKey: "share.nativeTitle",
+    title: () => t("share.nativeTitle"),
   });
 }
 
@@ -1484,7 +1499,92 @@ function bindSiteShare() {
     copy: $("#copy-site-link"),
     native: $("#native-site-share"),
     status: $("#site-share-status"),
-    titleKey: "shareSite.nativeTitle",
+    title: () => t("shareSite.nativeTitle"),
+  });
+}
+
+/* ---------- share one booth ----------
+
+   Between the other two: more than the guide's front door, less than your
+   whole plan. Nothing of yours rides along — the link names a booth and
+   nothing else — so like the guide's own sheet there is nothing to choose,
+   only the address twice.
+
+   The case it is for is a message rather than a queue: "Capcom is in 9.1,
+   here". So the link leads and the QR follows, which is the other way round
+   from the guide's sheet, where the two people are standing together. */
+
+/* #exhibitors?ex=<id> is the address the hall map has always used to send
+   someone to a card (see focusExhibitor) — sharing it is the same journey,
+   starting on somebody else's phone. Same origin rule as buildShareLink: a
+   host being retired hands out hallgui.de, everything else shares itself,
+   so a preview deploy's links stay inside the preview. */
+function boothShareUrl(id) {
+  const origin = onLegacyHost() ? SHARE_ORIGIN : location.origin;
+  return `${origin}${location.pathname}#exhibitors?ex=${encodeURIComponent(id)}`;
+}
+
+/* Which booth the open sheet is holding. The sheet is written on open, like
+   both others, but the OS share title is read at the moment the button is
+   pressed — so the name has to outlive the render. */
+let boothShareSubject = null;
+
+function renderBoothShare(ex) {
+  boothShareSubject = ex;
+  const url = boothShareUrl(ex.id);
+  $("#booth-share-link").value = url;
+  $("#booth-share-subject").textContent = ex.name;
+  /* Where it is, in the same words the plan uses — so the person pasting the
+     link can see they picked the right booth before they send it, and the
+     three cards that have no hall number to show (not exhibiting, offsite,
+     hall not announced) say which of the three they are rather than leaving
+     an empty line under the name. */
+  $("#booth-share-lede").textContent = ex.hall
+    ? whereLabel(ex.hall, ex.booth)
+    : isAbsent(ex)
+      ? t("plate.absent")
+      : isOffsite(ex)
+        ? t("plan.offsite")
+        : t("plan.hallTba");
+
+  /* js/qr.js is deferred, so it is there by the time anything can be
+     tapped — the fallback is for the load where it is not. */
+  const svg = typeof window.qrSvg === "function" ? window.qrSvg(url) : null;
+  $("#booth-share-qr").hidden = !svg;
+  $("#booth-share-qr-image").innerHTML = svg || "";
+  $("#booth-share-qr-fallback").hidden = Boolean(svg);
+
+  $("#native-booth-share").hidden = typeof navigator.share !== "function";
+  $("#booth-share-status").textContent = "";
+}
+
+function openBoothShare(id) {
+  const ex = exhibitorById(id);
+  const dialog = $("#booth-share-dialog");
+  if (!ex || !dialog) return;
+  renderBoothShare(ex);
+  dialog.showModal();
+}
+
+function bindBoothShare() {
+  const dialog = $("#booth-share-dialog");
+  /* Tolerate a cached pre-booth-share index.html — the bindSourcesDialog
+     rule. shareButton() renders nothing on that pairing, so there is also
+     no button to bind. */
+  if (!dialog) return;
+  bindDialogDismiss(dialog, $("#close-booth-share"));
+  bindLinkActions({
+    input: $("#booth-share-link"),
+    copy: $("#copy-booth-link"),
+    native: $("#native-booth-share"),
+    status: $("#booth-share-status"),
+    /* The booth's own name, not the guide's: an OS share sheet showing
+       "gamescom 2026 visitor guide" for every booth tells the person
+       picking a chat window nothing about which one they are sending. */
+    title: () =>
+      boothShareSubject
+        ? t("shareBooth.nativeTitle", { name: boothShareSubject.name })
+        : t("shareSite.nativeTitle"),
   });
 }
 
@@ -1532,7 +1632,7 @@ function sourcesSubject(kind, key) {
       checked: state.meta?.lastChecked,
     };
   }
-  const ex = state.exhibitors.find((item) => item.id === key);
+  const ex = exhibitorById(key);
   if (!ex) return null;
   return {
     name: ex.name,
@@ -1687,11 +1787,12 @@ function prunePlan() {
 
 function onItineraryChanged() {
   /* An assignment feeds both lenses (day groups here, day tags and the day
-     filter on the hall view), so the whole plan section re-renders. */
-  renderPlan();
-  /* And Today, which is that same assignment read for one date: placing a
-     stop on today has to put it on today's list. */
-  renderToday();
+     filter on the hall view), so the whole plan section re-renders — and
+     Today with it, which is that same assignment read for one date: placing a
+     stop on today has to put it on today's list. The day chips are on both
+     boards, so either one can be the screen this came from; whichever is not
+     waits for an idle slot rather than for the tap (see refreshViews). */
+  refreshViews("planner", "today");
 }
 
 /* ---------- the plan's order, stored ----------
@@ -1737,6 +1838,45 @@ const byName = (a, b) => a.localeCompare(b, GCI18N.lang);
 const byCrowdDesc = (a, b) => (b.crowd || 0) - (a.crowd || 0) || byName(a.name, b.name);
 const hallRank = (hall) => (hall ? parseFloat(hall) : Infinity);
 
+/* ---------- search haystacks ----------
+
+   The text a query is tested against is a dozen field reads, a join and a
+   lowercase — cheap once, and it was being rebuilt for every booth on every
+   keystroke, then again for all 1,751 directory rows twice over, because the
+   trade section scans them once for its chips and once for its rows.
+
+   Built once per record instead, in a WeakMap so a record that leaves (a new
+   directory payload) takes its haystack with it. Thrown away whole when
+   anything that changes the text changes: the age filter, which decides
+   whether a gated title is in it at all, and the derived-table epoch, which
+   is what a fresh directory or a flipped trade pref bumps. The language
+   cannot change without a reload — see setLang in js/i18n.js. */
+const haystacks = new Map();
+let haystackSignature = "";
+
+/* Scoped, because the same directory row is searched two different ways: the
+   trade list matches its product groups as well, and the Full directory
+   deliberately does not. */
+function haystackFor(scope, record, build) {
+  const signature = `${state.age}|${dataEpoch}`;
+  if (signature !== haystackSignature) {
+    haystackSignature = signature;
+    haystacks.clear();
+  }
+  let cache = haystacks.get(scope);
+  if (!cache) haystacks.set(scope, (cache = new WeakMap()));
+  let hay = cache.get(record);
+  if (hay === undefined) cache.set(record, (hay = build().join(" ").toLowerCase()));
+  return hay;
+}
+
+/* Query terms, lowercased and split once for a whole pass rather than once
+   per record. */
+const queryTerms = (q) => {
+  const clean = String(q || "").trim().toLowerCase();
+  return clean ? clean.split(/\s+/) : [];
+};
+
 /* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
    deliberately not a content filter. It hides lineup rows, not prose. An
    earlier pass regex-scrubbed adult titles out of the searchable description,
@@ -1745,9 +1885,9 @@ const hallRank = (hall) => (hall ? parseFloat(hall) : Infinity);
    first", and Plaion carries an "18+" tag). A leaky content filter reads as a
    guarantee it cannot keep, so descriptions stay exactly as written and stay
    searchable. */
-function matchesQuery(ex, q) {
-  if (!q) return true;
-  const hay = [
+function matchesQuery(ex, terms) {
+  if (!terms.length) return true;
+  const hay = haystackFor("card", ex, () => [
     ex.name,
     ex.description,
     ex.country || "",
@@ -1765,13 +1905,8 @@ function matchesQuery(ex, q) {
     /* Searching "18+" while hiding 18+ would return exactly the booths whose
        gated titles are currently hidden. */
     hasAdult(ex) && state.age !== "hide" ? "18+" : "",
-  ]
-    .join(" ")
-    .toLowerCase();
-  return q
-    .toLowerCase()
-    .split(/\s+/)
-    .every((term) => hay.includes(term));
+  ]);
+  return terms.every((term) => hay.includes(term));
 }
 
 function filtersActive() {
@@ -1801,19 +1936,54 @@ function filtersActive() {
    Cloudflare is not a special case, and the planner, map, share links and
    closed-day warning all keep treating each booth as the separate stop it is. */
 
-function businessFaces() {
+/* ---------- derived tables ----------
+
+   The pairings, the card pool and the booth/slug indexes are all rebuilt from
+   three things and nothing else: the exhibitor list, the raw directory, and
+   the trade pref. They used to be rebuilt from scratch every time they were
+   read — businessFaces() twice per comparison inside the sort, which is a
+   fresh Map per comparison — and that was most of what changing a filter or
+   the sort order cost. Cached against one counter instead, bumped by the
+   three writers of those three things, so a stale table is not expressible.
+
+   The Maps handed out are read-only by contract: nothing downstream writes to
+   one, and a caller that did would be writing into everyone else's copy. */
+let dataEpoch = 0;
+const invalidateDerived = () => {
+  dataEpoch++;
+};
+
+function derived(build) {
+  let epoch = -1;
+  let value;
+  return () => {
+    if (epoch !== dataEpoch) {
+      value = build();
+      epoch = dataEpoch;
+    }
+    return value;
+  };
+}
+
+/* id → exhibitor, for the lookups that used to walk the whole list. */
+const exhibitorIndex = derived(
+  () => new Map(state.exhibitors.map((ex) => [ex.id, ex]))
+);
+const exhibitorById = (id) => exhibitorIndex().get(id) || null;
+
+const businessFaces = derived(() => {
   const map = new Map();
   for (const ex of state.exhibitors) {
     if (ex.businessOf) map.set(ex.businessOf, ex);
   }
   return map;
-}
+});
 
 /* The other side of this card, if it has one and the visitor is being offered
    trade content at all. */
 function otherFace(ex) {
   if (!state.trade) return null;
-  if (ex.businessOf) return state.exhibitors.find((e) => e.id === ex.businessOf) || null;
+  if (ex.businessOf) return exhibitorById(ex.businessOf);
   return businessFaces().get(ex.id) || null;
 }
 
@@ -1852,15 +2022,16 @@ const savedEitherFace = (ex) => bothFaces(ex).some(hasSaved);
    resolves everywhere, which is what plannedExhibitors() is for. A paired
    business face is never its own grid entry; it is rendered as the other side
    of the card it belongs to. */
-function cardPool() {
+const cardPool = derived(() => {
   const owners = new Set(state.exhibitors.map((ex) => ex.id));
   return state.exhibitors.filter((ex) => {
     if (ex.businessOf && owners.has(ex.businessOf)) return false;
     return state.trade || ex.type !== "trade";
   });
-}
+});
 
 function filtered() {
+  const terms = queryTerms(state.query);
   const list = cardPool().filter((ex) => {
     const faces = bothFaces(ex);
     /* Category and hall look at both sides, so filtering to Hall 4.2 keeps
@@ -1878,7 +2049,7 @@ function filtered() {
     if (state.confirmedOnly && !face.locationConfirmed) return false;
     if (state.savedOnly && !savedEitherFace(ex)) return false;
     if (state.hidePlayed && faces.every(hasPlayed)) return false;
-    return faces.some((f) => matchesQuery(f, state.query));
+    return faces.some((f) => matchesQuery(f, terms));
   });
 
   /* Sorted on the filter-driven face, never the hand-flipped one — see
@@ -2085,6 +2256,212 @@ function itemQueueSummary(item) {
   return `<span class="queue-plan-live" data-queue-surface="item" data-queue-item-kind="${esc(
     item.kind
   )}" data-queue-item-key="${esc(item.key)}">${itemQueueInner(item)}</span>`;
+}
+
+/* ---------- keyed lists ----------
+
+   innerHTML is the expensive way to change a list. Handed the exhibitor grid
+   it reparses half a megabyte of markup, builds every element again and
+   re-resolves every style — to arrive, after a sort change, at exactly the
+   same cards in a different order. Measured against a phone profile (a 6×
+   CPU throttle, which is roughly the mid-range Android the field data comes
+   from), that one assignment was ~370ms of the ~490ms a filter change cost,
+   and in trade mode a filter change cost 830ms all told. That is what
+   Cloudflare was reporting: a sort box answering in 640ms, a filter drawer
+   in 1.6s.
+
+   So each list keeps the node it built for a row, against the markup it built
+   it from. A row whose markup has not changed is handed back as the same
+   element — never reparsed, never restyled — and the list is then walked into
+   the wanted order with the fewest moves that gets it there. Reordering 111
+   existing cards costs ~25ms where rebuilding them costs ~370ms.
+
+   Two rules follow for callers:
+
+   1. The markup is the cache key, so anything that should change a row has to
+      change what its render function returns. Everything card() and tradeRow()
+      read — the marks, the age filter, the expanded set, the language — is
+      already in their output, so this holds by construction.
+   2. A reused node keeps whatever listeners it was built with, and a rebuilt
+      one has none. Per-row listeners are therefore delegated (see the document
+      click handler in bindControls) rather than bound after each render. */
+const keyedCaches = new WeakMap();
+
+/* Rows the current list left out keep their node: clearing a search puts the
+   whole grid back, and rebuilding what was on screen a keystroke ago is the
+   cost this exists to avoid. Bounded so a long session of narrowing searches
+   through 1,751 directory rows cannot grow it without end — dropped in
+   insertion order, which is oldest first. */
+const KEYED_SLACK = 400;
+
+function renderKeyed(container, items, keyOf, htmlOf) {
+  let cache = keyedCaches.get(container);
+  if (!cache) keyedCaches.set(container, (cache = new Map()));
+  const found = new Array(items.length);
+  const misses = [];
+  const seen = new Set();
+
+  items.forEach((item, i) => {
+    /* A repeated key would have one node asked to stand in two places, and the
+       second insert would silently move it out of the first. Suffix the repeat
+       so it renders correctly; it simply misses the cache. */
+    let key = String(keyOf(item, i));
+    if (seen.has(key)) key = `${key}\u0000${i}`;
+    seen.add(key);
+    const html = htmlOf(item, i);
+    const entry = cache.get(key);
+    if (entry && entry.html === html) found[i] = entry.el;
+    else misses.push({ at: i, key, html, el: null });
+  });
+
+  if (misses.length) {
+    /* One parse for the batch. Handing the parser two hundred rows at once is
+       markedly cheaper than handing it one row two hundred times, and a first
+       render is all misses. Every row function here returns exactly one
+       element, so the parsed children line up with the batch one for one —
+       checked rather than assumed, with a row-at-a-time parse as the fallback
+       if one ever stops doing that. */
+    const parser = document.createElement("template");
+    parser.innerHTML = misses.map((miss) => miss.html).join("");
+    const parsed = [...parser.content.children];
+    if (parsed.length === misses.length) {
+      misses.forEach((miss, n) => {
+        miss.el = parsed[n];
+      });
+    } else {
+      for (const miss of misses) {
+        parser.innerHTML = miss.html;
+        miss.el = parser.content.firstElementChild;
+      }
+    }
+    for (const miss of misses) {
+      if (!miss.el) continue;
+      cache.set(miss.key, { html: miss.html, el: miss.el });
+      found[miss.at] = miss.el;
+    }
+  }
+
+  const nodes = found.filter(Boolean);
+
+  if (cache.size > nodes.length + KEYED_SLACK) {
+    for (const key of cache.keys()) {
+      if (cache.size <= nodes.length + KEYED_SLACK) break;
+      if (!seen.has(key)) cache.delete(key);
+    }
+  }
+
+  /* Nothing on screen survived the change — a new search, a new page of the
+     directory — so there is nothing to step over: swap the lot. */
+  if (!nodes.some((node) => node.parentNode === container)) {
+    container.replaceChildren(...nodes);
+    return nodes.length;
+  }
+
+  /* Otherwise walk the children into the wanted order. A node already in the
+     right place is left alone, so a filter that only drops rows never touches
+     the ones that stay — and a row holding focus survives its neighbours
+     leaving. */
+  let ref = container.firstChild;
+  for (const node of nodes) {
+    if (node === ref) {
+      ref = ref.nextSibling;
+      continue;
+    }
+    container.insertBefore(node, ref);
+  }
+  while (ref) {
+    const next = ref.nextSibling;
+    container.removeChild(ref);
+    ref = next;
+  }
+  return nodes.length;
+}
+
+/* The <ol> a keyed list lives in. renderKeyed reconciles a container's
+   children, so the container has to outlive the render — built once here and
+   kept, with the "show more" button below it as the container's other child. */
+function listShell(container, className) {
+  let ol = container.firstElementChild;
+  if (!ol || ol.tagName !== "OL" || ol.className !== className) {
+    container.textContent = "";
+    ol = document.createElement("ol");
+    ol.className = className;
+    container.appendChild(ol);
+  }
+  return ol;
+}
+
+/* The page-lift button under a capped list, kept across renders for the same
+   reason its rows are: it is the same button saying a different number. Its
+   click is delegated in bindControls. */
+function listMore(container, rest) {
+  let btn = container.querySelector(":scope > .dir-more");
+  if (rest <= 0) {
+    btn?.remove();
+    return;
+  }
+  if (!btn) {
+    btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "reset dir-more";
+    container.appendChild(btn);
+  }
+  btn.textContent = t("directory.showMore", { n: rest });
+}
+
+/* ---------- deferred work ----------
+
+   Responsiveness is measured to the frame that paints an interaction's own
+   answer, and the answer to a filter change is the grid. Both directory lists
+   sit below it — on a phone, a screen and a half below it — so rebuilding
+   them inside the handler that filtered the grid charges the tap for work
+   nobody is looking at yet. They run in a task of their own instead, once the
+   browser has painted: the same total work, off the interaction's clock.
+
+   Keyed, so a run of changes collapses into one run of the work, and
+   flushable for anything that has to read a list in its settled state. */
+const deferredWork = new Map();
+let deferredScheduled = false;
+
+/* Enough for the handful of jobs this queue ever holds. It is only a stop
+   against a job that schedules itself forever. */
+const DEFER_MAX_JOBS = 16;
+
+function armDeferred() {
+  if (deferredScheduled) return;
+  deferredScheduled = true;
+  /* A frame callback runs before the paint; a task queued from inside one runs
+     after it. Nothing here may hold up the pixels the interaction is waiting
+     for. The plain timeout is the floor: a backgrounded tab stops painting and
+     rAF stops with it, and the queue must not strand until the visitor
+     returns. */
+  requestAnimationFrame(() => setTimeout(runDeferred, 0));
+  setTimeout(runDeferred, 300);
+}
+
+function runDeferred() {
+  if (!deferredScheduled) return;
+  /* Taken one at a time off the live queue rather than off a snapshot of it,
+     and left armed for the whole drain: work scheduled from inside a job —
+     finishing the grid schedules the lists that sit under the grid — joins
+     this pass instead of running twice or arming a second one. */
+  let ran = 0;
+  while (deferredWork.size && ran++ < DEFER_MAX_JOBS) {
+    const [key, fn] = deferredWork.entries().next().value;
+    deferredWork.delete(key);
+    fn();
+  }
+  deferredScheduled = false;
+  if (deferredWork.size) armDeferred();
+}
+
+function defer(key, fn) {
+  deferredWork.set(key, fn);
+  armDeferred();
+}
+
+function flushDeferred() {
+  runDeferred();
 }
 
 function platformCode(raw) {
@@ -2347,6 +2724,26 @@ function tradeBlocks(ex) {
   return { list, line };
 }
 
+/* The third row of the card's action corner.
+
+   The + and the ✓ change your own copy of the guide; this one hands the
+   booth to somebody else, so it opens a sheet rather than toggling
+   anything. It carries the id of the face on screen, not the card's owner:
+   a card turned to its business booth shares the business booth.
+
+   Empty when the sheet is not in the markup, which is the bindSourcesDialog
+   rule — the service worker can pair this script with an index.html one
+   version older, and a third row that opens nothing is worse than two. */
+function shareButton(ex) {
+  if (!$("#booth-share-dialog")) return "";
+  const label = t("shareBooth.aria", { name: ex.name });
+  return `<button class="bm bm-wide bm-share" type="button" aria-haspopup="dialog"
+      data-share-ex="${esc(ex.id)}" title="${esc(label)}" aria-label="${esc(label)}">
+    <span class="bm-mark" aria-hidden="true">↗</span><span class="bm-text" aria-hidden="true">${esc(
+      t("shareBooth.action")
+    )}</span></button>`;
+}
+
 function card(ex) {
   const games = visibleGames(ex);
   const isOpen = state.expanded.has(ex.id);
@@ -2384,8 +2781,11 @@ function card(ex) {
         }</span>
         <h3>${esc(ex.name)}${hasAdult(ex) && !games.length && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</h3>
       </div>
-      ${markButton("played", "exhibitor", ex.id, ex.name)}
-      ${markButton("saved", "exhibitor", ex.id, ex.name, { wide: true })}
+      <div class="exh-actions">
+        ${markButton("saved", "exhibitor", ex.id, ex.name, { wide: true })}
+        ${markButton("played", "exhibitor", ex.id, ex.name, { wide: true })}
+        ${shareButton(ex)}
+      </div>
     </div>
     <div class="card-body">
       <p class="desc">${esc(ex.description)}</p>
@@ -2439,14 +2839,37 @@ function card(ex) {
   </article>`;
 }
 
-function renderExhibitors() {
+/* How many cards go in before the browser is let back out to paint. A phone
+   shows two of them; this is several screens of scrolling ahead of anyone. */
+const GRID_FIRST_FILL = 24;
+
+function renderExhibitors({ whole = false } = {}) {
   const list = filtered();
-  keepingFocus($("#exhibitor-grid"), () => {
+  const grid = $("#exhibitor-grid");
+  /* The first fill of an empty grid is the one render that has to build every
+     card from nothing, and on a phone that is a fifth of a second in a single
+     unbroken task — landing, at boot, exactly when someone is tapping the
+     filter drawer or a tab to see what this thing is. Nobody can see past the
+     second card, so a few screens go in now and the rest follow in the next
+     task, where a tap that lands meanwhile gets in front of them. They append
+     below the fold, so nothing on screen moves.
+
+     Every later render is a reconcile against cards that already exist (see
+     renderKeyed), which is cheap enough to do whole. */
+  const partial = !whole && !grid.firstChild && list.length > GRID_FIRST_FILL;
+  keepingFocus(grid, () => {
     /* The grid iterates owner cards; each one renders whichever of its two
-       faces is showing. */
-    $("#exhibitor-grid").innerHTML = list.map((ex) => card(faceOf(ex))).join("");
+       faces is showing. Keyed on the owner's id, so a sort or a filter moves
+       the cards it already built rather than building them again. */
+    renderKeyed(
+      grid,
+      partial ? list.slice(0, GRID_FIRST_FILL) : list,
+      (ex) => ex.id,
+      (ex) => card(faceOf(ex))
+    );
   });
-  $("#exhibitor-grid").classList.toggle("hidden", list.length === 0);
+  if (partial) defer("grid-rest", () => renderExhibitors({ whole: true }));
+  grid.classList.toggle("hidden", list.length === 0);
   $("#no-results").classList.toggle("hidden", list.length > 0);
   $("#no-results").textContent =
     state.savedOnly && savedCount() === 0 ? t("empty.noSavedYet") : t("empty.noMatches");
@@ -2459,19 +2882,16 @@ function renderExhibitors() {
       : t("count.exhibitorsFiltered", { n: list.length, total });
   renderFilterSummary();
 
-  $$(".more-games").forEach((btn) =>
-    btn.addEventListener("click", () => {
-      const id = btn.dataset.id;
-      state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id);
-      renderExhibitors();
-    })
-  );
-
   /* The search box and hall chips filter both lower lists as well, so they
      re-render with the grid rather than being wired to each control
-     separately. Trade first: it sits above the directory on the page. */
-  renderTrade();
-  renderDirectory();
+     separately. Not in this task, though: both sit below the grid — on a
+     phone, well below the fold — and the tap that filtered the grid should
+     be over by the time they are rebuilt. Trade first: it sits above the
+     directory on the page. */
+  defer("sub-lists", () => {
+    renderTrade();
+    renderDirectory();
+  });
 }
 
 /* When the drawer is collapsed this line is the only thing telling you what is
@@ -2660,7 +3080,7 @@ function boothKey(hall, booth) {
    ("C011/B010/B020"), while a neighbour renting space on one of those stands
    names only that stand. So the card answers to its whole set of codes and
    to each stand on its own. */
-function curatedByBooth() {
+const curatedByBooth = derived(() => {
   const map = new Map();
   const claim = (ex, booth) => {
     const key = boothKey(ex.hall, booth);
@@ -2675,7 +3095,7 @@ function curatedByBooth() {
     if (stands.length > 1) for (const stand of stands) claim(ex, stand);
   }
   return map;
-}
+});
 
 let directoryRequest = null;
 let directorySignature = "";
@@ -2693,6 +3113,7 @@ function loadDirectory() {
     .then((payload) => {
       state.directory = payload;
       state.directoryError = null;
+      invalidateDerived();
       /* Everything keyed off the directory is stale the moment it lands: the
          slug index, the share vocabulary that now knows 800 more identities,
          and the hall chips that can now offer the business halls. */
@@ -2746,20 +3167,17 @@ function loadDirectory() {
    lineups the directory doesn't have, so they deliberately don't apply. */
 function directoryMatches() {
   const entries = state.directory?.exhibitors || [];
-  const q = state.query.trim().toLowerCase();
-  const terms = q ? q.split(/\s+/) : [];
+  const terms = queryTerms(state.query);
   return entries.filter((entry) => {
     const stands = entry.stands || [];
     if (state.hall !== "all" && !stands.some((s) => s.hall === state.hall)) return false;
     if (!terms.length) return true;
-    const hay = [
+    const hay = haystackFor("directory", entry, () => [
       entry.name,
       entry.country,
       countryLabel(entry.country),
       ...stands.map((s) => `${t("hall.word")} ${s.hall} hall ${s.hall} ${s.booth}`),
-    ]
-      .join(" ")
-      .toLowerCase();
+    ]);
     return terms.every((term) => hay.includes(term));
   });
 }
@@ -2890,19 +3308,13 @@ function renderDirectory() {
   }
   note.innerHTML = bits.join(" ");
 
-  list.innerHTML = matches.length
-    ? `<ol class="dir-list">${shown.map((e) => directoryRow(e, byBooth)).join("")}</ol>` +
-      (rest > 0
-        ? `<button class="reset dir-more" type="button">${esc(t("directory.showMore", { n: rest }))}</button>`
-        : "")
-    : "";
-
-  const more = list.querySelector(".dir-more");
-  if (more) {
-    more.addEventListener("click", () => {
-      state.directoryLimit = matches.length;
-      renderDirectory();
-    });
+  if (!matches.length) {
+    list.textContent = "";
+  } else {
+    renderKeyed(listShell(list, "dir-list"), shown, (e) => e.slug, (e) =>
+      directoryRow(e, byBooth)
+    );
+    listMore(list, rest);
   }
 
   /* "Nothing matches" is a lie when the answer is sitting two hundred pixels
@@ -2962,11 +3374,11 @@ function directoryIndex() {
 /* slug → the curated card that claims it. Written by hand as `dirSlug` on a
    trade card, which is what stops one booth appearing as both a card and a
    directory row. */
-function curatedByDirSlug() {
+const curatedByDirSlug = derived(() => {
   const map = new Map();
   for (const ex of state.exhibitors) if (ex.dirSlug) map.set(ex.dirSlug, ex);
   return map;
-}
+});
 
 /* A directory row dressed as the exhibitor-shaped record everything
    downstream expects — the planner, the route, the map and the .ics export
@@ -3003,7 +3415,7 @@ function tradeRecord(entry) {
    record built from the directory. Null while the directory is still
    loading — callers treat that as "not yet", not as "gone". */
 function resolveSavedExhibitor(key) {
-  const curated = state.exhibitors.find((ex) => ex.id === key);
+  const curated = exhibitorById(key);
   if (curated) return curated;
   if (!isDirKey(key)) return null;
   const slug = dirSlug(key);
@@ -3126,22 +3538,28 @@ function tradeGroups(entries) {
     .sort((a, b) => b.n - a.n || a.label.localeCompare(b.label));
 }
 
+/* Every directory row standing in the business area, whether or not a curated
+   card has claimed it. Only the denominator in the section's count line, but
+   it is a scan of 1,751 rows and it was being run on every render. */
+const tradeEntries = derived(() =>
+  (state.directory?.exhibitors || []).filter(isTradeEntry)
+);
+
 /* Search and the hall chips drive this list exactly as they drive the Full
    directory; the category chips are this section's own. Rows claimed by a
    curated card drop out — the card is the better answer and carries the save. */
 function tradeMatches({ category = true } = {}) {
   const claimed = curatedByDirSlug();
-  const q = state.query.trim().toLowerCase();
-  const terms = q ? q.split(/\s+/) : [];
+  const terms = queryTerms(state.query);
   const groups = state.directory?.groups || {};
-  return (state.directory?.exhibitors || []).filter((entry) => {
-    if (!isTradeEntry(entry) || claimed.has(entry.slug)) return false;
+  return tradeEntries().filter((entry) => {
+    if (claimed.has(entry.slug)) return false;
     if (state.hall !== "all" && !(entry.stands || []).some((s) => s.hall === state.hall)) return false;
     if (category && state.tradeCat !== "all" && !(entry.cats || []).includes(state.tradeCat)) {
       return false;
     }
     if (!terms.length) return true;
-    const hay = [
+    const hay = haystackFor("trade", entry, () => [
       entry.name,
       entry.country,
       countryLabel(entry.country),
@@ -3151,9 +3569,7 @@ function tradeMatches({ category = true } = {}) {
       /* Both spellings stay searchable, the same way tags do. */
       ...(entry.cats || []).map((id) => groups[id] || ""),
       ...(entry.cats || []).map((id) => groupLabel(id, groups[id])),
-    ]
-      .join(" ")
-      .toLowerCase();
+    ]);
     return terms.every((term) => hay.includes(term));
   });
 }
@@ -3250,7 +3666,7 @@ function renderTrade() {
   }
 
   const matches = tradeMatches();
-  const total = (state.directory.exhibitors || []).filter(isTradeEntry).length;
+  const total = tradeEntries().length;
 
   count.textContent =
     matches.length === total
@@ -3286,23 +3702,15 @@ function renderTrade() {
   $("#trade-off").addEventListener("click", () => setTrade(false));
 
   keepingFocus(list, () => {
-    list.innerHTML = matches.length
-      ? `<ol class="dir-list trade-list">${shown.map((e) => tradeRow(e, byBooth)).join("")}</ol>` +
-        (rest > 0
-          ? `<button class="reset dir-more" type="button">${esc(
-              t("directory.showMore", { n: rest })
-            )}</button>`
-          : "")
-      : "";
+    if (!matches.length) {
+      list.textContent = "";
+      return;
+    }
+    renderKeyed(listShell(list, "dir-list trade-list"), shown, (e) => e.slug, (e) =>
+      tradeRow(e, byBooth)
+    );
+    listMore(list, rest);
   });
-
-  const more = list.querySelector(".dir-more");
-  if (more) {
-    more.addEventListener("click", () => {
-      state.tradeLimit = matches.length;
-      renderTrade();
-    });
-  }
 }
 
 /* Turning it on is also the first fetch, which warms the offline cache — the
@@ -3317,6 +3725,7 @@ let tradeToast = null;
 function setTrade(on, { announce = false } = {}) {
   if (state.trade === on) return;
   state.trade = on;
+  invalidateDerived();
   if (on) {
     state.showTrade = true;
     const section = $("#trade");
@@ -3324,12 +3733,14 @@ function setTrade(on, { announce = false } = {}) {
   }
   persistPrefs();
   loadDirectory();
-  renderTrade();
   renderFilters();
+  /* renderExhibitors() schedules the trade list with it — the switch is most
+     often thrown from the toolbar chips, a screen above the section it fills. */
   renderExhibitors();
-  renderPriority();
-  renderPlan();
-  if (state.event) renderEvent(); // keeps the Event info block's own button in step
+  refreshViews("planner");
+  /* Not through refreshViews: the Event info block carries this switch's other
+     remote control, so it has to follow whether or not anyone is looking. */
+  if (state.event) renderEvent();
   if (!announce) return;
   /* Flip the switch twice and the first message must not outlive it: left in
      the queue, "Trade exhibitors on · Show the list →" would surface after
@@ -3538,8 +3949,7 @@ function movePlanStop(key, groupKeys, delta) {
    fire together, the way onMarksChanged and onItineraryChanged already do for
    the other two things a stop can carry. */
 function onPlanOrderChanged() {
-  renderPlan();
-  renderToday();
+  refreshViews("planner", "today");
 }
 
 /* Back to automatic. Undoable from the toast rather than guarded by a
@@ -4579,11 +4989,14 @@ const clockNow = () => previewInstant() || new Date();
    is it" and "how long until the doors" can never disagree. */
 const SHOW_TZ = "Europe/Berlin";
 
-function showNow() {
-  const now = clockNow();
-  try {
-    const parts = {};
-    for (const part of new Intl.DateTimeFormat("en-CA", {
+/* Built once, not per call: showDay() runs on every render that asks whether
+   it is a show day, and constructing a DateTimeFormat is the expensive half of
+   this function. Lazy so an engine without the IANA database still reaches the
+   fallback below rather than throwing at load. */
+let showClock;
+function showFormatter() {
+  if (!showClock)
+    showClock = new Intl.DateTimeFormat("en-CA", {
       timeZone: SHOW_TZ,
       year: "numeric",
       month: "2-digit",
@@ -4591,8 +5004,15 @@ function showNow() {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
-    }).formatToParts(now))
-      parts[part.type] = part.value;
+    });
+  return showClock;
+}
+
+function showNow() {
+  const now = clockNow();
+  try {
+    const parts = {};
+    for (const part of showFormatter().formatToParts(now)) parts[part.type] = part.value;
     return {
       date: `${parts.year}-${parts.month}-${parts.day}`,
       /* Midnight is "24" under an h24 clock and "00" under h23; both engines
@@ -5962,6 +6382,39 @@ function resetFilters() {
    callback grows back into the block this exists to break up. */
 const pendingViewRender = new Map();
 let viewRenderPump = false;
+/* How many idle slots in a row the queue will hand back to a waiting tap
+   before it insists on making progress anyway. */
+const MAX_VIEW_RENDER_YIELDS = 20;
+let viewRenderYields = 0;
+
+/* Every view's complete render, in one place. A queued entry is always the
+   whole job: queueViewRender keeps a single render per view, so a partial
+   refresh landing on top of a boot render would quietly drop what the boot
+   render was for. */
+const viewRender = {
+  exhibitors: renderExhibitors,
+  planner: renderPlanner,
+  event: renderEvent,
+  updates: renderChangelog,
+  today: renderToday,
+  queues: renderQueues,
+};
+
+/* Re-render the views a change reaches, but pay for the one on screen only.
+
+   A saved booth moves the plan board, the queue table and Today as well as the
+   card that was tapped, and all four used to be rebuilt inside the tap. Three
+   of them were behind other tabs. The rest go on the same idle queue the boot
+   renders use, so the work still happens before anyone can look at it — just
+   not while they are waiting for the button they pressed. */
+function refreshViews(...views) {
+  for (const view of views) {
+    const render = viewRender[view];
+    if (!render) continue;
+    if (state.view === view) render();
+    else queueViewRender(view, render);
+  }
+}
 
 function queueViewRender(view, render) {
   pendingViewRender.set(view, render);
@@ -5981,6 +6434,19 @@ function pumpViewRenders() {
   const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 80));
   idle(() => {
     viewRenderPump = false;
+    /* A queued render is tens of milliseconds of unbroken main thread, and a
+       tap that lands while one is running waits it out. That is most of what
+       the field data was reporting: over a second charged to a heading, a
+       summary, an empty-state paragraph — elements with no handler at all,
+       whose taps were queued behind a view nobody had asked for yet. Let the
+       tap through and come back; this is idle work by definition. The counter
+       is the backstop, so a stream of input cannot starve the queue for good. */
+    if (viewRenderYields < MAX_VIEW_RENDER_YIELDS && navigator.scheduling?.isInputPending?.()) {
+      viewRenderYields += 1;
+      pumpViewRenders();
+      return;
+    }
+    viewRenderYields = 0;
     const next = pendingViewRender.keys().next();
     if (!next.done) flushViewRender(next.value);
     pumpViewRenders();
@@ -6032,15 +6498,31 @@ function syncHash() {
   if (location.hash.slice(1) !== target) history.replaceState(null, "", `#${target}`);
 }
 
-/* The hall map links back as #exhibitors?ex=<id> — a booth you tapped on
-   the map should land on its own card, not at the top of the grid. The
+/* The hall map links back as #exhibitors?ex=<id>, and a card's Share row
+   hands the same address to somebody else — a booth you tapped on the map,
+   or were sent, should land on its own card, not at the top of the grid. The
    param is consumed like a share payload (syncHash drops it moments
    later anyway), and any filter hiding the card is cleared first: you
    asked for this booth by name, so a stale "saved only" must not answer
    with an empty grid. */
 function focusExhibitor(id) {
-  const ex = id && state.exhibitors.find((e) => e.id === id);
+  const ex = id && exhibitorById(id);
   if (!ex) return;
+  /* The trade exhibitors are the one thing resetFilters() below cannot
+     clear, because they are a claim about you rather than a filter — the
+     badge switch is off until you say you hold one, and with it off a
+     business booth is not in the grid at all. A link that names one is
+     answered rather than dropped: it says where the person sending it
+     thinks you are going, the toast says what was switched on, and the
+     Badge row switches it straight back off. */
+  if (ex.type === "trade" && !state.trade) {
+    setTrade(true);
+    showToast(t("trade.toastLinked"));
+  }
+  /* A link names one card out of the whole list, and the grid may still be
+     filling the tail of it — see renderExhibitors. Settle that before looking
+     for the card, or a booth in the tail answers as a booth we do not have. */
+  flushDeferred();
   /* A business booth tapped on the map deep-links to its own face's id, so
      land on the paired card already turned to that side rather than on its
      consumer booth in a different hall. Set after resetFilters(), which
@@ -6077,8 +6559,7 @@ function setHidePlayed(on) {
      unchanged played sets and lose the toggle on the next reload. */
   persistPrefs();
   renderExhibitors();
-  renderPriority();
-  renderPlan();
+  refreshViews("planner");
 }
 
 function showView(route, { push = true } = {}) {
@@ -6114,11 +6595,21 @@ function showView(route, { push = true } = {}) {
     t.classList.toggle("active", on);
     t.setAttribute("aria-selected", String(on));
   });
+  /* Which view is holding focus, read before the swap. An inactive view hides
+     by having its contents skipped rather than by leaving the layout (see
+     .view in css/style.css), and unlike display:none that does not blur what
+     was focused inside it — leaving the focus ring on a control nobody can
+     see any more. Hand it back to the document; every caller with somewhere
+     better to put it (the plan's own doors, a card deep-linked from the map)
+     does so the moment this returns. */
+  const focused = document.activeElement;
+  const focusedIn = focused && focused.closest ? focused.closest(".view") : null;
   $$(".view").forEach((v) => v.classList.remove("active"));
   $(`#view-${name}`).classList.add("active");
-  /* Like Today, and unlike the four standing views, this one is a snapshot of
-     live state rather than of the dataset: sessions opened and figures arrived
-     while it was hidden, and flushViewRender() only ever fires once. */
+  if (focusedIn && !focusedIn.classList.contains("active")) focused.blur();
+  /* Like Today, and unlike the standing views, this one is a snapshot of live
+     state rather than of the dataset: sessions opened and figures arrived
+     while it was hidden, and the idle render queue only ever fires once. */
   if (name === "queues") renderQueues();
   if (push) syncHash();
 }
@@ -6146,11 +6637,18 @@ function showView(route, { push = true } = {}) {
 function trackHeaderHeight() {
   const header = $(".site-header");
   if (!header) return;
-  const publish = () =>
-    document.documentElement.style.setProperty(
-      "--header-h",
-      `${Math.round(header.getBoundingClientRect().height)}px`
-    );
+  /* Measure, then write only when the number moved. The property this writes
+     is read back by the stylesheet, so a write is a style invalidation, and
+     the observer that fires this is watching an element that invalidation can
+     reach — writing an unchanged value is how a measure/write pair turns into
+     a loop that re-lays-out the page on every frame. */
+  let published = "";
+  const publish = () => {
+    const height = `${Math.round(header.getBoundingClientRect().height)}px`;
+    if (height === published) return;
+    published = height;
+    document.documentElement.style.setProperty("--header-h", height);
+  };
   publish();
   if ("ResizeObserver" in window) new ResizeObserver(publish).observe(header);
   else window.addEventListener("resize", publish);
@@ -6225,17 +6723,32 @@ function trackTabOverflow() {
     }
   };
 
+  /* Reading scrollWidth forces the browser to lay the page out, so this asks
+     at most once a frame. It is fired by a scroll listener and by an observer
+     watching six elements, and during a boot render those arrive in bursts —
+     measuring on each one was tens of milliseconds of forced layout spread
+     across exactly the moment the guide is least able to spare it. */
+  let queued = false;
+  const syncSoon = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      sync();
+    });
+  };
+
   sync();
-  row.addEventListener("scroll", sync, { passive: true });
+  row.addEventListener("scroll", syncSoon, { passive: true });
   /* The tabs themselves are observed, not just the row: switching language
      rewrites all four labels in place, which changes what fits without
      changing the row's own box at all. */
   if ("ResizeObserver" in window) {
-    const ro = new ResizeObserver(sync);
+    const ro = new ResizeObserver(syncSoon);
     ro.observe(row);
     for (const tab of $$(".tab")) ro.observe(tab);
   } else {
-    window.addEventListener("resize", sync);
+    window.addEventListener("resize", syncSoon);
   }
 }
 
@@ -6366,10 +6879,11 @@ function bindControls() {
   $("#plan-order-reset")?.addEventListener("click", resetPlanOrder);
   bindShareDialog();
   bindSiteShare();
+  bindBoothShare();
   bindSourcesDialog();
   bindQueueControls();
-  /* One delegated listener covers every +, ✓, day and sources button in every
-     view, including the ones that get re-rendered underneath it. */
+  /* One delegated listener covers every +, ✓, day, share and sources button
+     in every view, including the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
     /* Turning a card over. Keyed on the owner's id from either side, so the
        two plates are the same switch pointing opposite ways. */
@@ -6406,6 +6920,22 @@ function bindControls() {
       openSources(src.dataset.srcKind, src.dataset.srcKey);
       return;
     }
+    const share = e.target.closest("[data-share-ex]");
+    if (share) {
+      openBoothShare(share.dataset.shareEx);
+      return;
+    }
+    /* "+ 4 more" / "Show fewer". Delegated rather than bound per card: the
+       grid hands back the card nodes it already built (see renderKeyed), so a
+       listener attached after a render would land on some cards and not
+       others, and on the reused ones twice. */
+    const more = e.target.closest(".more-games");
+    if (more) {
+      const id = more.dataset.id;
+      state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id);
+      renderExhibitors();
+      return;
+    }
     const btn = e.target.closest("[data-mark]");
     if (btn) toggleMark(btn.dataset.mark, btn.dataset.bmKind, btn.dataset.bmKey);
   });
@@ -6435,20 +6965,16 @@ function bindControls() {
     renderFilters();
     renderExhibitors();
     renderMarkControls();
-    renderPriority();
-    renderWristband();
-    renderPlan();
-    renderToday();
+    refreshViews("planner", "today");
     if (state.event) renderEvent(); // its badge block is a switch, not just copy
   });
 
   $("#reset-filters").addEventListener("click", () => {
     resetFilters();
     renderExhibitors();
-    renderPriority();
     /* Resetting hide-played changes which plan stops are on screen too —
        skipping this re-render left the hall view stale before the merge. */
-    renderPlan();
+    refreshViews("planner");
     syncHash();
   });
 
@@ -6463,6 +6989,17 @@ function bindControls() {
       state.showDirectory = directory.open;
       persistPrefs();
       if (directory.open) loadDirectory();
+      /* The browser has already opened the section by the time this runs, so
+         filling it in the same task only holds that paint back behind 200
+         rows. One frame later the rows are there and the tap is long over. */
+      defer("directory", renderDirectory);
+    });
+    /* The page-lift under the list. Delegated because the button is now kept
+       across renders (see listMore) — a listener bound after each render would
+       stack up on the same element. */
+    $("#directory-list")?.addEventListener("click", (e) => {
+      if (!e.target.closest(".dir-more")) return;
+      state.directoryLimit = Infinity;
       renderDirectory();
     });
   }
@@ -6477,6 +7014,11 @@ function bindControls() {
       state.showTrade = trade.open;
       persistPrefs();
       if (trade.open && state.trade) loadDirectory();
+      defer("trade", renderTrade); // same reason as the directory's toggle
+    });
+    $("#trade-list")?.addEventListener("click", (e) => {
+      if (!e.target.closest(".dir-more")) return;
+      state.tradeLimit = Infinity;
       renderTrade();
     });
     $("#trade-enable")?.addEventListener("click", () => setTrade(true));
@@ -6563,18 +7105,21 @@ async function main() {
     state.savedOnly = true;
     $("#saved-only").checked = true;
   }
-  const bootRender = {
-    exhibitors: renderExhibitors,
-    planner: renderPlanner,
-    event: renderEvent,
-    updates: renderChangelog,
-    today: renderToday,
-    queues: renderQueues,
-  };
   const landingView = route === SAVED_ROUTE ? "exhibitors" : route;
   const first = VIEWS.includes(landingView) ? landingView : VIEWS[0];
-  bootRender[first]();
-  for (const view of VIEWS) if (view !== first) queueViewRender(view, bootRender[view]);
+  viewRender[first]();
+  /* The landing view is on screen, so the screen index.html held open under
+     the empty grid can come back — see the data-booting stamp in its head and
+     the rule it drives in css/style.css. Here rather than a frame later: the
+     render above and this run in one task, so the reservation and the cards
+     that replace it are painted together and nothing moves between them.
+
+     The render above puts in the first few screens of grid and finishes the
+     rest in the next task (see renderExhibitors), which does not weaken that:
+     what is in by now is already several times the screen this gives back,
+     and the tail arrives below the fold where it costs nothing. */
+  delete document.documentElement.dataset.booting;
+  for (const view of VIEWS) if (view !== first) queueViewRender(view, viewRender[view]);
   showView(route, { push: false });
   syncQueueTab();
   /* Live data is deliberately last and unawaited: the static guide has

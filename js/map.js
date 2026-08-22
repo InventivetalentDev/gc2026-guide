@@ -1064,25 +1064,37 @@ const areaAccess = (area) => {
    the seven where it does not, it sits directly above what changes, and it
    already says "trade & media badge only" — so the switch finishes that
    sentence rather than introducing a second idea, and the map keeps every
-   pixel it has for the map. */
+   pixel it has for the map.
+
+   Which is also why it goes away once the answer is yes. Both halves of it
+   are spent by then — the warning asks a question the visitor has answered,
+   and the switch has been thrown — but the cost carries on: fifty pixels of
+   a map that has few to spare, on each of the five halls, for the rest of
+   the show. The two things it would still have been good for outlive it.
+   The chip row above keeps marking the business halls "trade only" whether
+   they are switched on or not, and turning them back off is the guide's
+   Badge row, which is where turning them on belongs too (index.html, "The
+   trade switch's remote control"). */
 function renderAccess(id) {
   const area = areaOf(id);
   const note = $("#access");
-  note.hidden = !area.access;
-  if (!area.access) {
+  const show = !!area.access && !(area.trade && GCMarks.tradeMode());
+  note.hidden = !show;
+  if (!show) {
     note.innerHTML = ""; // don't leave the last business hall's switch behind
     return;
   }
   note.style.setProperty("--area", area.colour || "");
-  const on = GCMarks.tradeMode();
+  /* One direction only: the banner is gone by the time the other one would
+     have been the offer. */
   note.innerHTML =
     `<b>${esc(areaName(area))}</b> — ${esc(areaAccess(area))}` +
     (area.trade
-      ? ` <button class="map-access-btn${on ? " is-on" : ""}" id="access-trade" type="button">${
-          esc(on ? t("map.hideExhibitors") : t("map.showExhibitors"))
+      ? ` <button class="map-access-btn" id="access-trade" type="button">${
+          esc(t("map.showExhibitors"))
         }</button>`
       : "");
-  $("#access-trade")?.addEventListener("click", () => setTrade(!GCMarks.tradeMode()));
+  $("#access-trade")?.addEventListener("click", () => setTrade(true));
 }
 
 /* The guide owns the preference; this page just writes it and redraws itself,
@@ -2726,6 +2738,12 @@ window.addEventListener("storage", (e) => {
   if (wantsTrade() && !state.trade.length) loadTrade();
   else if (e.key === null || e.key === GCMarks.PREFS_KEY) redrawJoin();
   refreshMarks();
+  /* The access banner reads the trade switch as well as the hall, and the
+     guide is where that switch is mostly thrown — its Badge row is the one
+     control that turns the business halls off again now. Turned off over
+     there, the warning this page owes a consumer ticket has to come back
+     here, on the hall that is already open. */
+  renderAccess(state.hall);
   if (state.sel) selectStand(state.sel);
 });
 

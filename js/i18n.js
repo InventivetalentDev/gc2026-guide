@@ -78,17 +78,42 @@
       : s;
   }
 
+  /* Intl.DateTimeFormat is expensive to construct and free to reuse, and the
+     guide asks for the same two shapes over and over. One instance per shape,
+     built on first use so a locale nobody visits costs nothing. */
+  const formatters = new Map();
+  function formatter(key, options) {
+    let fmt = formatters.get(key);
+    if (!fmt) formatters.set(key, (fmt = new Intl.DateTimeFormat(lang, options)));
+    return fmt;
+  }
+
+  /* And the answers are cached too, because the questions repeat: the guide
+     names the same five show days on every plan render, once per stop and
+     again per day chip, and formats the same forty changelog dates every time
+     that timeline is drawn. Both are pure functions of (date, style) for the
+     life of the page — the language cannot change without a reload, see
+     setLang below. */
+  const dates = new Map();
+  function cached(key, compute) {
+    let out = dates.get(key);
+    if (out === undefined) dates.set(key, (out = compute()));
+    return out;
+  }
+
   /* Weekday names come from the date, not from the data — deleting the
      hand-written labels removed a whole class of strings from both
      locales. Noon UTC so no timezone can shift the day. */
   function dayName(date, style = "long") {
-    try {
-      return new Intl.DateTimeFormat(lang, { weekday: style, timeZone: "UTC" }).format(
-        new Date(`${date}T12:00:00Z`)
-      );
-    } catch {
-      return String(date);
-    }
+    return cached(`w${style}|${date}`, () => {
+      try {
+        return formatter(`w${style}`, { weekday: style, timeZone: "UTC" }).format(
+          new Date(`${date}T12:00:00Z`)
+        );
+      } catch {
+        return String(date);
+      }
+    });
   }
 
   /* Dates in the data files stay as sortable ISO values. Format them only at
@@ -97,18 +122,20 @@
      every timezone. */
   function formatDate(date) {
     const raw = String(date || "");
-    const when = new Date(`${raw}T12:00:00Z`);
-    if (Number.isNaN(when.getTime())) return raw;
-    try {
-      return new Intl.DateTimeFormat(lang, {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        timeZone: "UTC",
-      }).format(when);
-    } catch {
-      return raw;
-    }
+    return cached(`d|${raw}`, () => {
+      const when = new Date(`${raw}T12:00:00Z`);
+      if (Number.isNaN(when.getTime())) return raw;
+      try {
+        return formatter("d", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+          timeZone: "UTC",
+        }).format(when);
+      } catch {
+        return raw;
+      }
+    });
   }
 
   /* Translate the static markup in place. English is the authored markup,

@@ -81,13 +81,38 @@
    showView, but a mode that only exists for five days should not spend one of
    them waiting for a revalidation.
 
-   v13 is live queues: a sixth tab and section in index.html, js/queue.js
+   v13 is the map's stand sheet leaving #stage. The sheet is a sibling of the
+   stage in map.html now and a fixed panel in css/map.css, and together they
+   are what puts its × back within reach on a phone held sideways — clipped
+   to the stage, the top of a sheet taller than it went behind the strips
+   above, and the card could be opened and not closed. Neither half is
+   broken alone, which is why this is a judgement rather than a rule: the
+   new markup under the old stylesheet is an uncapped bottom sheet with no
+   clip over it, and the old markup under the new one scrolls the whole
+   sheet rather than its body, which walks the × off the top on the tallest
+   ones. But this is the page a stranger's #hall/booth link opens, often
+   once, in a hall with no reception — "one load late" is "never" often
+   enough here — and the fix is not whole until both halves have landed.
+
+   v14 is the card's action corner and the sheet the third row of it opens.
+   Save, Played and Share are one stacked column now, built by js/app.js and
+   laid out by css/style.css, and the sheet is a <dialog> in index.html that
+   only that script ever opens. All three ride stale-while-revalidate, and
+   every pairing across the change is visibly wrong in a different way: the
+   new script under the old stylesheet stacks three unstyled buttons where a
+   plate used to be, and the old script under the new one leaves two buttons
+   with no column to sit in. The dialog is the one half that fails quietly —
+   shareButton() renders nothing when the sheet is missing, so that pairing
+   is a card with two rows rather than a row that opens nothing — and that
+   guard is what makes this a layout bump rather than a dead-control one.
+
+   v15 is live queues: a sixth tab and section in index.html, js/queue.js
    beside app.js, and — the load-bearing one — the /api/ bypass in this file.
    An older worker has no bypass, so it would put a live queue response into
    the stale-while-revalidate shell cache and answer the next reader with a
    minute-old wait as though it were current; an admin navigation would
    replace the guide's own "./" fallback outright. */
-const VERSION = "v13";
+const VERSION = "v15";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;

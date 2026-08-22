@@ -12,6 +12,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
 - **Shareable saved lists** — move a plan to another device or send it to a friend with a link or scannable QR code
 - **Share the guide itself** — a Share button in the masthead opens a QR code big enough to hold up to the phone of whoever you are queueing with, plus the link to copy for posting it anywhere else
+- **Share one booth** — every card's corner carries a Share row beside Save and Played. It hands out a link that opens the guide *on that card*, scrolled to it and lit for a moment, rather than at the top of a list of a hundred and eleven — so "Capcom is in 9.1" can be a link instead of a description. A card turned to its business booth shares the business booth, and a link naming one switches the trade exhibitors on to answer it
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Live queue times during the show** — a **Live queues** tab, open only while the show is on, that lists the lines you are standing in and searches all ~160 queues to report a new one; the cards themselves just show the figures, with one *Report a queue* link that opens the tab already narrowed to that booth. Optional reports under a random, resettable device id per playable game (or per booth where there is no playable lineup), server-side aggregation with report count and age, measured waits that can finish offline, and a phone-first moderation console
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them. Each stop wears its queue index in both arrangements, and ▲▼ put the list in **the order you'll actually walk it** — the guide opens with busiest-queue-first and hands the order over the moment you disagree; the hall map numbers its pins from the same order. Either arrangement reaches the map from its own headings — a hall heading opens that hall, a day heading opens the whole site with that day lit
@@ -177,11 +178,16 @@ overwhelmingly German. To refresh them, re-run the download step in
 
 ## The saved list
 
-The `+` on a card head saves a booth; the `+` on a lineup row saves a single game.
+The `+` in a card's corner saves a booth; the `+` on a lineup row saves a single game.
 Both are kept in `localStorage` under `gc2026.saved.v1` — no account, no server, and
 nothing leaves the device unless you share a link yourself. Two tabs of the guide stay
 in sync via the `storage` event, and if storage is blocked altogether (Safari private
 mode) the list still works for the session instead of throwing.
+
+The corner itself is three rows — **Save**, **Played**, **Share** — one per thing you
+can do with a booth, each carrying its own word rather than a bare glyph, and each the
+full width of a fixed column, so pressing one never resizes the button under the thumb
+that pressed it or shoves the exhibitor's name sideways.
 
 Shared links encode guide identifiers only — compact fixed-width hashes of exhibitor
 ids and game titles, never the names themselves. The link and its QR code are built
@@ -199,6 +205,17 @@ masthead — and carries nothing of yours: it is the canonical address, once as 
 code sized to be scanned across a queue and once as text to copy. Where the OS
 provides a share sheet it is offered too; there are no per-platform buttons, because
 a copied link reaches everywhere one of those would have.
+
+Sharing one *booth* is the third of the three, and the smallest: the **Share** row in
+a card's corner hands out `#exhibitors?ex=<id>`, which carries nothing of yours
+either. It is the address the hall map has always used to send someone to a card, so
+what arrives is the guide scrolled to that booth and the card lit for a moment —
+which is the whole difference between a link and a description. A card turned to its
+business booth shares the business booth rather than its owner, and a link naming a
+booth in halls 2–4 switches the trade exhibitors on to answer it rather than landing
+on an empty grid; a toast says so, and the Badge row switches them straight back off.
+Same sheet as the other two — the link first, because this one is usually sent rather
+than held up, with the QR under it for the times you are standing together after all.
 
 A link for someone else never replaces an existing list: it asks before adding to a
 non-empty list, while an empty list imports immediately with an Undo option — and a
@@ -258,8 +275,8 @@ game in anyone's saved list. See the editorial rules in
 
 ### Played tracking
 
-The `✓` beside every game and booth records what you have already played. A booth
-counts as played when you tick it directly, or when every game you saved there has
+The `✓` beside every game, and the **Played** row in a card's corner, record what you
+have already played. A booth counts as played when you tick it directly, or when every game you saved there has
 been played. Save another game at a booth that was complete that way and the booth
 becomes active again until you play the new addition.
 
@@ -341,12 +358,38 @@ which day a stop is on, and which stop is number 1. Anything either page kept
 its own copy of would drift, and a map that numbered your Thursday differently
 from the list it read it off would be worse than no numbers at all.
 
-Every list in the app is drawn by replacing a container's `innerHTML` in one
-write — there is no diffing layer — and one rule falls out of that: **a rebuild
-must not move the page.** The visitor pressed a button that was on screen, so
-the view belongs where they left it when the press is over. Three things
-threaten that, and all three are handled where they arise rather than papered
-over afterwards:
+Every list in the app is drawn from a function that returns one row's markup as
+a string — `card()`, `tradeRow()`, `directoryRow()` — and `renderKeyed()` in
+`js/app.js` is what puts those strings on screen. It keeps the element it built
+for each row alongside the markup it built it from: a row whose markup has not
+changed is handed back as the same element rather than parsed again, and the
+list is then walked into the order asked for with the fewest moves. That is
+what makes re-sorting the grid cost about what moving 111 cards costs rather
+than what building them costs — the measurements are in the comment above the
+function. Two rules fall out of it:
+
+- **The markup is the cache key.** Anything that should change a row has to
+  change what its row function returns. Everything those functions read — the
+  marks, the age filter, the expanded set, the language — is already in what
+  they return, so this holds by construction; a row that reached outside for
+  state would go stale invisibly.
+- **Per-row listeners are delegated** — on `document`, or on the list's own
+  container — never bound after a render. A reused element keeps the listeners
+  it was built with, so binding per render would stack them on the survivors
+  and miss the rebuilt ones.
+
+Work that the visitor is not waiting for does not run in the handler they are
+waiting on. The two directory lists sit below the grid, so a filter change
+schedules them with `defer()` and they fill a frame later; a view behind
+another tab is re-rendered through `refreshViews()`, which hands it to the same
+idle queue the boot renders use. Both keep the tap charged for what it changed
+on screen and nothing else.
+
+For the rows that *are* rebuilt, the older rule still holds: **a rebuild must
+not move the page.** The visitor pressed a button that was on screen, so the
+view belongs where they left it when the press is over. Three things threaten
+that, and all three are handled where they arise rather than papered over
+afterwards:
 
 - `focus()` scrolls its element into view, and after a rebuild the element is
   new, so the browser has no memory of it and centres it. `restoreFocus()` in

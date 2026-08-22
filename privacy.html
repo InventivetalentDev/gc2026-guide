@@ -12,6 +12,22 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='8' fill='%23ff4d17'/><text x='50' y='72' font-size='58' font-family='monospace' font-weight='700' text-anchor='middle' fill='%230c0c0d'>26</text></svg>">
 
+<!-- The same four faces index.html preloads, and here for a sharper reason
+     than there. These two pages carry no script at all, so nothing holds the
+     first paint back: without this the text lands in the system font and then
+     reflows when Archivo and Anton swap in, and a legal page is one column of
+     prose — every paragraph under the swap moves. It was the whole of these
+     pages' layout shift, at every connection speed.
+
+     Preloading wins the race rather than hoping to: the fetch starts with the
+     HTML rather than after css/fonts.css has been parsed, and it runs beside
+     css/style.css, which blocks the first paint and is several times the size
+     of any of them. Latin only, like index.html — the latin-ext subsets carry
+     the accents and are asked for when a glyph needs one. -->
+<link rel="preload" href="fonts/anton-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/archivo-narrow-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/style.css">
 <script>

@@ -491,6 +491,18 @@ window.GC_STRINGS.en = {
   "shareSite.linkLabel": "Link",
   "shareSite.nativeTitle": "gamescom 2026 visitor guide",
 
+  /* Sharing one booth — the third row of a card's action corner. The link is
+     #exhibitors?ex=<id>, the same address the hall map sends people to, so
+     what arrives is the guide scrolled to that card rather than the top of a
+     list of a hundred and eleven of them. */
+  "shareBooth.action": "Share",
+  "shareBooth.aria": "Share the {name} booth",
+  "shareBooth.overline": "Send someone here",
+  "shareBooth.title": "Share this booth",
+  "shareBooth.closeAria": "Close share dialog",
+  "shareBooth.qrHint": "Or hold this up to someone's camera to open this booth on their phone.",
+  "shareBooth.nativeTitle": "{name} at gamescom 2026",
+
   "share.items": "{n} saved item|{n} saved items",
   "share.readyWithStale": "{items} ready to share.",
   "share.staleOlder": " {n} older item is no longer in the guide.| {n} older items are no longer in the guide.",
@@ -716,6 +728,11 @@ window.GC_STRINGS.en = {
   "trade.toastOn":
     "Trade exhibitors on — business booths are in the grid, and in their own list below.",
   "trade.toastOff": "Trade exhibitors off — back to the consumer halls.",
+  /* A link named a business booth, so the badge switch was thrown to answer
+     it. Says what changed rather than asking, because the card is already on
+     screen by the time this appears — and the Badge row switches it back. */
+  "trade.toastLinked":
+    "That's a business-hall booth, so trade exhibitors are on. The Badge row turns them back off.",
   "trade.catFilterAria": "Filter trade exhibitors by product group",
   "trade.loading": "Loading the business halls…",
   "trade.loadError":
@@ -783,7 +800,6 @@ window.GC_STRINGS.en = {
   "map.tradeOnlySuffix": ", trade & media only",
   "map.tradeOnlyLabel": "trade only",
   "map.showExhibitors": "I have a badge — show exhibitors",
-  "map.hideExhibitors": "hide exhibitors",
   "map.showTrade": "show trade exhibitors",
   "map.gatedHint":
     "business area — most of these are in the guide with trade exhibitors on",

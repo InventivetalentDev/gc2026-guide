@@ -231,6 +231,7 @@
     "Malaysia": "Malaysia",
     "Malta": "Malta",
     "Mexico": "Mexiko",
+    "Moldova": "Moldau",
     "Morocco": "Marokko",
     "Netherlands": "Niederlande",
     "New Zealand": "Neuseeland",
@@ -1425,6 +1426,14 @@
       "description": "Ein großer Stand in Halle 8.1 — rund 610 m² bei A011/B010, am hinteren Hallenende neben Square Enix — dazu ein Business-Stand in Halle 2.1, für das britisch-saudische Studio, registriert unter der Marke „MGS“. Weder das gamescom-Verzeichnis noch die Fachpresse nennt bislang ein Spiel dafür.",
       "crowdNote": "Die Standgröße spricht für einen echten Auftritt, aber ohne angekündigtes Lineup ist der Andrang nicht abzuschätzen.",
       "visitAdvice": "Beim ersten Gang durch Halle 8.1 einen Blick wert — einer der größeren unbekannten Stände der Halle."
+    },
+    "mbc-game-studio-business": {
+      "description": "Der Business-Stand von MBC Game Studio, getrennt von der großen Präsenz in Halle 8.1. Publishing- und Partnerschaftsgespräche für das britisch-saudische Studio.",
+      "accessNote": "Ein Stand mit eigenem Standcode in Halle 2.1, registriert auf das Studio selbst statt auf einen gemeinsamen Pavillon.",
+      "offers": [
+        "Publishing- und Partnerschaftsgespräche",
+        "Investoren- und Pressetermine"
+      ]
     },
     "the-district": {
       "description": "Neu für 2026: eine Fläche für Competitive Gaming von rund 2.000 m² in Halle 8.1 plus etwa 1.000 m² im reaktivierten Außenbereich P8 hinter der Halle, mit einer E-Sport-Bühne im hinteren Hallenteil. Das Kölner SK Gaming ist Headline-Partner; REWE, Techniker Krankenkasse, Nestlé, Logitech, Deutsche Telekom, Philips, SanDisk, Subway und Esports Virtual Arenas gehören zu den Marken auf dem Gemeinschaftsstand und drumherum.",

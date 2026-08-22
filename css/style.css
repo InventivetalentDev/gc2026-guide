@@ -206,6 +206,20 @@ body {
   text-transform: uppercase;
   color: var(--signal);
   font-variant-numeric: tabular-nums;
+  /* Empty in the markup: renderCountdown writes it, and that waits on
+     data/event.json — seconds away on a hall's LTE. An empty <p> is nothing
+     high, so the line arriving grew the masthead by its own height and took
+     the tab strip, the whole of #main and the footer down with it. It was the
+     largest layout shift on the page, and it fired on every cold load.
+
+     One line, reserved from the first paint. Never a guess at what will
+     land in it: every string it can hold is one short line at every width
+     the guide is read at — "T−5 days", "● Live now", "See you next year",
+     and their German counterparts. The em fallback is the same number
+     (line-height 1.55, unitless, times this font-size) for browsers from
+     before lh units. */
+  min-height: 1.55em;
+  min-height: 1lh;
 }
 
 /* The masthead's stamped controls as one row rather than a stack of
@@ -312,8 +326,32 @@ body {
    layout
    ============================================================ */
 main { flex: 1; padding-top: 34px; padding-bottom: 72px; }
+/* A tab that is not on screen has its contents skipped, not taken out of the
+   layout.
+
+   display:none throws away every box under the view being left and builds
+   every box under the view being opened from nothing, and the exhibitor grid
+   is six thousand elements of boxes. On a phone that was 120-140ms of
+   rendering charged to the tap — nearly all of what switching tabs cost, and
+   none of it script the profiler could point at. content-visibility keeps the
+   layout it already worked out and hands it straight back, which roughly
+   halved that rendering in both directions.
+
+   The two are the same in the ways that matter for a tab panel nobody has
+   selected: skipped content is invisible to find-in-page, to assistive
+   technology, and to focus. They differ in one way that does — display:none
+   blurs whatever was focused inside it and this does not — so showView()
+   hands that focus back to the document itself.
+
+   Kept as an override of the display swap rather than replacing it, so a
+   browser that has never heard of the property gets exactly the rule it
+   always had. */
 .view { display: none; }
 .view.active { display: block; animation: rise .2s ease-out; }
+@supports (content-visibility: hidden) {
+  .view { display: block; content-visibility: hidden; contain-intrinsic-size: 0 0; }
+  .view.active { content-visibility: visible; }
+}
 
 @keyframes rise {
   from { opacity: 0; transform: translateY(4px); }
@@ -687,12 +725,19 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 }
 
 .exh-id { padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; justify-content: center; min-width: 0; }
+/* Both lines have to stay inside the column between the two plates. The
+   category is one unbreakable word in both languages — PUBLISHER, PUBLISHER
+   · SÜDKOREA — so on the narrowest phones it ends in an ellipsis rather
+   than running out under the action corner, and a name with no space in it
+   breaks rather than doing the same. */
+.exh-id .overline { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .exh-id h3 {
   font-family: var(--font-display);
   font-size: 1.18rem;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -.005em;
+  overflow-wrap: break-word;
 }
 
 .card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
@@ -1102,18 +1147,67 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 }
 .bm-mark { font-size: .9rem; line-height: 1; }
 
-/* card head: a plate on the right edge, bracketing the hall plate on the left */
+/* A mark button with its word beside its glyph rather than the glyph alone. */
 .bm-wide { width: auto; height: auto; padding: 0 15px; }
-.exh-head .bm {
-  align-self: stretch;
-  height: auto;
+
+/* --- the action corner: three rows, one per thing you can do with a booth ---
+
+   It used to be two controls side by side, and the pair had two problems.
+   The ✓ was a bare glyph with no word on it, so the one control on the card
+   that needs explaining was the one that got no explanation; and the Save
+   button sized itself to its own label, so pressing it — "Save" becoming
+   "Saved", "Merken" becoming "Gemerkt" — moved the exhibitor's name under
+   the thumb that had just pressed it.
+
+   Stacked, they are one column of fixed width: every label fits, nothing
+   reflows when a state changes, and there is room for a third row without
+   taking any more of the name than the pair already did (the old pair ran
+   about 138px wide against this column's 104). The head grows about 30px
+   in exchange, which the hall plate spends on being a taller sign. */
+.exh-actions {
+  flex: 0 0 104px;
+  display: flex;
+  flex-direction: column;
   margin-left: auto;
-  border: none;
   border-left: 1px solid var(--rule-soft);
-  border-radius: 0;
 }
-.exh-head .bm:not(.bm-wide) { width: 28px; }
-.exh-head .bm + .bm { margin-left: 0; }
+.exh-actions .bm {
+  flex: 1 1 0;
+  width: auto;
+  height: auto;
+  min-height: 31px;
+  justify-content: flex-start;
+  gap: 7px;
+  /* A third of a character tighter than the small caps everywhere else in
+     the guide, which is what fits "Gespielt" — the longest of the eight
+     labels the two languages between them put in these rows — inside the
+     column without it having to grow into the exhibitor's name. */
+  letter-spacing: .08em;
+  padding: 0 11px;
+  border: none;
+  border-radius: 0;
+  text-align: left;
+}
+.exh-actions .bm + .bm { border-top: 1px solid var(--rule-soft); }
+/* The three glyphs line up in their own column, so the labels start at the
+   same place whether the row is showing a "+", a "−" or a "✓". */
+.exh-actions .bm-mark { flex: 0 0 11px; text-align: center; }
+.exh-actions .bm-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* The border is gone, so hover has to be carried by the fill. Set rows keep
+   their own — an orange row does not get lighter for being pointed at. */
+.exh-actions .bm:not([aria-pressed="true"]):hover { background: var(--ground-3); color: var(--ink); }
+.card:hover .exh-actions .bm:not([aria-pressed="true"]):hover { background: var(--rule-soft); }
+
+/* On the narrowest phones the exhibitor's name is down to a word a line, so
+   the column gives back the eight pixels it can spare. The labels still fit:
+   what goes is the air around them. */
+@media (max-width: 380px) {
+  .exh-actions { flex-basis: 96px; }
+  .exh-actions .bm { padding: 0 9px; gap: 6px; font-size: .64rem; }
+  /* And the name's own gutters come in with them, which is what keeps a
+     short exhibitor name on one line at the width German needs most. */
+  .exh-id { padding-left: 10px; padding-right: 10px; }
+}
 .card[data-saved="true"] { border-color: var(--signal); }
 .card[data-played="true"] { border-color: var(--rule); }
 .card[data-played="true"] .card-body { opacity: .62; }
@@ -2538,6 +2632,16 @@ body.queue-prompt-open .toast { bottom: calc(112px + env(safe-area-inset-bottom)
 .share-qr-solo .share-qr-image { max-width: 260px; }
 .share-qr-solo p { text-align: center; max-width: 34ch; }
 
+/* One booth's sheet says which booth before it says anything else — the name
+   set like the sources sheet's subject, because it is answering the same
+   question about which of a hundred-odd cards this is, and the hall and
+   stand under it in the plate's own words. */
+.booth-share-where {
+  margin: 4px 0 16px;
+  color: var(--ink-mid);
+  font-size: .84rem;
+}
+
 /* ============================================================
    sources dialog
    ============================================================ */
@@ -2893,6 +2997,19 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
      the wide masthead, and there is nothing here to align against. */
   .header-meta { grid-column: 1; grid-row: 2; text-align: left; }
   .install-btn { grid-column: 1 / -1; grid-row: 3; justify-self: start; }
+  /* ...and that row is the one thing in the masthead that arrives late, so
+     on the visits where it is coming it is held open from the first paint.
+     index.html stamps the answer before anything paints; see the comment on
+     it for why js/pwa.js cannot be the one to say so.
+
+     Reserved rather than shown: the button keeps its hidden attribute until
+     pwa.js takes it off, so this rule stops matching in the same frame the
+     real button appears, and an iOS visit where pwa.js never loads is left
+     with an empty strip rather than a control that does nothing. */
+  html[data-install-offer] .install-btn[hidden] {
+    display: block;
+    visibility: hidden;
+  }
 
   .grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; gap: 26px; }
@@ -2985,13 +3102,52 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
 #wristband-list,
 #day-guide { overflow-anchor: none; }
 
+/* ---- boot reservation ----
+
+   The counterpart to the overflow-anchor rules above: those keep the page
+   still while a list is rebuilt, this keeps it still while the first one
+   arrives.
+
+   index.html stamps data-booting before the first paint and js/app.js takes
+   it off once the landing view has rendered — see the comment on the stamp
+   for why it cannot be set from a script at the end of the body. Between
+   those two moments the grid is empty and everything after it in the
+   document — the trade section, the full directory, the footer — sits inside
+   the first screen, waiting to be shoved off it the moment the cards land. A
+   footer leaving the viewport is scored against the whole viewport, so that
+   single frame carried most of the guide's layout shift.
+
+   A screen of grid is exactly enough to put all of it below the fold, where
+   the cards can arrive for free. Overshooting is free too: this is replaced
+   by real content in the same frame that removes the stamp, and the grid is
+   thousands of pixels tall by then. That first render puts in a few screens
+   of cards and leaves the tail for the next task (see renderExhibitors),
+   which changes nothing here — a few screens is already several times the
+   one this gives back, and the tail lands below the fold.
+
+   :empty is the second half of it, not decoration, and it carries three
+   cases the stamp alone would not. A boot that fails writes its message into
+   the grid (see main() in js/app.js), and the reservation has to come off in
+   the frame that fills it rather than wait for a stamp that failed boot never
+   removes. A filter matching nothing leaves an empty grid too, and that is a
+   page which should be short. And it is what keeps this out of sw.js's
+   version bump: index.html is network-first while this file and js/app.js
+   ride stale-while-revalidate, so a fresh shell can be paired with an
+   app.js that never heard of the stamp — one that renders cards anyway, and
+   drops the reservation by filling the grid. Every other pairing is a rule
+   or a stamp that is simply absent, which is the behaviour these replace. */
+html[data-booting] #exhibitor-grid:empty { min-height: 100vh; }
+
 /* ---- rendering cost ----
 
-   The two long lists here are built in one innerHTML write, and laying all of
-   them out at once is most of what froze the first seconds on a phone: 142
-   cards, up to 200 directory rows behind them. content-visibility lets the
-   browser skip layout and paint for everything below the fold until it is
-   scrolled toward, so the cost of a list tracks the viewport, not the dataset.
+   Laying these lists out all at once is most of what froze the first seconds
+   on a phone: 142 cards, up to 200 directory rows behind them. renderKeyed()
+   keeps a re-render from rebuilding the rows it already has, but the first
+   time each list is built there is nothing to reuse, and every row after it
+   is scrolled to has to be laid out at some point regardless.
+   content-visibility lets the browser skip layout and paint for everything
+   below the fold until it is scrolled toward, so the cost of a list tracks
+   the viewport rather than the dataset.
 
    The intrinsic sizes are rough per-item heights — they only steer the
    scrollbar's first guess and are replaced by real geometry once an item has
