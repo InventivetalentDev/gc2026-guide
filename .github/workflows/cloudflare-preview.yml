@@ -135,28 +135,22 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
+          skip() { echo 'api=false' >> "$GITHUB_OUTPUT"; echo "::notice::$1"; exit 0; }
+
           # A pull_request checkout is the shallow merge ref, so neither of
           # these commits is necessarily present. Fetch both — `git diff A B`
           # compares two trees and needs no merge base, so depth 1 is enough.
           git fetch --depth=1 origin "$BASE" "$HEAD"
-          if ! git diff --name-only "$BASE" "$HEAD" \
-               | grep -qE '^(worker/|wrangler-api\.toml$|data/(exhibitors|event)\.json$)'; then
-            echo 'api=false' >> "$GITHUB_OUTPUT"
-            echo "::notice::No API changes in this PR — skipping its preview."
-            exit 0
-          fi
-          # `versions upload` needs the staging Worker to already exist, and it
-          # cannot be deployed before its database is created. Until then this
-          # would fail on every pull request for a reason that is nothing to do
-          # with the pull request, so say so instead. Same placeholder test
-          # cloudflare.yml uses to skip the production API deploy.
+          git diff --name-only "$BASE" "$HEAD" \
+            | grep -qE '^(worker/|wrangler-api\.toml$|data/(exhibitors|event)\.json$)' \
+            || skip "No API changes in this PR — skipping its preview."
+
           staging_id="$(awk '/^\[env\.staging\]/ { seen = 1 } seen && /^database_id = / { print $3; exit }' wrangler-api.toml)"
           if [ "$staging_id" = '"00000000-0000-0000-0000-000000000000"' ] || [ -z "$staging_id" ]; then
-            echo 'api=false' >> "$GITHUB_OUTPUT"
-            echo "::notice::The staging queue database is not provisioned yet, so there is no staging Worker to upload a version of. See docs/DEPLOYING.md, 'Queue backend: first deployment'."
-          else
-            echo 'api=true' >> "$GITHUB_OUTPUT"
+            skip "The staging queue database is not provisioned yet. See docs/DEPLOYING.md, 'Queue backend: first deployment'."
           fi
+
+          echo 'api=true' >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-node@v4
         if: steps.changed.outputs.api == 'true'
@@ -168,10 +162,32 @@ jobs:
         if: steps.changed.outputs.api == 'true'
         run: npm ci
 
+      # The precondition `versions upload` actually has: a Worker to be a
+      # version *of*. It refuses outright against one that has never been
+      # deployed, and that first deploy is a person pressing the button on the
+      # staging workflow — not something a pull request should do for them. So
+      # ask, and skip with the answer rather than failing every pull request
+      # with an error about the backend. Needs the toolchain above, so it
+      # cannot live with the cheaper checks.
+      - name: Does the staging Worker exist yet?
+        id: worker
+        if: steps.changed.outputs.api == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if npx --no-install wrangler versions list \
+               --config wrangler-api.toml --env staging > /dev/null 2>&1; then
+            echo 'exists=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'exists=false' >> "$GITHUB_OUTPUT"
+            echo "::notice::The staging API Worker has not been deployed yet, so there is no Worker to upload a version of. Run the 'Deploy the queue API to staging' workflow once."
+          fi
+
       # The API's review is its test suite far more than its URL, so a failing
       # suite must not produce a preview somebody then pokes at by hand.
       - name: Test the Worker
-        if: steps.changed.outputs.api == 'true'
+        if: steps.changed.outputs.api == 'true' && steps.worker.outputs.exists == 'true'
         run: npx vitest run
 
       # `--env staging` is the safety property, not a convenience: it selects
@@ -181,7 +197,7 @@ jobs:
       # it by hand first (docs/DEPLOYING.md); automating it would let any open
       # PR rewrite the staging schema under the others.
       - name: Upload the API preview version
-        if: steps.changed.outputs.api == 'true'
+        if: steps.changed.outputs.api == 'true' && steps.worker.outputs.exists == 'true'
         id: upload
         uses: cloudflare/wrangler-action@v4
         with:
@@ -191,7 +207,7 @@ jobs:
           command: versions upload --config wrangler-api.toml --env staging --preview-alias pr-${{ github.event.pull_request.number }} --message pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
 
       - name: Comment the API preview URL on the PR
-        if: steps.changed.outputs.api == 'true'
+        if: steps.changed.outputs.api == 'true' && steps.worker.outputs.exists == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           UPLOAD_OUTPUT: ${{ steps.upload.outputs.command-output }}
