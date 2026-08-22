@@ -354,6 +354,15 @@ window.GC_STRINGS.de = {
   "shareSite.linkLabel": "Link",
   "shareSite.nativeTitle": "gamescom 2026 – Besucherguide",
 
+  /* Einen einzelnen Stand teilen — die dritte Zeile in der Ecke einer Karte. */
+  "shareBooth.action": "Teilen",
+  "shareBooth.aria": "Stand von {name} teilen",
+  "shareBooth.overline": "Hierhin schicken",
+  "shareBooth.title": "Diesen Stand teilen",
+  "shareBooth.closeAria": "Teilen-Dialog schließen",
+  "shareBooth.qrHint": "Oder halt den Code vor die Kamera, dann öffnet sich dieser Stand auf dem anderen Handy.",
+  "shareBooth.nativeTitle": "{name} auf der gamescom 2026",
+
   "share.items": "{n} Eintrag|{n} Einträge",
   "share.readyWithStale": "Du kannst {items} teilen.",
   "share.staleOlder":
@@ -563,6 +572,8 @@ window.GC_STRINGS.de = {
   "trade.toastOn":
     "Business-Aussteller an — die Stände stehen in der Übersicht und in ihrer eigenen Liste darunter.",
   "trade.toastOff": "Business-Aussteller aus — zurück zu den Entertainment-Hallen.",
+  "trade.toastLinked":
+    "Das ist ein Stand in den Business-Hallen, deshalb sind die Business-Aussteller jetzt an. Über die Ausweis-Zeile schaltest du sie wieder aus.",
   "trade.catFilterAria": "Business-Aussteller nach Produktgruppe filtern",
   "trade.loading": "Business-Hallen werden geladen…",
   "trade.loadError":

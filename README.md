@@ -12,6 +12,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Saved list** — bookmark booths and individual games, then filter both the exhibitor grid and the queue-priority list down to just those
 - **Shareable saved lists** — move a plan to another device or send it to a friend with a link or scannable QR code
 - **Share the guide itself** — a Share button in the masthead opens a QR code big enough to hold up to the phone of whoever you are queueing with, plus the link to copy for posting it anywhere else
+- **Share one booth** — every card's corner carries a Share row beside Save and Played. It hands out a link that opens the guide *on that card*, scrolled to it and lit for a moment, rather than at the top of a list of a hundred and eleven — so "Capcom is in 9.1" can be a link instead of a description. A card turned to its business booth shares the business booth, and a link naming one switches the trade exhibitors on to answer it
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them. Each stop wears its queue index in both arrangements, and ▲▼ put the list in **the order you'll actually walk it** — the guide opens with busiest-queue-first and hands the order over the moment you disagree; the hall map numbers its pins from the same order. Either arrangement reaches the map from its own headings — a hall heading opens that hall, a day heading opens the whole site with that day lit
 - **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up. Tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. Entertainment halls and trade-only business halls are each washed in the colour the official plan gives that area, and the business ones are flagged as the door a consumer ticket does not open. Pick a day and that day's stops are pinned on the floor in your plan's own order — the one you arranged, or busiest first with played ones last until you do — so "Thursday, hall 7.1" is a picture rather than a list. It does not stop at the wall: the halls either side of this one in the plan are named in the bar, a tap from opening, and where a doorway is known to start the way there the route runs out to it and an arrow points through. The overview answers the same question for the whole site — every hall that day touches, lit and numbered in order. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens the map on that stand. It works offline like everything else
@@ -150,11 +151,16 @@ overwhelmingly German. To refresh them, re-run the download step in
 
 ## The saved list
 
-The `+` on a card head saves a booth; the `+` on a lineup row saves a single game.
+The `+` in a card's corner saves a booth; the `+` on a lineup row saves a single game.
 Both are kept in `localStorage` under `gc2026.saved.v1` — no account, no server, and
 nothing leaves the device unless you share a link yourself. Two tabs of the guide stay
 in sync via the `storage` event, and if storage is blocked altogether (Safari private
 mode) the list still works for the session instead of throwing.
+
+The corner itself is three rows — **Save**, **Played**, **Share** — one per thing you
+can do with a booth, each carrying its own word rather than a bare glyph, and each the
+full width of a fixed column, so pressing one never resizes the button under the thumb
+that pressed it or shoves the exhibitor's name sideways.
 
 Shared links encode guide identifiers only — compact fixed-width hashes of exhibitor
 ids and game titles, never the names themselves. The link and its QR code are built
@@ -172,6 +178,17 @@ masthead — and carries nothing of yours: it is the canonical address, once as 
 code sized to be scanned across a queue and once as text to copy. Where the OS
 provides a share sheet it is offered too; there are no per-platform buttons, because
 a copied link reaches everywhere one of those would have.
+
+Sharing one *booth* is the third of the three, and the smallest: the **Share** row in
+a card's corner hands out `#exhibitors?ex=<id>`, which carries nothing of yours
+either. It is the address the hall map has always used to send someone to a card, so
+what arrives is the guide scrolled to that booth and the card lit for a moment —
+which is the whole difference between a link and a description. A card turned to its
+business booth shares the business booth rather than its owner, and a link naming a
+booth in halls 2–4 switches the trade exhibitors on to answer it rather than landing
+on an empty grid; a toast says so, and the Badge row switches them straight back off.
+Same sheet as the other two — the link first, because this one is usually sent rather
+than held up, with the QR under it for the times you are standing together after all.
 
 A link for someone else never replaces an existing list: it asks before adding to a
 non-empty list, while an empty list imports immediately with an Undo option — and a
@@ -231,8 +248,8 @@ game in anyone's saved list. See the editorial rules in
 
 ### Played tracking
 
-The `✓` beside every game and booth records what you have already played. A booth
-counts as played when you tick it directly, or when every game you saved there has
+The `✓` beside every game, and the **Played** row in a card's corner, record what you
+have already played. A booth counts as played when you tick it directly, or when every game you saved there has
 been played. Save another game at a booth that was complete that way and the booth
 becomes active again until you play the new addition.
 

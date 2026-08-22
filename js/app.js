@@ -512,6 +512,8 @@ function keepingFocus(container, render, fallback) {
       ? `.bm[data-mark="${CSS.escape(el.dataset.mark)}"][data-bm-kind="${CSS.escape(el.dataset.bmKind)}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
       : el.dataset.srcKind
       ? `.src-btn[data-src-kind="${CSS.escape(el.dataset.srcKind)}"][data-src-key="${CSS.escape(el.dataset.srcKey)}"]`
+      : el.dataset.shareEx
+      ? `.bm-share[data-share-ex="${CSS.escape(el.dataset.shareEx)}"]`
       : el.classList.contains("more-games")
         ? `.more-games[data-id="${CSS.escape(el.dataset.id)}"]`
         : null;
@@ -1361,12 +1363,12 @@ function renderShareDialog() {
   status.textContent = "";
 }
 
-/* Copy and OS-share are identical in both share sheets — only the ids and
-   the sheet's title differ — so the wiring lives once.
+/* Copy and OS-share are identical in all three share sheets — only the ids
+   and the sheet's title differ — so the wiring lives once.
 
    A refused clipboard is not an error state: it falls back to selecting the
    link, which is what a person would have done unaided, and says so. */
-function bindLinkActions({ input, copy, native, status, titleKey }) {
+function bindLinkActions({ input, copy, native, status, title }) {
   const say = (message) => {
     status.textContent = message;
   };
@@ -1386,7 +1388,7 @@ function bindLinkActions({ input, copy, native, status, titleKey }) {
 
   native.addEventListener("click", async () => {
     try {
-      await navigator.share({ title: t(titleKey), url: input.value });
+      await navigator.share({ title: title(), url: input.value });
     } catch (err) {
       /* Closing the OS sheet without picking anything is a choice, not a
          failure, and reporting it would call every dismissal a problem. */
@@ -1424,7 +1426,7 @@ function bindShareDialog() {
     copy: $("#copy-share-link"),
     native: $("#native-share"),
     status: $("#share-status"),
-    titleKey: "share.nativeTitle",
+    title: () => t("share.nativeTitle"),
   });
 }
 
@@ -1478,7 +1480,92 @@ function bindSiteShare() {
     copy: $("#copy-site-link"),
     native: $("#native-site-share"),
     status: $("#site-share-status"),
-    titleKey: "shareSite.nativeTitle",
+    title: () => t("shareSite.nativeTitle"),
+  });
+}
+
+/* ---------- share one booth ----------
+
+   Between the other two: more than the guide's front door, less than your
+   whole plan. Nothing of yours rides along — the link names a booth and
+   nothing else — so like the guide's own sheet there is nothing to choose,
+   only the address twice.
+
+   The case it is for is a message rather than a queue: "Capcom is in 9.1,
+   here". So the link leads and the QR follows, which is the other way round
+   from the guide's sheet, where the two people are standing together. */
+
+/* #exhibitors?ex=<id> is the address the hall map has always used to send
+   someone to a card (see focusExhibitor) — sharing it is the same journey,
+   starting on somebody else's phone. Same origin rule as buildShareLink: a
+   host being retired hands out hallgui.de, everything else shares itself,
+   so a preview deploy's links stay inside the preview. */
+function boothShareUrl(id) {
+  const origin = onLegacyHost() ? SHARE_ORIGIN : location.origin;
+  return `${origin}${location.pathname}#exhibitors?ex=${encodeURIComponent(id)}`;
+}
+
+/* Which booth the open sheet is holding. The sheet is written on open, like
+   both others, but the OS share title is read at the moment the button is
+   pressed — so the name has to outlive the render. */
+let boothShareSubject = null;
+
+function renderBoothShare(ex) {
+  boothShareSubject = ex;
+  const url = boothShareUrl(ex.id);
+  $("#booth-share-link").value = url;
+  $("#booth-share-subject").textContent = ex.name;
+  /* Where it is, in the same words the plan uses — so the person pasting the
+     link can see they picked the right booth before they send it, and the
+     three cards that have no hall number to show (not exhibiting, offsite,
+     hall not announced) say which of the three they are rather than leaving
+     an empty line under the name. */
+  $("#booth-share-lede").textContent = ex.hall
+    ? whereLabel(ex.hall, ex.booth)
+    : isAbsent(ex)
+      ? t("plate.absent")
+      : isOffsite(ex)
+        ? t("plan.offsite")
+        : t("plan.hallTba");
+
+  /* js/qr.js is deferred, so it is there by the time anything can be
+     tapped — the fallback is for the load where it is not. */
+  const svg = typeof window.qrSvg === "function" ? window.qrSvg(url) : null;
+  $("#booth-share-qr").hidden = !svg;
+  $("#booth-share-qr-image").innerHTML = svg || "";
+  $("#booth-share-qr-fallback").hidden = Boolean(svg);
+
+  $("#native-booth-share").hidden = typeof navigator.share !== "function";
+  $("#booth-share-status").textContent = "";
+}
+
+function openBoothShare(id) {
+  const ex = exhibitorById(id);
+  const dialog = $("#booth-share-dialog");
+  if (!ex || !dialog) return;
+  renderBoothShare(ex);
+  dialog.showModal();
+}
+
+function bindBoothShare() {
+  const dialog = $("#booth-share-dialog");
+  /* Tolerate a cached pre-booth-share index.html — the bindSourcesDialog
+     rule. shareButton() renders nothing on that pairing, so there is also
+     no button to bind. */
+  if (!dialog) return;
+  bindDialogDismiss(dialog, $("#close-booth-share"));
+  bindLinkActions({
+    input: $("#booth-share-link"),
+    copy: $("#copy-booth-link"),
+    native: $("#native-booth-share"),
+    status: $("#booth-share-status"),
+    /* The booth's own name, not the guide's: an OS share sheet showing
+       "gamescom 2026 visitor guide" for every booth tells the person
+       picking a chat window nothing about which one they are sending. */
+    title: () =>
+      boothShareSubject
+        ? t("shareBooth.nativeTitle", { name: boothShareSubject.name })
+        : t("shareSite.nativeTitle"),
   });
 }
 
@@ -2430,6 +2517,26 @@ function tradeBlocks(ex) {
   return { list, line };
 }
 
+/* The third row of the card's action corner.
+
+   The + and the ✓ change your own copy of the guide; this one hands the
+   booth to somebody else, so it opens a sheet rather than toggling
+   anything. It carries the id of the face on screen, not the card's owner:
+   a card turned to its business booth shares the business booth.
+
+   Empty when the sheet is not in the markup, which is the bindSourcesDialog
+   rule — the service worker can pair this script with an index.html one
+   version older, and a third row that opens nothing is worse than two. */
+function shareButton(ex) {
+  if (!$("#booth-share-dialog")) return "";
+  const label = t("shareBooth.aria", { name: ex.name });
+  return `<button class="bm bm-wide bm-share" type="button" aria-haspopup="dialog"
+      data-share-ex="${esc(ex.id)}" title="${esc(label)}" aria-label="${esc(label)}">
+    <span class="bm-mark" aria-hidden="true">↗</span><span class="bm-text" aria-hidden="true">${esc(
+      t("shareBooth.action")
+    )}</span></button>`;
+}
+
 function card(ex) {
   const games = visibleGames(ex);
   const isOpen = state.expanded.has(ex.id);
@@ -2458,8 +2565,11 @@ function card(ex) {
         }</span>
         <h3>${esc(ex.name)}${hasAdult(ex) && !games.length && state.age !== "hide" ? ageBadge(boothAgeStatus(ex)) : ""}</h3>
       </div>
-      ${markButton("played", "exhibitor", ex.id, ex.name)}
-      ${markButton("saved", "exhibitor", ex.id, ex.name, { wide: true })}
+      <div class="exh-actions">
+        ${markButton("saved", "exhibitor", ex.id, ex.name, { wide: true })}
+        ${markButton("played", "exhibitor", ex.id, ex.name, { wide: true })}
+        ${shareButton(ex)}
+      </div>
     </div>
     <div class="card-body">
       <p class="desc">${esc(ex.description)}</p>
@@ -5441,8 +5551,9 @@ function syncHash() {
   if (location.hash.slice(1) !== target) history.replaceState(null, "", `#${target}`);
 }
 
-/* The hall map links back as #exhibitors?ex=<id> — a booth you tapped on
-   the map should land on its own card, not at the top of the grid. The
+/* The hall map links back as #exhibitors?ex=<id>, and a card's Share row
+   hands the same address to somebody else — a booth you tapped on the map,
+   or were sent, should land on its own card, not at the top of the grid. The
    param is consumed like a share payload (syncHash drops it moments
    later anyway), and any filter hiding the card is cleared first: you
    asked for this booth by name, so a stale "saved only" must not answer
@@ -5450,6 +5561,17 @@ function syncHash() {
 function focusExhibitor(id) {
   const ex = id && exhibitorById(id);
   if (!ex) return;
+  /* The trade exhibitors are the one thing resetFilters() below cannot
+     clear, because they are a claim about you rather than a filter — the
+     badge switch is off until you say you hold one, and with it off a
+     business booth is not in the grid at all. A link that names one is
+     answered rather than dropped: it says where the person sending it
+     thinks you are going, the toast says what was switched on, and the
+     Badge row switches it straight back off. */
+  if (ex.type === "trade" && !state.trade) {
+    setTrade(true);
+    showToast(t("trade.toastLinked"));
+  }
   /* A link names one card out of the whole list, and the grid may still be
      filling the tail of it — see renderExhibitors. Settle that before looking
      for the card, or a booth in the tail answers as a booth we do not have. */
@@ -5800,9 +5922,10 @@ function bindControls() {
   $("#plan-order-reset")?.addEventListener("click", resetPlanOrder);
   bindShareDialog();
   bindSiteShare();
+  bindBoothShare();
   bindSourcesDialog();
-  /* One delegated listener covers every +, ✓, day and sources button in every
-     view, including the ones that get re-rendered underneath it. */
+  /* One delegated listener covers every +, ✓, day, share and sources button
+     in every view, including the ones that get re-rendered underneath it. */
   document.addEventListener("click", (e) => {
     /* Turning a card over. Keyed on the owner's id from either side, so the
        two plates are the same switch pointing opposite ways. */
@@ -5837,6 +5960,11 @@ function bindControls() {
     const src = e.target.closest("[data-src-kind]");
     if (src) {
       openSources(src.dataset.srcKind, src.dataset.srcKey);
+      return;
+    }
+    const share = e.target.closest("[data-share-ex]");
+    if (share) {
+      openBoothShare(share.dataset.shareEx);
       return;
     }
     /* "+ 4 more" / "Show fewer". Delegated rather than bound per card: the

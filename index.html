@@ -732,6 +732,44 @@
     </div>
   </dialog>
 
+  <!-- Sharing one booth, as opposed to the guide or a saved list. Nothing of
+       yours rides along — the link names a booth and nothing else — so like
+       the guide's sheet there is nothing to choose, only the address twice.
+
+       The order of the two is swapped, though. The guide's sheet is for two
+       people standing together, so its QR leads; a booth is for a message
+       sent to someone who is not there yet, so the link leads and the code
+       is underneath for the times you are in the queue together after all.
+       One dialog serves every card: the subject line and the link are
+       written on open, the way both sheets above are. -->
+  <dialog class="sheet" id="booth-share-dialog" aria-labelledby="booth-share-title" aria-describedby="booth-share-subject">
+    <div class="sheet-head">
+      <div>
+        <span class="overline" data-i18n="shareBooth.overline">Send someone here</span>
+        <h2 id="booth-share-title" data-i18n="shareBooth.title">Share this booth</h2>
+      </div>
+      <button class="sheet-close" id="close-booth-share" type="button" aria-label="Close share dialog" data-i18n-attr="aria-label:shareBooth.closeAria">×</button>
+    </div>
+    <div class="sheet-body">
+      <p class="src-subject" id="booth-share-subject"></p>
+      <p class="booth-share-where" id="booth-share-lede"></p>
+      <label class="share-link-field" for="booth-share-link">
+        <span class="field-label" data-i18n="shareSite.linkLabel">Link</span>
+        <input id="booth-share-link" type="text" readonly spellcheck="false">
+      </label>
+      <div class="share-actions">
+        <button class="share-action share-action-primary" id="copy-booth-link" type="button" data-i18n="share.copyAction">Copy link</button>
+        <button class="share-action" id="native-booth-share" type="button" hidden data-i18n="share.nativeAction">Share…</button>
+      </div>
+      <p class="share-status" id="booth-share-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div class="share-qr" id="booth-share-qr">
+        <div class="share-qr-image" id="booth-share-qr-image"></div>
+        <p data-i18n="shareBooth.qrHint">Or hold this up to someone's camera to open this booth on their phone.</p>
+      </div>
+      <p class="share-qr-fallback" id="booth-share-qr-fallback" hidden data-i18n="share.qrFailed">The QR code could not be loaded — send the link instead.</p>
+    </div>
+  </dialog>
+
   <!-- One dialog serves every entry: the list is written on open, the same way
        the share dialog is. -->
   <dialog class="sheet src-dialog" id="sources-dialog" aria-labelledby="sources-dialog-title" aria-describedby="sources-note">
