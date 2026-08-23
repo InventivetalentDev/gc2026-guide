@@ -5426,6 +5426,207 @@ function changeParts(change) {
   return { kind, text: String(change?.text ?? "") };
 }
 
+/* ---------- names in the changelog ----------
+
+   "Ubisoft booth confirmed: Hall 6 B010" is about a card this guide already
+   holds, and until something says so it is only prose. Every exhibitor and
+   game a bullet names is marked in the text and linked to its card, at the
+   same #exhibitors?ex=<id> address the hall map and a card's Share row hand
+   out — so a line about a booth is one tap from the booth.
+
+   The index is derived from data/exhibitors.json rather than written into the
+   changelog. A booth that gains a card is linked in every bullet that ever
+   named it, a name the guide drops stops pretending to be one, and nobody
+   re-marks six months of log by hand after a rename.
+
+   Two rules keep it from lying, and both are the share-token rule in another
+   place: a term is a link only when it names exactly one card, and a term two
+   cards claim is dropped rather than guessed at. That is what leaves EA
+   Sports FC 27 as plain text — EA, Nintendo and The District all show it, and
+   the sentence does not say which one it meant. */
+
+/* What a name can lose and still be the name someone writes in a sentence:
+   Focus Entertainment is Focus, SCS Software is SCS, MBC Game Studio is MBC.
+   Only these words — Raw Fury is not Raw, Secret Mode is not Secret, and The
+   District is certainly not The. */
+const NAME_TAIL = new Set([
+  "entertainment", "software", "games", "game", "studio", "studios",
+  "interactive", "technologies", "labs", "team", "group", "digital",
+  "pavilion", "ltd", "inc", "gmbh",
+]);
+
+/* The one-word form of a name whose remaining words are all in that set. It
+   is the only alias built from something other than the name as filed, which
+   is why it is the only one held to the sentence-start rule below. */
+function shortForm(name) {
+  const words = name.split(/\s+/);
+  if (words.length < 2 || words[0].length < 3) return null;
+  const tail = words.slice(1).every((w) => NAME_TAIL.has(w.toLowerCase().replace(/[.,]/g, "")));
+  return tail ? words[0] : null;
+}
+
+/* Every way one card's name is written in running prose. The name as filed is
+   one of them; the rest are the forms an editor actually types — "Xbox" for
+   "Xbox (Microsoft)", "Atlus" for "SEGA / Atlus", "Webedia" for "Webedia —
+   FYNG City". `aka` on the card is the escape hatch for the ones no rule
+   reaches, like AWS for Amazon Web Services. */
+function nameForms(ex) {
+  const forms = new Set((ex.aka || []).map((a) => String(a).trim()));
+  const add = (s) => {
+    const v = String(s).trim();
+    if (v.length >= 3) forms.add(v);
+  };
+  /* "Samsung — business booth" is a filing label, not something anyone
+     writes. Underneath it is the name, which belongs to the card people
+     mean — see the businessOf redirect in changelogRefs(). */
+  const base = String(ex.name).replace(/\s+—\s+business booth$/, "").trim();
+  add(base);
+  const paren = base.match(/^(.*?)\s*\(([^)]+)\)$/);
+  const stem = paren ? paren[1].trim() : base;
+  if (paren) {
+    add(stem);
+    /* "(Microsoft)", "(KOCCA)", "(GTA 6)" name something and get written on
+       their own; "(esports area)" describes one, and nobody writes that. */
+    if (/^[A-Z0-9]/.test(paren[2])) add(paren[2]);
+  }
+  for (const part of stem.split(/\s+(?:\/|&|×)\s+/)) add(part);
+  if (base.includes(" — ")) add(base.split(" — ")[0]);
+  return [...forms];
+}
+
+const RX_SPECIAL = /[.*+?^${}()|[\]\\]/g;
+
+/* term → the one card it names, plus the alternation that finds them. Terms
+   are held folded to lower case: casing is a house style rather than part of
+   a name — "CD PROJEKT RED" is CD Projekt Red shouting — and the rule that
+   keeps that from swallowing ordinary words is in changeMarkup, not here.
+   Rebuilt with the rest of the derived tables, so a data refresh cannot leave
+   a link pointing at a card that has since moved or gone. */
+const changelogRefs = derived(() => {
+  /* Two passes, kept apart: a name as filed always beats a short form built
+     from a different name, so the short forms are collected on their own and
+     only fill terms nothing has claimed. Within a pass, a term two cards
+     claim is set to null rather than deleted — a third claimant must not
+     quietly revive it. */
+  const named = new Map();
+  const shorts = new Map();
+  const claim = (into, term, ref) => {
+    const as = String(term || "").trim();
+    const key = as.toLowerCase();
+    if (key.length < 3) return;
+    /* `as` is the spelling the card actually files, which is the whole of
+       what a lower-case name has to prove itself by — see writtenAsName. */
+    if (!into.has(key)) into.set(key, { ...ref, as });
+    else {
+      const held = into.get(key);
+      if (held && held.id !== ref.id) into.set(key, null);
+    }
+  };
+  for (const ex of state.exhibitors || []) {
+    /* A business face is the same company as its consumer card, so the name
+       under its filing label belongs to the card people mean. */
+    const id = ex.businessOf || ex.id;
+    for (const form of nameForms(ex)) {
+      claim(named, form, { id, kind: "exhibitor" });
+      const short = shortForm(form);
+      if (short) claim(shorts, short, { id, kind: "exhibitor", short: true });
+    }
+  }
+  /* Games after exhibitors, because a booth named for its game — Gryphline
+     (Arknights: Endfield) — should answer as the booth either way, and both
+     claims land on the same card anyway. */
+  for (const ex of state.exhibitors || []) {
+    for (const game of ex.games || []) {
+      claim(named, game.title, { id: ex.id, kind: "game", title: game.title, at: ex.name });
+    }
+  }
+  for (const [term, ref] of shorts) if (!named.has(term)) named.set(term, ref);
+
+  const terms = new Map([...named].filter(([, ref]) => ref));
+  /* Longest first: "THQ Nordic" has to win over "Nordic", and "Final Fantasy
+     VII Remake" over the opening it shares with "Final Fantasy VII
+     Revelation". */
+  const pattern = terms.size
+    ? new RegExp(
+        [...terms.keys()]
+          .sort((a, b) => b.length - a.length)
+          .map((term) => term.replace(RX_SPECIAL, "\\$&"))
+          .join("|"),
+        "gi"
+      )
+    : null;
+  return { terms, pattern };
+});
+
+const RX_WORDISH = /[\p{L}\p{N}]/u;
+
+/* A short form is an ordinary word wearing a capital letter, and the one
+   place a capital letter proves nothing is the start of a sentence: "Focus"
+   mid-line is Focus Entertainment, "Focus" opening a bullet could be
+   anybody's verb. Names as filed carry their own evidence and match
+   anywhere. */
+const opensSentence = (text, at) => at === 0 || /[.!?:;]\s+$/.test(text.slice(0, at));
+
+/* Terms are matched without regard to case, so that CD PROJEKT RED and
+   Krafton reach the cards filed as CD Projekt Red and KRAFTON. What that must
+   not reach is the same letters used as ordinary words, and the tell is that
+   nobody writes a name in running text without a capital in it: "focus still
+   lands on the button" is not Focus Entertainment, and "the retro block" is
+   not Retro Games Ltd. The exception is a name filed in lower case —
+   servers.com, konsolenfan.de, astragon — which is a name written exactly as
+   its card spells it, and nothing else. */
+const writtenAsName = (shown, ref) => /[A-Z]/.test(shown) || shown === ref.as;
+
+function refLink(ref, shown) {
+  const label =
+    ref.kind === "game"
+      ? t("updates.refGame", { game: ref.title, exhibitor: ref.at })
+      : t("updates.refExhibitor", { exhibitor: exhibitorById(ref.id)?.name || shown });
+  return `<a class="change-ref" data-ref="${esc(ref.kind)}" href="#exhibitors?ex=${encodeURIComponent(
+    ref.id
+  )}" aria-label="${esc(label)}">${esc(shown)}</a>`;
+}
+
+/* The bullet, escaped as ever, with every name it holds turned into a link.
+   Everything outside a match still goes through esc() — the changelog is
+   data, and this is the only place its text stops being one opaque string. */
+function changeMarkup(text) {
+  const { terms, pattern } = changelogRefs();
+  if (!pattern) return esc(text);
+  let out = "";
+  let cut = 0;
+  let m;
+  pattern.lastIndex = 0;
+  while ((m = pattern.exec(text))) {
+    const shown = m[0];
+    const at = m.index;
+    const end = at + shown.length;
+    const term = shown.toLowerCase();
+    const ref = terms.get(term);
+    /* A name inside a longer word is not that name: Xbox is not in Xboxes,
+       and 4Divinity is not in 24Divinity. An apostrophe is not a letter, so
+       "Ubisoft's" links Ubisoft and leaves the possessive outside it. */
+    const bounded =
+      !(at > 0 && RX_WORDISH.test(text[at - 1])) && !(end < text.length && RX_WORDISH.test(text[end]));
+    if (
+      !ref ||
+      at < cut ||
+      !bounded ||
+      !writtenAsName(shown, ref) ||
+      (ref.short && opensSentence(text, at))
+    ) {
+      /* Step one character rather than past the whole term: a longer name
+         starting inside this one may still be the real match. */
+      pattern.lastIndex = at + 1;
+      continue;
+    }
+    out += esc(text.slice(cut, at)) + refLink(ref, shown);
+    cut = end;
+    pattern.lastIndex = end;
+  }
+  return out + esc(text.slice(cut));
+}
+
 function kindTag(kind, cls) {
   return `<span class="${cls}" data-kind="${esc(kind)}">${esc(t(`updates.kind.${kind}`))}</span>`;
 }
@@ -5500,7 +5701,7 @@ function renderChangelog() {
             (c) =>
               `<li${c.kind ? ` data-kind="${esc(c.kind)}"` : ""}>${
                 c.kind ? kindTag(c.kind, "change-tag") : ""
-              }${esc(c.text)}</li>`
+              }${changeMarkup(c.text)}</li>`
           )
           .join("")}</ul>
       </div>`

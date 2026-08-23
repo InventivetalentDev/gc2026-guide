@@ -2399,6 +2399,23 @@ a.area-hall::after { content: ""; position: absolute; inset: -6px -8px; }
 }
 .change-tag { margin-right: 9px; position: relative; top: -1px; }
 
+/* Exhibitors and games named in a bullet, linked to their cards (see
+   changeMarkup). The bullets are set in --ink-mid, so a name coming up to
+   --ink is the whole highlight — it reads as the proper noun it is without a
+   second colour in a list that already carries three kind tags. The underline
+   is the quiet one .hall-link uses in the planner rows, for the same reason:
+   these sit several to a line, and an affordance per name would be a rash. */
+.change-ref {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.change-ref:hover,
+.change-ref:focus-visible { color: var(--signal); text-decoration-color: currentColor; }
+
 /* ============================================================
    footer
    ============================================================ */

@@ -432,6 +432,8 @@ window.GC_STRINGS.de = {
   "updates.kind.fix": "Behoben",
   "updates.kind.content": "Messe-Infos",
   "updates.noneOfKind": "Zu dieser Art sind noch keine Änderungen verzeichnet.",
+  "updates.refExhibitor": "Karte von {exhibitor} öffnen",
+  "updates.refGame": "{exhibitor} öffnen, zeigt {game}",
 
   /* ---------- countdown & freshness ---------- */
   "countdown.days": "T−{n} Tag|T−{n} Tage",
