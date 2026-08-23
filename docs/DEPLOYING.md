@@ -402,9 +402,21 @@ Each gets two URLs:
   review;
 - `<version>-<worker>.<subdomain>.workers.dev` — that one push, frozen.
 
-The API job is path-filtered: it runs only when `worker/`, `wrangler-api.toml`
-or the two data files the Worker bundles have changed. A PR that only touches
-the client gets a site preview and nothing else.
+**The API job previews only a changed API**, and "changed" is asked of the
+Worker's behaviour rather than of the file list. `worker/` or
+`wrangler-api.toml` is a change outright. The two data files the Worker
+bundles — `data/exhibitors.json` and `data/event.json` — are not, on their own:
+the Worker takes a queue allowlist and a show calendar out of them and ignores
+the rest, so a booth number, a game description or a new `aka` short form
+leaves the API answering byte-for-byte as the one already on staging.
+`tools/api-fingerprint.mjs` hashes those two derived values on both sides of
+the diff, using the Worker's own `buildQueueAllowlist`, and the job skips when
+they match. It fails open: anything that stops the comparison working previews
+anyway. A PR that only touches the client gets a site preview and nothing else.
+
+This matters because an alias is retained against a per-Worker limit and a
+data refresh is most of what this repository does — by path alone, nearly
+every one of them spent a preview on an identical Worker.
 
 **A site preview borrows staging's API.** On its own it could not have one:
 the two halves share a hostname in production because the API claims `/api/*`
