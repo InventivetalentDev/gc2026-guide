@@ -64,6 +64,7 @@
       { "title": "Orbitals", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Pokémon Pokopia (Expansion Pass)", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Splatoon Raiders", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
+      { "title": "Elden Ring: Tarnished Edition", "status": "confirmed", "playable": true, "age": 16, "ageStatus": "expected", "platforms": ["Switch 2"] },
       { "title": "Additional unannounced titles", "status": "expected", "playable": null, "platforms": ["Switch 2"] }
     ],
     "tags": ["Switch 2", "family-friendly", "console", "playable demos"],
@@ -74,9 +75,10 @@
       "https://www.activision.com/de/games",
       "https://www.gamescom.global/en/info/gamescom-cares",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://x.com/BandaiNamcoEU/status/1955615446180184138"
     ],
-    "lastUpdated": "2026-08-19"
+    "lastUpdated": "2026-08-23"
   },
   {
     "id": "playstation",
@@ -181,9 +183,7 @@
     "games": [
       { "title": "Ace Combat 8: Wings of Theve", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Dragon Ball Xenoverse 3", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "Elden Ring: Tarnished Edition", "status": "rumored", "playable": null, "platforms": ["Switch 2"] },
-      { "title": "One Piece: Grand Gourmet", "status": "rumored", "playable": null, "platforms": ["TBC"] }
+      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AAA", "RPG", "anime", "world premiere", "playable demos"],
     "crowd": 4,
@@ -191,9 +191,10 @@
       "https://en.bandainamcoent.eu/events/news/bandai-namco-entertainment-details-fully-playable-gamescom-2026-line",
       "https://en.bandainamcoent.eu/dawnwalker/the-blood-of-dawnwalker",
       "https://www.gamescom.global/en/info/gamescom-cares",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
+      "https://x.com/BandaiNamcoEU/status/1955615446180184138"
     ],
-    "lastUpdated": "2026-08-10"
+    "lastUpdated": "2026-08-23"
   },
   {
     "id": "konami",
@@ -251,7 +252,7 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/ea-swiss-sarl",
     "games": [
-      { "title": "EA Sports FC 27", "status": "expected", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
+      { "title": "EA Sports FC 27", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
       { "title": "Battlefield 6 (seasonal content)", "status": "rumored", "playable": null, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "skate.", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "PS4", "Xbox"] }
     ],
@@ -259,9 +260,10 @@
     "crowd": 3,
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
-      "https://exhibitors.gamescom.global/exhibitor/ea_swiss/"
+      "https://exhibitors.gamescom.global/exhibitor/ea_swiss/",
+      "https://www.gamescom.global/en/exhibitor/ea-swiss-sarl"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-23"
   },
   {
     "id": "square-enix",
@@ -828,7 +830,7 @@
     "name": "MBC Game Studio — business booth",
     "type": "trade",
     "hall": "2.1",
-    "booth": "A057",
+    "booth": "C034/D035",
     "locationConfirmed": true,
     "dirSlug": "mbc_game_studio_limi",
     "country": "Saudi Arabia",
@@ -836,9 +838,10 @@
     "games": [],
     "tags": ["closed stand"],
     "sources": [
-      "https://exhibitors.gamescom.global/en/exhibitor/mbc_game_studio_limi/"
+      "https://exhibitors.gamescom.global/en/exhibitor/mbc_game_studio_limi/",
+      "https://www.gamescom.global/en/info/hall-plan"
     ],
-    "lastUpdated": "2026-08-22"
+    "lastUpdated": "2026-08-23"
   },
   {
     "id": "the-district",
@@ -888,14 +891,13 @@
     "hall": "8.1",
     "booth": "B020",
     "locationConfirmed": true,
-    "officialUrl": "https://www.gamescom.global/en/exhibitor/mattel-europa-bv",
     "games": [],
     "tags": ["family-friendly", "merch", "tabletop", "licensing"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/mattel_europa_bv/"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-23"
   },
   {
     "id": "jbl-quantum",
@@ -1717,6 +1719,22 @@
     "lastUpdated": "2026-08-17"
   },
   {
+    "id": "yamaha-music",
+    "name": "Yamaha Music",
+    "type": "hardware",
+    "hall": "10.1",
+    "booth": "A070",
+    "locationConfirmed": true,
+    "games": [],
+    "tags": ["hardware", "audio"],
+    "crowd": 1,
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-hardware-hersteller-070826/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
+    "lastUpdated": "2026-08-23"
+  },
+  {
     "id": "aoc-agon",
     "name": "AGON by AOC",
     "type": "hardware",
@@ -1831,7 +1849,6 @@
     "hall": "8.1",
     "booth": "B053a",
     "locationConfirmed": true,
-    "officialUrl": "https://www.gamescom.global/en/exhibitor/paradox-interactive-ab",
     "games": [
       { "title": "Transport Fever 3", "status": "confirmed", "playable": true, "platforms": ["PC"] },
       { "title": "Paradox grand-strategy catalog", "status": "rumored", "playable": null, "platforms": ["PC"] }
@@ -1842,7 +1859,46 @@
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
       "https://exhibitors.gamescom.global/exhibitor/urban_games/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-23"
+  },
+  {
+    "id": "cd-projekt-red",
+    "name": "CD Projekt Red",
+    "type": "publisher",
+    "hall": "8.1",
+    "booth": "B030/A031",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/cd-projekt-red",
+    "games": [
+      { "title": "The Witcher 3: Wild Hunt — Songs of the Past", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] }
+    ],
+    "tags": ["AAA", "RPG", "The Witcher"],
+    "crowd": 3,
+    "sources": [
+      "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
+    "lastUpdated": "2026-08-23"
+  },
+  {
+    "id": "cd-projekt-red-business",
+    "businessOf": "cd-projekt-red",
+    "name": "CD Projekt Red — business booth",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B065",
+    "locationConfirmed": true,
+    "dirSlug": "cd_projekt",
+    "country": "Poland",
+    "access": "appointment",
+    "games": [],
+    "tags": ["closed stand"],
+    "sources": [
+      "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
+    "lastUpdated": "2026-08-23"
   },
   {
     "id": "xbox-business",
@@ -2656,6 +2712,44 @@
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
     "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "techland-business",
+    "name": "Techland",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "D068/B061",
+    "locationConfirmed": true,
+    "dirSlug": "techland",
+    "country": "Poland",
+    "access": "open",
+    "games": [],
+    "tags": ["publisher", "walk-up"],
+    "sources": [
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-23"
+  },
+  {
+    "id": "ncsoft-business",
+    "name": "NCSOFT",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "B050/A051",
+    "locationConfirmed": true,
+    "dirSlug": "ncsoft",
+    "country": "Korea, Republic of",
+    "access": "appointment",
+    "games": [],
+    "tags": ["publisher", "closed stand"],
+    "sources": [
+      "https://www.invenglobal.com/articles/24999/gamescom-2026-preview-indisputably-one-of-the-worlds-top-two-game-shows",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-23"
   },
   {
     "id": "raw-fury-business",

@@ -5,11 +5,11 @@
   "event": {
     "location": "Koelnmesse, Cologne",
     "dates": "Aug 26–30, 2026",
-    "tickets": "Online-only via the official gamescom shop — no on-site box office. Day tickets: Thu/Fri/Sun €31.50 (discounted €22.50), Saturday €41.00; evening tickets from 16:00 €10.50–13.00; family ticket €69.50–86.00; Wednesday Wildcard €65.50 (sold out Aug 5, 2026). Opening Night Live tickets are sold out; Saturday day tickets sold out too, as of Aug 14, 2026 — only the €13 evening ticket (from 16:00) is left for that day. Day tickets include free VRS public transport in the Cologne region.",
+    "tickets": "Online-only via the official gamescom shop — no on-site box office. Day tickets: Thu/Fri/Sun €31.50 (discounted €22.50), Saturday €41.00; evening tickets from 16:00 €10.50–13.00; family ticket €69.50–86.00; Wednesday Wildcard €65.50 (sold out Aug 5, 2026). Opening Night Live tickets are sold out; Saturday day tickets sold out as of Aug 14, 2026, and Thursday day tickets have since sold out too — only Friday, Sunday and the evening tickets (from 16:00) are still on sale. Day tickets include free VRS public transport in the Cologne region.",
     "crowdTips": [
       "The show floor itself has sold out to exhibitors for the first time in gamescom's 18-edition history — 233,000 m² and 1,600+ exhibitors. Expect this to be the busiest gamescom yet.",
-      "Saturday day tickets are sold out (Aug 14, 2026) — do hands-on play Thursday or Sunday instead; only the evening ticket from 16:00 remains for Saturday.",
-      "Wednesday's Wildcard ticket (entry from 13:00) is the quietest way into the hottest demos, but it sold out on Aug 5 — without one, Thursday morning is the next-best low-crowd window.",
+      "Saturday and Thursday day tickets are both sold out now — Friday and Sunday are the only full public days left with day tickets on sale; only the evening ticket from 16:00 remains for Saturday and Thursday.",
+      "Wednesday's Wildcard ticket (entry from 13:00) is the quietest way into the hottest demos, but it sold out on Aug 5 — without one, Friday morning is the next-best low-crowd window now that Thursday has sold out too.",
       "On trade Wednesday, a trade badge doesn't open every door: several AAA booths run invited-press-only previews in the morning or skip the day entirely (Xbox 2026: booth opens Thursday; Capcom 2025: press-only until ~11:00). Check a booth's own channels before planning your Wednesday around it.",
       "Arrive well before doors open and pick the entrance nearest your first must-play booth — big booths build 2–4 h queues within the first hour. North is shortest for halls 6–9, East for Hall 10, South for the business halls; see Entrances on the Info tab.",
       "On a trade badge the entertainment halls open at 09:00 every day — an hour before the public on Thursday and Friday. Spend that hour on the one demo you most want to play; it is the closest thing to an empty show floor you will get.",
@@ -33,7 +33,7 @@
       "2026-08-27": {
         "access": "public",
         "hours": "Entertainment 10:00–20:00 (09:00 on a trade badge)",
-        "note": "Best full public day for hands-on demos — noticeably calmer than Fri–Sat. A trade badge opens the entertainment halls at 09:00, a full hour before the public — the most valuable hour of the week for hands-on demos."
+        "note": "Day tickets sold out — expect it as busy as a normal public day, not the calm start it used to be. A trade badge opens the entertainment halls at 09:00, a full hour before the public — the most valuable hour of the week for hands-on demos, and now the best reason to have one."
       },
       "2026-08-28": {
         "access": "public",
@@ -94,6 +94,7 @@
     "RPG": "RPG",
     "Switch 2": "Switch 2",
     "TCG": "TCG",
+    "The Witcher": "The Witcher",
     "VR": "VR",
     "action": "action",
     "action-RPG": "action-RPG",
@@ -327,6 +328,7 @@
         "Orbitals": "Hands-on demo.",
         "Pokémon Pokopia (Expansion Pass)": "Expansion Pass content playable — expect huge Pokémon queues.",
         "Splatoon Raiders": "First-party spin-off hands-on.",
+        "Elden Ring: Tarnished Edition": "Bandai Namco confirmed it's playable here, not at its own Hall 6 booth; releases Aug 28, mid-show.",
         "Additional unannounced titles": "Nintendo's announcement explicitly says 'and more'."
       }
     },
@@ -382,9 +384,7 @@
       "games": {
         "Ace Combat 8: Wings of Theve": "First-ever public hands-on; launches Oct 2, 2026.",
         "Dragon Ball Xenoverse 3": "First playable in Europe; full release 2027.",
-        "The Blood of Dawnwalker": "World-first open sessions days before its Sept 3 launch; also at the Xbox booth.",
-        "Elden Ring: Tarnished Edition": "Releases Aug 28, mid-show; floated by German trade press, not in the announced lineup.",
-        "One Piece: Grand Gourmet": "Oct 23 release makes it a candidate; unannounced for the booth."
+        "The Blood of Dawnwalker": "World-first open sessions days before its Sept 3 launch; also at the Xbox booth."
       }
     },
     "konami": {
@@ -412,11 +412,11 @@
       }
     },
     "ea": {
-      "description": "Back as an exhibitor with a booth at the Hall 6 entrance next to Ubisoft, though the lineup is unannounced. EA Sports FC 27, launching weeks after the show, is the near-certain centerpiece.",
+      "description": "Back as an exhibitor with a booth at the Hall 6 entrance next to Ubisoft. EA Sports FC 27, launching weeks after the show, is the confirmed centerpiece.",
       "crowdNote": "FC 27 stations traditionally draw steady but fast-moving queues; busy rather than overwhelming without a big reveal.",
       "visitAdvice": "FC has many stations and short rotations — fine midday.",
       "games": {
-        "EA Sports FC 27": "Launches weeks after gamescom; Switch 2 version separately confirmed at Nintendo's booth.",
+        "EA Sports FC 27": "Confirmed for the booth; launches weeks after gamescom. Switch 2 version separately confirmed at Nintendo's booth.",
         "Battlefield 6 (seasonal content)": "German trade press says BF6 'may play a role' at the booth.",
         "skate.": "Live-service title in active rollout; plausible but unannounced."
       }
@@ -894,6 +894,11 @@
       "crowdNote": "Low-queue browse stop.",
       "visitAdvice": "Walk in anytime; pairs well with Logitech and ASUS in the same hall."
     },
+    "yamaha-music": {
+      "description": "Yamaha's gaming headsets and audio gear on demo stations in the Hall 10.1 hardware row.",
+      "crowdNote": "Quiet component stand, not a destination booth.",
+      "visitAdvice": "A quick look if you're already working the hardware row."
+    },
     "amd": {
       "description": "AMD shares a Hall 7.1 stand block with Webedia's community area, Vodafone, ZOTAC and the Driveball Arena — expect Ryzen/Radeon rigs powering partner setups rather than a standalone AMD mega-booth. AMD also hosts its own Cologne event on Aug 23, teasing a Radeon announcement right before the show.",
       "crowdNote": "Traffic on the shared block follows the community-stage program and creator meetups more than AMD itself.",
@@ -940,6 +945,22 @@
         "Transport Fever 3": "Shown with Urban Games in Hall 8; double-decker photo op.",
         "Paradox grand-strategy catalog": "Paradox's own registration sits at Level Infinite's Hall 6.1 stand; nothing announced about what it shows there."
       }
+    },
+    "cd-projekt-red": {
+      "description": "CD Projekt Red returns to the show floor with a guided presentation of The Witcher 3: Wild Hunt — Songs of the Past, its new expansion for the ten-year-old game. No hands-on demo — it's a booth presentation, not a playable station.",
+      "crowdNote": "A beloved franchise with no queue-able demo — expect a full presentation room rather than a line, busiest right after each showing is announced.",
+      "visitAdvice": "Check the booth's screen for the next showing time rather than queuing on spec; arrive a few minutes early to get a seat.",
+      "games": {
+        "The Witcher 3: Wild Hunt — Songs of the Past": "Guided presentation only, all five show days; no hands-on station."
+      }
+    },
+    "cd-projekt-red-business": {
+      "description": "CD Projekt Red's business-hall stand, running only Wednesday through Friday — it packs up before the weekend, unlike most Hall 4.2 neighbours.",
+      "accessNote": "Guided presentations by appointment, Aug 26–28 only.",
+      "offers": [
+        "Publishing and partnership meetings",
+        "Press and investor appointments"
+      ]
     },
     "xbox-business": {
       "description": "Microsoft's business-side presence, entirely separate from the consumer Xbox booth in Hall 7.1. One of the largest single stands in the business area and one of the ~180 that no other exhibitor shares, which in Hall 4.2 means a meeting building rather than a stand you can walk into.",
@@ -1304,6 +1325,22 @@
         "Publishing submissions and partner meetings",
         "Co-development and investment conversations",
         "Six other publishers on the same stand"
+      ]
+    },
+    "techland-business": {
+      "description": "Dying Light's publisher on the trade side, one of seven publishers sharing Level Infinite's large Hall 4.2 stand rather than running a compound of its own. No consumer booth of its own this year.",
+      "accessNote": "Shares the same 512 m² open stand as Level Infinite, Bohemia Interactive, Digital Extremes, Funcom, Paradox and Remedy.",
+      "offers": [
+        "Publishing and partner meetings",
+        "Press appointments"
+      ]
+    },
+    "ncsoft-business": {
+      "description": "The Korean publisher behind Lineage, Guild Wars 2 and Throne and Liberty, running business-only meetings in Hall 4.2 — no consumer showcase this year.",
+      "accessNote": "A 306 m² single-occupant stand — closed, appointment-only.",
+      "offers": [
+        "Publishing and partner meetings",
+        "Press and investor appointments"
       ]
     },
     "raw-fury-business": {

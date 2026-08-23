@@ -5,11 +5,11 @@
   "event": {
     "location": "Koelnmesse, Köln",
     "dates": "26.–30. Aug. 2026",
-    "tickets": "Nur online über den offiziellen gamescom-Shop — keine Tageskasse vor Ort. Tagestickets: Do/Fr/So 31,50 € (ermäßigt 22,50 €), Samstag 41,00 €; Abendtickets ab 16:00 Uhr 10,50–13,00 €; Familienticket 69,50–86,00 €; Mittwochs-Wildcard 65,50 € (ausverkauft am 5. Aug. 2026). Tickets für Opening Night Live sind ausverkauft; die Samstags-Tagestickets sind seit dem 14. Aug. 2026 ebenfalls ausverkauft — für diesen Tag gibt es nur noch das Abendticket ab 16:00 Uhr für 13 €. Tagestickets enthalten die kostenlose Fahrt mit Bus und Bahn im VRS-Gebiet.",
+    "tickets": "Nur online über den offiziellen gamescom-Shop — keine Tageskasse vor Ort. Tagestickets: Do/Fr/So 31,50 € (ermäßigt 22,50 €), Samstag 41,00 €; Abendtickets ab 16:00 Uhr 10,50–13,00 €; Familienticket 69,50–86,00 €; Mittwochs-Wildcard 65,50 € (ausverkauft am 5. Aug. 2026). Tickets für Opening Night Live sind ausverkauft; die Samstags-Tagestickets sind seit dem 14. Aug. 2026 ausverkauft, und mittlerweile sind auch die Donnerstags-Tagestickets weg — nur Freitag, Sonntag und die Abendtickets (ab 16:00 Uhr) sind noch erhältlich. Tagestickets enthalten die kostenlose Fahrt mit Bus und Bahn im VRS-Gebiet.",
     "crowdTips": [
       "Die Ausstellungsfläche selbst ist zum ersten Mal in den 18 Jahren der gamescom komplett ausgebucht — 233.000 m² und über 1.600 Aussteller. Rechne mit der bisher vollsten gamescom.",
-      "Die Samstags-Tagestickets sind ausverkauft (Stand 14. Aug. 2026) — geh lieber am Donnerstag oder Sonntag zum Anspielen; für Samstag gibt es nur noch das Abendticket ab 16:00 Uhr.",
-      "Die Mittwochs-Wildcard (Einlass ab 13:00 Uhr) ist der ruhigste Weg zu den heißesten Demos, war aber am 5. Aug. ausverkauft — ohne sie ist Donnerstagmorgen das nächstbeste Zeitfenster mit wenig Andrang.",
+      "Die Samstags- und Donnerstags-Tagestickets sind beide ausverkauft — Freitag und Sonntag sind die einzigen vollen Publikumstage, für die noch Tagestickets zu haben sind; für Samstag und Donnerstag gibt es nur noch das Abendticket ab 16:00 Uhr.",
+      "Die Mittwochs-Wildcard (Einlass ab 13:00 Uhr) ist der ruhigste Weg zu den heißesten Demos, war aber am 5. Aug. ausverkauft — ohne sie ist jetzt, wo auch Donnerstag ausverkauft ist, Freitagmorgen das nächstbeste Zeitfenster mit wenig Andrang.",
       "Auch mit einem Business-Ticket kommst du am Mittwoch nicht überall hinein: Mehrere AAA-Stände lassen vormittags nur geladene Presse zu oder bleiben den ganzen Tag geschlossen (Xbox 2026: Stand öffnet erst Donnerstag; Capcom 2025: bis ca. 11:00 Uhr nur Presse). Schau auf die Kanäle des Standes, bevor du deinen Mittwoch danach planst.",
       "Sei deutlich vor Türöffnung da und nimm den Eingang, der deinem ersten Muss-Stand am nächsten liegt — große Stände bauen in der ersten Stunde 2–4 h Wartezeit auf. Nord ist am kürzesten für die Hallen 6–9, Ost für Halle 10, Süd für die Business-Hallen; siehe Eingänge unter Event-Infos.",
       "Mit einem Business-Ticket öffnen die Entertainment-Hallen jeden Tag um 09:00 Uhr — am Donnerstag und Freitag eine Stunde vor dem Publikum. Nimm dir in dieser Stunde die eine Demo vor, die dir am wichtigsten ist; näher an eine leere Messehalle kommst du nicht.",
@@ -33,7 +33,7 @@
       "2026-08-27": {
         "access": "öffentlich",
         "hours": "Entertainment 10:00–20:00 (09:00 mit Business-Ticket)",
-        "note": "Bester voller Publikumstag für Hands-on-Demos — spürbar ruhiger als Fr–Sa. Mit einem Business-Ticket öffnen die Entertainment-Hallen um 09:00 Uhr, eine ganze Stunde vor dem Publikum — die wertvollste Stunde der Woche zum Anspielen."
+        "note": "Tagestickets sind ausverkauft — rechne mit einem ganz normal vollen Publikumstag, nicht mehr mit dem ruhigen Start von früher. Mit einem Business-Ticket öffnen die Entertainment-Hallen um 09:00 Uhr, eine ganze Stunde vor dem Publikum — die wertvollste Stunde der Woche zum Anspielen, und jetzt der beste Grund, eins zu haben."
       },
       "2026-08-28": {
         "access": "öffentlich",
@@ -94,6 +94,7 @@
     "RPG": "RPG",
     "Switch 2": "Switch 2",
     "TCG": "TCG",
+    "The Witcher": "The Witcher",
     "VR": "VR",
     "action": "Action",
     "action-RPG": "Action-RPG",
@@ -327,6 +328,7 @@
         "Orbitals": "Hands-on-Demo.",
         "Pokémon Pokopia (Expansion Pass)": "Inhalte des Expansion Pass spielbar — rechne mit riesigen Pokémon-Schlangen.",
         "Splatoon Raiders": "Hands-on des First-Party-Spin-offs.",
+        "Elden Ring: Tarnished Edition": "Bandai Namco hat bestätigt, dass es hier spielbar ist, nicht am eigenen Stand in Halle 6; Release am 28. Aug., mitten in der Messe.",
         "Additional unannounced titles": "Nintendos Ankündigung sagt ausdrücklich „und mehr“."
       }
     },
@@ -382,9 +384,7 @@
       "games": {
         "Ace Combat 8: Wings of Theve": "Überhaupt erstes öffentliches Hands-on; Release 2. Okt. 2026.",
         "Dragon Ball Xenoverse 3": "Erstmals in Europa spielbar; Vollversion 2027.",
-        "The Blood of Dawnwalker": "Weltweit erstmals öffentlich anspielbar, wenige Tage vor dem Release am 3. Sept.; auch am Xbox-Stand.",
-        "Elden Ring: Tarnished Edition": "Erscheint am 28. Aug. mitten in der Messe; von der deutschen Fachpresse ins Spiel gebracht, steht nicht im angekündigten Lineup.",
-        "One Piece: Grand Gourmet": "Der Release am 23. Okt. macht es zum Kandidaten; für den Stand nicht angekündigt."
+        "The Blood of Dawnwalker": "Weltweit erstmals öffentlich anspielbar, wenige Tage vor dem Release am 3. Sept.; auch am Xbox-Stand."
       }
     },
     "konami": {
@@ -412,11 +412,11 @@
       }
     },
     "ea": {
-      "description": "EA ist wieder als Aussteller dabei, mit einem Stand am Eingang von Halle 6 neben Ubisoft. Das Lineup ist allerdings noch nicht angekündigt. EA Sports FC 27, das wenige Wochen nach der Messe erscheint, wird mit ziemlicher Sicherheit im Mittelpunkt stehen.",
+      "description": "EA ist wieder als Aussteller dabei, mit einem Stand am Eingang von Halle 6 neben Ubisoft. Im Mittelpunkt steht das bestätigte EA Sports FC 27, das wenige Wochen nach der Messe erscheint.",
       "crowdNote": "Bei den FC-27-Stationen bilden sich erfahrungsgemäß stetige, aber schnell vorankommende Schlangen; ohne große Enthüllung ist der Stand eher gut besucht als überrannt.",
       "visitAdvice": "FC hat viele Stationen und kurze Runden — mittags völlig okay.",
       "games": {
-        "EA Sports FC 27": "Erscheint wenige Wochen nach der gamescom; die Switch-2-Fassung ist separat für Nintendos Stand bestätigt.",
+        "EA Sports FC 27": "Für den Stand bestätigt; erscheint wenige Wochen nach der gamescom. Die Switch-2-Fassung ist separat für Nintendos Stand bestätigt.",
         "Battlefield 6 (seasonal content)": "Laut deutscher Fachpresse könnte BF6 am Stand „eine Rolle spielen“.",
         "skate.": "Live-Service-Titel im laufenden Rollout; plausibel, aber nicht angekündigt."
       }
@@ -894,6 +894,11 @@
       "crowdNote": "Stöber-Stopp ohne Wartezeit.",
       "visitAdvice": "Jederzeit reinspazieren; passt gut zu Logitech und ASUS in derselben Halle."
     },
+    "yamaha-music": {
+      "description": "Yamahas Gaming-Headsets und Audio-Ausrüstung an Demo-Stationen in der Hardware-Reihe von Halle 10.1.",
+      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
+      "visitAdvice": "Ein kurzer Abstecher, wenn du ohnehin die Hardware-Reihe abklapperst."
+    },
     "amd": {
       "description": "AMD teilt sich einen Standblock in Halle 7.1 mit dem Community-Bereich von Webedia, Vodafone, ZOTAC und der Driveball Arena — erwarte Ryzen-/Radeon-Rechner, die Partner-Aufbauten antreiben, statt eines eigenständigen AMD-Megastands. AMD veranstaltet außerdem am 23. Aug. ein eigenes Event in Köln und deutet damit kurz vor der Messe eine Radeon-Ankündigung an.",
       "crowdNote": "Wie voll es am Gemeinschaftsstand wird, hängt eher vom Bühnenprogramm und den Creator-Treffen ab als von AMD selbst.",
@@ -940,6 +945,22 @@
         "Transport Fever 3": "Zusammen mit Urban Games in Halle 8 gezeigt; Fotomotiv mit Doppeldecker.",
         "Paradox grand-strategy catalog": "Paradox selbst ist am Stand von Level Infinite in Halle 6.1 registriert; was dort gezeigt wird, ist noch nicht angekündigt."
       }
+    },
+    "cd-projekt-red": {
+      "description": "CD Projekt Red ist wieder auf der Messe vertreten, mit einer geführten Präsentation von The Witcher 3: Wild Hunt — Songs of the Past, der neuen Erweiterung für das zehn Jahre alte Spiel. Keine Hands-on-Demo — es ist eine Standpräsentation, keine spielbare Station.",
+      "crowdNote": "Eine beliebte Marke ohne Demo zum Anstellen — erwarte einen vollen Vorführraum statt einer Schlange, am vollsten direkt nach jeder angekündigten Vorführung.",
+      "visitAdvice": "Schau auf den Bildschirm am Stand für die nächste Vorführzeit, statt auf Verdacht anzustehen; komm ein paar Minuten früher für einen Sitzplatz.",
+      "games": {
+        "The Witcher 3: Wild Hunt — Songs of the Past": "Nur geführte Präsentation, an allen fünf Messetagen; keine spielbare Station."
+      }
+    },
+    "cd-projekt-red-business": {
+      "description": "CD Projekt Reds Stand im Fachbesucherbereich läuft nur von Mittwoch bis Freitag — er wird vor dem Wochenende abgebaut, anders als die meisten Nachbarn in Halle 4.2.",
+      "accessNote": "Geführte Präsentationen nach Termin, nur 26.–28. Aug.",
+      "offers": [
+        "Publishing- und Partnerschaftstermine",
+        "Presse- und Investorentermine"
+      ]
     },
     "xbox-business": {
       "description": "Microsofts Stand im Fachbesucherbereich ist vollständig vom Xbox-Publikumsstand in Halle 7.1 getrennt. Er gehört zu den größten Einzelständen dort und zu den rund 180 Ständen ohne Mitaussteller. In Halle 4.2 bedeutet das: ein geschlossener Bereich für Besprechungen, den man nicht einfach betreten kann.",
@@ -1304,6 +1325,22 @@
         "Publishing-Einreichungen und Partnertermine",
         "Gespräche zu Co-Development und Investment",
         "Sechs weitere Publisher am selben Stand"
+      ]
+    },
+    "techland-business": {
+      "description": "Der Publisher von Dying Light im Fachbesucherbereich, einer von sieben Publishern, die sich Level Infinites großen Stand in Halle 4.2 teilen, statt einen eigenen Bereich zu haben. In diesem Jahr kein eigener Publikumsstand.",
+      "accessNote": "Teilt sich denselben offenen 512-m²-Stand mit Level Infinite, Bohemia Interactive, Digital Extremes, Funcom, Paradox und Remedy.",
+      "offers": [
+        "Publishing- und Partnertermine",
+        "Presse-Termine"
+      ]
+    },
+    "ncsoft-business": {
+      "description": "Der koreanische Publisher hinter Lineage, Guild Wars 2 und Throne and Liberty hält in Halle 4.2 nur Fachtermine ab — in diesem Jahr keine Präsentation für das Publikum.",
+      "accessNote": "Ein 306-m²-Stand ohne Mitaussteller — geschlossen, nur nach Termin.",
+      "offers": [
+        "Publishing- und Partnertermine",
+        "Presse- und Investorentermine"
       ]
     },
     "raw-fury-business": {
