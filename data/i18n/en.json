@@ -94,7 +94,6 @@
     "RPG": "RPG",
     "Switch 2": "Switch 2",
     "TCG": "TCG",
-    "The Witcher": "The Witcher",
     "VR": "VR",
     "action": "action",
     "action-RPG": "action-RPG",
@@ -894,11 +893,6 @@
       "crowdNote": "Low-queue browse stop.",
       "visitAdvice": "Walk in anytime; pairs well with Logitech and ASUS in the same hall."
     },
-    "yamaha-music": {
-      "description": "Yamaha's gaming headsets and audio gear on demo stations in the Hall 10.1 hardware row.",
-      "crowdNote": "Quiet component stand, not a destination booth.",
-      "visitAdvice": "A quick look if you're already working the hardware row."
-    },
     "amd": {
       "description": "AMD shares a Hall 7.1 stand block with Webedia's community area, Vodafone, ZOTAC and the Driveball Arena — expect Ryzen/Radeon rigs powering partner setups rather than a standalone AMD mega-booth. AMD also hosts its own Cologne event on Aug 23, teasing a Radeon announcement right before the show.",
       "crowdNote": "Traffic on the shared block follows the community-stage program and creator meetups more than AMD itself.",
@@ -945,22 +939,6 @@
         "Transport Fever 3": "Shown with Urban Games in Hall 8; double-decker photo op.",
         "Paradox grand-strategy catalog": "Paradox's own registration sits at Level Infinite's Hall 6.1 stand; nothing announced about what it shows there."
       }
-    },
-    "cd-projekt-red": {
-      "description": "CD Projekt Red returns to the show floor with a guided presentation of The Witcher 3: Wild Hunt — Songs of the Past, its new expansion for the ten-year-old game. No hands-on demo — it's a booth presentation, not a playable station.",
-      "crowdNote": "A beloved franchise with no queue-able demo — expect a full presentation room rather than a line, busiest right after each showing is announced.",
-      "visitAdvice": "Check the booth's screen for the next showing time rather than queuing on spec; arrive a few minutes early to get a seat.",
-      "games": {
-        "The Witcher 3: Wild Hunt — Songs of the Past": "Guided presentation only, all five show days; no hands-on station."
-      }
-    },
-    "cd-projekt-red-business": {
-      "description": "CD Projekt Red's business-hall stand, running only Wednesday through Friday — it packs up before the weekend, unlike most Hall 4.2 neighbours.",
-      "accessNote": "Guided presentations by appointment, Aug 26–28 only.",
-      "offers": [
-        "Publishing and partnership meetings",
-        "Press and investor appointments"
-      ]
     },
     "xbox-business": {
       "description": "Microsoft's business-side presence, entirely separate from the consumer Xbox booth in Hall 7.1. One of the largest single stands in the business area and one of the ~180 that no other exhibitor shares, which in Hall 4.2 means a meeting building rather than a stand you can walk into.",
@@ -1258,7 +1236,7 @@
     },
     "cdpr-business": {
       "description": "CD Projekt S.A. — the group above CD Projekt Red and GOG — on a large closed stand in Hall 4.2. Partner and press meetings; the consumer booth is in Hall 8.1.",
-      "accessNote": "432 m², sole occupant, filed to the parent company rather than to CD Projekt Red or GOG.",
+      "accessNote": "432 m², sole occupant, filed to the parent company rather than to CD Projekt Red or GOG. CD Projekt Red's guided Songs of the Past presentations run here Aug 26–28 only, by appointment.",
       "offers": [
         "Publishing and partnership meetings",
         "GOG distribution conversations",
@@ -1320,19 +1298,11 @@
     },
     "level-infinite-business": {
       "description": "Tencent's publishing label, registered as Proxima Beta and sharing one of the few large *shared* stands in Hall 4.2 rather than a compound of its own. Its consumer booth is in Hall 6.1; the separate 702 m² Tencent Technology stand nearby is closed.",
-      "accessNote": "A 512 m² stand shared with six other publishers — Bohemia Interactive, Digital Extremes, Funcom and Paradox among them. Shared means staffed and walkable, unlike the sealed compounds around it.",
+      "accessNote": "A 512 m² stand shared with six other publishers — Bohemia Interactive, Digital Extremes, Funcom, Paradox, Remedy and Techland. Shared means staffed and walkable, unlike the sealed compounds around it.",
       "offers": [
         "Publishing submissions and partner meetings",
         "Co-development and investment conversations",
         "Six other publishers on the same stand"
-      ]
-    },
-    "techland-business": {
-      "description": "Dying Light's publisher on the trade side, one of seven publishers sharing Level Infinite's large Hall 4.2 stand rather than running a compound of its own. No consumer booth of its own this year.",
-      "accessNote": "Shares the same 512 m² open stand as Level Infinite, Bohemia Interactive, Digital Extremes, Funcom, Paradox and Remedy.",
-      "offers": [
-        "Publishing and partner meetings",
-        "Press appointments"
       ]
     },
     "ncsoft-business": {

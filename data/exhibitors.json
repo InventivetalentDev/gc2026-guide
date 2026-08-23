@@ -298,6 +298,7 @@
     "hall": "8.1",
     "booth": "B030/A031",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/cd-projekt-red",
     "games": [
       { "title": "The Witcher 3: Songs of the Past", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
@@ -305,9 +306,10 @@
     "crowd": 4,
     "sources": [
       "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
+      "https://www.gamescom.global/en/exhibitor/cd-projekt-red"
     ],
-    "lastUpdated": "2026-08-06"
+    "lastUpdated": "2026-08-23"
   },
   {
     "id": "gryphline",
@@ -1719,22 +1721,6 @@
     "lastUpdated": "2026-08-17"
   },
   {
-    "id": "yamaha-music",
-    "name": "Yamaha Music",
-    "type": "hardware",
-    "hall": "10.1",
-    "booth": "A070",
-    "locationConfirmed": true,
-    "games": [],
-    "tags": ["hardware", "audio"],
-    "crowd": 1,
-    "sources": [
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-hardware-hersteller-070826/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
-    ],
-    "lastUpdated": "2026-08-23"
-  },
-  {
     "id": "aoc-agon",
     "name": "AGON by AOC",
     "type": "hardware",
@@ -1858,45 +1844,6 @@
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
       "https://exhibitors.gamescom.global/exhibitor/urban_games/"
-    ],
-    "lastUpdated": "2026-08-23"
-  },
-  {
-    "id": "cd-projekt-red",
-    "name": "CD Projekt Red",
-    "type": "publisher",
-    "hall": "8.1",
-    "booth": "B030/A031",
-    "locationConfirmed": true,
-    "officialUrl": "https://www.gamescom.global/en/exhibitor/cd-projekt-red",
-    "games": [
-      { "title": "The Witcher 3: Wild Hunt — Songs of the Past", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] }
-    ],
-    "tags": ["AAA", "RPG", "The Witcher"],
-    "crowd": 3,
-    "sources": [
-      "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
-    ],
-    "lastUpdated": "2026-08-23"
-  },
-  {
-    "id": "cd-projekt-red-business",
-    "businessOf": "cd-projekt-red",
-    "name": "CD Projekt Red — business booth",
-    "type": "trade",
-    "hall": "4.2",
-    "booth": "B065",
-    "locationConfirmed": true,
-    "dirSlug": "cd_projekt",
-    "country": "Poland",
-    "access": "appointment",
-    "games": [],
-    "tags": ["closed stand"],
-    "sources": [
-      "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
     ],
     "lastUpdated": "2026-08-23"
   },
@@ -2576,9 +2523,10 @@
     "tags": ["closed stand"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/cd_projekt/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026"
     ],
-    "lastUpdated": "2026-08-15"
+    "lastUpdated": "2026-08-23"
   },
   {
     "id": "krafton-business",
@@ -2712,25 +2660,6 @@
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
     "lastUpdated": "2026-08-15"
-  },
-  {
-    "id": "techland-business",
-    "name": "Techland",
-    "type": "trade",
-    "hall": "4.2",
-    "booth": "D068/B061",
-    "locationConfirmed": true,
-    "dirSlug": "techland",
-    "country": "Poland",
-    "access": "open",
-    "games": [],
-    "tags": ["publisher", "walk-up"],
-    "sources": [
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
-    ],
-    "lastUpdated": "2026-08-23"
   },
   {
     "id": "ncsoft-business",

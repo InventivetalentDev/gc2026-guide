@@ -94,7 +94,6 @@
     "RPG": "RPG",
     "Switch 2": "Switch 2",
     "TCG": "TCG",
-    "The Witcher": "The Witcher",
     "VR": "VR",
     "action": "Action",
     "action-RPG": "Action-RPG",
@@ -894,11 +893,6 @@
       "crowdNote": "Stöber-Stopp ohne Wartezeit.",
       "visitAdvice": "Jederzeit reinspazieren; passt gut zu Logitech und ASUS in derselben Halle."
     },
-    "yamaha-music": {
-      "description": "Yamahas Gaming-Headsets und Audio-Ausrüstung an Demo-Stationen in der Hardware-Reihe von Halle 10.1.",
-      "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
-      "visitAdvice": "Ein kurzer Abstecher, wenn du ohnehin die Hardware-Reihe abklapperst."
-    },
     "amd": {
       "description": "AMD teilt sich einen Standblock in Halle 7.1 mit dem Community-Bereich von Webedia, Vodafone, ZOTAC und der Driveball Arena — erwarte Ryzen-/Radeon-Rechner, die Partner-Aufbauten antreiben, statt eines eigenständigen AMD-Megastands. AMD veranstaltet außerdem am 23. Aug. ein eigenes Event in Köln und deutet damit kurz vor der Messe eine Radeon-Ankündigung an.",
       "crowdNote": "Wie voll es am Gemeinschaftsstand wird, hängt eher vom Bühnenprogramm und den Creator-Treffen ab als von AMD selbst.",
@@ -945,22 +939,6 @@
         "Transport Fever 3": "Zusammen mit Urban Games in Halle 8 gezeigt; Fotomotiv mit Doppeldecker.",
         "Paradox grand-strategy catalog": "Paradox selbst ist am Stand von Level Infinite in Halle 6.1 registriert; was dort gezeigt wird, ist noch nicht angekündigt."
       }
-    },
-    "cd-projekt-red": {
-      "description": "CD Projekt Red ist wieder auf der Messe vertreten, mit einer geführten Präsentation von The Witcher 3: Wild Hunt — Songs of the Past, der neuen Erweiterung für das zehn Jahre alte Spiel. Keine Hands-on-Demo — es ist eine Standpräsentation, keine spielbare Station.",
-      "crowdNote": "Eine beliebte Marke ohne Demo zum Anstellen — erwarte einen vollen Vorführraum statt einer Schlange, am vollsten direkt nach jeder angekündigten Vorführung.",
-      "visitAdvice": "Schau auf den Bildschirm am Stand für die nächste Vorführzeit, statt auf Verdacht anzustehen; komm ein paar Minuten früher für einen Sitzplatz.",
-      "games": {
-        "The Witcher 3: Wild Hunt — Songs of the Past": "Nur geführte Präsentation, an allen fünf Messetagen; keine spielbare Station."
-      }
-    },
-    "cd-projekt-red-business": {
-      "description": "CD Projekt Reds Stand im Fachbesucherbereich läuft nur von Mittwoch bis Freitag — er wird vor dem Wochenende abgebaut, anders als die meisten Nachbarn in Halle 4.2.",
-      "accessNote": "Geführte Präsentationen nach Termin, nur 26.–28. Aug.",
-      "offers": [
-        "Publishing- und Partnerschaftstermine",
-        "Presse- und Investorentermine"
-      ]
     },
     "xbox-business": {
       "description": "Microsofts Stand im Fachbesucherbereich ist vollständig vom Xbox-Publikumsstand in Halle 7.1 getrennt. Er gehört zu den größten Einzelständen dort und zu den rund 180 Ständen ohne Mitaussteller. In Halle 4.2 bedeutet das: ein geschlossener Bereich für Besprechungen, den man nicht einfach betreten kann.",
@@ -1258,7 +1236,7 @@
     },
     "cdpr-business": {
       "description": "CD Projekt S.A. — die Muttergesellschaft von CD Projekt Red und GOG — hat einen großen geschlossenen Stand in Halle 4.2. Dort finden Partner- und Pressetermine statt; der Publikumsstand steht in Halle 8.1.",
-      "accessNote": "432 m², alleiniger Nutzer; registriert unter der Muttergesellschaft statt unter CD Projekt Red oder GOG.",
+      "accessNote": "432 m², alleiniger Nutzer; registriert unter der Muttergesellschaft statt unter CD Projekt Red oder GOG. Die geführten Präsentationen zu Songs of the Past von CD Projekt Red laufen hier nur vom 26.–28. Aug., nach Termin.",
       "offers": [
         "Publishing- und Partnerschaftstermine",
         "Gespräche zum Vertrieb über GOG",
@@ -1320,19 +1298,11 @@
     },
     "level-infinite-business": {
       "description": "Tencents Publishing-Label ist als Proxima Beta registriert und teilt sich einen der wenigen großen Gemeinschaftsstände in Halle 4.2, statt einen eigenen geschlossenen Bereich zu haben. Der Publikumsstand steht in Halle 6.1; der separate 702-m²-Stand von Tencent Technology in der Nähe ist geschlossen.",
-      "accessNote": "Ein 512-m²-Stand, den sich sieben Publisher teilen — darunter Bohemia Interactive, Digital Extremes, Funcom und Paradox. Weil mehrere Firmen dort vertreten sind, ist der Stand offen und zugänglich — anders als die geschlossenen Bereiche ringsum.",
+      "accessNote": "Ein 512-m²-Stand, den sich sieben Publisher teilen — Bohemia Interactive, Digital Extremes, Funcom, Paradox, Remedy und Techland. Weil mehrere Firmen dort vertreten sind, ist der Stand offen und zugänglich — anders als die geschlossenen Bereiche ringsum.",
       "offers": [
         "Publishing-Einreichungen und Partnertermine",
         "Gespräche zu Co-Development und Investment",
         "Sechs weitere Publisher am selben Stand"
-      ]
-    },
-    "techland-business": {
-      "description": "Der Publisher von Dying Light im Fachbesucherbereich, einer von sieben Publishern, die sich Level Infinites großen Stand in Halle 4.2 teilen, statt einen eigenen Bereich zu haben. In diesem Jahr kein eigener Publikumsstand.",
-      "accessNote": "Teilt sich denselben offenen 512-m²-Stand mit Level Infinite, Bohemia Interactive, Digital Extremes, Funcom, Paradox und Remedy.",
-      "offers": [
-        "Publishing- und Partnertermine",
-        "Presse-Termine"
       ]
     },
     "ncsoft-business": {
