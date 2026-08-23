@@ -129,12 +129,25 @@ jobs:
 
   # Only when the API actually changed: a CSS-only pull request has no reason
   # to spend a version, and every alias is retained against a per-Worker limit.
+  # "Actually" is doing work there — see the step below.
   api:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      # Three answers, and the middle one is why this is not a path filter.
+      # The Worker bundles data/exhibitors.json and data/event.json, so by
+      # path every data refresh changes it — and a refresh is most of what
+      # this repository does. What the Worker takes from those files is a
+      # queue allowlist and a show calendar, and a booth number, a game
+      # description or a new `aka` short form changes neither. Previewing
+      # those spent an alias, ran the suite and commented a URL for a Worker
+      # that answers byte-for-byte as the one already on staging.
+      #
+      # So the derived values are compared rather than the paths, by running
+      # the Worker's own buildQueueAllowlist over both sides of the diff. It
+      # fails open: anything that stops the comparison working previews.
       - name: Should this PR get an API preview?
         id: changed
         env:
@@ -145,11 +158,40 @@ jobs:
 
           # A pull_request checkout is the shallow merge ref, so neither of
           # these commits is necessarily present. Fetch both — `git diff A B`
-          # compares two trees and needs no merge base, so depth 1 is enough.
+          # compares two trees and needs no merge base, so depth 1 is enough,
+          # and it brings each commit's whole tree for the `git show` below.
           git fetch --depth=1 origin "$BASE" "$HEAD"
-          git diff --name-only "$BASE" "$HEAD" \
-            | grep -qE '^(worker/|wrangler-api\.toml$|data/(exhibitors|event)\.json$)' \
-            || skip "No API changes in this PR — skipping its preview."
+          changed="$(git diff --name-only "$BASE" "$HEAD")"
+
+          if grep -qE '^(worker/|wrangler-api\.toml$)' <<<"$changed"; then
+            echo "::notice::The Worker's own code or configuration changed."
+          elif grep -qE '^data/(exhibitors|event)\.json$' <<<"$changed"; then
+            # tools/api-fingerprint.mjs is plain node — no install needed —
+            # and it imports worker/core.js from the checkout. This branch is
+            # only reached when worker/ is unchanged, so both sides are hashed
+            # by the same code, which is the only thing that makes comparing
+            # them mean anything.
+            #
+            # Both sides come out of git, HEAD's included: the checkout is the
+            # merge ref, whose data files are not necessarily HEAD's once main
+            # has moved, and what is compared has to be the two commits the
+            # diff above named.
+            fp() {
+              local dir="$RUNNER_TEMP/api-$1"
+              mkdir -p "$dir"
+              git show "$1:data/exhibitors.json" > "$dir/exhibitors.json" \
+                && git show "$1:data/event.json" > "$dir/event.json" \
+                && node tools/api-fingerprint.mjs "$dir/exhibitors.json" "$dir/event.json"
+            }
+            if before="$(fp "$BASE" 2>/dev/null)" && after="$(fp "$HEAD" 2>/dev/null)"; then
+              [ "$before" != "$after" ] || skip "The site data changed, but not the queue allowlist or the show calendar — this API is identical to the one already on staging, skipping its preview."
+              echo "::notice::The queue allowlist or the show calendar changed."
+            else
+              echo "::warning::Could not compare the API's view of the site data, so previewing anyway."
+            fi
+          else
+            skip "No API changes in this PR — skipping its preview."
+          fi
 
           staging_id="$(awk '/^\[env\.staging\]/ { seen = 1 } seen && /^database_id = / { print $3; exit }' wrangler-api.toml)"
           if [ "$staging_id" = '"00000000-0000-0000-0000-000000000000"' ] || [ -z "$staging_id" ]; then
