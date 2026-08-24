@@ -2231,6 +2231,26 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .info-block a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--signal); text-underline-offset: 3px; }
 .info-block a:hover { color: var(--signal); }
 
+/* The "Map →" plate on the Halls & areas heading — the same chip the plan's
+   hall and day headings wear, so the one gesture reads the same wherever the
+   guide offers it. It borrows .route-hall-map for the box and restates only
+   what `.info-block a` above would repaint: that rule matches it just as
+   specifically and comes first, so an underlined body link is what it gets
+   otherwise. Same reason a.area-hall below is spelt out, same fix.
+
+   `flex: none` because the heading does not wrap: without it a long title in
+   German squeezes the chip until "Map →" breaks across two lines instead of
+   the words beside it wrapping, which is what should give. */
+a.info-map {
+  flex: none;
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--ink-dim);
+  text-decoration: none;
+}
+a.info-map:hover,
+a.info-map:focus-visible { color: var(--ink); border-color: var(--ink-dim); }
+
 .info-block .headline-fact {
   font-family: var(--font-poster);
   font-size: 2.1rem; font-weight: 400; line-height: 1.1;

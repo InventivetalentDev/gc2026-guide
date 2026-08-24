@@ -5488,6 +5488,20 @@ function renderEvent() {
     })
     .join("");
 
+  /* The way onto the map from the one section that is *about* where things
+     are. Each plate in the list opens a single hall, which is the answer once
+     you know which hall you mean; this is the answer before that — the whole
+     site at once, the same campus view a day heading in the plan opens, with
+     the areas below it named on the ground rather than in a list.
+
+     Ungated where the plates are gated, and for the same reason that day
+     heading's link is: the overview is drawn from its own campus file, not
+     from the per-hall snapshot `hasMap` answers for, so it has a site to draw
+     even when the hall this list names has never been cached. */
+  const areasMap = `<a class="route-hall-map info-map" href="map.html#overview"
+    title="${esc(t("map.openTitle"))}"
+    aria-label="${esc(t("event.areasMapAria"))}">${esc(t("map.cue"))}</a>`;
+
   /* Entrances are the one piece of event info that is advice rather than fact:
      which gate is quickest depends on the day and on which way Koelnmesse is
      steering the queue that morning. The lede says so, and the trade note gets
@@ -5567,7 +5581,7 @@ function renderEvent() {
       )}</button>
     </div>
     <div class="info-block">
-      <h2><span class="section-num">05</span> ${esc(t("event.areas"))}</h2>
+      <h2><span class="section-num">05</span> ${esc(t("event.areas"))}${areasMap}</h2>
       <ul class="area-list">${areas}</ul>
     </div>
     ${

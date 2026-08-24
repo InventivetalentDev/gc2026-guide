@@ -746,7 +746,12 @@ pan would be theatre. None of these change the architecture.
     plain text. The plate keeps the label the data filed, so the
     accessible name carries both — "Halls 5–10 — open Hall 5.1 on the
     hall map" — rather than letting the number you tapped and the hall
-    you land in disagree silently.
+    you land in disagree silently. The section heading above the list
+    carries the one link that is about no single hall: a "Map →" chip to
+    `map.html#overview`, the same campus view a day heading in the plan
+    opens. The plates are gated on the snapshot and it is not — the
+    overview is drawn from `campus.json`, so it has a site to show
+    whichever halls have been cached.
 4b. **The day hand-off**: `mapLink()` takes an optional day, and the plan
     board's hall lens passes its active day filter into both the hall
     header's "Map →" and each stop's booth number. So a plan filtered to
@@ -882,8 +887,9 @@ Serve the repo root; clear `gc2026.saved.v1`.
     are still not links. In Event info, the areas list opens the map at
     the near end of a span — "5–10" at 5.1, "2–4" at 2.1 with the trade
     banner up if the exhibitors are off — an exact hall at itself, and
-    1 / 11.1 / "—" not at all. The `.ics` export still contains no
-    markup.
+    1 / 11.1 / "—" not at all, and the heading above that list opens
+    the overview with no hall cached at all. The `.ics` export still
+    contains no markup.
 12. **Offline** — airplane mode, reopen installed app → map, switch to a
     never-opened hall: renders from precache. Navigating straight to
     `map.html` offline serves the map, not the guide.

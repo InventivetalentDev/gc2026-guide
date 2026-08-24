@@ -447,6 +447,10 @@ window.GC_STRINGS.en = {
   "event.ticketsFallback": "See gamescom.global for tickets.",
   /* Escaped at the render site, so plain "&" here — not an entity. */
   "event.areas": "Halls & areas",
+  /* On the section heading, where the visible label is only "Map →". The
+     plates in the list say which hall they open; this one opens all of
+     them, so it says so. */
+  "event.areasMapAria": "Open the whole site on the hall map",
   "event.entrances": "Entrances",
   /* Lead-in to the trade paragraph; the sentence after it comes from the data. */
   "event.entrancesTradeLabel": "On a trade badge.",
