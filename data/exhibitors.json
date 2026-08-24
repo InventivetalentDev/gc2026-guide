@@ -572,7 +572,8 @@
       { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"] },
       { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles"] },
-      { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "platforms": ["PC", "Consoles"] }
+      { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Ananta", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Mobile"] }
     ],
     "tags": ["live-service", "shooter", "RPG"],
     "crowd": 4,
@@ -581,9 +582,11 @@
       "https://www.neteasegames.com/news/Corporate/20260811/37075_1310671.html",
       "https://www.theouterhaven.net/etease-games-gamescom-2026-lineup/",
       "https://exhibitors.gamescom.global/exhibitor/netease_interactive/",
-      "https://exhibitors.gamescom.global/exhibitor/uk_netease_interacti/"
+      "https://exhibitors.gamescom.global/exhibitor/uk_netease_interacti/",
+      "https://www.siliconera.com/ananta-will-finally-show-up-again-at-gamescom-2026/",
+      "https://gamingbolt.com/ananta-will-be-showcased-at-gamescom-opening-night-live-2026"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "pearl-abyss",
@@ -1847,6 +1850,47 @@
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-thq-nordic-absage-080726/"
     ],
     "lastUpdated": "2026-08-06"
+  },
+  {
+    "id": "invoke-archetype",
+    "name": "Invoke / Archetype (Wizards of the Coast)",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": false,
+    "games": [
+      { "title": "Warlock: Dungeons & Dragons", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Exodus", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+    ],
+    "tags": ["not exhibiting", "RPG", "action"],
+    "crowd": 1,
+    "sources": [
+      "https://store.steampowered.com/app/3714800/Warlock_Dungeons__Dragons/",
+      "https://comicbook.com/gaming/news/dnd-finally-confirmed-warlock-video-game-gameplay-trailer-date-and-revealed-iconic-patron/",
+      "https://www.exodusgame.com/en-US/news/join-us-at-gamescom-opening-night-live-on-august-25",
+      "https://exhibitors.gamescom.global/exhibitor/invoke_studios/",
+      "https://exhibitors.gamescom.global/exhibitor/archetype_entertainmruiba_intelligent_te/"
+    ],
+    "lastUpdated": "2026-08-24"
+  },
+  {
+    "id": "playside",
+    "name": "PlaySide Studios (Game of Thrones)",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": false,
+    "games": [
+      { "title": "Game of Thrones: War for Westeros", "status": "confirmed", "playable": false, "platforms": ["PC"] }
+    ],
+    "tags": ["not exhibiting", "strategy"],
+    "crowd": 1,
+    "sources": [
+      "https://www.warforwesteros.com/post/official-gameplay-reveal-teaser",
+      "https://wikiofthrones.com/game-of-thrones-war-for-westeros-to-be-showcased-at-gamescom-2026-in-august",
+      "https://exhibitors.gamescom.global/exhibitor/playside/"
+    ],
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "paradox-urban",

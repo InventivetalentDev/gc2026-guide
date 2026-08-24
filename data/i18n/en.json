@@ -563,7 +563,8 @@
         "Marvel Rivals": "Multi-station 6v6 setups; Season 9.5 content at booth B050.",
         "Where Winds Meet": "Wuxia open-world RPG; Hidden Mountain finale content at booth B050.",
         "Sea of Remnants": "Stylized pirate adventure RPG, own booth A051; hands-on status not detailed in NetEase's release.",
-        "Once Human next expansion + unannounced title": "Hands-on preview at NetEase's business-area stand (Hall 4.2, D050) — trade & media only, not reachable on a public ticket."
+        "Once Human next expansion + unannounced title": "Hands-on preview at NetEase's business-area stand (Hall 4.2, D050) — trade & media only, not reachable on a public ticket.",
+        "Ananta": "Fresh gameplay in an Opening Night Live segment on Aug 25 — not part of NetEase's Hall 7.1 lineup, and no hands-on announced anywhere at the show."
       }
     },
     "pearl-abyss": {
@@ -929,6 +930,23 @@
       "visitAdvice": "Watch the THQ Nordic Digital Showcase stream instead; partner titles may still surface at other booths.",
       "games": {
         "Titan Quest II / Wreckfest 2 / Gothic Remake": "Digital Showcase (streamed Aug 7) only — no gamescom booth."
+      }
+    },
+    "invoke-archetype": {
+      "description": "Two Wizards of the Coast games premiere at Opening Night Live on Aug 25 and neither reaches the public floor: Invoke's Warlock: Dungeons & Dragons gets its first gameplay, Archetype's Exodus a new trailer and a companion reveal. Both studios are registered only on Hasbro's shared business stand (Hall 2.2, A014/B015) next to Wizards of the Coast LLC — trade badges only, no demo. Both games are due in 2027.",
+      "crowdNote": "No consumer booth to queue for.",
+      "visitAdvice": "Watch the ONL stream on Tuesday evening. On the floor, the Wizards of the Coast stand in Hall 5.2 is a Magic: The Gathering card booth and shows neither game.",
+      "games": {
+        "Warlock: Dungeons & Dragons": "First gameplay at ONL Aug 25 — Invoke's D&D action-adventure, out 2027. Stream only, no show-floor demo.",
+        "Exodus": "New trailer, a companion reveal and further news at ONL Aug 25; Archetype's sci-fi RPG lands 2027. Stream only, no show-floor demo."
+      }
+    },
+    "playside": {
+      "description": "No consumer booth: PlaySide's only registration in the official directory is its own stand in business Hall 3.2 (C010/D011, trade only). The full gameplay reveal for Game of Thrones: War for Westeros — a premium real-time strategy game for PC — premieres at Opening Night Live on Aug 25, ahead of an early 2027 release.",
+      "crowdNote": "No booth to queue for.",
+      "visitAdvice": "Catch it in the ONL stream on Tuesday evening; there is nothing to plan a floor stop around.",
+      "games": {
+        "Game of Thrones: War for Westeros": "Gameplay reveal trailer at ONL Aug 25 — four playable factions, PC only, early 2027. Stream only, no demo at the show."
       }
     },
     "paradox-urban": {
