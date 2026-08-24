@@ -248,6 +248,8 @@ window.GC_STRINGS.en = {
   "queues.searchLabel": "Find the queue",
   "queues.searchPlaceholder": "Game or booth…",
   "queues.scopedTo": "Showing queues at {exhibitor}",
+  "queues.scopedToHall": "Showing the queues in hall {hall}",
+  "queues.nearShow": "Show {n} queue near you|Show {n} queues near you",
   "queues.showAll": "Search all queues",
   "queues.countMatches": "{n} queue|{n} queues",
   "queues.countSaved": "{n} queue from your saved list|{n} queues from your saved list",
@@ -255,6 +257,7 @@ window.GC_STRINGS.en = {
     "Search for the game you are queueing for. Save booths on the Exhibitors tab and their queues show up here first.",
   "queues.emptySearch": "Nothing matches “{query}”.",
   "queues.emptyScoped": "Nothing at this booth matches “{query}”. Search all queues to look wider.",
+  "queues.emptyScopedHall": "Nothing in hall {hall} matches “{query}”. Search all queues to look wider.",
   "queues.previewWhen": "Live queues open on {day}, {date} — the first day of gamescom.",
   "queues.previewOver": "gamescom 2026 is over, and live queues closed with it.",
   "queues.previewHow":

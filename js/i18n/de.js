@@ -229,6 +229,8 @@ window.GC_STRINGS.de = {
   "queues.searchLabel": "Schlange finden",
   "queues.searchPlaceholder": "Spiel oder Stand…",
   "queues.scopedTo": "Schlangen bei {exhibitor}",
+  "queues.scopedToHall": "Schlangen in Halle {hall}",
+  "queues.nearShow": "{n} Schlange bei dir zeigen|{n} Schlangen bei dir zeigen",
   "queues.showAll": "Alle Schlangen durchsuchen",
   "queues.countMatches": "{n} Schlange|{n} Schlangen",
   "queues.countSaved": "{n} Schlange aus deiner Merkliste|{n} Schlangen aus deiner Merkliste",
@@ -236,6 +238,7 @@ window.GC_STRINGS.de = {
     "Suche das Spiel, für das du anstehst. Gemerkte Stände aus dem Aussteller-Tab erscheinen hier zuerst.",
   "queues.emptySearch": "Nichts passt zu „{query}“.",
   "queues.emptyScoped": "An diesem Stand passt nichts zu „{query}“. Durchsuche alle Schlangen, um weiter zu suchen.",
+  "queues.emptyScopedHall": "In Halle {hall} passt nichts zu „{query}“. Durchsuche alle Schlangen, um weiter zu suchen.",
   "queues.previewWhen": "Die Live-Wartezeiten starten am {day}, {date} — dem ersten Messetag.",
   "queues.previewOver": "Die gamescom 2026 ist vorbei, und mit ihr die Live-Wartezeiten.",
   "queues.previewHow":
