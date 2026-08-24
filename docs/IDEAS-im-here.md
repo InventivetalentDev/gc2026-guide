@@ -259,3 +259,23 @@ Then, in order: C (Today's ask-once row), 4 (queues near you), 5 (fold-in),
 and 6 once the show has proven the position trustworthy. E and F stay
 rejected until someone surveys anchor points or prints stickers, and D
 stays out unless the implicit signals turn out too sparse on day one.
+
+---
+
+## Build notes (what shipped)
+
+The v1 slice above landed the same day, plus C — without the ask row, a
+wrong implicit stamp could only be corrected from the map, and a feature
+named "quickly select I'm here" owes the guide page a selector. Two things
+the survey did not foresee, found in the building:
+
+- **"You're here" displaces a heading's step label** rather than standing
+  beside it. Steps describe the walk to a hall you have not reached;
+  "across the site" on the hall you are standing in was wrong twice over
+  and crowded a 360px heading past its width.
+- **The map's pan handler swallows taps on anything it does not exclude.**
+  The stage takes pointer capture on pointerdown, which suppressed the new
+  button's click for real fingers while a synthetic `.click()` sailed
+  through — the exclusion list (`#sheet, .map-zoom`) now carries
+  `.map-here` too. Any future control floating over the stage needs the
+  same line, and a trusted-event test is the only kind that catches it.

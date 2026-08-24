@@ -423,10 +423,14 @@ function markLabel(mark, kind, name, marked) {
 
 function toggleMark(mark, kind, key) {
   const set = markSet(mark, kind);
-  set.has(key) ? set.delete(key) : set.add(key);
+  const adding = !set.has(key);
+  adding ? set.add(key) : set.delete(key);
   persistMarks(mark);
   /* Only the saved set scopes the itinerary; a played tick can't orphan it. */
   if (mark === "saved") prunePlan();
+  /* Setting a ✓, never clearing one: an untick is a correction to the
+     record, not a statement about where you are standing. */
+  if (mark === "played" && adding) stampHereFromPlayed(kind, key);
   onMarksChanged();
 }
 
@@ -4644,6 +4648,67 @@ function hallSteps(fromHall, toHall) {
   return null;
 }
 
+/* The distance labels both the hall headings and Today's advice strip put on
+   a step count — one mapping, so "next hall along" means the same walk
+   wherever it is printed. */
+const stepsLabel = (steps) =>
+  steps === 1
+    ? t("route.stepsNear")
+    : steps === 2 || steps === 3
+      ? t("route.stepsAcross")
+      : steps >= 4
+        ? t("route.stepsFar")
+        : "";
+
+/* ---- where you are — the "I'm here" position ----
+
+   The advice surfaces below read the plan as if the visitor were at its top;
+   this is the fact that lets them start from where the visitor actually
+   stands instead (docs/IDEAS-im-here.md). Storage and decay live in
+   js/marks.js, because the map writes the same key; what belongs here is the
+   one rule about setting it: only statements of physical fact stamp a
+   position — a queue report, a ✓ made while the doors are open, an explicit
+   tap — never attention and never intent. Opening a hall on the map is
+   browsing; saving a booth is wanting; neither means standing there, and one
+   wrong "you're in hall 4" teaches the visitor to distrust every
+   position-flavoured line the guide ever renders. */
+const hereNow = () => GCMarks.readHere();
+
+function stampHere(hall, ex = null, src = "") {
+  if (!hall) return;
+  GCMarks.writeHere({ hall: String(hall), ex, src });
+  /* This tab gets no storage event for its own write; the two surfaces that
+     advise from the position redraw through the same idle queue every mark
+     change uses. */
+  refreshViews("planner", "today");
+}
+
+/* A queue report is booth-accurate: you do not count the people ahead of you
+   in a line you are not standing in. Called from the gesture handlers, never
+   from the transport — a deferred completion replays when the network comes
+   back, possibly hours later and halls away, and must not claim you are
+   still at the booth. */
+function stampHereAtBooth(exhibitorId, src) {
+  const ex = state.exhibitors.find((entry) => entry.id === exhibitorId);
+  if (ex?.hall && !isAbsent(ex)) stampHere(ex.hall, ex.id, src);
+}
+
+/* The ✓ is the other statement of presence — you tick it walking away from
+   the demo — but only while the doors are open: people tidy their lists from
+   the hotel at night, and an evening stamp would open tomorrow's advice on
+   yesterday's hall. A game ticked at one of the two-booth titles is skipped
+   as ambiguous rather than guessed at. */
+function stampHereFromPlayed(kind, key) {
+  const d = showDay();
+  if (!d || dayStatus(d).state !== "open") return;
+  const holds = (ex) =>
+    kind === "exhibitor"
+      ? ex.id === key
+      : (ex.games || []).some((game) => gameKey(game.title) === key);
+  const at = state.exhibitors.filter((ex) => holds(ex) && ex.hall && !isAbsent(ex));
+  if (at.length === 1) stampHere(at[0].hall, at[0].id, "played");
+}
+
 /* Which days a stop is planned for. Shared with the map's route overlay, which
    has to bucket the same booth onto the same day (js/marks.js). */
 const stopDays = (ex) => GCMarks.stopDays(state.marks.saved, state.itinerary, ex);
@@ -4771,8 +4836,11 @@ function routeRow(
   </div>`;
 }
 
-/* The hall heading above a run of those rows — also shared with Today. */
-function routeHallHeader(group, { dayFilter = null, from = null } = {}) {
+/* The hall heading above a run of those rows — also shared with Today.
+   `here` marks the hall the visitor said they are in, and displaces the step
+   label: steps describe the walk to a hall you have not reached, and "across
+   the site" on the hall you are standing in is wrong twice over. */
+function routeHallHeader(group, { dayFilter = null, from = null, here = false } = {}) {
   const kicker =
     group.key === "offsite" || group.key === "tba"
       ? t("route.locationKicker")
@@ -4784,15 +4852,8 @@ function routeHallHeader(group, { dayFilter = null, from = null } = {}) {
         ? t("plate.tba")
         : group.key;
   const countLabel = t("route.stops", { n: group.items.length });
-  const steps = hallSteps(from, group.key);
-  const stepLabel =
-    steps === 1
-      ? t("route.stepsNear")
-      : steps === 2 || steps === 3
-        ? t("route.stepsAcross")
-        : steps >= 4
-          ? t("route.stepsFar")
-          : "";
+  const stepLabel = here ? "" : stepsLabel(hallSteps(from, group.key));
+  const hereTag = here ? `<span class="route-hall-here">${esc(t("route.hereTag"))}</span>` : "";
   /* The header opens the whole hall — the overview you want before
      walking into it. Each stop's booth number below opens that stand. */
   const toMap = hasMap(group.key)
@@ -4802,10 +4863,11 @@ function routeHallHeader(group, { dayFilter = null, from = null } = {}) {
         )}">${esc(t("map.cue"))}</a>`
     : "";
   return `<h4 class="route-hall" aria-label="${esc(
-    [group.label, stepLabel, countLabel].filter(Boolean).join(", ")
+    [group.label, here ? t("route.hereTag") : "", stepLabel, countLabel].filter(Boolean).join(", ")
   )}">
     <span class="route-hall-kicker">${esc(kicker)}</span>
     <span class="route-hall-num">${esc(number)}</span>
+    ${hereTag}
     ${stepLabel ? `<span class="route-hall-steps">${esc(stepLabel)}</span>` : ""}
     <span class="route-hall-count">${esc(countLabel)}</span>
     ${toMap}
@@ -4821,14 +4883,23 @@ function routeHallHeader(group, { dayFilter = null, from = null } = {}) {
    played stops folded away, so an arrow there would arrange a list against a
    set the visitor cannot see. Arranging belongs to the plan, which shows the
    whole of it — Today only has to honour the order, which routeGroups()
-   already sorts by. */
-const routeBoard = (groups, { dayFilter = null, move = true, deadlines = null } = {}) =>
-  groups
+   already sorts by.
+
+   The position changes what the headings *say*, never what order the groups
+   come in: the first hall's steps are measured from where you are (the walk
+   to it starts there, and with no position it had no steps at all), and the
+   hall you said you are in wears a tag. Re-sorting the board by proximity
+   would move the map's numbered pins with it — anything that arranges by
+   position is its own lens, not a mutation of the walking route. */
+const routeBoard = (groups, { dayFilter = null, move = true, deadlines = null } = {}) => {
+  const here = hereNow();
+  return groups
     .map(
       (group, groupIndex) =>
         routeHallHeader(group, {
           dayFilter,
-          from: groupIndex ? groups[groupIndex - 1].key : null,
+          from: groupIndex ? groups[groupIndex - 1].key : here?.hall || null,
+          here: Boolean(here && group.key === here.hall),
         }) +
         group.items
           .map((ex, i) =>
@@ -4843,6 +4914,7 @@ const routeBoard = (groups, { dayFilter = null, move = true, deadlines = null } 
           .join("")
     )
     .join("");
+};
 
 function renderRoute() {
   const routeList = $("#plan-board");
@@ -5258,13 +5330,51 @@ function todayFitMarkup(groups, day, now) {
   )}${result.unmeasured ? esc(t("today.fitUnmeasured", { n: result.unmeasured })) : ""}</p>`;
 }
 
-/* The one stop worth walking to first: the longest queue still left today.
-   Only offered when there is a choice to make. With nothing measured the old
-   bad-queue threshold still applies, so a quiet morning stays quiet. Business
-   stops run on appointments, so they are never the answer to "where is the
-   queue". */
+/* The stops the strip below is allowed to advise: business stops run on
+   appointments, so they are never the answer to "where next" or "where is
+   the queue". */
+const todayAdvisable = (groups) =>
+  groups.flatMap((group) => group.items).filter((ex) => !inBusinessArea(ex));
+
+/* The wait a named stop is quoted with: the live figure where one exists,
+   the editorial forecast where it doesn't, nothing where there is neither —
+   the same preference every other live surface has. */
+function stopWaitDetail(ex) {
+  const entry = worstOpenTrustedQueue(ex);
+  if (entry) return queueLiveMain(entry.live);
+  const crowd = ex.crowd || 0;
+  return crowd ? t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) }) : "";
+}
+
+/* What the position adds to the strip: the first remaining stop in the hall
+   you are standing in, and the nearest one outside it. "First" and "nearest,
+   among the equally near" both defer to the plan's own comparator rather
+   than a worth formula of their own — the order you arranged is the order
+   the advice respects. Only offered when there is a choice to make, like the
+   longest-queue line below. */
+function todayHereEntries(groups) {
+  const here = hereNow();
+  if (!here) return null;
+  const stops = todayAdvisable(groups);
+  if (stops.length < 2) return null;
+  const rank = GCMarks.compareStops(hasPlayed, GCI18N.lang, exPlanRank);
+  const inHall = stops.filter((ex) => String(ex.hall) === here.hall).sort(rank)[0] || null;
+  /* Steps of 0 is the other floor of the same building — kept, with no
+     distance word, rather than dropped between "here" and "next hall". */
+  const near =
+    stops
+      .filter((ex) => String(ex.hall) !== here.hall)
+      .map((ex) => ({ ex, steps: hallSteps(here.hall, ex.hall) }))
+      .filter((entry) => entry.steps !== null)
+      .sort((a, b) => a.steps - b.steps || rank(a.ex, b.ex))[0] || null;
+  return { inHall, near };
+}
+
+/* The longest queue still left today. Only offered when there is a choice to
+   make. With nothing measured the old bad-queue threshold still applies, so
+   a quiet morning stays quiet. */
 function todayFirstEntry(groups) {
-  const stops = groups.flatMap((group) => group.items).filter((ex) => !inBusinessArea(ex));
+  const stops = todayAdvisable(groups);
   if (stops.length < 2) return null;
 
   if (QUEUES?.visible()) {
@@ -5282,15 +5392,41 @@ function todayFirstEntry(groups) {
   return ex && (ex.crowd || 0) >= 4 ? { ex, live: null } : null;
 }
 
+/* The advice strip: one block, up to three short lines. Position-less it is
+   the line it has always been — the longest queue, labelled as the place to
+   go first. With a position the strip answers "from here" instead: your
+   hall, the nearest next stop, and the longest queue renamed to the
+   observation it is — three suggestions would be noise, but three facts let
+   the visitor make the trade the guide cannot make for them. A stop already
+   named is not named twice. */
 function todayFirstMarkup(groups) {
-  const entry = todayFirstEntry(groups);
-  if (!entry) return "";
-  const crowd = entry.ex.crowd || 0;
-  const forecast = t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) });
-  const detail = (entry.live && queueLiveMain(entry.live)) || forecast;
-  return `<p class="today-first"><span class="today-first-label">${esc(
-    t("today.firstLabel")
-  )}</span> <strong>${esc(entry.ex.name)}</strong> — ${esc(detail)}</p>`;
+  const positioned = todayHereEntries(groups);
+  const worst = todayFirstEntry(groups);
+  const line = (label, ex, detail) =>
+    `<span class="today-first-line"><span class="today-first-label">${esc(
+      label
+    )}</span> <strong>${esc(ex.name)}</strong>${detail ? ` — ${esc(detail)}` : ""}</span>`;
+  const lines = [];
+  const named = new Set();
+  if (positioned?.inHall) {
+    lines.push(line(t("today.hereLabel"), positioned.inHall, stopWaitDetail(positioned.inHall)));
+    named.add(positioned.inHall.id);
+  }
+  if (positioned?.near) {
+    const detail = [stepsLabel(positioned.near.steps), stopWaitDetail(positioned.near.ex)]
+      .filter(Boolean)
+      .join(" · ");
+    lines.push(line(t("today.nearestLabel"), positioned.near.ex, detail));
+    named.add(positioned.near.ex.id);
+  }
+  if (worst && !named.has(worst.ex.id)) {
+    const crowd = worst.ex.crowd || 0;
+    const detail =
+      (worst.live && queueLiveMain(worst.live)) ||
+      t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) });
+    lines.push(line(t(named.size ? "today.longestLabel" : "today.firstLabel"), worst.ex, detail));
+  }
+  return lines.length ? `<p class="today-first">${lines.join("")}</p>` : "";
 }
 
 function refreshTodayLive() {
@@ -5304,12 +5440,71 @@ function refreshTodayLive() {
   const fitMarkup = todayFitMarkup(groups, day, showNow());
   if (firstTarget && firstTarget.innerHTML !== firstMarkup) firstTarget.innerHTML = firstMarkup;
   if (fitTarget && fitTarget.innerHTML !== fitMarkup) fitTarget.innerHTML = fitMarkup;
+  /* The here row ages like the strip does — a position expires between full
+     renders, and a row still claiming a hall above a strip that has stopped
+     advising from it would be the two disagreeing. Never patched under a
+     focused chip: yanking the picker out from under a thumb to note an
+     expiry is the worse trade. */
+  const hereTarget = $("#today-here-row");
+  if (hereTarget && !hereTarget.contains(document.activeElement)) {
+    const hereMarkup = todayHereRowMarkup(day, dayStatus(day, showNow()), groups);
+    if (hereTarget.innerHTML !== hereMarkup) hereTarget.innerHTML = hereMarkup;
+  }
 }
 
 /* The Done fold is rebuilt from scratch on every tick, so its open state has
    to live out here — otherwise un-ticking a mis-tapped ✓ slams the drawer it
    was in. */
 let todayDoneOpen = false;
+
+/* The hall picker's two transient states live out here for the same reason:
+   "change" and "elsewhere" both re-render the header they sit in. Neither is
+   a preference — a reload starts folded, which is the right cold state. */
+let todayHerePickerOpen = false;
+let todayHereAllOpen = false;
+
+/* Today's own way to set the position — the one place the guide volunteers
+   the question. While the doors are open and no fresh position exists, a row
+   of hall chips asks it, today's own halls first (that is usually the
+   answer) and the rest behind one more tap; once set, the row folds to a
+   statement with the way to change it. Off-hours it is nothing at all: you
+   are not standing in a hall before the doors, and after them the advice the
+   position feeds has gone home too. */
+function todayHereRowMarkup(d, status, groups) {
+  if (status.state !== "open") return "";
+  const here = hereNow();
+  if (here && !todayHerePickerOpen) {
+    return `<p class="today-here">
+      <span class="today-here-in">${esc(t("today.hereIn", { hall: here.hall }))}</span>
+      <button class="today-here-change" type="button" data-here-change>${esc(
+        t("today.hereChange")
+      )}</button>
+    </p>`;
+  }
+  const todays = groups.map((group) => group.key).filter((key) => key !== "offsite" && key !== "tba");
+  const rest = [...state.mapHalls]
+    .filter((hall) => !todays.includes(hall))
+    .sort((a, b) => hallRank(a) - hallRank(b));
+  if (!todays.length && !rest.length) return "";
+  const showAll = todayHereAllOpen || !todays.length;
+  const chip = (hall, extra = "") =>
+    `<button class="day-chip${here?.hall === hall ? " active" : ""}" type="button"
+      data-here-hall="${esc(hall)}"${extra} aria-pressed="${here?.hall === hall}"
+      aria-label="${esc(t("today.hereSetAria", { hall }))}">${esc(hall)}</button>`;
+  return `<div class="today-here" role="group" aria-label="${esc(t("today.hereAria"))}">
+    <span class="today-here-q">${esc(t("today.hereQuestion"))}</span>
+    ${todays.map((hall) => chip(hall)).join("")}
+    ${
+      showAll
+        ? rest.map((hall, i) => chip(hall, i === 0 ? ' data-here-rest="true"' : "")).join("")
+        : rest.length
+          ? `<button class="day-chip" type="button" data-here-more>${esc(
+              t("today.hereElsewhere")
+            )}</button>`
+          : ""
+    }
+  </div>`;
+}
 
 function renderTodayTab(day = showDay()) {
   const tab = $('.tab[data-view="today"]');
@@ -5360,6 +5555,8 @@ function renderToday() {
   const now = showNow();
   const status = dayStatus(d, now);
   const pct = total ? Math.round((done.length / total) * 100) : 0;
+  /* A picker left open when the doors shut would greet tomorrow half-open. */
+  if (status.state !== "open") todayHerePickerOpen = todayHereAllOpen = false;
 
   $("#today-head").innerHTML = `<div class="today-strip" data-state="${esc(status.state)}">
       <span class="today-when">
@@ -5369,6 +5566,7 @@ function renderToday() {
       <span class="day-access ${isTradeDay(d) ? "trade" : "public"}">${esc(d.access)}</span>
       <span class="today-status">${esc(dayStatusLine(d))}</span>
     </div>
+    <div id="today-here-row">${todayHereRowMarkup(d, status, groups)}</div>
     ${
       total
         ? `<div class="today-progress">
@@ -6499,6 +6697,9 @@ async function submitQueueDialog(action, value) {
   }
 
   const stateAtSubmit = queueDialogState;
+  /* Joining, updating your place and voting the mechanics are the strongest
+     "I'm here" the guide ever hears — you counted the people ahead of you. */
+  stampHereAtBooth(stateAtSubmit.queue.exhibitor, "queue");
   stateAtSubmit.busy = true;
   stateAtSubmit.status = t("queue.sending");
   renderQueueDialog();
@@ -6565,6 +6766,10 @@ async function runQueueAction(queue, action, source = null) {
     return;
   }
   pendingQueueActions.add(pendingKey);
+  /* Before the report, not after it: the tap is the statement of presence —
+     entered, left and a closure vote are all made looking at the booth — and
+     it holds whether or not the write gets through. */
+  stampHereAtBooth(queue.exhibitor, "queue");
   if (source) {
     source.disabled = true;
     source.setAttribute("aria-busy", "true");
@@ -7341,6 +7546,34 @@ function bindControls() {
     window.scrollTo(0, 0);
     $('.tab[data-view="exhibitors"]')?.focus({ preventScroll: true });
   });
+  /* The hall picker. Delegated on the section rather than bound per render —
+     the header it sits in is rebuilt on every tick — and every branch ends in
+     restoreFocus, because each press replaces the control that was pressed. */
+  $("#view-today")?.addEventListener("click", (event) => {
+    const pick = event.target.closest("[data-here-hall]");
+    if (pick) {
+      todayHerePickerOpen = false;
+      todayHereAllOpen = false;
+      /* stampHere re-renders Today, which folds the picker to the statement
+         row — so the control to land on is the one that opens it again. */
+      stampHere(pick.dataset.hereHall, null, "asked");
+      restoreFocus($("#view-today [data-here-change]"));
+      return;
+    }
+    if (event.target.closest("[data-here-change]")) {
+      todayHerePickerOpen = true;
+      renderToday();
+      restoreFocus(
+        $("#view-today .today-here .day-chip.active") || $("#view-today [data-here-hall]")
+      );
+      return;
+    }
+    if (event.target.closest("[data-here-more]")) {
+      todayHereAllOpen = true;
+      renderToday();
+      restoreFocus($('#view-today [data-here-rest="true"]'));
+    }
+  });
   /* Today's header is a clock, and every other surface in the app is
      timeless — so this is the one listener of its kind. A phone that spent
      the last hour in a pocket must not come back to "closes in 3h". */
@@ -7451,6 +7684,15 @@ function bindControls() {
   });
   /* Same marks, second tab: keep them from overwriting each other. */
   window.addEventListener("storage", (e) => {
+    /* The position is read fresh at render time, so an "I'm here" from the
+       map tab only needs the two surfaces that advise from it redrawn — not
+       the full re-render below, which rebuilds the grid for keys that scope
+       it. (A cleared storage falls through: the full path redraws these two
+       as well.) */
+    if (e.key === GCMarks.HERE_KEY) {
+      refreshViews("planner", "today");
+      return;
+    }
     const watched = [...Object.values(MARK_KEYS), IT_KEY, ORDER_KEY, PREFS_KEY];
     if (e.key !== null && !watched.includes(e.key)) return;
     if (e.key === null || e.key === MARK_KEYS.saved) state.marks.saved = loadMarks("saved");
