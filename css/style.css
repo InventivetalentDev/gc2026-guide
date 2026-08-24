@@ -1948,7 +1948,8 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   border-bottom: 1px solid var(--rule-soft);
   background: var(--ground-3);
 }
-.route-hall-kicker {
+.route-hall-kicker,
+.route-hall-steps {
   font-family: var(--font-mono);
   font-size: .64rem;
   font-weight: 500;
@@ -1997,6 +1998,7 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   opacity: .62;
   box-shadow: inset 3px 0 0 var(--ink-dim);
 }
+.route-deadline { grid-column: 4; grid-row: 1; }
 .route-item .row-actions { grid-column: -2 / -1; grid-row: 1; align-self: center; }
 .route-item .priority-saved { grid-column: 1 / -1; }
 .route-name { font-weight: 700; font-size: .95rem; }
@@ -2112,7 +2114,8 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .today-strip[data-state="after"] .today-status { color: var(--ink-dim); }
 
 .today-progress { margin: 14px 0 24px; }
-.today-count {
+.today-count,
+.today-fit {
   font-family: var(--font-mono);
   font-size: .68rem; font-weight: 700;
   letter-spacing: .1em; text-transform: uppercase;
@@ -2980,6 +2983,7 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .route-item { grid-template-columns: 1fr auto auto; row-gap: 4px; }
   .route-booth { grid-column: 1 / -1; grid-row: 2; }
   .route-crowd { grid-column: 2; grid-row: 1; }
+  .route-deadline { grid-column: 1 / -1; grid-row: 4; }
   /* Six columns do not fit a tablet, so the day row folds the same way the
      hall row above it does: name, queue and the controls on the first line,
      the address under them, the day chips under that. */

@@ -4578,6 +4578,48 @@ function downloadICS() {
 const isAbsent = (ex) => (ex.tags || []).includes("not exhibiting");
 const isOffsite = (ex) => (ex.tags || []).includes("offsite");
 
+/* Which halls you can walk between without passing through a third, from the
+   arrangement in data/hallplan/campus.json. B, B1 and B3 are the Boulevard's
+   two runs and the Piazza — real places you cross, so they count as a step.
+   The file is a diagram and not to scale, so this is the only thing taken
+   from it: what joins what, never how far. */
+const HALL_LINKS = {
+  "1": ["4", "5", "6"],
+  "2": ["3"],
+  "3": ["2", "B3"],
+  "4": ["1", "5", "B1", "B3"],
+  "5": ["1", "4", "6", "9", "B", "B1"],
+  "6": ["1", "5", "9", "B", "B1"],
+  "7": ["B"],
+  "8": ["B"],
+  "9": ["5", "6", "10", "B", "B1"],
+  "10": ["9", "B1", "B3"],
+  "11": ["B3"],
+  B: ["5", "6", "7", "8", "9", "B1"],
+  B1: ["4", "5", "6", "9", "10", "B", "B3"],
+  B3: ["3", "4", "10", "11", "B1"],
+};
+
+function hallSteps(fromHall, toHall) {
+  const from = String(fromHall || "").split(".")[0];
+  const to = String(toHall || "").split(".")[0];
+  if (!HALL_LINKS[from] || !HALL_LINKS[to]) return null;
+  if (from === to) return 0;
+
+  const seen = new Set([from]);
+  const pending = [{ hall: from, steps: 0 }];
+  for (let i = 0; i < pending.length; i++) {
+    const { hall, steps } = pending[i];
+    for (const next of HALL_LINKS[hall]) {
+      if (next === to) return steps + 1;
+      if (seen.has(next)) continue;
+      seen.add(next);
+      pending.push({ hall: next, steps: steps + 1 });
+    }
+  }
+  return null;
+}
+
 /* Which days a stop is planned for. Shared with the map's route overlay, which
    has to bucket the same booth onto the same day (js/marks.js). */
 const stopDays = (ex) => GCMarks.stopDays(state.marks.saved, state.itinerary, ex);
@@ -4666,7 +4708,10 @@ function routeDayTags(ex) {
    `total` is how many stops the arrows are allowed to move this one through,
    and passing 0 is how a view says it does not arrange anything — see
    routeBoard. */
-function routeRow(ex, { dayFilter = null, group = "", index = 0, total = 0 } = {}) {
+function routeRow(
+  ex,
+  { dayFilter = null, group = "", index = 0, total = 0, deadlines = null } = {}
+) {
   const baseLocation = ex.booth
     ? ex.booth
     : ex.hall
@@ -4677,6 +4722,12 @@ function routeRow(ex, { dayFilter = null, group = "", index = 0, total = 0 } = {
      underlining it would offer to show you a stand we're not sure of. */
   const unconf = ex.hall && !ex.locationConfirmed ? t("plate.unconfSuffix") : "";
   const key = GCMarks.stopKey("exhibitor", ex.id);
+  const deadline = deadlines ? stopDeadline(ex, deadlines, showNow()) : null;
+  const deadlineCell = deadline
+    ? `<span class="route-deadline" data-late="${deadline.late}">${esc(
+        deadline.late ? t("today.tooLate") : t("today.joinBy", { at: deadline.at })
+      )}</span>`
+    : "";
   /* The group a move is measured against is the hall as rendered —
      under a day filter that is exactly the set the map numbers, so
      an arrow here moves a pin there. */
@@ -4686,6 +4737,7 @@ function routeRow(ex, { dayFilter = null, group = "", index = 0, total = 0 } = {
     <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation, dayFilter)}${unconf}</span>
     ${crowdCell("route-crowd", ex.crowd || 0, inBusinessArea(ex))}
     ${queueSummary(ex, { compact: true, kind: "route" })}
+    ${deadlineCell}
     <span class="row-actions">
       ${moveButtons(key, ex.name, index, total)}
       ${markButton("played", "exhibitor", ex.id, ex.name)}
@@ -4696,7 +4748,7 @@ function routeRow(ex, { dayFilter = null, group = "", index = 0, total = 0 } = {
 }
 
 /* The hall heading above a run of those rows — also shared with Today. */
-function routeHallHeader(group, { dayFilter = null } = {}) {
+function routeHallHeader(group, { dayFilter = null, from = null } = {}) {
   const kicker =
     group.key === "offsite" || group.key === "tba"
       ? t("route.locationKicker")
@@ -4708,6 +4760,15 @@ function routeHallHeader(group, { dayFilter = null } = {}) {
         ? t("plate.tba")
         : group.key;
   const countLabel = t("route.stops", { n: group.items.length });
+  const steps = hallSteps(from, group.key);
+  const stepLabel =
+    steps === 1
+      ? t("route.stepsNear")
+      : steps === 2 || steps === 3
+        ? t("route.stepsAcross")
+        : steps >= 4
+          ? t("route.stepsFar")
+          : "";
   /* The header opens the whole hall — the overview you want before
      walking into it. Each stop's booth number below opens that stand. */
   const toMap = hasMap(group.key)
@@ -4716,9 +4777,12 @@ function routeHallHeader(group, { dayFilter = null } = {}) {
           t("map.openAria", { where: t("where.hall", { hall: group.key }) })
         )}">${esc(t("map.cue"))}</a>`
     : "";
-  return `<h4 class="route-hall" aria-label="${esc(`${group.label}, ${countLabel}`)}">
+  return `<h4 class="route-hall" aria-label="${esc(
+    [group.label, stepLabel, countLabel].filter(Boolean).join(", ")
+  )}">
     <span class="route-hall-kicker">${esc(kicker)}</span>
     <span class="route-hall-num">${esc(number)}</span>
+    ${stepLabel ? `<span class="route-hall-steps">${esc(stepLabel)}</span>` : ""}
     <span class="route-hall-count">${esc(countLabel)}</span>
     ${toMap}
   </h4>`;
@@ -4734,11 +4798,14 @@ function routeHallHeader(group, { dayFilter = null } = {}) {
    set the visitor cannot see. Arranging belongs to the plan, which shows the
    whole of it — Today only has to honour the order, which routeGroups()
    already sorts by. */
-const routeBoard = (groups, { dayFilter = null, move = true } = {}) =>
+const routeBoard = (groups, { dayFilter = null, move = true, deadlines = null } = {}) =>
   groups
     .map(
-      (group) =>
-        routeHallHeader(group, { dayFilter }) +
+      (group, groupIndex) =>
+        routeHallHeader(group, {
+          dayFilter,
+          from: groupIndex ? groups[groupIndex - 1].key : null,
+        }) +
         group.items
           .map((ex, i) =>
             routeRow(ex, {
@@ -4746,6 +4813,7 @@ const routeBoard = (groups, { dayFilter = null, move = true } = {}) =>
               group: group.key,
               index: i,
               total: move ? group.items.length : 0,
+              deadlines,
             })
           )
           .join("")
@@ -5098,13 +5166,79 @@ function unplacedCount() {
 
 const LIVE_TRUST_MIN = 2;
 
+/* Which of a booth's queues speaks for it, for the three readings Today makes of
+   one: where to go first, when to be in the line, and whether the day still fits.
+
+   Not QUEUES.worst(). That sorts closed queues first, which is right on a card —
+   the closure is the most important thing to know about a booth you are looking
+   at — and wrong for all three of these, which are advice. Sending somebody to a
+   line that admits nobody is the one answer none of them may give, and a booth
+   running one closed demo beside an open one still has a wait worth quoting.
+
+   Two devices, because one person's report is not enough to overrule a forecast
+   somebody sat down and made. */
+function worstOpenTrustedQueue(ex) {
+  return (
+    QUEUES?.queuesFor(ex)
+      .map((queue) => ({ queue, live: QUEUES.live(queue) }))
+      .filter(
+        (candidate) =>
+          candidate.live &&
+          Number(candidate.live.n) >= LIVE_TRUST_MIN &&
+          !candidate.live.closed
+      )
+      .sort(compareQueueEntries)[0] || null
+  );
+}
+
+function stopDeadline(ex, day, now) {
+  const entry = worstOpenTrustedQueue(ex);
+  if (!entry) return null;
+
+  const minutes = clockMinutes(day.close) - Math.round(Number(entry.live.est) || 0);
+  if (minutes < clockMinutes(day.open)) return null;
+  return { at: hhmm(minutes), minutes, late: now.minutes > minutes };
+}
+
+function todayFit(groups, day, now) {
+  let fit = 0;
+  let measured = 0;
+  let unmeasured = 0;
+  let queueMinutes = 0;
+  let stillFits = true;
+  const close = clockMinutes(day.close);
+
+  groups.forEach((group) =>
+    group.items.forEach((ex) => {
+      const entry = worstOpenTrustedQueue(ex);
+      if (!entry) {
+        unmeasured++;
+        return;
+      }
+
+      measured++;
+      queueMinutes += Math.round(Number(entry.live.est) || 0);
+      if (stillFits && now.minutes + queueMinutes <= close) fit++;
+      else stillFits = false;
+    })
+  );
+
+  return { fit, measured, unmeasured };
+}
+
+function todayFitMarkup(groups, day, now) {
+  const result = todayFit(groups, day, now);
+  if (!result.measured || dayStatus(day, now).state !== "open") return "";
+  return `<p class="today-fit">${esc(
+    t("today.fitCount", { n: result.fit, total: result.measured })
+  )}${result.unmeasured ? esc(t("today.fitUnmeasured", { n: result.unmeasured })) : ""}</p>`;
+}
+
 /* The one stop worth walking to first: the longest queue still left today.
-   Only offered when there is a choice to make. One person's report does not
-   overrule the considered forecast; without two, the old bad-queue threshold
-   still applies. Business stops run on appointments, so they are never the
-   answer to "where is the queue". compareQueueEntries keeps closed queues
-   first on status surfaces, where the closure matters most. Advice drops them:
-   sending somebody to a line that admits nobody is wrong. */
+   Only offered when there is a choice to make. With nothing measured the old
+   bad-queue threshold still applies, so a quiet morning stays quiet. Business
+   stops run on appointments, so they are never the answer to "where is the
+   queue". */
 function todayFirstEntry(groups) {
   const stops = groups.flatMap((group) => group.items).filter((ex) => !inBusinessArea(ex));
   if (stops.length < 2) return null;
@@ -5112,15 +5246,7 @@ function todayFirstEntry(groups) {
   if (QUEUES?.visible()) {
     const measured = stops
       .map((ex) => {
-        const entry = QUEUES.queuesFor(ex)
-          .map((queue) => ({ queue, live: QUEUES.live(queue) }))
-          .filter(
-            (candidate) =>
-              candidate.live &&
-              Number(candidate.live.n) >= LIVE_TRUST_MIN &&
-              !candidate.live.closed
-          )
-          .sort(compareQueueEntries)[0];
+        const entry = worstOpenTrustedQueue(ex);
         return entry ? { ex, live: entry.live } : null;
       })
       .filter(Boolean)
@@ -5143,14 +5269,17 @@ function todayFirstMarkup(groups) {
   )}</span> <strong>${esc(entry.ex.name)}</strong> — ${esc(detail)}</p>`;
 }
 
-function refreshTodayFirst() {
-  const target = $("#today-first");
-  if (!target || !state.event) return;
+function refreshTodayLive() {
+  const firstTarget = $("#today-first");
+  const fitTarget = $("#today-fit");
+  if ((!firstTarget && !fitTarget) || !state.event) return;
   const day = showDay();
   if (!day) return;
   const { groups } = routeGroups({ day: day.date, hidePlayed: true });
-  const markup = todayFirstMarkup(groups);
-  if (target.innerHTML !== markup) target.innerHTML = markup;
+  const firstMarkup = todayFirstMarkup(groups);
+  const fitMarkup = todayFitMarkup(groups, day, showNow());
+  if (firstTarget && firstTarget.innerHTML !== firstMarkup) firstTarget.innerHTML = firstMarkup;
+  if (fitTarget && fitTarget.innerHTML !== fitMarkup) fitTarget.innerHTML = fitMarkup;
 }
 
 /* The Done fold is rebuilt from scratch on every tick, so its open state has
@@ -5204,7 +5333,8 @@ function renderToday() {
   const left = groups.reduce((total, group) => total + group.items.length, 0);
   const total = left + done.length;
   const [, month, dayOfMonth] = d.date.split("-");
-  const status = dayStatus(d);
+  const now = showNow();
+  const status = dayStatus(d, now);
   const pct = total ? Math.round((done.length / total) * 100) : 0;
 
   $("#today-head").innerHTML = `<div class="today-strip" data-state="${esc(status.state)}">
@@ -5226,7 +5356,8 @@ function renderToday() {
             )}"><span class="today-meter-fill" style="width:${pct}%"></span></div>
           </div>`
         : ""
-    }`;
+    }
+    <div id="today-fit">${todayFitMarkup(groups, d, now)}</div>`;
 
   /* Both lists are day-scoped already, so the closed-doors count covers played
      stops too: "two of today's stops are behind a badge gate" stays true after
@@ -5244,7 +5375,11 @@ function renderToday() {
        this strip is for — which of today's stops to walk to first. */
     `<div id="today-first">${todayFirstMarkup(groups)}</div>`,
     left
-      ? `<div class="route-board">${routeBoard(groups, { dayFilter: d.date, move: false })}</div>`
+      ? `<div class="route-board">${routeBoard(groups, {
+          dayFilter: d.date,
+          move: false,
+          deadlines: d,
+        })}</div>`
       : "",
     done.length
       ? `<details class="today-done" id="today-done"${todayDoneOpen ? " open" : ""}>
@@ -6094,7 +6229,7 @@ function refreshQueueSurfaces() {
      hidden list on every 30-second tick is work nobody sees. */
   syncQueueTab();
   if (state.view === "queues") renderQueues();
-  if (state.view === "today") refreshTodayFirst();
+  if (state.view === "today") refreshTodayLive();
 }
 
 function updateQueueTimes() {
