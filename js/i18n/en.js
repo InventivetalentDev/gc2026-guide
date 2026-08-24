@@ -648,6 +648,18 @@ window.GC_STRINGS.en = {
   "map.alsoHere": "also here",
   "map.notCovered": "not covered by the guide",
   "map.noExhibitor": "no exhibitor filed for this stand",
+  /* ---- the sheet's report link ----
+     The guide's one corrections channel (footer.feedback), opened from in
+     front of the booth it is wrong about. Subject and body are prefilled
+     by selectStand (js/map.js) with the stand, what the sheet claims and
+     the map link; the body ends on an open question on purpose, leaving
+     the cursor where the reporter's half of the story goes. */
+  "map.reportLink": "report a missing or wrong exhibitor",
+  "map.reportAria": "Report a missing or wrong exhibitor for stand {nr} in hall {hall} by e-mail",
+  "map.reportSubject": "gamescom guide: booth report — hall {hall}, stand {nr}",
+  "map.reportBody":
+    "Stand {nr} in hall {hall}\n{link}\n\nThe guide currently lists: {shown}\n\nWho or what is actually there:\n",
+  "map.reportShownNone": "nothing yet",
   "map.saveBooth": "+ Save booth",
   "map.unsaveBooth": "− Remove from saved",
   "map.plannedFor": "planned · {days}",

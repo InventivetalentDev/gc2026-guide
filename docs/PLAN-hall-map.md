@@ -755,7 +755,12 @@ pan would be theatre. None of these change the architecture.
     to have an opinion about.
 5. **Cross-links out**: the sheet links to `./#exhibitors?ex=<id>`, and
    `focusExhibitor()` in `js/app.js` scrolls that card into view and
-   flashes it, clearing any filter that would otherwise hide it.
+   flashes it, clearing any filter that would otherwise hide it. The sheet
+   also carries the guide's corrections channel to where errors are
+   noticed: a "report a missing or wrong exhibitor" mailto to the footer's
+   feedback address, prefilled per stand with the hall, booth number, what
+   the sheet currently claims and the `#hall/stand` link, so a report from
+   the show floor names its booth without the reporter typing any of it.
 6. **UPDATING.md** has a "Refreshing the hall plans" section: when to
    re-run the tool, how to read the join report, and the rule that booth
    numbers stay editorial — never hand-edit `data/hallplan/`. The booth
