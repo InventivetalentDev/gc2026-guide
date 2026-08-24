@@ -5,11 +5,11 @@
   "event": {
     "location": "Koelnmesse, Köln",
     "dates": "26.–30. Aug. 2026",
-    "tickets": "Nur online über den offiziellen gamescom-Shop — keine Tageskasse vor Ort. Tagestickets: Do/Fr/So 31,50 € (ermäßigt 22,50 €), Samstag 41,00 €; Abendtickets ab 16:00 Uhr 10,50–13,00 €; Familienticket 69,50–86,00 €; Mittwochs-Wildcard 65,50 € (ausverkauft am 5. Aug. 2026). Tickets für Opening Night Live sind ausverkauft; die Samstags-Tagestickets sind seit dem 14. Aug. 2026 ausverkauft, und mittlerweile sind auch die Donnerstags-Tagestickets weg — nur Freitag, Sonntag und die Abendtickets (ab 16:00 Uhr) sind noch erhältlich. Tagestickets enthalten die kostenlose Fahrt mit Bus und Bahn im VRS-Gebiet.",
+    "tickets": "Nur online über den offiziellen gamescom-Shop — keine Tageskasse vor Ort. Donnerstag, Freitag und Sonntag sind in allen Kategorien noch zu haben: Tagesticket 31,50 € (ermäßigt 22,50 €), Familienticket 69,50 €, Abendticket ab 16:00 Uhr 10,50 €. Der Samstag ist komplett ausverkauft — Tages-, Ermäßigten-, Familien- und Abendticket gleichermaßen — und ebenso die Mittwochs-Wildcard (65,50 €), die Superfan-Bundles und Opening Night Live. Das gamescom-congress-Tagesticket für Donnerstag kostet 111,00 € (ermäßigt 40,00 €) und enthält keinen Eintritt zur gamescom selbst. Tagestickets enthalten die kostenlose Fahrt mit Bus und Bahn im VRS-Gebiet.",
     "crowdTips": [
       "Die Ausstellungsfläche selbst ist zum ersten Mal in den 18 Jahren der gamescom komplett ausgebucht — 233.000 m² und über 1.600 Aussteller. Rechne mit der bisher vollsten gamescom.",
-      "Die Samstags- und Donnerstags-Tagestickets sind beide ausverkauft — Freitag und Sonntag sind die einzigen vollen Publikumstage, für die noch Tagestickets zu haben sind; für Samstag und Donnerstag gibt es nur noch das Abendticket ab 16:00 Uhr.",
-      "Die Mittwochs-Wildcard (Einlass ab 13:00 Uhr) ist der ruhigste Weg zu den heißesten Demos, war aber am 5. Aug. ausverkauft — ohne sie ist jetzt, wo auch Donnerstag ausverkauft ist, Freitagmorgen das nächstbeste Zeitfenster mit wenig Andrang.",
+      "Der Samstag ist jetzt in allen Kategorien ausverkauft, auch das Abendticket ab 16:00 Uhr — ohne bereits gekauftes Ticket oder Business-Ticket kommst du an diesem Tag nicht mehr rein. Donnerstag, Freitag und Sonntag sind alle noch zu haben.",
+      "Die Mittwochs-Wildcard (Einlass ab 13:00 Uhr) ist der ruhigste Weg zu den heißesten Demos, war aber am 5. Aug. ausverkauft — ohne sie ist der Donnerstagmorgen das nächstbeste Zeitfenster mit wenig Andrang, und der ist noch zu haben.",
       "Auch mit einem Business-Ticket kommst du am Mittwoch nicht überall hinein: Mehrere AAA-Stände lassen vormittags nur geladene Presse zu oder bleiben den ganzen Tag geschlossen (Xbox 2026: Stand öffnet erst Donnerstag; Capcom 2025: bis ca. 11:00 Uhr nur Presse). Schau auf die Kanäle des Standes, bevor du deinen Mittwoch danach planst.",
       "Sei deutlich vor Türöffnung da und nimm den Eingang, der deinem ersten Muss-Stand am nächsten liegt — große Stände bauen in der ersten Stunde 2–4 h Wartezeit auf. Nord ist am kürzesten für die Hallen 6–9, Ost für Halle 10, Süd für die Business-Hallen; siehe Eingänge unter Event-Infos.",
       "Mit einem Business-Ticket öffnen die Entertainment-Hallen jeden Tag um 09:00 Uhr — am Donnerstag und Freitag eine Stunde vor dem Publikum. Nimm dir in dieser Stunde die eine Demo vor, die dir am wichtigsten ist; näher an eine leere Messehalle kommst du nicht.",
@@ -17,7 +17,7 @@
       "Manche großen Stände geben morgens Zeitfenster oder Fast-Lane-Bändchen über ihre eigenen Apps aus — schau in der Woche davor auf die Social-Kanäle der Aussteller.",
       "Ein paar Stände nehmen vor der Messe kostenlose Online-Buchungen an: Die sechs Simulatoren von MOZA Racing in Halle 10.1 sind das klarste Beispiel. Buchen kostet nichts und entscheidet darüber, ob du fährst oder zuschaust — schau also auf die Websites aller Stände mit spielbaren Demos, die dir wichtig sind.",
       "Nimm Bahn oder Tram zur Station Köln Messe/Deutz — Tagestickets enthalten die kostenlose VRS-Fahrt; fahr nicht mit dem Auto.",
-      "Abendtickets (ab 16:00 Uhr, 10,50–13,00 €) sind ein günstiger zweiter Besuch; in den letzten 2–3 Stunden werden die Schlangen kürzer.",
+      "Abendtickets (ab 16:00 Uhr, 10,50 €) sind ein günstiger zweiter Besuch, und in den letzten 2–3 Stunden werden die Schlangen kürzer — erhältlich für Donnerstag, Freitag und Sonntag; die für Samstag sind weg.",
       "Mach die gamescom-epix-Quests — wer alle Kapitel abschließt, kann ein kostenloses Sonntagsticket bekommen."
     ],
     "onl": {
@@ -33,7 +33,7 @@
       "2026-08-27": {
         "access": "öffentlich",
         "hours": "Entertainment 10:00–20:00 (09:00 mit Business-Ticket)",
-        "note": "Tagestickets sind ausverkauft — rechne mit einem ganz normal vollen Publikumstag, nicht mehr mit dem ruhigen Start von früher. Mit einem Business-Ticket öffnen die Entertainment-Hallen um 09:00 Uhr, eine ganze Stunde vor dem Publikum — die wertvollste Stunde der Woche zum Anspielen, und jetzt der beste Grund, eins zu haben."
+        "note": "Tagestickets sind noch zu haben, und da der Samstag weg ist, ist das der Publikumstag mit der besten Mischung aus Andrang und Spielzeit — voll, aber nichts im Vergleich zum Wochenende. Mit einem Business-Ticket öffnen die Entertainment-Hallen um 09:00 Uhr, eine ganze Stunde vor dem Publikum — die wertvollste Stunde der Woche zum Anspielen."
       },
       "2026-08-28": {
         "access": "öffentlich",
@@ -43,7 +43,7 @@
       "2026-08-29": {
         "access": "öffentlich",
         "hours": "Entertainment 09:00–20:00 (Business-Bereich geschlossen)",
-        "note": "Vollster und teuerster Tag; Tagestickets seit 14. Aug. 2026 ausverkauft — wenn möglich zum Spielen meiden. Abends City Festival."
+        "note": "Vollster Tag der Messe und inzwischen in allen Kategorien ausverkauft, Abendticket inklusive — ohne Samstagsticket oder Business-Ticket kommst du nicht rein. Wenn du hingehst: zum Anspielen lieber meiden. Abends City Festival."
       },
       "2026-08-30": {
         "access": "öffentlich",
@@ -394,7 +394,7 @@
         "Silent Hill: Townfall": "Begehbare interaktive Installation, keine Demo; neuer Trailer bei ONL am 25. Aug.",
         "Castlevania: Belmont's Curse": "Während der ganzen Messe spielbar; auch am Xbox-Stand.",
         "Metal Gear Solid: Master Collection Vol. 2": "Fotogelegenheit vor einem Metal Gear.",
-        "Yu-Gi-Oh! Trading Card Game": "Einsteiger-Sessions am Kartenspiel-Stand in Halle 5.2."
+        "Yu-Gi-Oh! Trading Card Game": "Hands-on mit den neuesten Produkten an Konamis zweitem Stand, Halle 5.2 B021/A020 in der Cards & Boards Area; das Personal führt Einsteiger durch ein Duell. Master Duel und Duel Links sind ebenfalls da."
       }
     },
     "ubisoft": {
@@ -1458,9 +1458,13 @@
       "visitAdvice": "Gehört zur selben Hardware-Reihe in Halle 8.1 wie ASUS ROG, AGON by AOC und Logitech."
     },
     "mattel": {
-      "description": "Mattel auf zwei Ständen — Halle 8.1 bei B020, direkt hinter Square Enix, und einer in der Merchandise-Fläche in Halle 5.1 — für Hot Wheels, Masters of the Universe, UNO und den Mattel Brick Shop.",
-      "crowdNote": "Markenstand für Familien; am Wochenende am vollsten.",
-      "visitAdvice": "Kombinier ihn mit der Merchandise-Fläche in Halle 5, wenn du shoppen statt anspielen willst."
+      "description": "Mattels erste gamescom mit eigenem Stand — und es sind gleich zwei: Halle 8.1 B020 im Eingangsbereich der Halle neben CD Projekt Red und Square Enix, mit sechs spielbaren Titeln der Mattel Game Studios, den Sets des Mattel Brick Shop (darunter eine Xbox-Konsole aus 3.500 Teilen), einer Live-Bühne und Fotopunkten rund um Minecraft und KPop Demon Hunters — dazu der Mattel Fan Shop in Halle 5.1 C024 in der Merchandise Area, wo tatsächlich verkauft wird.",
+      "crowdNote": "Markenstand für Familien; die Demos sind kurze Mobile-Sessions, die Wartezeiten bleiben also klein — außer am Wochenende und rund um die Bühnenslots.",
+      "visitAdvice": "Der Stand in Halle 8.1 ist ein kurzer Stopp auf dem Weg in Halle 8 hinein oder wieder hinaus — fünf der sechs Demos laufen auf dem Handy und gehen schnell. Wenn du die Brick-Shop-Sets kaufen statt spielen willst, geh stattdessen zum Fan Shop in Halle 5.1; nur dort wird verkauft.",
+      "games": {
+        "He-Man and the Masters of the Universe: Dragon Pearl of Destruction": "Der einzige PC-/Konsolentitel am Stand — der Retro-Brawler von Bitmap Bureau, seit April erhältlich.",
+        "Skeletor: Until Next Time!": "Das erste selbst veröffentlichte Spiel der Mattel Game Studios, ein Endless Runner, schon für iOS und Android erhältlich."
+      }
     },
     "jbl-quantum": {
       "description": "Harmans Gaming-Audio-Linie JBL und JBL Quantum in Halle 9.1 bei B034/C035 — Headsets, Kopfhörer und Lautsprecher zum Ausprobieren.",
