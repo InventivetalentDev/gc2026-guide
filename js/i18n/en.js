@@ -648,6 +648,9 @@ window.GC_STRINGS.en = {
   "map.countsSaved": " · {n} saved",
   "map.countsPlanned": " · {n} planned",
   "map.chipSavedAria": ", {n} saved",
+  "map.heat": "Queues",
+  "map.heatAria": "Show live queue times on the map",
+  "map.heatOffAria": "Hide live queue times",
   /* ---- the day route overlay (see renderRoute in js/map.js) ----
      The bar names what the numbers mean and stops short of claiming a walk:
      the snapshot files stands, never aisles, so the line joining the pins is
