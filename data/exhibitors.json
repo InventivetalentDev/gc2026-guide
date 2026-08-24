@@ -2497,6 +2497,27 @@
     "lastUpdated": "2026-08-15"
   },
   {
+    "id": "hasbro-biz",
+    "name": "Hasbro / Wizards of the Coast",
+    "type": "trade",
+    "hall": "2.2",
+    "booth": "A014/B015",
+    "locationConfirmed": true,
+    "dirSlug": "hasbro_inc",
+    "country": "United States",
+    "access": "appointment",
+    "games": [],
+    "tags": ["publisher", "licensing", "closed stand"],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/hasbro_inc/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/hasbro_inc/",
+      "https://exhibitors.gamescom.global/en/exhibitor/invoke_studios/",
+      "https://exhibitors.gamescom.global/en/exhibitor/archetype_entertainmruiba_intelligent_te/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-24"
+  },
+  {
     "id": "kakao-games-biz",
     "name": "Kakao Games",
     "type": "trade",
