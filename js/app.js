@@ -5096,16 +5096,61 @@ function unplacedCount() {
   return itineraryItems().filter((item) => !validDays.has(assignedDay(item.kind, item.key))).length;
 }
 
+const LIVE_TRUST_MIN = 2;
+
 /* The one stop worth walking to first: the longest queue still left today.
-   Only offered when there is a choice to make and the queue is actually one
-   of the bad ones — naming the single remaining stop, or a walk-up booth,
-   would be advice-shaped noise. Business stops run on appointments, so they
-   are never the answer to "where is the queue". */
-function todayFirstStop(groups) {
+   Only offered when there is a choice to make. One person's report does not
+   overrule the considered forecast; without two, the old bad-queue threshold
+   still applies. Business stops run on appointments, so they are never the
+   answer to "where is the queue". compareQueueEntries keeps closed queues
+   first on status surfaces, where the closure matters most. Advice drops them:
+   sending somebody to a line that admits nobody is wrong. */
+function todayFirstEntry(groups) {
   const stops = groups.flatMap((group) => group.items).filter((ex) => !inBusinessArea(ex));
   if (stops.length < 2) return null;
-  const first = [...stops].sort(byCrowdDesc)[0];
-  return first && (first.crowd || 0) >= 4 ? first : null;
+
+  if (QUEUES?.visible()) {
+    const measured = stops
+      .map((ex) => {
+        const entry = QUEUES.queuesFor(ex)
+          .map((queue) => ({ queue, live: QUEUES.live(queue) }))
+          .filter(
+            (candidate) =>
+              candidate.live &&
+              Number(candidate.live.n) >= LIVE_TRUST_MIN &&
+              !candidate.live.closed
+          )
+          .sort(compareQueueEntries)[0];
+        return entry ? { ex, live: entry.live } : null;
+      })
+      .filter(Boolean)
+      .sort(compareQueueEntries)[0];
+    if (measured) return measured;
+  }
+
+  const ex = [...stops].sort(byCrowdDesc)[0];
+  return ex && (ex.crowd || 0) >= 4 ? { ex, live: null } : null;
+}
+
+function todayFirstMarkup(groups) {
+  const entry = todayFirstEntry(groups);
+  if (!entry) return "";
+  const crowd = entry.ex.crowd || 0;
+  const forecast = t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) });
+  const detail = (entry.live && queueLiveMain(entry.live)) || forecast;
+  return `<p class="today-first"><span class="today-first-label">${esc(
+    t("today.firstLabel")
+  )}</span> <strong>${esc(entry.ex.name)}</strong> — ${esc(detail)}</p>`;
+}
+
+function refreshTodayFirst() {
+  const target = $("#today-first");
+  if (!target || !state.event) return;
+  const day = showDay();
+  if (!day) return;
+  const { groups } = routeGroups({ day: day.date, hidePlayed: true });
+  const markup = todayFirstMarkup(groups);
+  if (target.innerHTML !== markup) target.innerHTML = markup;
 }
 
 /* The Done fold is rebuilt from scratch on every tick, so its open state has
@@ -5189,8 +5234,6 @@ function renderToday() {
   const shut = isBusinessOpenDay(d)
     ? 0
     : [...groups.flatMap((group) => group.items), ...done].filter(inBusinessArea).length;
-  const first = todayFirstStop(groups);
-
   const body = [
     shut
       ? `<p class="today-warn">${esc(t("plan.closedGroupWarn", { n: shut, day: dayName(d.date) }))}</p>`
@@ -5199,13 +5242,7 @@ function renderToday() {
        that is four sentences of editorial prose, it already sits on the card
        and in the queue-priority row, and pasted here it buries the one thing
        this strip is for — which of today's stops to walk to first. */
-    first
-      ? `<p class="today-first"><span class="today-first-label">${esc(
-          t("today.firstLabel")
-        )}</span> <strong>${esc(first.name)}</strong> — ${esc(
-          t("plan.queueWith", { n: first.crowd || 0, label: crowdLabel(first.crowd || 0) })
-        )}</p>`
-      : "",
+    `<div id="today-first">${todayFirstMarkup(groups)}</div>`,
     left
       ? `<div class="route-board">${routeBoard(groups, { dayFilter: d.date, move: false })}</div>`
       : "",
@@ -6057,6 +6094,7 @@ function refreshQueueSurfaces() {
      hidden list on every 30-second tick is work nobody sees. */
   syncQueueTab();
   if (state.view === "queues") renderQueues();
+  if (state.view === "today") refreshTodayFirst();
 }
 
 function updateQueueTimes() {
