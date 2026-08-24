@@ -268,6 +268,32 @@
 #map .stand path { fill: var(--ground-3); stroke: var(--rule); cursor: pointer; }
 #map .stand.official path { fill: #232327; }
 #map .stand.covered path { fill: #2e2e33; }
+/* A live measurement is a lens over the official map colours, not another
+   permanent stand state. Saved stands are excluded outright so no property
+   from this layer can mute the visitor's own marker. */
+#map .stand[data-heat="0"]:not(.saved) path {
+  fill: color-mix(in srgb, var(--warn) 18%, var(--ground-3));
+}
+#map .stand[data-heat="1"]:not(.saved) path {
+  fill: color-mix(in srgb, var(--warn) 38%, var(--ground-3));
+}
+#map .stand[data-heat="2"]:not(.saved) path {
+  fill: color-mix(in srgb, var(--warn) 68%, var(--ground-3));
+}
+#map .stand[data-heat="3"]:not(.saved) path {
+  fill: color-mix(in srgb, var(--signal) 78%, var(--warn));
+}
+/* Shut is dark, while no reports is a deliberately flat neutral with a
+   broken edge. Neither can be mistaken for the calm end of the ramp. */
+#map .stand[data-heat="closed"]:not(.saved) path {
+  fill: var(--ground);
+  stroke: var(--ink-dim);
+}
+#map .stand[data-heat="none"]:not(.saved) path {
+  fill: color-mix(in srgb, var(--ink-dim) 34%, var(--ground-3));
+  stroke: var(--ink-dim);
+  stroke-dasharray: 2 2;
+}
 #map .stand.saved path { fill: var(--signal); stroke: #ff6a3d; }
 /* A numbered stop. Set before the unconf and sel rules on purpose: an
    unconfirmed booth keeps its amber dashes even when it is stop 3, because
@@ -523,6 +549,7 @@
 /* Not a hall, and the row's one chip that isn't: the area edge every hall
    chip carries would claim it belongs to one. */
 .map-halls .campus-chip { border-left-color: var(--ink-dim); }
+.map-halls .heat-chip { border-left-color: var(--warn); }
 
 /* The ground between the halls, in one wash each. The Boulevard and the
    Piazza are the walkable spine and read lightest; the passages that join

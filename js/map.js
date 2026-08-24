@@ -48,12 +48,15 @@ const crowdLabel = (level) => {
 };
 
 const DEFAULT_HALL = "7.1";
+/* One device's report is not enough to colour a booth that somebody will cross a hall on. */
+const HEAT_MIN_REPORTS = 2;
 
 const state = {
   index: null,          // data/hallplan/index.json
   areas: {},            // area key -> {label, colour, trade?, access?}
   outline: {},          // data/hallplan/outline.json — hall margins + doors
   campus: null,         // data/hallplan/campus.json — the whole site, once fetched
+  heat: false,          // page-lifetime queue lens; off again on every load
   labels: {},           // {countries, dirGroups} from data/i18n/<lang>.json
   exhibitors: [],       // data/exhibitors.json
   trade: [],            // business-hall rows from data/directory.json, once loaded
@@ -1025,6 +1028,41 @@ function refreshMarks() {
     t("map.counts", { n: state.stands.length, covered: covered || t("map.coveredNone") }) +
     (saved ? t("map.countsSaved", { n: saved }) : "");
   renderChips();
+  refreshHeat();
+}
+
+function standHeat(rec) {
+  if (!state.heat || onOverview() || !window.GCQueues || !rec.exs.length) return null;
+  const trackable = rec.exs.filter((ex) => ex.type !== "trade");
+  if (!trackable.length) return null;
+
+  let worst = null;
+  for (const ex of trackable) {
+    const live = GCQueues.worst(ex)?.live;
+    if (!live || Number(live.n) < HEAT_MIN_REPORTS) continue;
+    if (
+      !worst ||
+      (live.closed && !worst.closed) ||
+      (live.closed === worst.closed && (Number(live.est) || 0) > (Number(worst.est) || 0))
+    ) worst = live;
+  }
+  if (!worst) return "none";
+  if (worst.closed) return "closed";
+  const est = Number(worst.est) || 0;
+  if (est <= 15) return "0";
+  if (est <= 30) return "1";
+  if (est <= 60) return "2";
+  return "3";
+}
+
+function refreshHeat() {
+  for (const rec of state.stands) {
+    const heat = standHeat(rec);
+    for (const el of [rec.g, rec.lg]) {
+      if (heat === null) el.removeAttribute("data-heat");
+      else el.setAttribute("data-heat", heat);
+    }
+  }
 }
 
 /* ================= areas ================= */
@@ -1192,6 +1230,15 @@ const overviewChip = () =>
       )}</button>`
     : "";
 
+const heatChip = () =>
+  window.GCQueues?.visible()
+    ? `<button class="chip hall-chip heat-chip ${state.heat ? "active" : ""}" type="button"
+        data-heat-toggle aria-pressed="${state.heat}"
+        aria-label="${esc(t(state.heat ? "map.heatOffAria" : "map.heatAria"))}">${esc(
+        t("map.heat")
+      )}</button>`
+    : "";
+
 /* One scrolling row, but grouped: the halls of an area sit behind that
    area's name in that area's colour, so the row doubles as the legend
    and the business halls can't be mistaken for more of the show. The
@@ -1199,8 +1246,9 @@ const overviewChip = () =>
    between chips. */
 function renderChips() {
   let last = null;
-  $("#halls").innerHTML = overviewChip() + state.index.halls
-    .map((h) => {
+  $("#halls").innerHTML =
+    overviewChip() +
+    state.index.halls.map((h) => {
       const area = state.areas[h.area] || {};
       let head = "";
       /* An index.json from before the areas existed (a cached copy in an
@@ -1228,8 +1276,8 @@ function renderChips() {
         aria-label="${esc(label)}">${esc(t("where.hall", { hall: h.id }))}${
         n ? ` <span class="chip-saved" aria-hidden="true">●${n}</span>` : ""
       }</button>`;
-    })
-    .join("");
+    }).join("") +
+    heatChip();
 }
 
 /* ================= the campus overview =================
@@ -2824,8 +2872,22 @@ const hallExists = (id) => Boolean(state.index?.halls.some((h) => h.id === id));
 $("#halls").addEventListener("click", (e) => {
   const chip = e.target.closest(".chip");
   if (!chip) return;
-  if (chip.dataset.view === OVERVIEW) showOverview();
+  if (chip.dataset.heatToggle !== undefined) {
+    state.heat = !state.heat;
+    renderChips();
+    refreshHeat();
+  } else if (chip.dataset.view === OVERVIEW) showOverview();
   else if (chip.dataset.hall) showHall(chip.dataset.hall);
+});
+
+let queuesVisible = false;
+window.addEventListener("gcqueueschange", () => {
+  const visible = Boolean(window.GCQueues?.visible());
+  if (visible !== queuesVisible) {
+    queuesVisible = visible;
+    renderChips();
+  }
+  refreshHeat();
 });
 
 /* the address bar is an input too: a pasted #hall/stand link navigates */
@@ -2869,9 +2931,15 @@ $(".map-back")?.addEventListener("click", (e) => {
 async function main() {
   loadMarks();
   const bust = `?v=${Date.now()}`;
-  const [index, exhibitors, outline] = await Promise.all([
+  const [index, exhibitors, event, outline] = await Promise.all([
     fetch(`data/hallplan/index.json${bust}`).then((r) => r.json()),
     fetch(`data/exhibitors.json${bust}`).then((r) => r.json()),
+    /* Optional for the same mixed-shell case as outline.json below: an older
+       service worker may have no event file to serve offline. The hall map
+       still works without a live queue lens, so that cannot fail its boot. */
+    fetch(`data/event.json${bust}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null),
     /* Optional, unlike the other two: an installed shell whose service
        worker predates this file has nothing to serve for it offline, and
        a hall without it is drawn on its booth box with no openings —
@@ -2885,6 +2953,7 @@ async function main() {
   state.outline = outline || {};
   state.exhibitors = exhibitors;
   buildJoin();
+  if (window.GCQueues && event) { GCQueues.configure({ event, exhibitors }); GCQueues.start(); }
   renderSourceNote();
   /* Not awaited: the entertainment halls are the common case and must not
      wait on a 43 KB file they don't use. The business halls fill in when it
