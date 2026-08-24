@@ -2744,6 +2744,29 @@ function selectStand(rec, { zoom = false } = {}) {
     link.removeAttribute("rel");
   }
 
+  /* The sheet's claims, correctable from where they are read: a mail to the
+     same corrections inbox as the footer's feedback link, with the part no
+     reporter should have to type — which stand, on which map, claiming what
+     — already filled in. The names are capped like the sheet's own lists,
+     because a mailto URL rides through the OS and fourteen companies of
+     shared trade stand are the normal case, not the edge. Guarded like
+     #sheet-trade: an installed shell whose cached map.html predates the
+     link simply has nothing here to fill. */
+  const report = $("#sheet-report");
+  if (report) {
+    const listed = (rec.exs.length ? rec.exs.map((x) => x.name) : s.names).filter(Boolean);
+    const shown = listed.length
+      ? listed.slice(0, 6).join(", ") +
+        (listed.length > 6 ? t("map.plusMore", { n: listed.length - 6 }) : "")
+      : t("map.reportShownNone");
+    const here = `${location.origin}${location.pathname}#${state.hall}/${[...rec.codes][0] || ""}`;
+    report.href =
+      "mailto:content@hallgui.de" +
+      `?subject=${encodeURIComponent(t("map.reportSubject", { hall: state.hall, nr: s.nr }))}` +
+      `&body=${encodeURIComponent(t("map.reportBody", { hall: state.hall, nr: s.nr, shown, link: here }))}`;
+    report.setAttribute("aria-label", t("map.reportAria", { hall: state.hall, nr: s.nr }));
+  }
+
   sheet.hidden = false;
   /* force a layout between "displayed" and "open" so the slide-in has a
      start state to animate from — display:none has none */
