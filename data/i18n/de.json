@@ -563,7 +563,8 @@
         "Marvel Rivals": "Mehrere Stationen für 6-gegen-6-Partien; Inhalte aus Season 9.5 an Stand B050.",
         "Where Winds Meet": "Wuxia-Open-World-RPG; Inhalte des Hidden-Mountain-Finales an Stand B050.",
         "Sea of Remnants": "Stilisiertes Piraten-Abenteuer-RPG, eigener Stand A051; ob es spielbar ist, sagt NetEases Mitteilung nicht.",
-        "Once Human next expansion + unannounced title": "Hands-on-Vorschau an NetEases Stand im Business-Bereich (Halle 4.2, D050) — nur Fach- und Medienbesucher, mit Publikumsticket nicht erreichbar."
+        "Once Human next expansion + unannounced title": "Hands-on-Vorschau an NetEases Stand im Business-Bereich (Halle 4.2, D050) — nur Fach- und Medienbesucher, mit Publikumsticket nicht erreichbar.",
+        "Ananta": "Neues Gameplay in einem Segment der Opening Night Live am 25. Aug. — nicht Teil von NetEases Aufgebot in Halle 7.1, und ein Hands-on ist nirgends auf der Messe angekündigt."
       }
     },
     "pearl-abyss": {
@@ -931,6 +932,23 @@
         "Titan Quest II / Wreckfest 2 / Gothic Remake": "Nur Digital Showcase (gestreamt am 7. Aug.) — kein gamescom-Stand."
       }
     },
+    "invoke-archetype": {
+      "description": "Zwei Spiele von Wizards of the Coast feiern am 25. Aug. bei der Opening Night Live Premiere, und keines davon schafft es auf die Publikumsfläche: Invokes Warlock: Dungeons & Dragons zeigt erstmals Gameplay, Archetypes Exodus einen neuen Trailer und eine Begleiter-Enthüllung. Beide Studios sind nur an Hasbros Gemeinschaftsstand im Business-Bereich registriert (Halle 2.2, A014/B015), direkt neben Wizards of the Coast LLC — nur für Fachbesucher, ohne Demo. Beide Spiele erscheinen 2027.",
+      "crowdNote": "Kein Publikumsstand, für den man anstehen könnte.",
+      "visitAdvice": "Schau dir am Dienstagabend den ONL-Stream an. Auf dem Messegelände ist der Stand von Wizards of the Coast in Halle 5.2 ein Kartenstand für Magic: The Gathering und zeigt keines der beiden Spiele.",
+      "games": {
+        "Warlock: Dungeons & Dragons": "Erstes Gameplay bei ONL am 25. Aug. — Invokes D&D-Action-Adventure, erscheint 2027. Nur im Stream, keine Demo auf der Messe.",
+        "Exodus": "Neuer Trailer, eine Begleiter-Enthüllung und weitere News bei ONL am 25. Aug.; Archetypes Sci-Fi-RPG erscheint 2027. Nur im Stream, keine Demo auf der Messe."
+      }
+    },
+    "playside": {
+      "description": "Kein Publikumsstand: PlaySides einziger Eintrag im offiziellen Verzeichnis ist ein eigener Stand in der Business-Halle 3.2 (C010/D011, nur Fachbesucher). Das vollständige Gameplay-Reveal zu Game of Thrones: War for Westeros — einem Premium-Echtzeitstrategiespiel für PC — läuft am 25. Aug. bei der Opening Night Live, vor dem Release Anfang 2027.",
+      "crowdNote": "Kein Stand, für den man anstehen könnte.",
+      "visitAdvice": "Sieh es dir am Dienstagabend im ONL-Stream an; einen Messestand, den du einplanen könntest, gibt es nicht.",
+      "games": {
+        "Game of Thrones: War for Westeros": "Gameplay-Reveal-Trailer bei ONL am 25. Aug. — vier spielbare Fraktionen, nur PC, Anfang 2027. Nur im Stream, keine Demo auf der Messe."
+      }
+    },
     "paradox-urban": {
       "description": "Kein eigener Stand: Paradox präsentiert Transport Fever 3 gemeinsam mit Urban Games, deren Stand in Halle 8.1 bei B053a liegt — samt Londoner Doppeldeckerbus als Blickfang. Paradox ist separat an Level Infinites Gemeinschaftsstand in Halle 6.1 registriert, eine Präsenz im Tencent-Bereich ist also wahrscheinlich.",
       "crowdNote": "Der Stand hat eine kleine, aber treue Fangemeinde. Simulationsfans schauen stetig vorbei, große Schlangen gibt es aber nicht.",
@@ -1199,6 +1217,15 @@
         "Gameserver-Hosting und Edge-Auslieferung",
         "CDN- und Streaming-Infrastruktur",
         "DDoS-Schutz für Live-Service-Titel"
+      ]
+    },
+    "hasbro-biz": {
+      "description": "Hasbros Business-Standort, den sich Hasbro Inc., Hasbro U.K. und Wizards of the Coast LLC mit den beiden hauseigenen Spielestudios teilen — Invoke (Warlock: Dungeons & Dragons) und Archetype (Exodus). Hier laufen Lizenz- und Partnergespräche zu Spielzeug, Tabletop und Games; spielbar ist keines der beiden Videospiele, weder hier noch sonst irgendwo auf dem Messegelände.",
+      "accessNote": "196 m², die sich fünf Hasbro-Firmen teilen und sonst niemand, registriert unter Entertainment und Analog Games statt unter Dienstleistungen — ein Gebäude für Termine, kein Tresen.",
+      "offers": [
+        "Lizenzen und Markenpartnerschaften für Dungeons & Dragons und Magic: The Gathering",
+        "Publishing- und Co-Development-Gespräche für Invoke und Archetype",
+        "Termine für Handel und Vertrieb der Tabletop-Reihen"
       ]
     },
     "kakao-games-biz": {
