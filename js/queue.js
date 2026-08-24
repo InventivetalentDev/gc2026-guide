@@ -61,6 +61,7 @@ const GCQueues = (() => {
   let started = false;
   let pollTimer = 0;
   let tickTimer = 0;
+  let isPaused = GCMarks.powerSaver();
   let liveRequest = null;
   let replayRequest = null;
   let pendingRetryTimer = 0;
@@ -400,7 +401,8 @@ const GCQueues = (() => {
     if (changed) notify("connection");
   }
 
-  async function refresh({ force = false } = {}) {
+  async function refresh({ force = false, manual = false } = {}) {
+    if (isPaused && !manual) return livePayload;
     if (!showOpen() || document.visibilityState === "hidden") return null;
     if (liveRequest) return liveRequest;
     if (!force && Date.now() - lastRefresh < 1000) return livePayload;
@@ -788,6 +790,34 @@ const GCQueues = (() => {
     }
   }
 
+  function pause() {
+    if (isPaused) return;
+    /* What this deliberately does not stop: replayPending() and the retry
+       timer behind it. That is the visitor's own report trying to reach the
+       server, it backs off to a 300-second ceiling, and it clears itself once
+       nothing is pending. Saving a radio wake must not cost somebody the
+       report they already made. */
+    window.clearInterval(pollTimer);
+    window.clearInterval(tickTimer);
+    pollTimer = 0;
+    tickTimer = 0;
+    isPaused = true;
+    notify("pause");
+  }
+
+  function resume() {
+    if (!isPaused) return;
+    isPaused = false;
+    if (started) {
+      pollTimer = window.setInterval(() => refresh(), POLL_MS);
+      tickTimer = window.setInterval(() => notify("tick"), TICK_MS);
+    }
+    notify("resume");
+    refresh({ force: true, manual: true });
+  }
+
+  const paused = () => isPaused;
+
   function start() {
     if (started) return;
     started = true;
@@ -810,11 +840,15 @@ const GCQueues = (() => {
       notify("storage");
       if (store.pending.length && navigator.onLine !== false) replayPending();
     });
-    pollTimer = window.setInterval(() => refresh(), POLL_MS);
-    tickTimer = window.setInterval(() => notify("tick"), TICK_MS);
+    if (!isPaused) {
+      pollTimer = window.setInterval(() => refresh(), POLL_MS);
+      tickTimer = window.setInterval(() => notify("tick"), TICK_MS);
+    }
     notify("start");
     replayPending();
-    refresh({ force: true });
+    /* livePayload is memory-only. A paused boot still fetches once so it has
+       a figure to hold stale instead of leaving every live surface blank. */
+    refresh({ force: true, manual: true });
   }
 
   return {
@@ -837,6 +871,9 @@ const GCQueues = (() => {
     promptCandidate,
     report,
     refresh,
+    pause,
+    resume,
+    paused,
     replayPending,
     pendingCount: () => store.pending.filter((item) => !pendingExpired(item)).length,
     pendingFor,

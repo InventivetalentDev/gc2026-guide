@@ -2245,7 +2245,8 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 /* The same switch as the toolbar's, offered again where the other badge and
    access facts live — the semantically right home for a setting that
    describes you rather than the list, and reachable from any view. */
-#badge-toggle { margin-top: 14px; }
+#badge-toggle,
+#power-toggle { margin-top: 14px; }
 /* Same pill as .trade-enable so the two states read as one control, in plain
    ink rather than amber — turning it off is not the offer being made. */
 .badge-off {
@@ -2853,6 +2854,38 @@ body.queue-prompt-open .toast { bottom: calc(112px + env(safe-area-inset-bottom)
 }
 html[data-offline="true"] .offline-flag { display: block; }
 
+.power-flag {
+  display: none;
+  align-items: baseline;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 4px 8px;
+  border-left: 3px solid var(--warn);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--warn);
+}
+html[data-power-saver="true"] .power-flag { display: flex; }
+.power-flag button {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.power-flag button:hover { color: var(--signal); }
+
 .toast {
   position: fixed;
   left: 24px;
@@ -3039,6 +3072,7 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   /* Left edge with everything else in the stack — right alignment was for
      the wide masthead, and there is nothing here to align against. */
   .header-meta { grid-column: 1; grid-row: 2; text-align: left; }
+  .power-flag { justify-content: flex-start; }
   .install-btn { grid-column: 1 / -1; grid-row: 3; justify-self: start; }
   /* ...and that row is the one thing in the masthead that arrives late, so
      on the visits where it is coming it is held open from the first paint.

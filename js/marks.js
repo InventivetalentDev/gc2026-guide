@@ -78,6 +78,16 @@ const GCMarks = (() => {
     }
   }
 
+  /* Read-only here: both pages need the same answer before their queue
+     transport starts, without taking ownership of the rest of the blob. */
+  function powerSaver() {
+    try {
+      return JSON.parse(localStorage.getItem(PREFS_KEY) || "{}").power === true;
+    } catch {
+      return false;
+    }
+  }
+
   /* Games are keyed by normalised title, not by booth: eight titles this
      year are shown at two booths at once (Alien: Isolation 2 sits at
      both Xbox and SEGA), and a mark applies to the game everywhere. */
@@ -253,6 +263,7 @@ const GCMarks = (() => {
   return {
     MARK_KEYS, PREFS_KEY, gameKey, readMarks, writeMarks, savedGames, hasSaved, boothCodes,
     DIR_PREFIX, dirKey, isDirKey, dirSlug, isBusinessHall, tradeMode, setTradeMode,
+    powerSaver,
     IT_KEY, readItinerary, stopDays, compareStops,
     ORDER_KEY, UNRANKED, stopKey, readOrder, writeOrder, orderRanks,
   };

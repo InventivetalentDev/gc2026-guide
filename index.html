@@ -373,6 +373,16 @@
         <p class="meta-line" id="event-dates" data-i18n="header.eventFallback">Koelnmesse, Cologne · Aug 26–30, 2026</p>
         <p class="countdown" id="countdown" aria-live="polite"></p>
         <p class="offline-flag" data-i18n="header.offline">Offline · showing saved data</p>
+        <!-- A frozen queue figure looks current without this line. Keep the
+             mode explicit in the masthead instead of collapsing it to an icon
+             or leaving the Event info switch as its only indication. -->
+        <p class="power-flag" id="power-flag">
+          <span data-i18n="power.on">Power saver on · live queues paused</span>
+          <button id="power-refresh" type="button" data-i18n="power.refresh"
+                  data-i18n-attr="aria-label:power.refreshAria"
+                  aria-label="Fetch live queue times once">Refresh now</button>
+          <button id="power-disable" type="button" data-i18n="power.disable">Turn off</button>
+        </p>
       </div>
       <!-- The stamped controls, kept out of .header-meta so they never widen
            the block the dates and countdown are right-aligned against. One row

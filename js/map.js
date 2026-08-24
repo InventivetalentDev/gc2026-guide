@@ -57,6 +57,7 @@ const state = {
   outline: {},          // data/hallplan/outline.json — hall margins + doors
   campus: null,         // data/hallplan/campus.json — the whole site, once fetched
   heat: false,          // page-lifetime queue lens; off again on every load
+  power: GCMarks.powerSaver(),
   labels: {},           // {countries, dirGroups} from data/i18n/<lang>.json
   exhibitors: [],       // data/exhibitors.json
   trade: [],            // business-hall rows from data/directory.json, once loaded
@@ -1230,14 +1231,18 @@ const overviewChip = () =>
       )}</button>`
     : "";
 
-const heatChip = () =>
-  window.GCQueues?.visible()
-    ? `<button class="chip hall-chip heat-chip ${state.heat ? "active" : ""}" type="button"
+const heatChip = () => {
+  const paused = state.power ? ` · ${t("power.paused")}` : "";
+  return window.GCQueues?.visible()
+    ? `<button class="chip hall-chip heat-chip ${state.heat ? "active" : ""}${
+        state.power ? " paused" : ""
+      }" type="button"
         data-heat-toggle aria-pressed="${state.heat}"
-        aria-label="${esc(t(state.heat ? "map.heatOffAria" : "map.heatAria"))}">${esc(
-        t("map.heat")
+        aria-label="${esc(t(state.heat ? "map.heatOffAria" : "map.heatAria") + paused)}">${esc(
+        t("map.heat") + paused
       )}</button>`
     : "";
+};
 
 /* One scrolling row, but grouped: the halls of an area sit behind that
    area's name in that area's colour, so the row doubles as the legend
@@ -2773,6 +2778,11 @@ window.addEventListener("storage", (e) => {
     GCMarks.ORDER_KEY,
   ];
   if (e.key !== null && !keys.includes(e.key)) return;
+  if (e.key === null || e.key === GCMarks.PREFS_KEY) {
+    state.power = GCMarks.powerSaver();
+    if (state.power) window.GCQueues?.pause?.();
+    else window.GCQueues?.resume?.();
+  }
   /* The guide writes prefs on nearly every interaction, so this fires far
      more often than a mark change and can easily land before the hall index
      has arrived. Everything below needs it; nothing below is urgent, and
@@ -2887,7 +2897,7 @@ window.addEventListener("gcqueueschange", () => {
     queuesVisible = visible;
     renderChips();
   }
-  refreshHeat();
+  if (!window.GCQueues?.paused?.()) refreshHeat();
 });
 
 /* the address bar is an input too: a pasted #hall/stand link navigates */
@@ -2998,7 +3008,9 @@ async function main() {
    parse on tap. */
 function prefetchRest() {
   loadCampus().catch(() => {});
+  if (state.power) return;
   const prefetch = async () => {
+    if (state.power) return;
     const before = countsKey();
     await Promise.all(state.index.halls.map((h) => loadHall(h.id).catch(() => {})));
     /* And then say so. A hall's saved count is read from its own stands
