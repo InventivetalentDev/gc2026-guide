@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tools/build-site.sh",
-    "check:client": "node --check js/queue.js && node --check js/app.js && node --check sw.js",
+    "check:client": "for f in js/*.js js/i18n/*.js sw.js; do node --check \"$f\" || exit 1; done && echo \"check:client: ok — $(ls js/*.js js/i18n/*.js sw.js | wc -l | tr -d ' ') scripts parsed\"",
     "dev": "node tools/dev-proxy.mjs",
     "dev:api": "wrangler dev --config wrangler-api.toml",
     "test": "npm run build && npm run check:client && vitest run",
