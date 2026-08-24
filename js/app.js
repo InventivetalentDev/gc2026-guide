@@ -61,6 +61,8 @@ const state = {
   countryLabels: {},
   /* explicit switcher choice, or null = keep following the browser */
   lang: null,
+  /* the one page-wide mode both the guide and hall map obey */
+  power: false,
   /* "I have a trade badge" — gates what the guide offers, never what it
      resolves. See the trade section below. */
   trade: false,
@@ -292,9 +294,9 @@ const pendingQueueActions = new Set();
 const loadMarks = (mark) => GCMarks.readMarks(mark);
 const persistMarks = (mark) => GCMarks.writeMarks(mark, state.marks[mark]);
 
-/* Both view preferences live here rather than beside the marks they act on:
-   "hide played" is a lens on the list, the same kind of thing as the age
-   filter, and neither works well tangled up with the marks themselves. */
+/* View preferences and page-wide modes live here rather than beside the marks
+   they act on. They share one blob so a write must always hand the others
+   back untouched. */
 function loadPrefs() {
   try {
     const raw = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
@@ -306,6 +308,7 @@ function loadPrefs() {
       showDirectory: raw.showDirectory === true,
       trade: raw.trade === true,
       showTrade: raw.showTrade === true,
+      power: raw.power === true,
       /* null means "no explicit choice" — the browser's preference keeps
          deciding. js/i18n.js reads this key itself, before this file runs
          and on map.html where app.js never loads; here it only has to
@@ -316,7 +319,7 @@ function loadPrefs() {
     /* corrupt entry, or storage blocked entirely (Safari private mode) */
     return {
       age: "all", hidePlayed: false, planLens: "day",
-      showDirectory: false, trade: false, showTrade: false, lang: null,
+      showDirectory: false, trade: false, showTrade: false, power: false, lang: null,
     };
   }
 }
@@ -330,6 +333,7 @@ function persistPrefs() {
       showDirectory: state.showDirectory,
       trade: state.trade,
       showTrade: state.showTrade,
+      power: state.power,
     };
     /* Only written once the switcher has been used: an auto-detected
        visitor keeps following their browser, on this device and the next. */
@@ -338,6 +342,22 @@ function persistPrefs() {
   } catch {
     /* out of quota or storage denied — the choice still works for this session */
   }
+}
+
+function syncPowerSaverAttribute() {
+  document.documentElement.dataset.powerSaver = String(state.power);
+}
+
+function setPowerSaver(on) {
+  if (state.power === on) return;
+  state.power = on;
+  persistPrefs();
+  if (on) QUEUES?.pause?.();
+  else QUEUES?.resume?.();
+  syncPowerSaverAttribute();
+  /* Event info carries the other copy of this switch, even when its tab is
+     not the one that changed it. */
+  if (state.event) renderEvent();
 }
 
 const markSet = (mark, kind) => (kind === "game" ? state.marks[mark].games : state.marks[mark].exhibitors);
@@ -2153,6 +2173,10 @@ function queueLiveMarkup(queue, { compact = false } = {}) {
   const detail = `<span class="queue-live-detail${compact ? " sr-only" : ""}">
     <span>${esc(reports)}</span><span aria-hidden="true">·</span>
     <span data-live-age ${queueAttrs(queue)}>${esc(queueAge(live.age))}</span>${
+      QUEUES?.paused?.()
+        ? `<span aria-hidden="true">·</span><span>${esc(t("power.paused"))}</span>`
+        : ""
+    }${
       mechanics ? `<span aria-hidden="true">·</span><span>${esc(mechanics)}</span>` : ""
     }
   </span>`;
@@ -5536,13 +5560,20 @@ function renderEvent() {
       )}</button>
     </div>
     <div class="info-block">
-      <h2><span class="section-num">04</span> ${esc(t("event.areas"))}</h2>
+      <h2><span class="section-num">04</span> ${esc(t("power.title"))}</h2>
+      <p>${esc(t("power.lede"))}</p>
+      <button class="${state.power ? "badge-off" : "trade-enable"}" id="power-toggle" type="button">${esc(
+        state.power ? t("power.disable") : t("power.enable")
+      )}</button>
+    </div>
+    <div class="info-block">
+      <h2><span class="section-num">05</span> ${esc(t("event.areas"))}</h2>
       <ul class="area-list">${areas}</ul>
     </div>
     ${
       entrances
         ? `<div class="info-block">
-      <h2><span class="section-num">05</span> ${esc(t("event.entrances"))}</h2>
+      <h2><span class="section-num">06</span> ${esc(t("event.entrances"))}</h2>
       ${ent.lede ? `<p>${esc(ent.lede)}</p>` : ""}
       <ul class="area-list">${entrances}</ul>
       ${
@@ -5556,7 +5587,7 @@ function renderEvent() {
         : ""
     }
     <div class="info-block">
-      <h2><span class="section-num">0${entrances ? 6 : 5}</span> ${esc(t("event.officialLinks"))}</h2>
+      <h2><span class="section-num">0${entrances ? 7 : 6}</span> ${esc(t("event.officialLinks"))}</h2>
       <ul class="link-list">${links}</ul>
     </div>
     <p class="info-foot">
@@ -5564,9 +5595,10 @@ function renderEvent() {
       ${sourcesButton("event", "")}
     </p>`;
 
-  /* setTrade() re-renders this block, so the listener is re-attached with it
-     rather than delegated — same pattern as the filter chips. */
+  /* Both setters re-render this block, so the listeners are re-attached with
+     it rather than delegated — same pattern as the filter chips. */
   $("#badge-toggle").addEventListener("click", () => setTrade(!state.trade, { announce: true }));
+  $("#power-toggle").addEventListener("click", () => setPowerSaver(!state.power));
 }
 
 /* ---------- changelog ----------
@@ -7225,6 +7257,14 @@ function trackTabOverflow() {
 function bindControls() {
   trackHeaderHeight();
   trackTabOverflow();
+  $("#power-refresh")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    const payload = await QUEUES?.refresh({ force: true, manual: true });
+    button.disabled = false;
+    showToast(t(payload ? "power.refreshSuccess" : "power.refreshFailed"));
+  });
+  $("#power-disable")?.addEventListener("click", () => setPowerSaver(false));
 
   /* One render per pause, not per keystroke: the grid plus both directory
      lists is too much DOM to rebuild at typing speed on a phone. The value is
@@ -7419,6 +7459,9 @@ function bindControls() {
     if (e.key === null || e.key === ORDER_KEY) setPlanOrder(loadPlanOrder());
     if (e.key === null || e.key === PREFS_KEY) {
       Object.assign(state, loadPrefs());
+      if (state.power) QUEUES?.pause?.();
+      else QUEUES?.resume?.();
+      syncPowerSaverAttribute();
       /* The <details> holds its own open state, so a pref that arrived from
          another tab has to be pushed back onto the element. */
       const directory = $("#directory");
@@ -7528,6 +7571,9 @@ async function main() {
      a fact about your list, not about the show days. */
   setPlanOrder(loadPlanOrder());
   Object.assign(state, loadPrefs());
+  if (state.power) QUEUES?.pause?.();
+  else QUEUES?.resume?.();
+  syncPowerSaverAttribute();
   /* Rule 1: the pref gates discovery, not resolution. A trade booth already
      on the list resolves whether or not trade mode is on. */
   if (state.trade || hasSavedTrade()) loadDirectory();

@@ -550,6 +550,11 @@
    chip carries would claim it belongs to one. */
 .map-halls .campus-chip { border-left-color: var(--ink-dim); }
 .map-halls .heat-chip { border-left-color: var(--warn); }
+.map-halls .heat-chip.paused {
+  border-top-style: dashed;
+  border-right-style: dashed;
+  border-bottom-style: dashed;
+}
 
 /* The ground between the halls, in one wash each. The Boulevard and the
    Piazza are the walkable spine and read lightest; the passages that join
