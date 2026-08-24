@@ -907,6 +907,16 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 .dir-name { min-width: 0; color: var(--ink); }
 .dir-name a { color: inherit; text-decoration: none; }
 .dir-name a:hover { color: var(--signal); text-decoration: underline; text-underline-offset: 3px; }
+/* The entity a branded row is registered under. Its own line, quieter than the
+   name above it: it is there to explain the row's link and its map label, not
+   to compete with the name someone is scanning for. */
+.dir-filed {
+  display: block;
+  color: var(--ink-dim);
+  font-size: .72rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
 .dir-country { color: var(--ink-dim); font-size: .78rem; }
 
 .dir-stands { display: flex; flex-wrap: wrap; gap: 4px 10px; min-width: 0; }

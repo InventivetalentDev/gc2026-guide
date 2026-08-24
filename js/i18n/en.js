@@ -322,6 +322,7 @@ window.GC_STRINGS.en = {
   "directory.showMore": "Show {n} more",
   "directory.noBooth": "no booth listed",
   "directory.hostedAt": " at {name}",
+  "directory.filedAs": "registered as {name}",
   "directory.entryAria": ", official directory entry, opens in a new tab",
   "directory.businessArea": "Business area — trade & media only",
   "directory.fallbackHint":

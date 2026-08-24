@@ -3200,6 +3200,10 @@ function directoryMatches() {
     if (!terms.length) return true;
     const hay = haystackFor("directory", entry, () => [
       entry.name,
+      /* The name the exhibitor trades as, where the directory files it under
+         the entity that signed the contract. Nobody searches for "Hantschel,
+         Hort, Müller und Neumann GbR"; they search for Pipapo Games. */
+      entry.brand || "",
       entry.country,
       countryLabel(entry.country),
       ...stands.map((s) => `${t("hall.word")} ${s.hall} hall ${s.hall} ${s.booth}`),
@@ -3215,18 +3219,34 @@ function profileUrl(entry) {
   return base && entry.slug ? `${base}${entry.slug}/` : "";
 }
 
+/* Where a row carries a brand, that is what the row is called. The directory
+   files a company under the entity that signed the contract; gamescom's own
+   profile pages title the same company by the name it trades as, and this
+   section exists to answer "is this company even here?" — which only the name
+   someone recognises can answer. The filed name stays underneath rather than
+   being replaced: it is what the official entry, the map label and the link
+   target all say, so a reader who follows the link is not met by a stranger. */
 function profileLink(entry) {
   const href = profileUrl(entry);
-  return href
-    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(entry.name)}<span aria-hidden="true"> ↗</span><span class="sr-only">${esc(t("directory.entryAria"))}</span></a>`
-    : esc(entry.name);
+  const shown = entry.brand || entry.name;
+  const link = href
+    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(shown)}<span aria-hidden="true"> ↗</span><span class="sr-only">${esc(t("directory.entryAria"))}</span></a>`
+    : esc(shown);
+  return entry.brand
+    ? `${link}<span class="dir-filed">${esc(t("directory.filedAs", { name: entry.name }))}</span>`
+    : link;
 }
 
 /* Shared by the Full directory and the trade list, so a stand reads the same
    in both: the same amber plate for the business halls, the same map link,
    the same "at <host>" when a bigger booth is standing on it. `self` is the
-   row's own name, so a card never labels itself as its own neighbour. */
+   row's own name — or both of them, where it has a brand — so a card never
+   labels itself as its own neighbour. */
 function standChips(stands, byBooth, self = "") {
+  /* Both of a row's names, because either can be the host card's: Super Crowd
+     Entertainment GmbH is the company that runs the Indie Arena Booth, and a
+     row reading "Indie Arena Booth · at Indie Arena Booth" says nothing. */
+  const own = new Set([].concat(self).filter(Boolean));
   return (stands || [])
     .map((s) => {
       const host = byBooth.get(boothKey(s.hall, s.booth));
@@ -3238,7 +3258,7 @@ function standChips(stands, byBooth, self = "") {
       const where = `<span class="dir-stand-where"><b>${esc(s.hall)}</b>${
         s.booth ? ` · ${esc(s.booth)}` : ""
       }</span>${
-        host && host.name !== self
+        host && !own.has(host.name)
           ? `<i>${esc(t("directory.hostedAt", { name: host.name }))}</i>`
           : ""
       }`;
@@ -3263,7 +3283,7 @@ function standChips(stands, byBooth, self = "") {
 }
 
 function directoryRow(entry, byBooth) {
-  const stands = standChips(entry.stands, byBooth, entry.name);
+  const stands = standChips(entry.stands, byBooth, [entry.name, entry.brand]);
   return `<li class="dir-row">
     <span class="dir-name">${profileLink(entry)}</span>
     <span class="dir-country">${esc(entry.country ? countryLabel(entry.country) : "")}</span>
@@ -3417,6 +3437,11 @@ function tradeRecord(entry) {
   const first = stands[0] || {};
   const record = {
     id: dirKey(entry.slug),
+    /* The filed name, not the brand, and deliberately: this is the stop a
+       visitor walks to, and every other place-like surface — the official
+       row, the map label, the hall plan — calls it that. The brand belongs to
+       the row you browse and search, which renders from the directory entry
+       itself. Only one business-hall row carries one at all. */
     name: entry.name,
     type: "trade",
     trade: true,
@@ -3587,6 +3612,7 @@ function tradeMatches({ category = true } = {}) {
     if (!terms.length) return true;
     const hay = haystackFor("trade", entry, () => [
       entry.name,
+      entry.brand || "",
       entry.country,
       countryLabel(entry.country),
       ...(entry.stands || []).map(
@@ -3623,9 +3649,9 @@ function tradeRow(entry, byBooth) {
   return `<li class="dir-row trade-row" data-saved="${isSaved("exhibitor", key)}">
     <span class="dir-name">${profileLink(entry)}</span>
     <span class="dir-country">${esc(entry.country ? countryLabel(entry.country) : "")}</span>
-    <span class="dir-stands">${standChips(entry.stands, byBooth, entry.name)}${shared}</span>
+    <span class="dir-stands">${standChips(entry.stands, byBooth, [entry.name, entry.brand])}${shared}</span>
     <span class="trade-tags">${cats}</span>
-    ${markButton("saved", "exhibitor", key, entry.name)}
+    ${markButton("saved", "exhibitor", key, entry.brand || entry.name)}
   </li>`;
 }
 
