@@ -671,34 +671,42 @@ function buildShareCodeMap() {
   /* v2 shares one flat namespace and resolves collisions by exclusion: a
      prefix claimed twice is dropped for every claimant — never emitted, never
      resolved — so a token can be lost but never mistranslated, and the loss
-     shows up in the "no longer in the guide" counts the UI already displays.
-     None of the current 217 items collide; there is head-room to about a
-     thousand before 5 characters needs revisiting. */
+     shows up in the "no longer in the guide" counts the UI already displays. */
   const claims = new Map();
-  const claim = (kind, key) => {
+  const claim = (kind, key, curated) => {
     const tok = tok36(key);
     if (!claims.has(tok)) claims.set(tok, []);
-    claims.get(tok).push({ kind, key });
+    claims.get(tok).push({ kind, key, curated });
   };
-  state.exhibitors.forEach((ex) => claim("exhibitors", ex.id));
-  gameKeys.forEach((key) => claim("games", key));
-  /* Trade booths ride the same namespace rather than a parameter of their
+  state.exhibitors.forEach((ex) => claim("exhibitors", ex.id, true));
+  gameKeys.forEach((key) => claim("games", key, true));
+  /* Directory booths ride the same namespace rather than a parameter of their
      own: the day plan is positional over this one token list, so a second list
      could not carry day assignments without duplicating that machinery. Every
      "dir:" key claimable in the guide is claimed here, including rows a curated
      card has since taken over — an older link naming one still has to land, and
      migrateDirAliases folds it onto the card afterwards.
 
-     Adding ~800 identities to ~220 is what the 5-character headroom note below
-     was about, so tools/fetch-directory.py re-checks it at generation time.
-     Only a directory that has actually loaded is in here, so a visitor who
-     never turns trade mode on shares exactly what they always did. */
+     Every row, not only the business ones, since an entertainment booth is
+     saveable now too. That takes the namespace from ~220 identities to ~2,160
+     and finds the first real collision in it, which is what the rule below is
+     for. Only a directory that has actually loaded is in here, so a visitor
+     who never opens one shares exactly what they always did. */
   (state.directory?.exhibitors || []).forEach((entry) => {
-    if (isTradeEntry(entry)) claim("exhibitors", dirKey(entry.slug));
+    claim("exhibitors", dirKey(entry.slug), false);
   });
   claims.forEach((items, tok) => {
-    if (items.length !== 1) return;
-    const item = items[0];
+    /* Exclusion, but not evenly: a curated identity outranks a directory row
+       claiming the same prefix. Both are real, and one of them is a card
+       somebody wrote — losing "Tides of Annihilation" from every share link
+       because an unrelated studio's slug hashes alongside it would be paying
+       for the new booths with the old ones. The row loses its token instead,
+       and is silently unshareable exactly as a second curated claimant would
+       be. Encoder and decoder read this one map, so the two can never
+       disagree about who won. */
+    const pool = items.some((item) => item.curated) ? items.filter((item) => item.curated) : items;
+    if (pool.length !== 1) return;
+    const item = pool[0];
     (item.kind === "exhibitors" ? shareCodes.exhibitorTok : shareCodes.gameTok).set(item.key, tok);
     shareCodes.tokItem.set(tok, item);
   });
@@ -2229,7 +2237,7 @@ function queueReportLink(ex) {
      show opens and the contents appear. refreshQueueSurfaces() can only refill
      surfaces that are already in the DOM, so a card rendered at 08:29 on the
      Wednesday still gains its link when the gate flips at 08:30. */
-  if (!QUEUES || !ex || ex.type === "trade" || isAbsent(ex)) return "";
+  if (!QUEUES || !ex || withoutQueues(ex) || isAbsent(ex)) return "";
   if (!QUEUES.queuesFor(ex).length) return "";
   return `<span class="queue-report" data-queue-surface="report" data-queue-exhibitor="${esc(
     ex.id
@@ -2243,7 +2251,7 @@ function queueSummaryInner(ex, compact = false) {
 }
 
 function queueSummary(ex, { compact = false, kind = "summary" } = {}) {
-  if (!QUEUES?.visible() || !ex || ex.type === "trade" || isAbsent(ex)) return "";
+  if (!QUEUES?.visible() || !ex || withoutQueues(ex) || isAbsent(ex)) return "";
   return `<span class="queue-summary${compact ? " queue-summary-compact" : ""}" data-queue-surface="${esc(
     kind
   )}" data-queue-exhibitor="${esc(ex.id)}" data-queue-compact="${compact}">${queueSummaryInner(ex, compact)}</span>`;
@@ -2278,7 +2286,7 @@ function itemQueueInner(item) {
 }
 
 function itemQueueSummary(item) {
-  if (!QUEUES?.visible() || !item || (item.kind === "exhibitor" && (item.ex.type === "trade" || isAbsent(item.ex)))) return "";
+  if (!QUEUES?.visible() || !item || (item.kind === "exhibitor" && (withoutQueues(item.ex) || isAbsent(item.ex)))) return "";
   return `<span class="queue-plan-live" data-queue-surface="item" data-queue-item-kind="${esc(
     item.kind
   )}" data-queue-item-key="${esc(item.key)}">${itemQueueInner(item)}</span>`;
@@ -3141,11 +3149,12 @@ function loadDirectory() {
       state.directoryError = null;
       invalidateDerived();
       /* Everything keyed off the directory is stale the moment it lands: the
-         slug index, the share vocabulary that now knows 800 more identities,
-         and the hall chips that can now offer the business halls. */
+         slug index, the share vocabulary that now knows every one of its rows
+         as an identity, and the hall chips that can now offer the business
+         halls. */
       directoryIndexCache = null;
       standShareCache = null;
-      tradeRecordCache.clear();
+      directoryRecordCache.clear();
       buildShareCodeMap();
     })
     .catch((err) => {
@@ -3264,6 +3273,19 @@ function standChips(stands, byBooth, self = "") {
 
 function directoryRow(entry, byBooth) {
   const stands = standChips(entry.stands, byBooth, entry.name);
+  /* Saveable from the row that names it. The map can pin the stand this
+     company stands on, but 172 of them share the Indie Arena Booth's floor
+     and searching a name is how you find one of those — so the answer to
+     "where is 11 bit studios" is also where you save it.
+
+     Keyed to the curated card when one claims this slug, rather than to the
+     row: one booth, one identity, saved the same wherever it was pressed
+     (rule 2 above). migrateDirAliases would fold a "dir:" key onto the card
+     afterwards; minting the right one now means it never has to.
+
+     No played tick beside it. That mark reads "I have seen the lineup", and
+     a row with no lineup in the guide has nothing to have seen. */
+  const card = curatedByDirSlug().get(entry.slug);
   return `<li class="dir-row">
     <span class="dir-name">${profileLink(entry)}</span>
     <span class="dir-country">${esc(entry.country ? countryLabel(entry.country) : "")}</span>
@@ -3271,6 +3293,12 @@ function directoryRow(entry, byBooth) {
       stands ||
       `<span class="dir-stand dir-stand-tba">${esc(t("directory.noBooth"))}</span>`
     }</span>
+    <span class="row-actions">${markButton(
+      "saved",
+      "exhibitor",
+      card ? card.id : dirKey(entry.slug),
+      entry.name
+    )}</span>
   </li>`;
 }
 
@@ -3385,8 +3413,23 @@ const TRADE_PAGE = 200;
 const tradeStands = (entry) => (entry.stands || []).filter((s) => isBusinessHall(s.hall));
 const isTradeEntry = (entry) => tradeStands(entry).length > 0;
 
+/* Was this record built from a directory row rather than written by hand?
+
+   Asked wherever the guide would otherwise offer editorial content a
+   directory row cannot have. It is provenance, not a category: `type` stays
+   the facet the filter chips are built from ("publisher", "hardware", …),
+   and a directory row never enters that pool, so it never gains a chip. */
+const fromDirectory = (ex) => Boolean(ex) && ex.fromDirectory === true;
+
+/* Nothing here can carry a live queue. A curated trade card runs on
+   appointments; a directory row has no lineup in the guide at all, and
+   js/queue.js is keyed to curated cards and their games, so there is no
+   queue record for one to find. Both would resolve to "no queues" on their
+   own — stated, so the rule survives someone filling a `crowd` in. */
+const withoutQueues = (ex) => ex.type === "trade" || fromDirectory(ex);
+
 let directoryIndexCache = null;
-const tradeRecordCache = new Map();
+const directoryRecordCache = new Map();
 
 function directoryIndex() {
   if (!directoryIndexCache) {
@@ -3409,29 +3452,40 @@ const curatedByDirSlug = derived(() => {
 /* A directory row dressed as the exhibitor-shaped record everything
    downstream expects — the planner, the route, the map and the .ics export
    all read `hall`/`booth`/`name`/`id` and nothing else. Memoised so a stop
-   keeps one identity across re-renders. */
-function tradeRecord(entry) {
-  const cached = tradeRecordCache.get(entry.slug);
+   keeps one identity across re-renders.
+
+   Built for any row now, not only the business ones. A row standing in the
+   business area keeps every trade rule it had: `type: "trade"`, and the
+   business stand is the one it reports, because that is the stand a badge is
+   for and the one whose doors shut on Saturday. A row standing only in the
+   entertainment halls is a plain booth that happens to have no card — it
+   takes no `type`, so nothing labels it "trade & media only", the planner
+   never warns it is shut for the weekend, and inBusinessArea() below keeps
+   answering off the hall rather than off any of this. */
+function directoryRecord(entry) {
+  const cached = directoryRecordCache.get(entry.slug);
   if (cached) return cached;
-  const stands = tradeStands(entry);
+  const trade = isTradeEntry(entry);
+  const stands = trade ? tradeStands(entry) : entry.stands || [];
   const first = stands[0] || {};
   const record = {
     id: dirKey(entry.slug),
     name: entry.name,
-    type: "trade",
-    trade: true,
+    ...(trade ? { type: "trade", trade: true } : null),
+    fromDirectory: true,
     country: entry.country || "",
     hall: first.hall || null,
     booth: first.booth || "",
     stands,
     cats: entry.cats || [],
     officialUrl: profileUrl(entry),
-    /* No lineup, no queue forecast, no crowd note: a business booth runs on
-       appointments, and inventing numbers for it would poison the one list
+    /* No lineup, no queue forecast, no crowd note. A business booth runs on
+       appointments; an entertainment row is a booth the guide has simply not
+       researched. Inventing numbers for either would poison the one list
        whose honesty matters most. */
     games: [],
   };
-  tradeRecordCache.set(entry.slug, record);
+  directoryRecordCache.set(entry.slug, record);
   return record;
 }
 
@@ -3448,7 +3502,7 @@ function resolveSavedExhibitor(key) {
   const claimed = curatedByDirSlug().get(slug);
   if (claimed) return claimed;
   const entry = directoryIndex().get(slug);
-  return entry ? tradeRecord(entry) : null;
+  return entry ? directoryRecord(entry) : null;
 }
 
 /* The curated cards plus every saved trade booth — the population the plan
@@ -3470,15 +3524,21 @@ function plannedExhibitors() {
 }
 
 /* Is any saved key a directory row? Then the directory has to load whatever
-   the pref says — rule 1 above. */
-const hasSavedTrade = () =>
+   the pref says — rule 1 above. True of a hall 10.2 indie stand as much as a
+   hall 2.1 meeting room: neither has a card to resolve against. */
+const hasSavedDirectoryRow = () =>
   [...state.marks.saved.exhibitors].some(isDirKey) ||
   [...state.marks.played.exhibitors].some(isDirKey);
 
 /* A saved `dir:` key with no directory loaded is data that has not arrived,
    not an item that went away. Telling someone "nothing you saved is in the
-   lineup" there would be a lie about their own list. */
-const tradeDataPending = () => hasSavedTrade() && !state.directory;
+   lineup" there would be a lie about their own list.
+
+   The `trade.` name is where this started and no longer what it covers: an
+   uncarded indie stand is in exactly the same position as a hall 2.1 meeting
+   room, and the copy behind the key says "booths the guide writes no card
+   about" rather than naming the business halls. */
+const tradeDataPending = () => hasSavedDirectoryRow() && !state.directory;
 const tradePendingCopy = () => t("trade.dataPending");
 
 /* A `dir:` key saved before a card claimed that row — from the map, from a
@@ -7487,7 +7547,7 @@ function bindControls() {
     }
     /* A trade booth saved in the other tab needs its data here before the
        plan can show it — the same never-vanish rule as at boot. */
-    if (hasSavedTrade()) loadDirectory();
+    if (hasSavedDirectoryRow()) loadDirectory();
     prunePlan();
     renderFilters();
     renderExhibitors();
@@ -7590,7 +7650,7 @@ async function main() {
   syncPowerSaverAttribute();
   /* Rule 1: the pref gates discovery, not resolution. A trade booth already
      on the list resolves whether or not trade mode is on. */
-  if (state.trade || hasSavedTrade()) loadDirectory();
+  if (state.trade || hasSavedDirectoryRow()) loadDirectory();
   try {
     await loadData();
   } catch (err) {

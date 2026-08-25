@@ -621,6 +621,12 @@ window.GC_STRINGS.de = {
   "map.plusMore": ", +{n} weitere",
   "map.alsoHere": "ebenfalls hier",
   "map.notCovered": "nicht im Guide erfasst",
+  "map.notCoveredSaveOne": "nicht im Guide erfasst — als eigenen Stopp merken",
+  "map.notCoveredSaveAny": "nicht im Guide erfasst — einzelne davon als eigenen Stopp merken",
+  "map.listedLede": "{n} Firma auf diesem Stand gemeldet|{n} Firmen auf diesem Stand gemeldet",
+  "map.listedFilter": "Nach Namen filtern",
+  "map.listedFilterAria": "Firmen auf diesem Stand nach Namen filtern",
+  "map.listedNoMatch": "niemand auf diesem Stand passt dazu",
   "map.noExhibitor": "kein Aussteller für diesen Stand gemeldet",
   "map.reportLink": "fehlenden oder falschen Aussteller melden",
   "map.reportAria": "Fehlenden oder falschen Aussteller für Stand {nr} in Halle {hall} per E-Mail melden",
@@ -729,7 +735,7 @@ window.GC_STRINGS.de = {
   "trade.loadError":
     "Die Business-Liste konnte nicht geladen werden ({error}). Sie muss einmal online geladen werden, bevor sie offline funktioniert.",
   "trade.dataPending":
-    "Deine Liste enthält Stände aus den Business-Hallen. Lade die Daten einmal online, bevor du sie einplanst. Danach sind sie auch offline verfügbar.",
+    "Deine Liste enthält Stände, für die der Guide keine Karte hat. Lade die Daten einmal online, bevor du sie einplanst. Danach sind sie auch offline verfügbar.",
   "trade.listWhat":
     "Im Business-Bereich (Hallen 2–4) trifft sich die Spielebranche. Mit einem Business-Ticket hast du Zutritt; mit einem Privatbesucher-Ticket nicht. Nach Freitag sind die Hallen geschlossen.",
   "trade.listWalkUp":

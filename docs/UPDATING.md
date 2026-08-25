@@ -41,15 +41,28 @@ This document is the playbook for refreshing the data — written so a scheduled
    Two of its stderr lines are worth reading:
    ```
    categories: 18 groups · 1621/1658 exhibitors tagged
-   share tokens: 1038 identities, no collisions
+   note: 1 directory row(s) lose their share token to a curated identity …
+   share tokens: 2164 identities, no unresolved collisions
    ```
-   The second is a real check. Trade booths are saved and shared under
-   `dir:<slug>` keys, and the share format hashes every identity to a
-   5-character token. A token claimed twice is abandoned by both claimants, so
-   those items silently stop riding share links. The tool mirrors `tok36()` from
-   `js/app.js` and warns before such a dataset ships. If it ever does warn, the
-   fix is a wider `TOK_LEN` in `js/app.js` — a share-format change, not an edit
-   here.
+   The last is a real check. **Every** directory row is saveable and shareable
+   under a `dir:<slug>` key — the business ones as trade booths, the rest as
+   the personal stops in `docs/PLAN-directory-stops.md` — and the share format
+   hashes every identity to a 5-character token. A token claimed twice is
+   abandoned, so those items silently stop riding share links.
+
+   Two outcomes, reported apart, because they mean different things. The
+   **note** is a directory row that lost its token to a curated card or game:
+   the guide keeps the curated one, the row stays saveable and plannable and
+   only loses its place in a share link. One row is in that position today
+   (`dir:sharkbomb_studios`, against the game *Tides of Annihilation*), and a
+   handful more is not a problem to solve.
+
+   The **warning** is two curated identities colliding, which costs a card or a
+   game somebody wrote. That is the one to act on, and the fix is a wider
+   `TOK_LEN` in `js/app.js` — a share-format change that invalidates every
+   link already out there, not an edit here. The tool mirrors `tok36()` and
+   the precedence rule from `buildShareCodeMap()`; if you change one, change
+   the other.
 
    The search form ignores plain query parameters, but it does accept its whole
    state as one JSON blob in `paginatevalues`, which is how the `--hall` filter
@@ -413,11 +426,14 @@ keep different opening hours.
   building). Use those as evidence, not as a rule: a small single-occupant
   stand in Hall 2.1 is an ordinary table booth you can walk up to.
 - **`dirSlug` claims a directory row.** The row then disappears from the trade
-  list, because the card is the better answer, and a `dir:<slug>` key already
-  saved by a visitor — from the map, or from a share link — is migrated onto
-  the card's id on their next load. Use it when the card *is* that one
-  exhibitor. A pavilion card describes a **stand**, not a row, so it takes no
-  `dirSlug` and its members stay listed individually.
+  list and from the stand sheet's list of uncarded booths, because the card is
+  the better answer, and a `dir:<slug>` key already saved by a visitor — from
+  the map, from that list, or from a share link — is migrated onto the card's
+  id on their next load. Use it when the card *is* that one exhibitor. A
+  pavilion card describes a **stand**, not a row, so it takes no `dirSlug` and
+  its members stay listed individually — which is what lets someone save one
+  of the Indie Arena Booth's 171 studios while the stand itself stays the
+  card's.
 - Don't give a trade card `crowd`, `crowdNote` or a game list. Queue priority
   and the 18+ wristband exclude `type: "trade"` outright — business booths run
   on appointments, not queues, and inventing a number for one would put a

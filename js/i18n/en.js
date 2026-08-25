@@ -651,6 +651,12 @@ window.GC_STRINGS.en = {
   "map.plusMore": ", +{n} more",
   "map.alsoHere": "also here",
   "map.notCovered": "not covered by the guide",
+  "map.notCoveredSaveOne": "not covered by the guide — save it as a stop of your own",
+  "map.notCoveredSaveAny": "not covered by the guide — save any of these as a stop of your own",
+  "map.listedLede": "{n} company filed on this stand|{n} companies filed on this stand",
+  "map.listedFilter": "Filter by name",
+  "map.listedFilterAria": "Filter the companies on this stand by name",
+  "map.listedNoMatch": "nobody on this stand matches that",
   "map.noExhibitor": "no exhibitor filed for this stand",
   /* ---- the sheet's report link ----
      The guide's one corrections channel (footer.feedback), opened from in
@@ -788,7 +794,7 @@ window.GC_STRINGS.en = {
   "trade.loadError":
     "Couldn't load the trade list ({error}). It needs one online load before it works offline.",
   "trade.dataPending":
-    "Your list has trade booths from the business halls. That data needs one online load before they can be planned — it is cached from then on.",
+    "Your list has booths the guide writes no card about. That data needs one online load before they can be planned — it is cached from then on.",
   "trade.listWhat":
     "The business area (halls 2–4), where the industry does its trading. A trade or media badge opens these halls; a consumer ticket does not, and they close after Friday.",
   "trade.listWalkUp":

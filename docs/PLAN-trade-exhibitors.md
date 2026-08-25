@@ -17,7 +17,10 @@ out differently once the data was in front of us, and they are marked
 2. The share-token check is scoped to rows the guide actually mints tokens
    for. Checking all 1658 rows reported a collision against a token that is
    never minted (`dir:sharkbomb_studios` — hall 10.2, not a trade row).
-   Correctly scoped: **1038 identities, no collisions**.
+   Correctly scoped: **1038 identities, no collisions**. *(Superseded:
+   `docs/PLAN-directory-stops.md` mints a token for every row, so that
+   collision is real now and is resolved by giving a curated identity
+   precedence over a directory row — see its decision 4.)*
 3. A booth's **access** — walk-up stand or closed meeting building — turned
    out to be the most useful thing to say about the business halls, and is a
    new curated field. See "What the business halls actually are" below.
