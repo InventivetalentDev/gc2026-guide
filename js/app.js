@@ -6144,7 +6144,16 @@ function queueItem(kind, key) {
 
 let queueIndex = [];
 let queueScopeEx = null;
+/* The other scope: one hall's queues, offered off the "I'm here" position
+   (docs/IDEAS-im-here.md, follow-up 4). Standing in an impromptu line, the
+   dozen-odd queues around you are the whole answer, and typing a name with a
+   phone in one hand and a spot in the queue at stake is the flow this
+   removes. A filter once applied, like the booth scope — it does not expire
+   with the position that offered it. */
+let queueScopeHall = null;
 let queueQuery = "";
+
+const queuesInHall = (hall) => queueIndex.filter((entry) => String(entry.ex.hall) === hall);
 
 function buildQueueIndex() {
   queueIndex = [];
@@ -6170,10 +6179,13 @@ function buildQueueIndex() {
 }
 
 /* Ranked so a typed title beats a booth that merely mentions it: exact lead,
-   then lead prefix, then a word start anywhere, then any substring. Pure, and
-   deliberately no fuzzy matching — "hlo" should not offer Halo to somebody
-   standing in front of a sign. */
-function matchQueues(query, entries) {
+   then lead prefix, then a word start anywhere, then any substring. Within a
+   tier, the queues of the hall you said you are in come first — never above a
+   better match, because the sign in front of you still beats proximity. Pure
+   (the hall is passed in, not reached for), and deliberately no fuzzy
+   matching — "hlo" should not offer Halo to somebody standing in front of a
+   sign. */
+function matchQueues(query, entries, hereHall = null) {
   const needle = String(query || "").trim().toLowerCase();
   if (!needle) return [];
   const scored = [];
@@ -6185,8 +6197,9 @@ function matchQueues(query, entries) {
     else if (entry.haystack.includes(needle)) score = 3;
     if (score >= 0) scored.push({ entry, score });
   }
+  const near = (candidate) => (hereHall && String(candidate.entry.ex.hall) === hereHall ? 0 : 1);
   return scored
-    .sort((a, b) => a.score - b.score || byName(a.entry.title, b.entry.title))
+    .sort((a, b) => a.score - b.score || near(a) - near(b) || byName(a.entry.title, b.entry.title))
     .map(({ entry }) => entry);
 }
 
@@ -6270,14 +6283,41 @@ function renderQueuesMine() {
   if (reportNum) reportNum.textContent = section.hidden ? "01" : "02";
 }
 
+/* The scope strip wears one of three faces: the booth scope a card link set,
+   the hall scope the visitor chose, or — unscoped, with a fresh position —
+   the offer to take it. The offer is a statement and a button in the same
+   shape as the active scopes, so taking it reads as the strip folding into
+   what it promised; without a position, or in a hall with nothing reportable,
+   the strip is simply absent and the view is exactly what it always was. */
 function renderQueuesScope() {
   const scope = $("#queues-scope");
   if (!scope) return;
+  const clear = `<button class="chip" type="button" id="queues-scope-clear">${esc(
+    t("queues.showAll")
+  )}</button>`;
   const ex = queueScopeEx && state.exhibitors.find((entry) => entry.id === queueScopeEx);
-  scope.hidden = !ex;
-  scope.innerHTML = ex
-    ? `<span class="queues-scope-label">${esc(t("queues.scopedTo", { exhibitor: ex.name }))}</span>
-       <button class="chip" type="button" id="queues-scope-clear">${esc(t("queues.showAll"))}</button>`
+  if (ex) {
+    scope.hidden = false;
+    scope.innerHTML = `<span class="queues-scope-label">${esc(
+      t("queues.scopedTo", { exhibitor: ex.name })
+    )}</span> ${clear}`;
+    return;
+  }
+  if (queueScopeHall) {
+    scope.hidden = false;
+    scope.innerHTML = `<span class="queues-scope-label">${esc(
+      t("queues.scopedToHall", { hall: queueScopeHall })
+    )}</span> ${clear}`;
+    return;
+  }
+  const here = hereNow();
+  const n = here ? queuesInHall(here.hall).length : 0;
+  scope.hidden = !n;
+  scope.innerHTML = n
+    ? `<span class="queues-scope-label">${esc(t("today.hereIn", { hall: here.hall }))}</span>
+       <button class="chip" type="button" id="queues-near" data-hall="${esc(here.hall)}">${esc(
+        t("queues.nearShow", { n })
+      )}</button>`
     : "";
 }
 
@@ -6287,16 +6327,20 @@ function renderQueuesResults() {
   const empty = $("#queues-empty");
   if (!list || !count || !empty) return;
 
-  const scoped = queueScopeEx ? queueIndex.filter((entry) => entry.ex.id === queueScopeEx) : queueIndex;
-  /* Scoped to a booth, the whole (short) list is the answer and typing
-     narrows it. Unscoped, an untyped list of 162 queues is not a useful
-     starting point, so the saved list stands in for it. */
+  const scoped = queueScopeEx
+    ? queueIndex.filter((entry) => entry.ex.id === queueScopeEx)
+    : queueScopeHall
+      ? queuesInHall(queueScopeHall)
+      : queueIndex;
+  /* Scoped to a booth or a hall, the whole (short) list is the answer and
+     typing narrows it. Unscoped, an untyped list of 162 queues is not a
+     useful starting point, so the saved list stands in for it. */
   let rows;
   let heading = "";
   if (queueQuery) {
-    rows = matchQueues(queueQuery, scoped);
+    rows = matchQueues(queueQuery, scoped, hereNow()?.hall || null);
     heading = t("queues.countMatches", { n: rows.length });
-  } else if (queueScopeEx) {
+  } else if (queueScopeEx || queueScopeHall) {
     rows = scoped;
     heading = t("queues.countMatches", { n: rows.length });
   } else {
@@ -6310,7 +6354,11 @@ function renderQueuesResults() {
   empty.hidden = shown.length > 0;
   if (!shown.length) {
     empty.textContent = queueQuery
-      ? t(queueScopeEx ? "queues.emptyScoped" : "queues.emptySearch", { query: queueQuery })
+      ? queueScopeEx
+        ? t("queues.emptyScoped", { query: queueQuery })
+        : queueScopeHall
+          ? t("queues.emptyScopedHall", { query: queueQuery, hall: queueScopeHall })
+          : t("queues.emptySearch", { query: queueQuery })
       : t("queues.emptyDefault");
   }
 }
@@ -6379,11 +6427,16 @@ function renderQueues() {
   renderQueuesResults();
 }
 
-/* Narrow the view to one booth, or clear it. Landing scoped also clears any
-   stale query, so arriving from a card never shows another booth's matches. */
-function applyQueueScope(exhibitorId) {
+/* Narrow the view to one booth or one hall, or clear it. Landing scoped also
+   clears any stale query, so arriving from a card never shows another booth's
+   matches. The booth wins when a link names both — it is the narrower claim —
+   and a hall is only taken when something there is reportable, so a link to a
+   business hall lands unscoped rather than on an empty list. */
+function applyQueueScope(exhibitorId, hall = null) {
   const ex = exhibitorId && state.exhibitors.find((entry) => entry.id === exhibitorId);
   queueScopeEx = ex ? ex.id : null;
+  if (!queueIndex.length) buildQueueIndex();
+  queueScopeHall = !ex && hall && queuesInHall(String(hall)).length ? String(hall) : null;
   queueQuery = "";
   const search = $("#queues-search");
   if (search) search.value = "";
@@ -6868,11 +6921,25 @@ function bindQueueControls() {
     queueQuery = search.value.trim();
     renderQueuesResults();
   });
-  /* The scope chip is replaced on every render, so the listener lives on its
-     container rather than the button. */
+  /* The scope chips are replaced on every render, so the listener lives on
+     their container rather than the buttons. */
   $("#queues-scope")?.addEventListener("click", (event) => {
+    const near = event.target.closest("#queues-near");
+    if (near) {
+      /* Taking the offer, in place: no applyQueueScope, whose scroll-to-top
+         exists for arrivals from elsewhere — this tap happens inside the
+         view, on a strip that stays where it is. */
+      queueScopeEx = null;
+      queueScopeHall = near.dataset.hall;
+      queueQuery = "";
+      if (search) search.value = "";
+      renderQueues();
+      restoreFocus($("#queues-scope-clear"));
+      return;
+    }
     if (!event.target.closest("#queues-scope-clear")) return;
     queueScopeEx = null;
+    queueScopeHall = null;
     renderQueuesScope();
     renderQueuesResults();
     search?.focus();
@@ -7699,12 +7766,14 @@ function bindControls() {
   /* Same marks, second tab: keep them from overwriting each other. */
   window.addEventListener("storage", (e) => {
     /* The position is read fresh at render time, so an "I'm here" from the
-       map tab only needs the two surfaces that advise from it redrawn — not
-       the full re-render below, which rebuilds the grid for keys that scope
-       it. (A cleared storage falls through: the full path redraws these two
-       as well.) */
+       map tab only needs the surfaces that advise from it redrawn — not the
+       full re-render below, which rebuilds the grid for keys that scope it.
+       Queues is here for its near-you offer strip; same-tab stamps need no
+       entry, because every gesture that stamps already re-renders the view
+       it happened on. (A cleared storage falls through: the full path
+       redraws all three as well.) */
     if (e.key === GCMarks.HERE_KEY) {
-      refreshViews("planner", "today");
+      refreshViews("planner", "today", "queues");
       return;
     }
     const watched = [...Object.values(MARK_KEYS), IT_KEY, ORDER_KEY, PREFS_KEY];
@@ -7812,7 +7881,8 @@ function bindControls() {
     if (incoming) offerIncomingWhenReady(incoming);
     /* `?ex=` means "this booth" on both views, and each reads it its own way:
        the grid scrolls to the card, the queues view narrows to its lines. */
-    else if (landing.route === "queues") applyQueueScope(landing.params.get("ex"));
+    else if (landing.route === "queues")
+      applyQueueScope(landing.params.get("ex"), landing.params.get("hall"));
     else focusExhibitor(landing.params.get("ex"));
   });
 }
@@ -7898,7 +7968,7 @@ async function main() {
      already rendered, so a dead hall connection can never hold first paint. */
   QUEUES?.start();
   if (!incoming) {
-    if (route === "queues") applyQueueScope(landing.params.get("ex"));
+    if (route === "queues") applyQueueScope(landing.params.get("ex"), landing.params.get("hall"));
     else focusExhibitor(landing.params.get("ex"));
   }
   if (offer) offerIncomingWhenReady(offer);
