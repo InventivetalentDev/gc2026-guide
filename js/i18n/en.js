@@ -346,6 +346,15 @@ window.GC_STRINGS.en = {
   "today.doneSuffix": " · {n} done",
   "today.meterAria": "{done} of {total} of today's stops done",
   "today.firstLabel": "Go here first",
+  "today.hereLabel": "In your hall",
+  "today.nearestLabel": "Nearest",
+  "today.longestLabel": "Longest queue left",
+  "today.hereIn": "You're in hall {hall}",
+  "today.hereChange": "change",
+  "today.hereQuestion": "Where are you?",
+  "today.hereElsewhere": "Elsewhere",
+  "today.hereAria": "Tell the guide which hall you are in",
+  "today.hereSetAria": "I'm in hall {hall}",
   "today.joinBy": "Join by {at}",
   "today.tooLate": "Too late to start",
   "today.fitCount":
@@ -419,6 +428,7 @@ window.GC_STRINGS.en = {
   "route.stepsNear": "Next hall along",
   "route.stepsAcross": "Across the site",
   "route.stepsFar": "Far side of the site",
+  "route.hereTag": "you're here",
   "route.allDays": "All days",
   "route.allDaysTitle": "Every stop on your list",
   "route.onlyDay": "Only stops planned for {day}",
@@ -678,6 +688,11 @@ window.GC_STRINGS.en = {
   "map.heat": "Queues",
   "map.heatAria": "Show live queue times on the map",
   "map.heatOffAria": "Hide live queue times",
+  "map.here": "I'm here",
+  "map.hereOn": "You're here",
+  "map.hereAria": "Mark hall {hall} as where you are",
+  "map.hereOnAria": "Hall {hall} is marked as where you are — tap to refresh",
+  "map.chipHereAria": ", you're here",
   /* ---- the day route overlay (see renderRoute in js/map.js) ----
      The bar names what the numbers mean and stops short of claiming a walk:
      the snapshot files stands, never aisles, so the line joining the pins is
