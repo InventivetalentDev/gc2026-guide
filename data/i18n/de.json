@@ -551,13 +551,18 @@
       }
     },
     "tencent-worlds-of-play": {
-      "description": "Tencent Games zeigt am Stand in Halle 8.1 Honor of Kings und Arena of Valor mit Cosplayern und Wettbewerben und veranstaltet außerdem die Ausstellung „Worlds of Play: The Game Art Exhibition“ außerhalb des Geländes in der Wassermannhalle (27.–29.8.): fünf thematische Zonen mit Artworks aus 40 Titeln, Entwicklertalks und Cosplay-Showcases. Tencents übrige spielbare Titel stehen bei Level Infinite in Halle 6.1.",
+      "description": "Tencent Games zeigt am Stand in Halle 8.1 Honor of Kings und Arena of Valor mit Cosplayern und Wettbewerben, und die Standseite nennt fünf weitere Titel: Honor of Kings: World, Honor of Kings: ACE, Rust Mobile, Roco Kingdom und Animula Nook. Das Unternehmen veranstaltet außerdem die Ausstellung „Worlds of Play: The Game Art Exhibition“ außerhalb des Geländes in der Wassermannhalle (27.–29.8.): fünf thematische Zonen mit Artworks aus 40 Titeln, Entwicklertalks und Cosplay-Showcases. Tencents übrige spielbare Titel stehen bei Level Infinite in Halle 6.1.",
       "crowdNote": "Die kuratierte Ausstellung liegt abseits der Haupthallen und arbeitet mit Zeitfenstern. Rechne mit mittlerem Andrang; bei Level Infinite ist deutlich mehr los.",
       "visitAdvice": "Ein ruhigerer Ausgleich zwischen zwei Hallenrunden; prüf kurz vor der Messe, ob du dich für ein kostenloses Zeitfenster anmelden musst.",
       "games": {
         "Worlds of Play (40-title art exhibition)": "Kunstausstellung vom 27.–29. Aug., außerhalb des Messegeländes.",
         "Honor of Kings": "Am Stand in Halle 8.1, mit Cosplayern und Wettbewerben.",
-        "Arena of Valor": "Am Stand in Halle 8.1, mit Cosplayern und Wettbewerben."
+        "Arena of Valor": "Am Stand in Halle 8.1, mit Cosplayern und Wettbewerben.",
+        "Honor of Kings: World": "Der Open-World-Ableger, in China seit April für PC und Mobile erhältlich; auf der Standseite registriert, ein Hands-on ist nicht angekündigt.",
+        "Honor of Kings: ACE": "Registriert auf Tencent Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "Rust Mobile": "Registriert auf Tencent Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "Roco Kingdom": "Registriert auf Tencent Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "Animula Nook": "Registriert auf Tencent Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt."
       }
     },
     "netease": {
@@ -784,13 +789,14 @@
       "visitAdvice": "Stopp ohne Wartezeit; geh hin, wenn die großen Hallen am schlimmsten sind."
     },
     "frozen-district": {
-      "description": "Das Studio hinter House Flipper ist in Halle 10.1 sowohl unter seinem eigenen Namen als auch unter House Flipper 2 registriert. Passend zu einem Putzsimulator ist es im Ausstellerverzeichnis außerdem unter Pflege- und Reinigungsprodukten gelistet, nicht nur unter Spielen. Auf der Standseite stehen zusätzlich die Roboter-Farmsimulation Farmbotic, der Fälscher-Simulator Forgery Craft und eine Haustier-Erweiterung für House Flipper 2.",
+      "description": "Das Studio hinter House Flipper ist in Halle 10.1 sowohl unter seinem eigenen Namen als auch unter House Flipper 2 registriert. Passend zu einem Putzsimulator ist es im Ausstellerverzeichnis außerdem unter Pflege- und Reinigungsprodukten gelistet, nicht nur unter Spielen. Auf der Standseite stehen zusätzlich die Roboter-Farmsimulation Farmbotic, der Fälscher-Simulator Forgery Craft, das Traum-Malerei-Puzzlespiel Dreampainters und eine Haustier-Erweiterung für House Flipper 2.",
       "crowdNote": "Cozy-Sim-Fans stöbern eher, als dass sie anstehen.",
       "visitAdvice": "Der Stand liegt nur zwei Stände von Raw Fury und drei von MOZA entfernt und lässt sich gut in einen Rundgang durch die A-Reihe einbauen.",
       "games": {
         "House Flipper 2": "Im offiziellen Ausstellerprofil als Marke registriert, zusammen mit einer Haustier-Erweiterung; das Demo-Programm ist nicht angekündigt.",
         "Farmbotic": "Roboter-Farmsimulation, registriert auf Frozen Districts gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
-        "Forgery Craft": "Simulation rund um Kunstfälschung, registriert auf derselben Standseite; ein Hands-on ist nicht angekündigt."
+        "Forgery Craft": "Simulation rund um Kunstfälschung, registriert auf derselben Standseite; ein Hands-on ist nicht angekündigt.",
+        "Dreampainters": "Ego-Puzzlespiel rund um Farben von Stability Games, veröffentlicht von Frozen District; steht auf der Standseite, ein Hands-on ist nicht angekündigt."
       }
     },
     "raw-fury": {
@@ -854,6 +860,11 @@
         "Horseguard: Winds of the North": "Adventure-Titel im nordischen Setting.",
         "The Curse of the Crimson Stag": "Neues Adventure."
       }
+    },
+    "indie-castle": {
+      "description": "Ein Community-Stand, gebaut als echte Burg, vier Meter hoch, in der Indie-Hälfte von Halle 10.2: 52 Spiele an Pods entlang der Außenmauern und im Innenhof, von rund vierzig kleinen Studios und Publishern. Es ist der erste Auftritt der Marke Indies United, organisiert von Insomnia Development aus Hamburg; auch Dotemu, gamigo und Daedalic haben hier Pods.",
+      "crowdNote": "Vierzig kleine Pods statt einer großen Schlange — gewartet wird pro Station und nur kurz, am vollsten am Samstagnachmittag.",
+      "visitAdvice": "Geh erst außen um die Mauern herum und dann in den Innenhof — die Pods drinnen übersieht man leicht. Die Burg liegt zwischen dem Indie Arena Booth und der Retro & Family Area und passt damit in denselben Rundgang durch Halle 10.2."
     },
     "a-maze": {
       "description": "Der dritte Digital PlayGround des Berliner Independent-Games-Festivals auf der gamescom: experimentelle Spiele und Art Games, die noch ungewöhnlicher sind als das Angebot am Indie Arena Booth. Der Stand liegt nur wenige Plätze entfernt in derselben Halle.",
@@ -1505,12 +1516,13 @@
       "visitAdvice": "Gehört zur selben Hardware-Reihe in Halle 8.1 wie ASUS ROG, AGON by AOC und Logitech."
     },
     "mattel": {
-      "description": "Mattels erste gamescom mit eigenem Stand — und es sind gleich zwei: Halle 8.1 B020 im Eingangsbereich der Halle neben CD Projekt Red und Square Enix, mit sechs spielbaren Titeln der Mattel Game Studios, den Sets des Mattel Brick Shop (darunter eine Xbox-Konsole aus 3.500 Teilen), einer Live-Bühne und Fotopunkten rund um Minecraft und KPop Demon Hunters — dazu der Mattel Fan Shop in Halle 5.1 C024 in der Merchandise Area, wo tatsächlich verkauft wird.",
+      "description": "Mattels erste gamescom mit eigenem Stand — und es sind gleich zwei: Halle 8.1 B020 im Eingangsbereich der Halle neben CD Projekt Red und Square Enix, mit sechs spielbaren Titeln der Mattel Game Studios, den Sets des Mattel Brick Shop (darunter eine Xbox-Konsole aus 3.500 Teilen), einer Live-Bühne und Fotopunkten rund um Minecraft und KPop Demon Hunters, seit Kurzem ergänzt um Barbie Rewind auf der Standseite — dazu der Mattel Fan Shop in Halle 5.1 C024 in der Merchandise Area, wo tatsächlich verkauft wird.",
       "crowdNote": "Markenstand für Familien; die Demos sind kurze Mobile-Sessions, die Wartezeiten bleiben also klein — außer am Wochenende und rund um die Bühnenslots.",
       "visitAdvice": "Der Stand in Halle 8.1 ist ein kurzer Stopp auf dem Weg in Halle 8 hinein oder wieder hinaus — fünf der sechs Demos laufen auf dem Handy und gehen schnell. Wenn du die Brick-Shop-Sets kaufen statt spielen willst, geh stattdessen zum Fan Shop in Halle 5.1; nur dort wird verkauft.",
       "games": {
         "He-Man and the Masters of the Universe: Dragon Pearl of Destruction": "Der einzige PC-/Konsolentitel am Stand — der Retro-Brawler von Bitmap Bureau, seit April erhältlich.",
-        "Skeletor: Until Next Time!": "Das erste selbst veröffentlichte Spiel der Mattel Game Studios, ein Endless Runner, schon für iOS und Android erhältlich."
+        "Skeletor: Until Next Time!": "Das erste selbst veröffentlichte Spiel der Mattel Game Studios, ein Endless Runner, schon für iOS und Android erhältlich.",
+        "Barbie Rewind": "Erst nach der Ankündigung der sechs spielbaren Titel auf Mattels gamescom-Standseite ergänzt; ein Hands-on ist nicht angekündigt."
       }
     },
     "jbl-quantum": {
@@ -1629,14 +1641,29 @@
       "visitAdvice": "Ein kurzer Blick, wenn du ohnehin in der Nähe bist."
     },
     "shueisha-games": {
-      "description": "Der Spiele-Arm des Manga-Verlags Shueisha (Shonen Jump) mit einem Stand in Halle 10.2 — das Lineup für die Messe ist noch nicht angekündigt.",
-      "crowdNote": "Unklar, bis ein Lineup angekündigt ist.",
-      "visitAdvice": "Kurz vor der Messe noch mal nachschauen, was spielbar ist."
+      "description": "Der Spiele-Arm des Manga-Verlags Shueisha (Shonen Jump), auf einem geteilten Standblock in Halle 10.2. Auf der Standseite stehen inzwischen zehn Titel — vom Jujutsu-Kaisen-Actionspiel und einem KochiKame-Ableger bis zu kleineren eigenen Projekten wie ATMOSFAR und Wild Wild Eden. Für keinen davon ist ein Hands-on angekündigt.",
+      "crowdNote": "Ein Stand zum Stöbern in der Indie-Hälfte von Halle 10.2 — kurze Wartezeiten, wenn überhaupt.",
+      "visitAdvice": "Lohnt einen Abstecher, wenn du Shonen Jump verfolgst. Der Stand liegt nur wenige Plätze vom Indie Arena Booth entfernt, also nimm ihn gleich mit.",
+      "games": {
+        "BAKUDO": "Steht auf Shueisha Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "Chronoscript: The Endless End": "Steht auf Shueisha Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "UN:Me": "Steht auf Shueisha Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "Schrödinger's Call": "Steht auf Shueisha Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "JUJUTSU KAISEN RUMBLE: SURVIVATON": "Der Jujutsu-Kaisen-Titel auf der Standseite — der bekannteste Name am Stand; ein Hands-on ist nicht angekündigt.",
+        "KochiKame: Ryo-san's Billion-yen Beat": "Ableger des langjährigen Shueisha-Mangas; ein Hands-on ist nicht angekündigt.",
+        "ATMOSFAR": "Steht auf Shueisha Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "Seasons of Books and Keys": "Steht auf Shueisha Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "YAKOH SHINOBI OPS": "Steht auf Shueisha Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
+        "Wild Wild Eden": "Steht auf Shueisha Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt."
+      }
     },
     "metanet": {
-      "description": "Das kanadische Indie-Studio hinter dem Plattformer N++, mit einem Stand in Halle 10.2 — die Pläne für die Messe sind noch nicht angekündigt.",
-      "crowdNote": "Unklar, bis ein Lineup angekündigt ist.",
-      "visitAdvice": "Kurz vor der Messe noch mal nachschauen, was spielbar ist."
+      "description": "Das kanadische Studio hinter den Ninja-Plattformern N und N++ bringt einen Titel an seinen kleinen Stand in Halle 10.2: N PLUS INFINITY TIMES TWO, genannt auf seiner gamescom-Standseite. Ein Hands-on ist nicht angekündigt.",
+      "crowdNote": "Ein Stand mit einem einzigen Spiel in der Indie-Hälfte der Halle — kaum bis gar keine Wartezeit.",
+      "visitAdvice": "Ein Zwei-Minuten-Stopp auf dem Weg durch Halle 10.2; das Indie Arena Booth liegt ein paar Stände weiter.",
+      "games": {
+        "N PLUS INFINITY TIMES TWO": "Der N++-Nachfolger, genannt auf Metanets gamescom-Standseite; ein Hands-on ist nicht angekündigt."
+      }
     }
   }
 }

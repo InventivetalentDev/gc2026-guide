@@ -1,5 +1,17 @@
 [
   {
+    "date": "2026-08-25",
+    "revision": 50,
+    "changes": [
+      { "kind": "content", "text": "New card: Indie Castle, a community booth built as an actual four-metre castle in Hall 10.2 (E020/D021) — 52 games on pods around the walls and in the courtyard, from about forty small studios. Daedalic and Razer sit inside it." },
+      { "kind": "content", "text": "Shueisha Games has a lineup: ten titles on its Hall 10.2 booth page, headed by JUJUTSU KAISEN RUMBLE: SURVIVATON and a KochiKame spin-off. None is announced as hands-on." },
+      { "kind": "content", "text": "Metanet Software's Hall 10.2 stand has a game — N PLUS INFINITY TIMES TWO, the follow-up to N++." },
+      { "kind": "content", "text": "Tencent — Worlds of Play adds five titles from its own booth page: Honor of Kings: World, Honor of Kings: ACE, Rust Mobile, Roco Kingdom and Animula Nook." },
+      { "kind": "content", "text": "Mattel adds Barbie Rewind and Frozen District adds Dreampainters — both appeared on the exhibitors' own booth pages, and neither is announced as playable." },
+      { "kind": "content", "text": "Twenty-four more cards link straight to the exhibitor's own gamescom page, among them Nintendo, Mattel, Daedalic, Retro Games, Ravensburger, Bushiroad, Fangamer and most of the Hall 10.1 hardware row." }
+    ]
+  },
+  {
     "date": "2026-08-24",
     "revision": 49,
     "changes": [
