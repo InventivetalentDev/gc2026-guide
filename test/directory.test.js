@@ -11,16 +11,31 @@ import directory from "../data/directory.json";
 const rows = directory.exhibitors;
 const branded = rows.filter((row) => "brand" in row);
 
-/* Mirror of directoryMatches() in js/app.js: the query is lowercased, split on
-   whitespace, and every term has to appear somewhere in the row's haystack. */
-const findableBy = (query, row) => {
-  const haystack = `${row.name} ${row.country || ""}`.toLowerCase();
+/* Mirror of queryTerms()/matchesTerms() in js/app.js: the query is lowercased
+   and split on whitespace, and every term has to match the row's haystack —
+   inside a word if the term is long enough to be deliberate or carries
+   punctuation, and otherwise only at the start of one. tools/fetch-directory.py
+   holds the third copy, in findable_by(); the sweep decides whether a row
+   needs a `brand` by asking exactly this question, so the three have to agree
+   or the answer it wrote down stops being true. */
+const WORD_BREAK = /[^\p{L}\p{N}.+]+/u;
+const INFIX_MIN = 4;
+
+const findableIn = (query, haystack) => {
+  const words = haystack.split(WORD_BREAK).filter(Boolean);
   return query
     .toLowerCase()
     .split(/\s+/)
     .filter(Boolean)
-    .every((term) => haystack.includes(term));
+    .every((term) =>
+      term.length >= INFIX_MIN || WORD_BREAK.test(term)
+        ? haystack.includes(term)
+        : words.some((word) => word.startsWith(term))
+    );
 };
+
+const findableBy = (query, row) =>
+  findableIn(query, `${row.name} ${row.country || ""}`.toLowerCase());
 
 describe("directory rows", () => {
   it("carries the fields the Full directory renders", () => {
@@ -80,5 +95,59 @@ describe("brand names", () => {
       expect(seen.has(key), `${row.brand} claimed twice`).toBe(false);
       seen.set(key, row.slug);
     }
+  });
+});
+
+describe("how a term matches", () => {
+  /* The bug this pins down: "io interactive" answered with three companies
+     that are not IO Interactive, because "io" was tested as a substring and
+     sits inside behav·io·ur, A·io·n and Stud·io·s. Worse than the wrong rows
+     was what they hid — a grid with results never shows the "N matches in the
+     full directory" hint, so the one right answer stayed behind a collapsed
+     section and the show read as if IO Interactive were not coming. */
+  it("does not answer a short term from the middle of a word", () => {
+    const hits = rows.filter((row) => findableBy("io interactive", row));
+    expect(hits.map((row) => row.name)).toEqual(["IO Interactive A/S"]);
+  });
+
+  it("still finds a name by its opening letters, so search works as you type", () => {
+    const io = rows.find((row) => row.name === "IO Interactive A/S");
+    for (const query of ["i", "io", "io i", "io interact", "io interactive"]) {
+      expect(findableBy(query, io), `"${query}" lost the row`).toBe(true);
+    }
+  });
+
+  it("lets a long term match inside a word, which is how German compounds are found", () => {
+    /* "messe" for Koelnmesse, and the tail of any compound a visitor knows
+       only half of. Four characters is the line: long enough to be typed on
+       purpose, too long to land inside an unrelated word by accident. */
+    const hay = "koelnmesse gmbh germany";
+    expect(findableIn("messe", hay)).toBe(true);
+    expect(findableIn("koelnmesse", hay)).toBe(true);
+    expect(findableIn("nmes", hay)).toBe(true);
+    expect(findableIn("mes", hay)).toBe(false);
+  });
+
+  it("keeps a hall number one word, dot and all", () => {
+    const hay = "hall 6.1 halle 6.1 c041";
+    expect(findableIn("6.1", hay)).toBe(true);
+    expect(findableIn("hall 6", hay)).toBe(true);
+    /* A booth code is not the hall it stands in: "6" used to match C041 and
+       every other code carrying the digit, which is most of the show. */
+    expect(findableIn("6", "hall 7 halle 7 c061")).toBe(false);
+  });
+
+  it("matches a term written across a word boundary", () => {
+    /* Split into single words, "a/s" and "co-op" could never match one. */
+    expect(findableIn("a/s", "io interactive a/s denmark")).toBe(true);
+    expect(findableIn("co-op", "party game co-op couch")).toBe(true);
+    expect(findableIn("18+", "plaion 18+ hall 7")).toBe(true);
+  });
+
+  it("does not split a word on an umlaut", () => {
+    const hay = "aidshilfe köln germany";
+    expect(findableIn("köln", hay)).toBe(true);
+    expect(findableIn("kö", hay)).toBe(true);
+    expect(findableIn("ln", hay)).toBe(false);
   });
 });

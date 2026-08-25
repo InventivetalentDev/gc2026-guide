@@ -360,21 +360,43 @@ def partner_stands(partner):
     return out
 
 
+# Word boundaries, and the length past which a term may match inside a word.
+# Both mirror WORD_BREAK and INFIX_MIN in js/app.js — see the long note there
+# for why a short term has to land on the start of a word. The extra `_+`
+# branch is only Python's `\w` disagreeing with JS about the underscore.
+WORD_BREAK = re.compile(r"[^\w.+]+|_+")
+INFIX_MIN = 4
+
+
+def findable_by(query, haystack):
+    """Does the guide's search reach this haystack with that query?
+
+    Mirrors matchesTerms() in js/app.js term for term: every term matches
+    inside the text if it is long enough or carries punctuation, and otherwise
+    has to start a word."""
+    words = [w for w in WORD_BREAK.split(haystack) if w]
+    for term in query.lower().split():
+        if len(term) >= INFIX_MIN or WORD_BREAK.search(term):
+            if term in haystack:
+                continue
+        elif any(word.startswith(term) for word in words):
+            continue
+        return False
+    return True
+
+
 def already_findable(brand, entry):
     """Would the guide's own search already reach this row by that brand?
 
     Two ways it would, and either one means the brand is not worth writing
     down. It may be the filed name shortened — "Konami" for "Konami Digital
-    Entertainment B.V." — which the substring test catches, mirroring
-    directoryMatches() in js/app.js term for term. Or it may be the same name
-    in different dress: "IO Interactive AB" against a row filed as "IO
+    Entertainment B.V." — which findable_by() catches. Or it may be the same
+    name in different dress: "IO Interactive AB" against a row filed as "IO
     Interactive A/S" is one company, one name and two legal forms, and
     recording the profile's would put a wrong suffix on screen next to the
     right one."""
     haystack = f"{entry['name']} {entry.get('country', '')}".lower()
-    if all(term in haystack for term in brand.lower().split()):
-        return True
-    return fold(brand) == fold(entry["name"])
+    return findable_by(brand, haystack) or fold(brand) == fold(entry["name"])
 
 
 def harvest_brands(entries):
