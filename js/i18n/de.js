@@ -301,6 +301,7 @@ window.GC_STRINGS.de = {
   "directory.showMore": "{n} weitere zeigen",
   "directory.noBooth": "kein Stand angegeben",
   "directory.hostedAt": " bei {name}",
+  "directory.filedAs": "registriert als {name}",
   "directory.entryAria": ", offizieller Verzeichniseintrag, öffnet in einem neuen Tab",
   "directory.businessArea": "Business-Bereich — nur für Fach- und Medienbesucher",
   "directory.fallbackHint":

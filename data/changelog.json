@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-25",
+    "revision": 52,
+    "changes": [
+      { "kind": "feature", "text": "The full directory now answers to brand names: searching Pipapo Games finds the Hall 10.2 booth registered as Hantschel, Hort, Müller und Neumann GbR, and the row shows both names." },
+      { "kind": "content", "text": "40 booths gained the name they actually trade as — Deep Silver on PLAION GmbH's row, KOCCA on Korea Creative Content Agency's, HyperX on HP Deutschland's, and Pipapo Games inside the Indie Arena Booth." }
+    ]
+  },
+  {
+    "date": "2026-08-25",
     "revision": 51,
     "changes": [
       { "kind": "content", "text": "Travel warning for show week: Stadtbahn lines 1, 7 and 9 do not cross the Rhine, so 1 and 9 end at Heumarkt and 7 at Neumarkt, with replacement buses to the grounds. Lines 3 and 4 to the East entrance still run." },

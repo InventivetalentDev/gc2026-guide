@@ -27,6 +27,7 @@ This document is the playbook for refreshing the data — written so a scheduled
    python3 tools/fetch-directory.py                    # whole show → data/directory.json
    python3 tools/fetch-directory.py --hall 10.1        # one hall, to stdout, for eyeballing
    python3 tools/fetch-directory.py --skip-categories  # names and stands only, ~1 min
+   python3 tools/fetch-directory.py --skip-brands      # no self-managed profile sweep
    ```
    Re-run it on every refresh — it is the file that answers "is this company even
    here?", and a stale copy silently misses new registrations.
@@ -38,12 +39,33 @@ This document is the playbook for refreshing the data — written so a scheduled
    `groups`/`cats` at all, which means the trade list loses its category chips
    until the next full run; prefer the full sweep unless you are in a hurry.
 
-   Two of its stderr lines are worth reading:
+   The run also sweeps the **self-managed profiles** on `gamescom.global` to fill
+   each row's `brand`. Those pages are the same exhibitors filing under the name
+   they trade as, where this directory files them under the entity that signed the
+   contract — so this is the pass that makes *Pipapo Games* find the row registered
+   as *Hantschel, Hort, Müller und Neumann GbR*, and *Deep Silver* find *PLAION
+   GmbH*. Ten requests of 100 profiles, a few seconds, and it runs even under
+   `--skip-categories`: the reason to be in a hurry is that sweep, not this one.
+   `--skip-brands` opts out entirely.
+
+   The join is the part to understand before trusting it, because neither side
+   carries the other's key. A profile is matched to a row on its name once the
+   legal form is stripped (*11 bit studios S.A.* meets *11 bit studios*), on the
+   entity it names in its own imprint (which is what reaches Pipapo), or on a
+   stand — and a stand only identifies a row when it has exactly one occupant, so
+   this can name the Bundeswehr's booth and never guesses at one of the 172
+   studios sharing the Indie Arena Booth stand. Anything ambiguous is dropped
+   rather than guessed, and a brand the guide's search could already find from the
+   filed name is not written down at all: `brand` is for the ~40 names search
+   cannot otherwise reach, not a second copy of every row's name.
+
+   Three of its stderr lines are worth reading:
    ```
    categories: 18 groups · 1621/1658 exhibitors tagged
+   brands: 947 profiles · 720 matched to a row · 40 named a brand search could not already find
    share tokens: 1038 identities, no collisions
    ```
-   The second is a real check. Trade booths are saved and shared under
+   The third is a real check. Trade booths are saved and shared under
    `dir:<slug>` keys, and the share format hashes every identity to a
    5-character token. A token claimed twice is abandoned by both claimants, so
    those items silently stop riding share links. The tool mirrors `tok36()` from
@@ -63,8 +85,10 @@ This document is the playbook for refreshing the data — written so a scheduled
    are worth re-checking every time, because neither is ever in the press: the
    hardware/peripheral row in 10.1's A–D rows, and anything registered under a legal
    entity that hides a known brand (MOZA Racing files as *Shenzhen Gudsen Technology*,
-   Backforce as *Interstuhl*, AULA as *Dongguan Suoai Electronics*). The self-managed
-   profile payload in step 4 carries a `Brand` field that unmasks most of these.
+   Backforce as *Interstuhl*, AULA as *Dongguan Suoai Electronics*). The `brand` sweep
+   above unmasks these in the directory itself, so reading the sweep's own brand list is
+   the fastest way to spot one worth a card; the self-managed profile payload in step 4
+   carries the same name for a brand the sweep could not match.
    Useful permalinks:
    - Directory entry: `https://exhibitors.gamescom.global/exhibitor/<slug>/` (slug from the result link)
    - Self-managed profile with booth program: `https://www.gamescom.global/en/exhibitor/<slug>`
@@ -555,7 +579,10 @@ refresh, and anything worth keeping belongs in `exhibitors.json` as a card inste
   "exhibitors": [
     { "name": "1000 Orks UG", "country": "Germany", "slug": "1000_orks_ug",
       "stands": [ { "hall": "10.2", "booth": "F010/E019" } ],
-      "cats": ["201", "204"] }                       // ids into `groups`; omitted when empty
+      "cats": ["201", "204"] },                      // ids into `groups`; omitted when empty
+    { "name": "Hantschel, Hort, Müller und Neumann GbR", "country": "Germany",
+      "slug": "hantschel_hort_muel", "brand": "Pipapo Games",   // omitted unless it differs
+      "stands": [ { "hall": "10.2", "booth": "F010/E019" } ], "cats": ["201"] }
   ]
 }
 ```
@@ -567,6 +594,18 @@ slugs are Koelnmesse's own and some of them look wrong: `&why GmbH` is filed as
 `-whyassociacao_de_produt`, and `Artifika Games` as
 `muhammed_serkan_yildwestdeutscher_rundfu` — two truncated contact fields run
 together. Those are correct and resolve to the right profile; don't "fix" them.
+
+`brand` is the name the exhibitor trades as, harvested from its self-managed
+profile on `gamescom.global` — see step 3. It is written only where the guide's
+own search could not already reach the row from the name it was filed under, so
+~40 of 1785 rows carry one and the rest are unchanged. Where it exists it is
+what the Full directory and the trade list call the row, with the filed name
+kept underneath. It is **not** an identity: `slug` stays the saved key, and the
+filed name stays the name of the *stop* — in the plan, the route, the `.ics`
+and on the map — because those are place-like surfaces and every one of them,
+including Koelnmesse's own hall plan, calls the stand by the entity that
+registered it. Almost nothing turns on that split in practice: 39 of the 40
+brands sit in the consumer halls, which the trade list does not cover.
 
 `groups` is the official product-group taxonomy, harvested by sweeping the
 listing endpoint once per group. Ids arrive in near-duplicate pairs per label
