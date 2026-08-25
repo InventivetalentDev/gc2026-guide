@@ -16,7 +16,9 @@
       "Such dir vorab 5–10 Muss-Stände aus (offizielle gamescom-App + Hallenplan) und geh direkt bei Öffnung zu deinem wichtigsten.",
       "Manche großen Stände geben morgens Zeitfenster oder Fast-Lane-Bändchen über ihre eigenen Apps aus — schau in der Woche davor auf die Social-Kanäle der Aussteller.",
       "Ein paar Stände nehmen vor der Messe kostenlose Online-Buchungen an: Die sechs Simulatoren von MOZA Racing in Halle 10.1 sind das klarste Beispiel. Buchen kostet nichts und entscheidet darüber, ob du fährst oder zuschaust — schau also auf die Websites aller Stände mit spielbaren Demos, die dir wichtig sind.",
-      "Nimm Bahn oder Tram zur Station Köln Messe/Deutz — Tagestickets enthalten die kostenlose VRS-Fahrt; fahr nicht mit dem Auto.",
+      "Nimm öffentliche Verkehrsmittel — Tagestickets enthalten die kostenlose VRS-Fahrt im Kölner Raum, und das Parken am Gelände lohnt den Versuch nicht. Prüf aber deine Linie, bevor du losfährst: Die Kölner Rheinbrücken-Baustellen laufen quer durch die Messewoche.",
+      "Die Stadtbahnlinien 1, 7 und 9 fahren bis Anfang September nicht über den Rhein: 1 und 9 enden am Heumarkt, die 7 am Neumarkt, dazu fahren Ersatzbusse vom Neumarkt zur Koelnmesse in 10–20 Minuten. Die Linien 3 und 4 fahren weiterhin zum Eingang Ost und sind der verlässliche Weg.",
+      "Auf der Bahnseite sind RE 1, RE 5, S 1 und S 6 ab dem 21. Aug. zwischen Düsseldorf und Köln-Mülheim eingekürzt, und manche Züge lassen Köln Hauptbahnhof und Köln Messe/Deutz ganz aus. Prüf deine Verbindung am Morgen der Anreise; aus Düsseldorf ist der RE 6 die empfohlene Umleitung.",
       "Abendtickets (ab 16:00 Uhr, 10,50 €) sind ein günstiger zweiter Besuch, und in den letzten 2–3 Stunden werden die Schlangen kürzer — erhältlich für Donnerstag, Freitag und Sonntag; die für Samstag sind weg.",
       "Mach die gamescom-epix-Quests — wer alle Kapitel abschließt, kann ein kostenloses Sonntagsticket bekommen."
     ],
@@ -399,9 +401,9 @@
       }
     },
     "ubisoft": {
-      "description": "Der gewohnte Platz am Eingang von Halle 6 mit einer spielbaren Demo von Rayman Legends Retold und der zurückkehrenden Community Lounge — Entwicklertalks und live gestreamte Sessions (26.–29. Aug.) zu Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 und The Division 2.",
+      "description": "Der gewohnte Platz am Eingang von Halle 6 mit einer spielbaren Demo von Rayman Legends Retold — 20 Minuten an einer von 15 Couch-Koop-Stationen für zwei Personen — und der zurückkehrenden Community Lounge, die an allen fünf Tagen läuft: zu Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 und The Division 2.",
       "crowdNote": "Ein spielbarer Titel plus Lounge-Format — mittlere Wartezeiten, dieses Jahr kein großes neues AAA-Hands-on.",
-      "visitAdvice": "Die Rayman-Schlange ist unter der Woche vormittags gut machbar. Die Community-Lounge-Sessions laufen nach Zeitplan — Termine stehen auf Ubisofts Kanälen.",
+      "visitAdvice": "Die Rayman-Schlange ist unter der Woche vormittags gut machbar. Die Lounge teilt ihr Programm auf: Bei manchen Slots musst du dabei sein — Meet-and-Greets und Entwicklersessions —, der Rest wird gestreamt und geht dir auch später nicht verloren. Der Zeitplan des Tages hängt auf Bildschirmen am Stand. Ubisofts eigene Zusammenfassung nennt Donnerstag als Öffnungstag, im veröffentlichten Zeitplan stehen aber auch am Fachbesucher-Mittwoch Sessions vor Ort.",
       "games": {
         "Rayman Legends Retold": "Demo: Einstiegslevel, eine neue Drachenritt-Sequenz und ein klassisches Musiklevel.",
         "Assassin's Creed Black Flag Resynced": "Community-Lounge-Showcase des Black-Flag-Remakes.",
@@ -877,11 +879,13 @@
       "visitAdvice": "Überspring es, außer du suchst einen Job oder ein Studium. Es ist allerdings ein wirklich ruhiger Ort, um sich mittags hinzusetzen, und die Stände zu Barrierefreiheit und Jugendarbeit sind einen Blick wert."
     },
     "lego": {
-      "description": "LEGO kehrt 2026 mit mehreren zusammenhängenden Ständen neben Nintendo in Halle 9.1 zurück. Das Programm ist noch nicht angekündigt. 2025 gab es Bereiche zu Batman, One Piece und Super Mario; erwarte daher aktuelle LEGO-Videospiele und Fotomotive mit Sets.",
+      "description": "Mehrere zusammenhängende Stände neben Nintendo in Halle 9.1. Im Mittelpunkt steht LEGO Batman: Legacy of the Dark Knight, dessen Mayhem-Collection-DLC hier vor dem Release am 18. September erstmals öffentlich gezeigt wird — dazu ein LEGO-Fortnite-Bereich rund um einen lebensgroßen Nachbau des Rave-Cave-Sets.",
       "crowdNote": "Familienmagnet in derselben Halle wie Nintendo — Foto- und Demo-Schlangen werden am Wochenende lang.",
-      "visitAdvice": "Vormittags unter der Woche; am Wochenende dominieren Familien.",
+      "visitAdvice": "Vormittags unter der Woche; am Wochenende dominieren Familien. LEGO hat nicht gesagt, ob der Batman-DLC spielbar ist oder nur auf Bildschirmen läuft — sieh eine Demo-Station also als Zugabe und nicht als Grund zum Anstellen.",
       "games": {
-        "LEGO video game lineup (TBC)": "LEGO enthüllt neue Spiele traditionell auf der gamescom bzw. bei ONL; die Titel für 2026 sind nicht angekündigt."
+        "LEGO Batman: Legacy of the Dark Knight": "Erster öffentlicher Blick auf den Mayhem-Collection-DLC vor dem Release am 18. September. Ein Trailer läuft zudem am Mittwoch in IGNs gamescom-Stream; ob der Stand ihn spielbar hat, ist nicht angekündigt.",
+        "LEGO Fortnite": "Ein thematischer Standbereich, keine angekündigte Demo — der Blickfang ist ein lebensgroßer Nachbau des Rave-Cave-Sets.",
+        "LEGO Skylines": "Anfang des Jahres in Südkorea eingestuft und breit als Paradox-Kooperation erwartet, angekündigt hat es aber weder LEGO noch Paradox."
       }
     },
     "wizards-of-the-coast": {

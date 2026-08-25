@@ -1,10 +1,21 @@
 [
   {
     "date": "2026-08-25",
-    "revision": 51,
+    "revision": 52,
     "changes": [
       { "kind": "feature", "text": "The full directory now answers to brand names: searching Pipapo Games finds the Hall 10.2 booth registered as Hantschel, Hort, Müller und Neumann GbR, and the row shows both names." },
       { "kind": "content", "text": "40 booths gained the name they actually trade as — Deep Silver on PLAION GmbH's row, KOCCA on Korea Creative Content Agency's, HyperX on HP Deutschland's, and Pipapo Games inside the Indie Arena Booth." }
+    ]
+  },
+  {
+    "date": "2026-08-25",
+    "revision": 51,
+    "changes": [
+      { "kind": "content", "text": "Travel warning for show week: Stadtbahn lines 1, 7 and 9 do not cross the Rhine, so 1 and 9 end at Heumarkt and 7 at Neumarkt, with replacement buses to the grounds. Lines 3 and 4 to the East entrance still run." },
+      { "kind": "content", "text": "Also on the rails: RE 1, RE 5, S 1 and S 6 are cut back between Düsseldorf and Köln-Mülheim, and some trains skip Köln Hauptbahnhof and Köln Messe/Deutz. Check your connection on the morning you travel." },
+      { "kind": "content", "text": "LEGO lineup confirmed: LEGO Batman: Legacy of the Dark Knight shows its Mayhem Collection DLC publicly for the first time, plus a LEGO Fortnite section around a life-size Rave Cave build." },
+      { "kind": "content", "text": "Ubisoft's Community Lounge runs all five days, not four — Sunday was missing. Rayman Legends Retold is a 20-minute demo across 15 two-player couch co-op stations." },
+      { "kind": "content", "text": "Fixed: Commodore's official gamescom profile link pointed at a page that 404s." }
     ]
   },
   {

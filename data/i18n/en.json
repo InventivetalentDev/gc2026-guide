@@ -16,7 +16,9 @@
       "Pick 5–10 must-play booths in advance (official gamescom app + hall plan) and hit your single most-wanted booth right at opening.",
       "Some large booths hand out time slots or fast-lane wristbands in the morning via their own apps — check exhibitors' socials the week before.",
       "A few booths take free bookings online before the show: MOZA Racing's six sim rigs in Hall 10.1 are the clearest example. Booking costs nothing and is the difference between sitting down and watching, so check the websites of any hands-on booth you care about.",
-      "Take the train/tram to Koeln Messe/Deutz — day tickets include free VRS public transport; don't drive.",
+      "Take public transport — day tickets include free VRS travel in the Cologne region and parking at the grounds is not worth the attempt. Check your line before you set off, though: Cologne's Rhine bridge works run straight through show week.",
+      "Stadtbahn lines 1, 7 and 9 do not cross the Rhine until early September: 1 and 9 terminate at Heumarkt, 7 at Neumarkt, with replacement buses from Neumarkt to Koelnmesse taking 10–20 minutes. Lines 3 and 4 still run to the East entrance and are the dependable way in.",
+      "On the rail side, RE 1, RE 5, S 1 and S 6 are cut back between Düsseldorf and Köln-Mülheim from Aug 21, and some trains skip Köln Hauptbahnhof and Köln Messe/Deutz entirely. Check your connection the morning you travel; coming from Düsseldorf, RE 6 is the recommended way round.",
       "Evening tickets (from 16:00, €10.50) are a cheap second visit and queues shrink in the last 2–3 hours — on sale for Thursday, Friday and Sunday; Saturday's have gone.",
       "Do gamescom epix quests — completing all chapters can earn a free Sunday ticket."
     ],
@@ -399,9 +401,9 @@
       }
     },
     "ubisoft": {
-      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 and The Division 2.",
+      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo — 20 minutes at one of 15 two-player couch co-op stations — plus the returning Community Lounge, running all five days around Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 and The Division 2.",
       "crowdNote": "One playable title plus a lounge format — moderate queues, no giant new AAA hands-on this year.",
-      "visitAdvice": "Rayman queues are manageable before noon on weekdays. Community Lounge sessions are schedule-based — check Ubisoft's channels for timings.",
+      "visitAdvice": "Rayman queues are manageable before noon on weekdays. The lounge splits its programme: some slots are meet-and-greets and dev sessions you have to be there for, the rest are streamed and lose nothing if you watch later. Each day's schedule goes up on screens at the stand. Ubisoft's own summary says the lounge opens Thursday, but its published schedule lists in-person sessions on trade Wednesday too.",
       "games": {
         "Rayman Legends Retold": "Demo: opening level, a new dragon-ride sequence and a classic musical level.",
         "Assassin's Creed Black Flag Resynced": "Community Lounge showcase of the Black Flag remake.",
@@ -877,11 +879,13 @@
       "visitAdvice": "Skip it unless you're job-hunting or studying. It is, however, a genuinely calm place to sit down mid-day, and the accessibility and youth-work stands are worth a look."
     },
     "lego": {
-      "description": "Multi-stand block in Hall 9.1 next to Nintendo, confirmed returning for 2026. The lineup is unannounced — the 2025 booth featured Batman, One Piece and Super Mario zones, so expect current LEGO video games plus set photo ops.",
+      "description": "Multi-stand block in Hall 9.1 next to Nintendo. The headline is LEGO Batman: Legacy of the Dark Knight, whose Mayhem Collection DLC gets its first public showing here ahead of a September 18 release, alongside a LEGO Fortnite section built around a life-size recreation of the Rave Cave set.",
       "crowdNote": "Family magnet in the same hall as Nintendo — photo-op and demo lines get long on the weekend.",
-      "visitAdvice": "Weekday mornings; weekends are dominated by families.",
+      "visitAdvice": "Weekday mornings; weekends are dominated by families. LEGO has not said whether the Batman DLC is hands-on or shown on screens, so treat a demo station as a bonus rather than the reason to queue.",
       "games": {
-        "LEGO video game lineup (TBC)": "LEGO historically reveals new games at gamescom/ONL; 2026 titles unannounced."
+        "LEGO Batman: Legacy of the Dark Knight": "First public look at the Mayhem Collection DLC before its September 18 release. A trailer also airs on IGN's gamescom stream on Wednesday; whether the booth has it playable is unannounced.",
+        "LEGO Fortnite": "A themed booth section rather than an announced demo — the draw is a life-size build of the Rave Cave set.",
+        "LEGO Skylines": "Rated in South Korea earlier this year and widely expected as a Paradox collaboration, but neither LEGO nor Paradox has announced it."
       }
     },
     "wizards-of-the-coast": {
