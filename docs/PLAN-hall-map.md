@@ -746,7 +746,12 @@ pan would be theatre. None of these change the architecture.
     plain text. The plate keeps the label the data filed, so the
     accessible name carries both — "Halls 5–10 — open Hall 5.1 on the
     hall map" — rather than letting the number you tapped and the hall
-    you land in disagree silently.
+    you land in disagree silently. The section heading above the list
+    carries the one link that is about no single hall: a "Map →" chip to
+    `map.html#overview`, the same campus view a day heading in the plan
+    opens. The plates are gated on the snapshot and it is not — the
+    overview is drawn from `campus.json`, so it has a site to show
+    whichever halls have been cached.
 4b. **The day hand-off**: `mapLink()` takes an optional day, and the plan
     board's hall lens passes its active day filter into both the hall
     header's "Map →" and each stop's booth number. So a plan filtered to
@@ -755,7 +760,12 @@ pan would be theatre. None of these change the architecture.
     to have an opinion about.
 5. **Cross-links out**: the sheet links to `./#exhibitors?ex=<id>`, and
    `focusExhibitor()` in `js/app.js` scrolls that card into view and
-   flashes it, clearing any filter that would otherwise hide it.
+   flashes it, clearing any filter that would otherwise hide it. The sheet
+   also carries the guide's corrections channel to where errors are
+   noticed: a "report a missing or wrong exhibitor" mailto to the footer's
+   feedback address, prefilled per stand with the hall, booth number, what
+   the sheet currently claims and the `#hall/stand` link, so a report from
+   the show floor names its booth without the reporter typing any of it.
 6. **UPDATING.md** has a "Refreshing the hall plans" section: when to
    re-run the tool, how to read the join report, and the rule that booth
    numbers stay editorial — never hand-edit `data/hallplan/`. The booth
@@ -882,8 +892,9 @@ Serve the repo root; clear `gc2026.saved.v1`.
     are still not links. In Event info, the areas list opens the map at
     the near end of a span — "5–10" at 5.1, "2–4" at 2.1 with the trade
     banner up if the exhibitors are off — an exact hall at itself, and
-    1 / 11.1 / "—" not at all. The `.ics` export still contains no
-    markup.
+    1 / 11.1 / "—" not at all, and the heading above that list opens
+    the overview with no hall cached at all. The `.ics` export still
+    contains no markup.
 12. **Offline** — airplane mode, reopen installed app → map, switch to a
     never-opened hall: renders from precache. Navigating straight to
     `map.html` offline serves the map, not the guide.

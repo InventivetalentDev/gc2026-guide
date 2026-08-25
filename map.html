@@ -196,6 +196,14 @@
       <button class="chip" id="sheet-here" type="button" hidden></button>
       <a class="reset" id="sheet-link" href="./" data-i18n="map.openInGuide">open in guide →</a>
     </div>
+    <!-- Corrections, offered where errors are actually noticed: standing in
+         front of the booth the sheet is wrong about. selectStand (js/map.js)
+         prefills subject and body with the stand, what the sheet claims, and
+         the map link, so the report arrives naming the booth without the
+         reporter typing any of it. The static href is the footer's plain
+         feedback address — a cached shell riding an older script still sends
+         mail to the right inbox, just unfilled. -->
+    <p class="map-sheet-report"><a class="subtle-link" id="sheet-report" href="mailto:content@hallgui.de?subject=gamescom%20guide%20feedback" data-i18n="map.reportLink">report a missing or wrong exhibitor</a></p>
   </div>
 </section>
 

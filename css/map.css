@@ -532,6 +532,10 @@
 .map-sheet-actions .chip[data-on="true"] {
   background: var(--signal); border-color: var(--signal); color: var(--signal-ink);
 }
+/* The corrections mail, one register below the actions it follows: used a
+   handful of times a show, so it dresses as the footer's feedback link
+   (.subtle-link, css/style.css) rather than competing with the save chip. */
+.map-sheet-report { margin-top: 10px; font-size: .74rem; }
 
 /* --- credit line ---
    Three groups that wrap to three or four rows on a phone, and every row of

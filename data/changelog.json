@@ -1,5 +1,42 @@
 [
   {
+    "date": "2026-08-25",
+    "revision": 50,
+    "changes": [
+      { "kind": "content", "text": "New card: Indie Castle, a community booth built as an actual four-metre castle in Hall 10.2 (E020/D021) — 52 games on pods around the walls and in the courtyard, from about forty small studios. Daedalic and Razer sit inside it." },
+      { "kind": "content", "text": "Shueisha Games has a lineup: ten titles on its Hall 10.2 booth page, headed by JUJUTSU KAISEN RUMBLE: SURVIVATON and a KochiKame spin-off. None is announced as hands-on." },
+      { "kind": "content", "text": "Metanet Software's Hall 10.2 stand has a game — N PLUS INFINITY TIMES TWO, the follow-up to N++." },
+      { "kind": "content", "text": "Tencent — Worlds of Play adds five titles from its own booth page: Honor of Kings: World, Honor of Kings: ACE, Rust Mobile, Roco Kingdom and Animula Nook." },
+      { "kind": "content", "text": "Mattel adds Barbie Rewind and Frozen District adds Dreampainters — both appeared on the exhibitors' own booth pages, and neither is announced as playable." },
+      { "kind": "content", "text": "Twenty-four more cards link straight to the exhibitor's own gamescom page, among them Nintendo, Mattel, Daedalic, Retro Games, Ravensburger, Bushiroad, Fangamer and most of the Hall 10.1 hardware row." }
+    ]
+  },
+  {
+    "date": "2026-08-24",
+    "revision": 49,
+    "changes": [
+      { "kind": "content", "text": "Focus Entertainment's Hall 6.1 stand has a lineup: Road Kings and BioEden join Resonance: A Plague Tale Legacy. Focus presents all three itself but says nothing about hands-on, so only Resonance is confirmed playable — and that is at the Xbox booth." },
+      { "kind": "content", "text": "Bilibili's lineup is no longer blank: Escape From Duckov, the duck extraction shooter, is the one game on its Hall 10.1 stand. Snail Games' unannounced AAA slot also has a name now — 9 Yin Sutra: Immortal." },
+      { "kind": "content", "text": "Four more booths gained lineups from their own gamescom pages: MicroProse brings 17 simulation and strategy titles to Hall 10.1, Secret Mode has STAR WARS: Galactic Racer, XelerateVR has Weeny Wise, and GIANTS Software adds Project Motor Racing." },
+      { "kind": "content", "text": "Bloober Team adds Cronos: Lazarus and SAW: Genesis; Frozen District adds Farmbotic and Forgery Craft. None of these are announced as playable — they are what each studio lists for its own stand." },
+      { "kind": "content", "text": "New card: a Korean games showcase in Hall 10.2 (F001) — ten Korean studios on one stand by the hall entrance. KOCCA was reported to have dropped its consumer pavilion this year; it did not." },
+      { "kind": "content", "text": "Fixed: Webedia's FYNG City covers all three of its Hall 7.1 stands. The B041/C040 half of it, where AMD sits, used to read as not covered by the guide." },
+      { "kind": "content", "text": "Fixed: the Korea Pavilion's business stand is filed the way the directory files its 13 studios, so their entries now name the pavilion they stand on. Its German access line said Hall 2.2 instead of 3.2." },
+      { "kind": "content", "text": "The Indie Arena Booth spans three stand blocks in Hall 10.2, not one — the other two now light up on the map as well." },
+      { "kind": "content", "text": "Dropped the gamescom profile link from Google Play, 4Divinity, Thermaltake and 8BitDo: gamescom has switched those four profiles off." }
+    ]
+  },
+  {
+    "date": "2026-08-24",
+    "revision": 48,
+    "changes": [
+      { "kind": "content", "text": "Ananta is now on NetEase Games' card: fresh gameplay in an Opening Night Live segment on Aug 25, but it is not in the Hall 7.1 booth lineup and no hands-on is announced anywhere at the show." },
+      { "kind": "content", "text": "Warlock: Dungeons & Dragons and Exodus get a card: both premiere at Opening Night Live on Aug 25, and Invoke and Archetype only hold a trade stand on Hasbro's shared Hall 2.2 booth — nothing on the public floor." },
+      { "kind": "content", "text": "Game of Thrones: War for Westeros is covered too — its full gameplay reveal is an Opening Night Live segment on Aug 25, and PlaySide Studios exhibits only in business Hall 3.2." },
+      { "kind": "content", "text": "Hasbro's business stand is on the map: Hasbro, Wizards of the Coast, Invoke and Archetype share one 196 m² compound in Hall 2.2 (A014/B015), by appointment and trade badges only." }
+    ]
+  },
+  {
     "date": "2026-08-24",
     "revision": 47,
     "changes": [
