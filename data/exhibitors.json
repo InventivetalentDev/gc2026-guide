@@ -9,24 +9,24 @@
     "officialUrl": "https://www.gamescom.global/en/exhibitor/xbox",
     "games": [
       { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "confirmed", "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"] },
-      { "title": "Gears of War: E-Day", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"] },
+      { "title": "Gears of War: E-Day", "status": "confirmed", "playable": true, "onl": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"] },
       { "title": "Fable", "status": "confirmed", "playable": false, "platforms": ["Xbox Series X|S", "PC"] },
       { "title": "Minecraft Dungeons II", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC", "Switch 2", "PS5"] },
-      { "title": "METRO 2039", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"] },
+      { "title": "METRO 2039", "status": "confirmed", "playable": true, "onl": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC"] },
       { "title": "Stranger Than Heaven", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"] },
       { "title": "Halo: Campaign Evolved", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
       { "title": "Forza Horizon 6", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"] },
       { "title": "Microsoft Flight Simulator 2024", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"] },
       { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
       { "title": "Alien Deathstorm", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
-      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "onl": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC", "PS5"] },
       { "title": "STAR WARS Zero Company", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
-      { "title": "Turok: Origins", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "Turok: Origins", "status": "confirmed", "playable": true, "onl": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
       { "title": "Castlevania: Belmont's Curse", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
-      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
-      { "title": "Valor Mortis", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "onl": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
+      { "title": "Valor Mortis", "status": "confirmed", "playable": true, "onl": true, "platforms": ["Xbox Series X|S", "PC", "PS5"] },
       { "title": "Crowsworn", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
-      { "title": "Genigods: Nezha", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
+      { "title": "Genigods: Nezha", "status": "confirmed", "playable": true, "onl": true, "platforms": ["Xbox", "PC"] },
       { "title": "Terrible Lizards", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
       { "title": "Armatus", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
       { "title": "Bad Magpie", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC"] },
@@ -43,9 +43,10 @@
       "https://insider-gaming.com/xbox-confirms-gamescom-2026-presence-and-playable-game-lineup/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
       "https://www.drwindows.de/news/die-gamescom-2025-mein-persoenlicher-rueckblick",
-      "https://businessmirror.com.ph/2026/08/15/xbox-to-feature-25-upcoming-games-at-gamescom-2026/"
+      "https://businessmirror.com.ph/2026/08/15/xbox-to-feature-25-upcoming-games-at-gamescom-2026/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-17"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "nintendo",
@@ -133,17 +134,18 @@
     "officialUrl": "https://www.gamescom.global/en/exhibitor/capcom-entertainment-germany-gmbh",
     "games": [
       { "title": "Dragon's Dogma 2: Dark Arisen", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "Mega Man: Dual Override", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"] },
-      { "title": "Onimusha: Way of the Sword", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Mega Man: Dual Override", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC", "Consoles TBC"] },
+      { "title": "Onimusha: Way of the Sword", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Street Fighter 6", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "PS4", "Xbox Series X|S", "Switch 2"] }
     ],
     "tags": ["AAA", "RPG", "action", "world premiere", "playable demos"],
     "crowd": 5,
     "sources": [
       "https://www.gematsu.com/2026/06/capcom-announces-gamescom-2026-lineup-including-playable-dragons-dogma-ii-dark-arisen-and-mega-man-dual-override",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "sega-atlus",
@@ -157,7 +159,7 @@
       { "title": "Alien: Isolation 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Persona 4 Revival", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Stranger Than Heaven", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "Crazy Taxi: World Tour", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"] },
+      { "title": "Crazy Taxi: World Tour", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC", "Consoles TBC"] },
       { "title": "Total War: Warhammer 40,000", "status": "confirmed", "playable": true, "platforms": ["PC"] },
       { "title": "Sonic Racing: CrossWorlds", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Switch 2"] },
       { "title": "Sonic Pico Park", "status": "confirmed", "playable": true, "platforms": ["TBC"] },
@@ -169,9 +171,10 @@
     "sources": [
       "https://sega.prezly.com/sega-announces-huge-gamescom-2026-line-up",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-14"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "bandai-namco",
@@ -184,7 +187,7 @@
     "games": [
       { "title": "Ace Combat 8: Wings of Theve", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Dragon Ball Xenoverse 3", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "The Blood of Dawnwalker", "status": "confirmed", "playable": true, "onl": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AAA", "RPG", "anime", "world premiere", "playable demos"],
     "crowd": 4,
@@ -193,9 +196,10 @@
       "https://en.bandainamcoent.eu/dawnwalker/the-blood-of-dawnwalker",
       "https://www.gamescom.global/en/info/gamescom-cares",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
-      "https://x.com/BandaiNamcoEU/status/1955615446180184138"
+      "https://x.com/BandaiNamcoEU/status/1955615446180184138",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-23"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "konami",
@@ -210,7 +214,7 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/konami-digital-entertainment-bv",
     "games": [
-      { "title": "Silent Hill: Townfall", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Silent Hill: Townfall", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Castlevania: Belmont's Curse", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"] },
       { "title": "Metal Gear Solid: Master Collection Vol. 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Yu-Gi-Oh! Trading Card Game", "status": "confirmed", "playable": true, "platforms": ["TCG", "Digital"] }
@@ -219,9 +223,10 @@
     "crowd": 4,
     "sources": [
       "https://www.konami.com/games/eu/en/topics/19215/",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-24"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "ubisoft",
@@ -232,12 +237,14 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/ubisoft-gmbh",
     "games": [
-      { "title": "Rayman Legends Retold", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles TBC"] },
+      { "title": "Rayman Legends Retold", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC", "Consoles TBC"] },
       { "title": "Assassin's Creed Black Flag Resynced", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Assassin's Creed Shadows", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Anno 117: Pax Romana", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Rainbow Six Siege", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "The Division 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "The Division 2", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Rainbow Six Tactics", "status": "expected", "playable": null, "onl": true, "platforms": ["TBA"] },
+      { "title": "Heroes of Might and Magic III Remake", "status": "expected", "playable": null, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AAA", "platformer", "community", "playable demos"],
     "crowd": 3,
@@ -245,7 +252,9 @@
       "https://news.ubisoft.com/en-us/article/6c99kNuqSEWK74Ltt0FJND/ubisoft-at-gamescom-2026-rayman-legends-retold-community-lounge-returns",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
-      "https://news.ubisoft.com/en-us/article/1bJOlV0elnCLWK0qZSqg3N/ubisoft-gamescom-lineup-tune-in-for-rainbow-six-siege-the-division-anno-morbid-metal-and-more"
+      "https://news.ubisoft.com/en-us/article/1bJOlV0elnCLWK0qZSqg3N/ubisoft-gamescom-lineup-tune-in-for-rainbow-six-siege-the-division-anno-morbid-metal-and-more",
+      "https://noisypixel.net/heroes-of-might-and-magic-3-remake-2027/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
     "lastUpdated": "2026-08-25"
   },
@@ -285,7 +294,7 @@
       { "title": "Final Fantasy VII Remake", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Switch 2", "Xbox"] },
       { "title": "Final Fantasy XIV", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox"] },
       { "title": "Final Fantasy X/X-2 HD Remaster", "status": "confirmed", "playable": true, "platforms": ["Multi"] },
-      { "title": "Final Fantasy VII Revelation", "status": "confirmed", "playable": false, "platforms": ["TBA"] }
+      { "title": "Final Fantasy VII Revelation", "status": "confirmed", "playable": false, "onl": true, "platforms": ["TBA"] }
     ],
     "tags": ["AAA", "RPG", "merch", "photo ops"],
     "crowd": 3,
@@ -293,9 +302,10 @@
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
       "https://nintendowire.com/news/2026/08/10/square-enix-is-bringing-final-fantasy-vii-revelation-to-gamescom-opening-night-live-for-a-new-look/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-14"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "cdpr",
@@ -306,16 +316,17 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/cd-projekt-red",
     "games": [
-      { "title": "The Witcher 3: Songs of the Past", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "The Witcher 3: Songs of the Past", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AAA", "RPG", "world premiere", "theater"],
     "crowd": 4,
     "sources": [
       "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
-      "https://www.gamescom.global/en/exhibitor/cd-projekt-red"
+      "https://www.gamescom.global/en/exhibitor/cd-projekt-red",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-23"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "gryphline",
@@ -370,15 +381,16 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/plaion-gmbh",
     "games": [
-      { "title": "METRO 2039", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "METRO 2039", "status": "confirmed", "playable": true, "onl": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AAA", "shooter", "18+"],
     "crowd": 3,
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-14"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "krafton",
@@ -389,11 +401,11 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/krafton",
     "games": [
-      { "title": "Untitled PUBG STUDIOS project", "status": "confirmed", "playable": null, "platforms": ["TBA"] },
-      { "title": "NO LAW", "status": "confirmed", "playable": true, "platforms": ["PC"] },
-      { "title": "Project ZETA", "status": "confirmed", "playable": null, "platforms": ["TBA"] },
-      { "title": "Age Twisters", "status": "confirmed", "playable": null, "platforms": ["TBA"] },
-      { "title": "TARAE: The Unbound", "status": "confirmed", "playable": null, "platforms": ["TBA"] }
+      { "title": "PUBG: DED.NET", "status": "confirmed", "playable": null, "onl": true, "platforms": ["TBA"] },
+      { "title": "NO LAW", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC"] },
+      { "title": "Project ZETA", "status": "confirmed", "playable": null, "onl": true, "platforms": ["TBA"] },
+      { "title": "Age Twisters", "status": "confirmed", "playable": null, "onl": true, "platforms": ["TBA"] },
+      { "title": "TARAE: The Unbound", "status": "confirmed", "playable": null, "onl": true, "platforms": ["TBA"] }
     ],
     "tags": ["shooter", "world premiere", "merch missions"],
     "crowd": 4,
@@ -401,9 +413,11 @@
       "https://www.invenglobal.com/articles/24454/krafton-unveils-5-titles-for-gamescom-2026",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
       "https://www.nat-games.de/2026/08/11/gamescom-2026-alle-games-aussteller-in-der-uebersicht/",
-      "https://exhibitors.gamescom.global/exhibitor/krafton/"
+      "https://exhibitors.gamescom.global/exhibitor/krafton/",
+      "https://www.shacknews.com/article/150477/pubg-ded-net-new-multiplayer-game-from-krafton",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "embark",
@@ -440,16 +454,18 @@
       { "title": "Construction Simulator Evolution", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
       { "title": "Firefighting Simulator: Ignite", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
       { "title": "Seafarer: The Ship Sim", "status": "confirmed", "playable": true, "platforms": ["PC"] },
-      { "title": "Worms W.M.D.", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] }
+      { "title": "Worms W.M.D.", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Worms: Galactic Tactics", "status": "expected", "playable": null, "onl": true, "platforms": ["TBA"] }
     ],
     "tags": ["indie", "simulation", "playable demos"],
     "crowd": 2,
     "sources": [
       "https://www.astragon.com/news/detail/astragon-and-team17-return-to-gamescom-2026-with-beloved-brands-and-exciting-newcomers",
       "https://exhibitors.gamescom.global/exhibitor/team17_digital_ltd/",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "giants-software",
@@ -483,10 +499,10 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/focus-entertainment-publishing-sas",
     "games": [
-      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Edge of Memories", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Warhammer 40,000: Space Marine 3", "status": "rumored", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "Road Kings", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Road Kings", "status": "expected", "playable": null, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "BioEden", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] }
     ],
     "tags": ["AA", "adventure", "simulation"],
@@ -497,9 +513,10 @@
       "https://www.nat-games.de/2026/08/11/gamescom-2026-alle-games-aussteller-in-der-uebersicht/",
       "https://gamesfinest.de/gamescom/gamescom-2026-welche-spiele-sind-vor-ort-und-wo-findest-du-sie/",
       "https://exhibitors.gamescom.global/exhibitor/focus_entertainment/",
-      "https://www.gamescom.global/en/exhibitor/focus-entertainment-publishing-sas"
+      "https://www.gamescom.global/en/exhibitor/focus-entertainment-publishing-sas",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-24"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "hoyoverse",
@@ -514,16 +531,19 @@
       { "title": "Honkai: Star Rail", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"] },
       { "title": "Zenless Zone Zero", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox", "Mobile"] },
       { "title": "Honkai: Nexus Anima", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"] },
-      { "title": "Petit Planet", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"] }
+      { "title": "Petit Planet", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC", "Mobile"] },
+      { "title": "Nodus Fall", "status": "expected", "playable": null, "onl": true, "platforms": ["TBA"] }
     ],
     "tags": ["gacha", "anime", "merch", "photo ops", "world premiere"],
     "crowd": 5,
     "sources": [
       "https://www.hoyoverse.com/en-us/news/165264",
       "https://finalweapon.net/2026/07/17/hoyoverse-gamescom-2026-lineup-honkai-nexus-anima-petit-planet/",
-      "https://exhibitors.gamescom.global/exhibitor/hoyoverse/"
+      "https://exhibitors.gamescom.global/exhibitor/hoyoverse/",
+      "https://www.videogameschronicle.com/news/genshin-impact-creator-hoyoverse-announces-realistic-new-monster-hunter-like-game-nodus-fall/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "level-infinite",
@@ -534,7 +554,7 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/level-infinite",
     "games": [
-      { "title": "CONTROL Resonant", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S", "PC"] },
+      { "title": "CONTROL Resonant", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PS5", "Xbox Series X|S", "PC"] },
       { "title": "Dune: Awakening (console)", "status": "confirmed", "playable": true, "platforms": ["PS5", "Xbox Series X|S"] },
       { "title": "Hunt: Showdown 1896", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
@@ -543,9 +563,10 @@
     "sources": [
       "https://www.levelinfinite.com/news/level-infinite-gamescom-2026-lineup/",
       "https://usk.de/en/usktitle/55381/",
-      "https://www.gamescom.global/en/info/gamescom-cares"
+      "https://www.gamescom.global/en/info/gamescom-cares",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-10"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "tencent-worlds-of-play",
@@ -562,7 +583,7 @@
       { "title": "Honor of Kings: World", "status": "expected", "playable": null, "platforms": ["PC", "Mobile"] },
       { "title": "Honor of Kings: ACE", "status": "expected", "playable": null, "platforms": [] },
       { "title": "Rust Mobile", "status": "expected", "playable": null, "platforms": ["Mobile"] },
-      { "title": "Roco Kingdom", "status": "expected", "playable": null, "platforms": ["Mobile"] },
+      { "title": "Roco Kingdom", "status": "expected", "playable": null, "onl": true, "platforms": ["Mobile"] },
       { "title": "Animula Nook", "status": "expected", "playable": null, "platforms": [] }
     ],
     "tags": ["art", "exhibition", "offsite", "mobile"],
@@ -571,7 +592,8 @@
       "https://www.gameshub.com/news/news/tencent-worlds-of-play-game-art-exhibition-gamescom-2026-2887179/",
       "https://exhibitors.gamescom.global/exhibitor/tencent_games/",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
-      "https://www.gamescom.global/en/exhibitor/tencentgames"
+      "https://www.gamescom.global/en/exhibitor/tencentgames",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
     "lastUpdated": "2026-08-25"
   },
@@ -586,9 +608,9 @@
     "games": [
       { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"] },
-      { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles"] },
+      { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "onl": true, "platforms": ["PC", "Consoles"] },
       { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "platforms": ["PC", "Consoles"] },
-      { "title": "Ananta", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Mobile"] }
+      { "title": "Ananta", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Mobile"] }
     ],
     "tags": ["live-service", "shooter", "RPG"],
     "crowd": 4,
@@ -599,9 +621,10 @@
       "https://exhibitors.gamescom.global/exhibitor/netease_interactive/",
       "https://exhibitors.gamescom.global/exhibitor/uk_netease_interacti/",
       "https://www.siliconera.com/ananta-will-finally-show-up-again-at-gamescom-2026/",
-      "https://gamingbolt.com/ananta-will-be-showcased-at-gamescom-opening-night-live-2026"
+      "https://gamingbolt.com/ananta-will-be-showcased-at-gamescom-opening-night-live-2026",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-24"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "pearl-abyss",
@@ -612,15 +635,16 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/pearl-abyss-corp",
     "games": [
-      { "title": "Crimson Desert", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "Crimson Desert", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["action", "RPG", "tech showcase"],
     "crowd": 4,
     "sources": [
       "https://www.invenglobal.com/articles/23511/pearl-abyss-to-showcase-crimson-desert-at-gamescom-in-partnership-with-samsung-electronics",
-      "https://exhibitors.gamescom.global/exhibitor/pearl_abyss/"
+      "https://exhibitors.gamescom.global/exhibitor/pearl_abyss/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "infold",
@@ -680,7 +704,7 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/grinding-gear-games-ltd",
     "games": [
-      { "title": "Path of Exile 2", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "Path of Exile 2", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["ARPG", "PC", "merch"],
     "crowd": 4,
@@ -688,9 +712,10 @@
       "https://www.pathofexile.com/forum/view-thread/3980614",
       "https://www.nat-games.de/2026/08/11/gamescom-2026-alle-games-aussteller-in-der-uebersicht/",
       "https://gamesfinest.de/gamescom/gamescom-2026-welche-spiele-sind-vor-ort-und-wo-findest-du-sie/",
-      "https://www.xboxdynasty.de/news/path-of-exile-2/gamescom-2026-bringt-neue-enthuellung-und-hands-on-erlebnis/"
+      "https://www.xboxdynasty.de/news/path-of-exile-2/gamescom-2026-bringt-neue-enthuellung-und-hands-on-erlebnis/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "eclipse-glow",
@@ -701,7 +726,7 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/eclipse-glow-games",
     "games": [
-      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["action", "single-player"],
     "crowd": 3,
@@ -710,7 +735,8 @@
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
       "https://worthplaying.com/article/2026/7/15/news/150452",
       "https://exhibitors.gamescom.global/exhibitor/eclipse_glow_games/",
-      "https://www.gamescom.global/en/exhibitor/eclipse-glow-games"
+      "https://www.gamescom.global/en/exhibitor/eclipse-glow-games",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
     "lastUpdated": "2026-08-25"
   },
@@ -726,11 +752,11 @@
     ],
     "locationConfirmed": true,
     "games": [
-      { "title": "The Defiant", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "Showa American Story", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "The Defiant", "status": "confirmed", "playable": null, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Showa American Story", "status": "confirmed", "playable": null, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Guns of Eschaton", "status": "confirmed", "playable": null, "platforms": ["PC"] },
       { "title": "A Whisper of Fall: Jinyiwei", "status": "confirmed", "playable": null, "platforms": ["PC"] },
-      { "title": "Genigods: Nezha", "status": "confirmed", "playable": null, "platforms": ["PC", "Xbox"] },
+      { "title": "Genigods: Nezha", "status": "confirmed", "playable": null, "onl": true, "platforms": ["PC", "Xbox"] },
       { "title": "Sword Sage: Awakening", "status": "confirmed", "playable": null, "platforms": ["PC"] }
     ],
     "tags": ["publisher", "action-RPG", "shooter", "discovery"],
@@ -740,9 +766,10 @@
       "https://www.gamespress.com/en-GB/4Divinity-Powers-Into-Western-Market-With-Six-Title-Showcase-at-gamesc",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
-      "https://exhibitors.gamescom.global/en/exhibitor/4divinity_uk_ltd/"
+      "https://exhibitors.gamescom.global/en/exhibitor/4divinity_uk_ltd/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-24"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "secret-mode",
@@ -773,15 +800,16 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/pawprint-interactive-entertainment",
     "games": [
-      { "title": "Aniimo", "status": "confirmed", "playable": null, "platforms": ["PC", "Consoles", "Mobile"] }
+      { "title": "Aniimo", "status": "confirmed", "playable": null, "onl": true, "platforms": ["PC", "Consoles", "Mobile"] }
     ],
     "tags": ["action-RPG", "anime", "mobile"],
     "crowd": 3,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/pawprint_interactive/",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-hersteller-wer-ist-wo-070826/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-hersteller-wer-ist-wo-070826/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "elementa-games",
@@ -792,15 +820,16 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/elementa-games-pte-ltd",
     "games": [
-      { "title": "Silver Palace", "status": "confirmed", "playable": null, "platforms": ["PC"] }
+      { "title": "Silver Palace", "status": "confirmed", "playable": null, "onl": true, "platforms": ["PC"] }
     ],
     "tags": ["action-RPG", "adventure", "discovery"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/elementa_games_pteefly-amz/",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "huawei-appgallery",
@@ -1147,15 +1176,17 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/behaviour-interactive",
     "games": [
-      { "title": "Dead by Daylight", "status": "expected", "playable": null, "platforms": ["PC", "Consoles", "Mobile"] }
+      { "title": "Dead by Daylight", "status": "expected", "playable": null, "platforms": ["PC", "Consoles", "Mobile"] },
+      { "title": "Exterminauts", "status": "expected", "playable": null, "onl": true, "platforms": ["TBA"] }
     ],
     "tags": ["horror", "multiplayer", "community"],
     "crowd": 3,
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/behaviour/",
-      "https://mobilesyrup.com/2026/06/14/montreal-behaviour-interactive-dead-by-daylight-10-year-anniversary-big-game-updates/"
+      "https://mobilesyrup.com/2026/06/14/montreal-behaviour-interactive-dead-by-daylight-10-year-anniversary-big-game-updates/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "scs-software",
@@ -1226,16 +1257,17 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/kepler-interactive",
     "games": [
-      { "title": "ONTOS", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "ONTOS", "status": "confirmed", "playable": null, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["AA", "narrative", "sci-fi"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/kepler_interactive/",
       "https://www.gamescom.global/en/exhibitor/kepler-interactive",
-      "https://www.gematsu.com/2025/12/kepler-interactive-and-frictional-games-announce-sci-fi-mystery-thriller-ontos-for-ps5-xbox-series-and-pc"
+      "https://www.gematsu.com/2025/12/kepler-interactive-and-frictional-games-announce-sci-fi-mystery-thriller-ontos-for-ps5-xbox-series-and-pc",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "atari",
@@ -1245,14 +1277,17 @@
     "booth": "B041",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/atari",
-    "games": [],
+    "games": [
+      { "title": "RollerCoaster Tycoon: Wonderworks", "status": "expected", "playable": null, "onl": true, "platforms": ["PC"] }
+    ],
     "tags": ["retro", "hardware", "merch"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/atari/",
-      "https://www.gamescom.global/en/exhibitor/atari"
+      "https://www.gamescom.global/en/exhibitor/atari",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "moza-racing",
@@ -1425,14 +1460,15 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/redoctane-games",
     "games": [
-      { "title": "Stage Tour", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] }
+      { "title": "Stage Tour", "status": "expected", "playable": null, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] }
     ],
     "tags": ["rhythm", "peripherals", "retro"],
     "crowd": 3,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/_stagetour/",
       "https://www.engadget.com/gaming/guitar-hero-vets-redoctane-reveal-their-new-music-game-220809719.html",
-      "https://www.gamescom.global/en/exhibitor/redoctane-games"
+      "https://www.gamescom.global/en/exhibitor/redoctane-games",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
     "lastUpdated": "2026-08-25"
   },
@@ -1737,7 +1773,7 @@
     "games": [
       { "title": "LEGO Batman: Legacy of the Dark Knight", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
       { "title": "LEGO Fortnite", "status": "expected", "playable": null, "platforms": ["PC", "Consoles"] },
-      { "title": "LEGO Skylines", "status": "rumored", "playable": null, "platforms": ["PC", "Consoles"] }
+      { "title": "LEGO Skylines", "status": "expected", "playable": null, "onl": true, "platforms": ["PC", "Consoles"] }
     ],
     "tags": ["family-friendly", "photo ops"],
     "crowd": 4,
@@ -1750,7 +1786,8 @@
       "https://www.kitguru.net/tech-news/mustafa-mahmoud/leaked-lego-skylines-could-be-officially-announced-at-gamescom/",
       "https://www.brickfanatics.com/lego-batman-mayhem-collection-dlc-confirmed-for-gamescom",
       "https://bricksfanz.com/first-look-at-lego-batman-game-dlc-at-gamescom/",
-      "https://www.brickfanatics.com/what-to-expect-from-lego-at-gamescom-2026"
+      "https://www.brickfanatics.com/what-to-expect-from-lego-at-gamescom-2026",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
     "lastUpdated": "2026-08-25"
   },
@@ -1961,8 +1998,8 @@
     "booth": null,
     "locationConfirmed": false,
     "games": [
-      { "title": "Warlock: Dungeons & Dragons", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "Exodus", "status": "confirmed", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "Warlock: Dungeons & Dragons", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Exodus", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["not exhibiting", "RPG", "action"],
     "crowd": 1,
@@ -1971,9 +2008,10 @@
       "https://comicbook.com/gaming/news/dnd-finally-confirmed-warlock-video-game-gameplay-trailer-date-and-revealed-iconic-patron/",
       "https://www.exodusgame.com/en-US/news/join-us-at-gamescom-opening-night-live-on-august-25",
       "https://exhibitors.gamescom.global/exhibitor/invoke_studios/",
-      "https://exhibitors.gamescom.global/exhibitor/archetype_entertainmruiba_intelligent_te/"
+      "https://exhibitors.gamescom.global/exhibitor/archetype_entertainmruiba_intelligent_te/",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-24"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "playside",
@@ -1983,16 +2021,18 @@
     "booth": null,
     "locationConfirmed": false,
     "games": [
-      { "title": "Game of Thrones: War for Westeros", "status": "confirmed", "playable": false, "platforms": ["PC"] }
+      { "title": "Game of Thrones: War for Westeros", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC"] }
     ],
     "tags": ["not exhibiting", "strategy"],
     "crowd": 1,
     "sources": [
       "https://www.warforwesteros.com/post/official-gameplay-reveal-teaser",
       "https://wikiofthrones.com/game-of-thrones-war-for-westeros-to-be-showcased-at-gamescom-2026-in-august",
-      "https://exhibitors.gamescom.global/exhibitor/playside/"
+      "https://exhibitors.gamescom.global/exhibitor/playside/",
+      "https://www.invenglobal.com/articles/25120/game-of-thrones-war-for-westeros-unveils-gameplay-trailer",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-24"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "paradox-urban",
@@ -2003,7 +2043,7 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/urban-games-gmbh",
     "games": [
-      { "title": "Transport Fever 3", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "Transport Fever 3", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC"] },
       { "title": "Paradox grand-strategy catalog", "status": "rumored", "playable": null, "platforms": ["PC"] }
     ],
     "tags": ["simulation", "strategy", "PC"],
@@ -2011,7 +2051,8 @@
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
       "https://exhibitors.gamescom.global/exhibitor/urban_games/",
-      "https://www.gamescom.global/en/exhibitor/urban-games-gmbh"
+      "https://www.gamescom.global/en/exhibitor/urban-games-gmbh",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
     "lastUpdated": "2026-08-25"
   },
