@@ -10,6 +10,7 @@ const state = {
   hall: "all",
   age: "all",
   playableOnly: false,
+  onlOnly: false,
   confirmedOnly: false,
   savedOnly: false,
   hidePlayed: false,
@@ -1936,6 +1937,10 @@ function matchesQuery(ex, terms) {
     ...(ex.tags || []),
     ...(ex.tags || []).map(tagLabel),
     ...visibleGames(ex).map((g) => g.title),
+    /* Shorthand and spelled-out name both find the booths running something
+       off gamescom's own stage — reading visibleGames keeps a gated premiere
+       out of it under "hide 18+", like the title itself. */
+    visibleGames(ex).some((g) => g.onl) ? "onl opening night live" : "",
     /* Searching "18+" while hiding 18+ would return exactly the booths whose
        gated titles are currently hidden. */
     hasAdult(ex) && state.age !== "hide" ? "18+" : "",
@@ -1950,6 +1955,7 @@ function filtersActive() {
     state.hall !== "all" ||
     state.age !== "all" ||
     state.playableOnly ||
+    state.onlOnly ||
     state.confirmedOnly ||
     state.savedOnly ||
     state.hidePlayed
@@ -2079,6 +2085,7 @@ function filtered() {
       if ((ex.games || []).length && !visibleGames(ex).length) return false;
     }
     if (state.playableOnly && !visibleGames(ex).some((g) => g.playable)) return false;
+    if (state.onlOnly && !visibleGames(ex).some((g) => g.onl)) return false;
     const face = faceOf(ex);
     if (state.confirmedOnly && !face.locationConfirmed) return false;
     if (state.savedOnly && !savedEitherFace(ex)) return false;
@@ -2705,6 +2712,7 @@ function gameRow(ex, g) {
       <span class="game-title">${esc(g.title)}</span>
       ${statusLabel}
       ${g.playable ? `<span class="badge badge-playable">${esc(t("badge.playable"))}</span>` : ""}
+      ${g.onl ? `<span class="badge badge-onl">${esc(t("badge.onl"))}</span>` : ""}
       ${isAdult(g) ? ageBadge(g.ageStatus) : ""}
     </span>
     ${plat ? `<span class="game-plat">${esc(plat)}</span>` : "<span></span>"}
@@ -2941,6 +2949,7 @@ function renderFilterSummary() {
   if (state.age === "hide") parts.push(t("summary.hideAdult"));
   if (state.age === "only") parts.push(t("summary.onlyAdult"));
   if (state.playableOnly) parts.push(t("summary.playableOnly"));
+  if (state.onlOnly) parts.push(t("summary.onlOnly"));
   if (state.confirmedOnly) parts.push(t("summary.confirmedOnly"));
   if (state.savedOnly) parts.push(t("summary.savedOnly"));
   if (state.hidePlayed) parts.push(t("summary.playedHidden"));
@@ -7206,6 +7215,7 @@ function resetFilters() {
     hall: "all",
     age: "all",
     playableOnly: false,
+    onlOnly: false,
     confirmedOnly: false,
     savedOnly: false,
     hidePlayed: false,
@@ -7213,6 +7223,9 @@ function resetFilters() {
   state.flipped.clear();
   $("#search").value = "";
   $("#playable-only").checked = false;
+  /* Guarded like #goto-plan: absent on a stale cached shell. */
+  const onlOnly = $("#onl-only");
+  if (onlOnly) onlOnly.checked = false;
   $("#confirmed-only").checked = false;
   $("#saved-only").checked = false;
   $("#hide-played").checked = false;
@@ -7659,6 +7672,11 @@ function bindControls() {
   });
   $("#playable-only").addEventListener("change", (e) => {
     state.playableOnly = e.target.checked;
+    renderExhibitors();
+  });
+  /* Optional-chained: absent on a stale cached shell — see renderPlan. */
+  $("#onl-only")?.addEventListener("change", (e) => {
+    state.onlOnly = e.target.checked;
     renderExhibitors();
   });
   $("#confirmed-only").addEventListener("change", (e) => {
