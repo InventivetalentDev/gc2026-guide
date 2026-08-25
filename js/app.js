@@ -1901,16 +1901,71 @@ function haystackFor(scope, record, build) {
   let cache = haystacks.get(scope);
   if (!cache) haystacks.set(scope, (cache = new WeakMap()));
   let hay = cache.get(record);
-  if (hay === undefined) cache.set(record, (hay = build().join(" ").toLowerCase()));
+  if (hay === undefined) {
+    /* `words` stays null until a short term asks for it — see matchesTerms.
+       Most queries are long enough to be answered by the single indexOf this
+       cache already existed to make cheap, and splitting every directory row
+       into a word list for those would hand back what caching the text won. */
+    cache.set(record, (hay = { text: build().join(" ").toLowerCase(), words: null }));
+  }
   return hay;
 }
 
+/* Word boundaries: everything that is not a letter or a digit, minus the two
+   characters that carry meaning inside a word here. Dots keep "6.1" one word
+   rather than a 6 and a 1, and "+" keeps "18+" whole. Unicode-aware, so
+   "Köln" is one word and "Aidshilfe Köln" is still findable by its second. */
+const WORD_BREAK = /[^\p{L}\p{N}.+]+/u;
+const wordsOf = (hay) => hay.words || (hay.words = hay.text.split(WORD_BREAK).filter(Boolean));
+
+/* ---------- how a term matches ----------
+
+   Every term used to be tested with a plain `includes`, which let it land
+   anywhere inside any word. That is what people want from the long words they
+   actually type, and wrong for the short ones: "io interactive" answered with
+   Behaviour Interactive, Aion Interactive and a booth tagged "action",
+   because "io" sits inside behav·io·ur, A·io·n and act·io·n.
+
+   Those hits cost more than a wrong row. The grid had results, so the "N
+   matches in the full directory" hint at the bottom of renderDirectory never
+   fired — and the one real answer, IO Interactive out in the open-air area,
+   sat behind a section that stays collapsed until something points at it. A
+   search that answers with noise reads as a search that has no answer.
+
+   So a short term has to land on a word boundary: it matches a word starting
+   with it, which is also what keeps search working as you type — "nintend"
+   still finds Nintendo, "6" still finds halls 6 and 6.1. Longer terms keep
+   matching inside a word, because by four characters the fragment is
+   deliberate: it is what finds Koelnmesse by "messe", esports by "sports",
+   and any German compound by its tail.
+
+   A term carrying punctuation matches inside a word whatever its length —
+   "a/s" and "co-op" are written across a word boundary, so testing them
+   against single words would never match one. */
+const INFIX_MIN = 4;
+
 /* Query terms, lowercased and split once for a whole pass rather than once
-   per record. */
+   per record — and with the choice above made here too, once per term rather
+   than once per term per record. */
 const queryTerms = (q) => {
   const clean = String(q || "").trim().toLowerCase();
-  return clean ? clean.split(/\s+/) : [];
+  if (!clean) return [];
+  return clean.split(/\s+/).map((text) => ({
+    text,
+    infix: text.length >= INFIX_MIN || WORD_BREAK.test(text),
+  }));
 };
+
+/* Every term has to match, each on its own terms. Note what an infix term
+   does *not* need: a word-boundary match is by definition a substring of the
+   whole text, so `includes` already covers both ways a long term can match,
+   and the word list is never built for it. */
+const matchesTerms = (hay, terms) =>
+  terms.every((term) =>
+    term.infix
+      ? hay.text.includes(term.text)
+      : wordsOf(hay).some((word) => word.startsWith(term.text))
+  );
 
 /* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
    deliberately not a content filter. It hides lineup rows, not prose. An
@@ -1945,7 +2000,7 @@ function matchesQuery(ex, terms) {
        gated titles are currently hidden. */
     hasAdult(ex) && state.age !== "hide" ? "18+" : "",
   ]);
-  return terms.every((term) => hay.includes(term));
+  return matchesTerms(hay, terms);
 }
 
 function filtersActive() {
@@ -3230,7 +3285,7 @@ function directoryMatches() {
       countryLabel(entry.country),
       ...stands.map((s) => `${t("hall.word")} ${s.hall} hall ${s.hall} ${s.booth}`),
     ]);
-    return terms.every((term) => hay.includes(term));
+    return matchesTerms(hay, terms);
   });
 }
 
@@ -3335,12 +3390,42 @@ function directoryRow(entry, byBooth) {
   </li>`;
 }
 
+/* "Nothing matches" is a lie when the answer is sitting two hundred pixels
+   further down — searching a booth we never carded is exactly what this
+   section is for.
+
+   Which means the hint cannot belong to the open section, the way it used to.
+   The Full directory ships collapsed, so a visitor meeting an empty grid for
+   the first time is in the one state where renderDirectory returns early and
+   the file has not even been fetched — and the guide answers "Nothing matches
+   — try clearing filters" about a company that is standing at the show. IO
+   Interactive is out in the open-air area and has a row; searching it said
+   the opposite. So the hint runs with the section shut, and it is what asks
+   for the file: one fetch, on the one keystroke that found nothing, and
+   loadDirectory re-renders this view when it lands.
+
+   Only for a search, though. With no query the grid is empty because of a
+   filter this list does not carry — every row would "match", and pointing at
+   the whole directory answers a question nobody asked. */
+function renderDirectoryHint() {
+  if (!state.query) return;
+  if (!$("#exhibitor-grid")?.classList.contains("hidden")) return;
+  if (!state.directory) {
+    if (!state.directoryError) loadDirectory();
+    return;
+  }
+  const n = directoryMatches().length;
+  if (n) $("#no-results").textContent = t("directory.fallbackHint", { n });
+}
+
 function renderDirectory() {
   const section = $("#directory");
   if (!section) return; // stale cached shell — see the note in renderPlan
   const count = $("#directory-count");
   const note = $("#directory-note");
   const list = $("#directory-list");
+
+  renderDirectoryHint();
 
   if (!state.showDirectory) {
     count.textContent = state.directory
@@ -3402,14 +3487,6 @@ function renderDirectory() {
       directoryRow(e, byBooth)
     );
     listMore(list, rest);
-  }
-
-  /* "Nothing matches" is a lie when the answer is sitting two hundred pixels
-     further down — searching a booth we never carded is exactly what this
-     section is for. */
-  const gridEmpty = $("#exhibitor-grid").classList.contains("hidden");
-  if (gridEmpty && matches.length) {
-    $("#no-results").textContent = t("directory.fallbackHint", { n: matches.length });
   }
 }
 
@@ -3695,7 +3772,7 @@ function tradeMatches({ category = true } = {}) {
       ...(entry.cats || []).map((id) => groups[id] || ""),
       ...(entry.cats || []).map((id) => groupLabel(id, groups[id])),
     ]);
-    return terms.every((term) => hay.includes(term));
+    return matchesTerms(hay, terms);
   });
 }
 
