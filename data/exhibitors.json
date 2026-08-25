@@ -54,6 +54,7 @@
     "hall": "9.1",
     "booth": "A010/B009, A020/B019, A009, A019",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/nintendo-of-europe-se",
     "games": [
       { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Switch 2"] },
       { "title": "007 First Light", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
@@ -76,9 +77,10 @@
       "https://www.gamescom.global/en/info/gamescom-cares",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
-      "https://x.com/BandaiNamcoEU/status/1955615446180184138"
+      "https://x.com/BandaiNamcoEU/status/1955615446180184138",
+      "https://www.gamescom.global/en/exhibitor/nintendo-of-europe-se"
     ],
-    "lastUpdated": "2026-08-23"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "playstation",
@@ -104,7 +106,6 @@
     "hall": "7.1",
     "booth": "A011/B010",
     "locationConfirmed": true,
-    "officialUrl": "https://www.gamescom.global/en/exhibitor/google-uk-ltd",
     "games": [
       { "title": "Fruit Ninja", "status": "confirmed", "playable": true, "platforms": ["Android"] },
       { "title": "Dave the Diver", "status": "confirmed", "playable": true, "platforms": ["Android"] },
@@ -120,7 +121,7 @@
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
       "https://mobilegamer.biz/apple-and-google-look-set-to-up-their-presence-for-gamescom-2026/"
     ],
-    "lastUpdated": "2026-08-22"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "capcom",
@@ -348,7 +349,7 @@
       { "title": "For The Stars", "status": "confirmed", "playable": null, "platforms": ["PC"] },
       { "title": "Bellwright", "status": "confirmed", "playable": null, "platforms": ["PC"] },
       { "title": "Honeycomb: The World Beyond", "status": "confirmed", "playable": null, "platforms": ["PC"] },
-      { "title": "Unannounced Snail AAA title", "status": "confirmed", "playable": null, "platforms": ["TBA"] }
+      { "title": "9 Yin Sutra: Immortal", "status": "expected", "playable": null, "platforms": ["TBA"] }
     ],
     "tags": ["survival", "MMO", "world premiere"],
     "crowd": 3,
@@ -357,7 +358,7 @@
       "https://investor.snail.com/news-releases/news-release-details/snail-games-attend-gamescom-2026-expanded-product-pipeline-and",
       "https://www.gamescom.global/en/exhibitor/snail-games-usa"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "plaion",
@@ -459,15 +460,18 @@
     "officialUrl": "https://www.gamescom.global/en/exhibitor/giants-software-entertainment-gmbh",
     "games": [
       { "title": "Farming Simulator 26", "status": "expected", "playable": null, "platforms": ["Switch", "Mobile"] },
-      { "title": "Farming Simulator 25: Beans & Alpacas", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "Farming Simulator 25: Beans & Alpacas", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Project Motor Racing", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Farming Simulator: Signature Edition", "status": "expected", "playable": null, "platforms": ["Multi"] }
     ],
-    "tags": ["simulation", "family-friendly"],
+    "tags": ["simulation", "family-friendly", "sim racing"],
     "crowd": 3,
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/giants_software/",
-      "https://www.univers-simu.com/en/news/la-gamescom-2026-affiche-complet-giants-aerosoft-et-lopening-night-live-se-devoilent-124784/"
+      "https://www.univers-simu.com/en/news/la-gamescom-2026-affiche-complet-giants-aerosoft-et-lopening-night-live-se-devoilent-124784/",
+      "https://www.gamescom.global/en/exhibitor/giants-software-entertainment-gmbh"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "focus",
@@ -480,18 +484,21 @@
     "games": [
       { "title": "Resonance: A Plague Tale Legacy", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Edge of Memories", "status": "rumored", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
-      { "title": "Warhammer 40,000: Space Marine 3", "status": "rumored", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "Warhammer 40,000: Space Marine 3", "status": "rumored", "playable": false, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Road Kings", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "BioEden", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] }
     ],
-    "tags": ["AA", "adventure"],
+    "tags": ["AA", "adventure", "simulation"],
     "crowd": 2,
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-ticker-180526/",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
       "https://www.nat-games.de/2026/08/11/gamescom-2026-alle-games-aussteller-in-der-uebersicht/",
       "https://gamesfinest.de/gamescom/gamescom-2026-welche-spiele-sind-vor-ort-und-wo-findest-du-sie/",
-      "https://exhibitors.gamescom.global/exhibitor/focus_entertainment/"
+      "https://exhibitors.gamescom.global/exhibitor/focus_entertainment/",
+      "https://www.gamescom.global/en/exhibitor/focus-entertainment-publishing-sas"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "hoyoverse",
@@ -546,19 +553,26 @@
     "hall": "8.1",
     "booth": "B050/A051",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/tencentgames",
     "games": [
       { "title": "Worlds of Play (40-title art exhibition)", "status": "confirmed", "playable": false, "platforms": [] },
       { "title": "Honor of Kings", "status": "confirmed", "playable": null, "platforms": ["Mobile", "PC"] },
-      { "title": "Arena of Valor", "status": "confirmed", "playable": null, "platforms": ["Mobile"] }
+      { "title": "Arena of Valor", "status": "confirmed", "playable": null, "platforms": ["Mobile"] },
+      { "title": "Honor of Kings: World", "status": "expected", "playable": null, "platforms": ["PC", "Mobile"] },
+      { "title": "Honor of Kings: ACE", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "Rust Mobile", "status": "expected", "playable": null, "platforms": ["Mobile"] },
+      { "title": "Roco Kingdom", "status": "expected", "playable": null, "platforms": ["Mobile"] },
+      { "title": "Animula Nook", "status": "expected", "playable": null, "platforms": [] }
     ],
     "tags": ["art", "exhibition", "offsite", "mobile"],
     "crowd": 3,
     "sources": [
       "https://www.gameshub.com/news/news/tencent-worlds-of-play-game-art-exhibition-gamescom-2026-2887179/",
       "https://exhibitors.gamescom.global/exhibitor/tencent_games/",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
+      "https://www.gamescom.global/en/exhibitor/tencentgames"
     ],
-    "lastUpdated": "2026-08-19"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "netease",
@@ -684,6 +698,7 @@
     "hall": "6.1",
     "booth": "B050",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/eclipse-glow-games",
     "games": [
       { "title": "Tides of Annihilation", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
@@ -693,9 +708,10 @@
       "https://www.invenglobal.com/articles/23789/eclipse-glow-games-to-host-tides-of-annihilation-demo-booth-at-gamescom-2026",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
       "https://worthplaying.com/article/2026/7/15/news/150452",
-      "https://exhibitors.gamescom.global/exhibitor/eclipse_glow_games/"
+      "https://exhibitors.gamescom.global/exhibitor/eclipse_glow_games/",
+      "https://www.gamescom.global/en/exhibitor/eclipse-glow-games"
     ],
-    "lastUpdated": "2026-08-19"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "4divinity",
@@ -708,7 +724,6 @@
       { "hall": "6.1", "booth": "A030" }
     ],
     "locationConfirmed": true,
-    "officialUrl": "https://www.gamescom.global/en/exhibitor/4divinity-uk-ltd",
     "games": [
       { "title": "The Defiant", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Showa American Story", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
@@ -726,7 +741,7 @@
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
       "https://exhibitors.gamescom.global/en/exhibitor/4divinity_uk_ltd/"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "secret-mode",
@@ -736,14 +751,17 @@
     "booth": "B040",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/secret-mode-limited",
-    "games": [],
-    "tags": ["publisher", "indie"],
+    "games": [
+      { "title": "STAR WARS: Galactic Racer", "status": "expected", "playable": null, "platforms": ["PC", "Consoles"] }
+    ],
+    "tags": ["publisher", "indie", "racing"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/secret_mode_limited/",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-hersteller-wer-ist-wo-070826/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-hersteller-wer-ist-wo-070826/",
+      "https://www.gamescom.global/en/exhibitor/secret-mode-limited"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "pawprint-aniimo",
@@ -805,7 +823,7 @@
     "name": "Webedia — FYNG City",
     "type": "media",
     "hall": "7.1",
-    "booth": "B051/C050, C052",
+    "booth": "B051/C050, B041/C040, C052",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/webedia-gmbh",
     "games": [],
@@ -813,9 +831,10 @@
     "crowd": 3,
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
-      "https://exhibitors.gamescom.global/en/exhibitor/webedia/"
+      "https://exhibitors.gamescom.global/en/exhibitor/webedia/",
+      "https://www.gamescom.global/en/exhibitor/webedia-gmbh"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "mbc-game-studio",
@@ -904,21 +923,24 @@
       { "hall": "5.1", "booth": "C024" }
     ],
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/mattel-inc",
     "games": [
       { "title": "He-Man and the Masters of the Universe: Dragon Pearl of Destruction", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
       { "title": "Masters of the Universe: Legends Unite", "status": "confirmed", "playable": true, "platforms": ["Mobile"] },
       { "title": "Skeletor: Until Next Time!", "status": "confirmed", "playable": true, "platforms": ["iOS", "Android"] },
       { "title": "Hot Wheels Infinite Rush", "status": "confirmed", "playable": true, "platforms": ["Mobile"] },
       { "title": "UNO! Mobile", "status": "confirmed", "playable": true, "platforms": ["Mobile"] },
-      { "title": "UNO Wonder", "status": "confirmed", "playable": true, "platforms": ["Mobile"] }
+      { "title": "UNO Wonder", "status": "confirmed", "playable": true, "platforms": ["Mobile"] },
+      { "title": "Barbie Rewind", "status": "expected", "playable": null, "platforms": [] }
     ],
     "tags": ["family-friendly", "merch", "tabletop", "licensing"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/mattel_europa_bv/",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-mattel-halle-8-programm-200826/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-mattel-halle-8-programm-200826/",
+      "https://www.gamescom.global/en/exhibitor/mattel-inc"
     ],
-    "lastUpdated": "2026-08-24"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "jbl-quantum",
@@ -989,6 +1011,11 @@
     "type": "indie",
     "hall": "10.2",
     "booth": "F010/E019",
+    "stands": [
+      { "hall": "10.2", "booth": "F010/E019" },
+      { "hall": "10.2", "booth": "F020g/E029g" },
+      { "hall": "10.2", "booth": "F030g/E039g" }
+    ],
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/indie-arena-booth",
     "games": [
@@ -1009,16 +1036,35 @@
     "sources": [
       "https://indiearenabooth.de/",
       "https://www.gamesmarket.global/indie-arena-booth-full-gamescom-2026-lineup/",
-      "https://www.gamespress.com/beyerdynamic-to-become-First-Presenter-of-the-Indie-Arena-Booth-at-gam"
+      "https://www.gamespress.com/beyerdynamic-to-become-First-Presenter-of-the-Indie-Arena-Booth-at-gam",
+      "https://www.gamescom.global/en/exhibitor/indie-arena-booth"
     ],
-    "lastUpdated": "2026-08-11"
+    "lastUpdated": "2026-08-24"
+  },
+  {
+    "id": "korea-showcase",
+    "name": "Korean games showcase (KOCCA)",
+    "type": "indie",
+    "hall": "10.2",
+    "booth": "F001",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/korea-creative-content-agency",
+    "games": [],
+    "tags": ["indie", "pavilion", "playable demos"],
+    "crowd": 2,
+    "sources": [
+      "https://www.gamescom.global/en/exhibitor/korea-creative-content-agency",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "korea-pavilion",
     "name": "Korea Pavilion (KOCCA)",
     "type": "trade",
     "hall": "3.2",
-    "booth": "C050g/D051g",
+    "booth": "C050/D051",
     "locationConfirmed": true,
     "dirSlug": "korea_creative",
     "country": "Korea, Republic of",
@@ -1029,9 +1075,10 @@
     "sources": [
       "https://www.invenglobal.com/articles/24205/13-korean-companies-to-participate-in-korea-pavilion-at-gamescom-2026",
       "https://www.hartware.de/2026/08/20/kocca-praesentiert-auf-der-gamescom-2026-13-koreanische-spieleunternehmen-mit-einem-angebot-an-pc-mobil-und-vr-spielen/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/korea-creative-content-agency"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "koei-tecmo",
@@ -1060,15 +1107,16 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/bilibili-hk-ltd",
     "games": [
-      { "title": "Bilibili-published titles (lineup TBA)", "status": "expected", "playable": null, "platforms": ["PC", "Mobile"] }
+      { "title": "Escape From Duckov", "status": "expected", "playable": null, "platforms": ["PC"] }
     ],
     "tags": ["mobile", "indie"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
-      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/"
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/",
+      "https://www.gamescom.global/en/exhibitor/bilibili-hk-ltd"
     ],
-    "lastUpdated": "2026-08-17"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "aternos",
@@ -1123,9 +1171,10 @@
     "tags": ["simulation", "community"],
     "crowd": 2,
     "sources": [
-      "https://exhibitors.gamescom.global/exhibitor/scs_software/"
+      "https://exhibitors.gamescom.global/exhibitor/scs_software/",
+      "https://www.gamescom.global/en/exhibitor/scs-software-sro"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "bloober-team",
@@ -1136,14 +1185,17 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/bloober-team-spolka-akcyjna",
     "games": [
-      { "title": "Cronos: The New Dawn", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "Cronos: The New Dawn", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Cronos: Lazarus", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "SAW: Genesis", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["horror", "single-player"],
     "crowd": 2,
     "sources": [
-      "https://exhibitors.gamescom.global/exhibitor/bloober_team/"
+      "https://exhibitors.gamescom.global/exhibitor/bloober_team/",
+      "https://www.gamescom.global/en/exhibitor/bloober-team-spolka-akcyjna"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "coffee-stain",
@@ -1282,14 +1334,16 @@
     "booth": "F086",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/xeleratevr-gmbh",
-    "games": [],
+    "games": [
+      { "title": "Weeny Wise", "status": "expected", "playable": null, "platforms": ["VR"] }
+    ],
     "tags": ["VR", "hands-on"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/xeleratevr_gmbh/",
       "https://www.gamescom.global/en/exhibitor/xeleratevr-gmbh"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "gamescom-lan",
@@ -1334,14 +1388,32 @@
     "booth": "A060/B061",
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/microprose-software-pty-ltd",
-    "games": [],
+    "games": [
+      { "title": "Sea Power: Naval Combat in the Missile Age", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Better Than Dead", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Battleship Command", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Combat Air Patrol 2: Military Flight Simulator", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Car Park Capital", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Cleared Hot", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Dagger Directive", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Darkenstein 3D", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Death by Scrolling", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Drone Sector", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Dying Breed", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "GROUND BRANCH", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Knights of Frontier Valley", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Liquidation", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Repterra", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Rise of Piracy", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Throttle Trace", "status": "expected", "playable": null, "platforms": ["PC"] }
+    ],
     "tags": ["retro", "simulation", "strategy"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/microprose/",
       "https://www.gamescom.global/en/exhibitor/microprose-software-pty-ltd"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "embracer-freemode",
@@ -1350,6 +1422,7 @@
     "hall": "10.1",
     "booth": "F061",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/redoctane-games",
     "games": [
       { "title": "Stage Tour", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] }
     ],
@@ -1357,9 +1430,10 @@
     "crowd": 3,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/_stagetour/",
-      "https://www.engadget.com/gaming/guitar-hero-vets-redoctane-reveal-their-new-music-game-220809719.html"
+      "https://www.engadget.com/gaming/guitar-hero-vets-redoctane-reveal-their-new-music-game-220809719.html",
+      "https://www.gamescom.global/en/exhibitor/redoctane-games"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "rocketwerkz",
@@ -1387,7 +1461,10 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/frozen-district",
     "games": [
-      { "title": "House Flipper 2", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+      { "title": "House Flipper 2", "status": "expected", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Farmbotic", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Dreampainters", "status": "expected", "playable": null, "platforms": ["PC"] },
+      { "title": "Forgery Craft", "status": "expected", "playable": null, "platforms": ["PC"] }
     ],
     "tags": ["simulation", "cozy", "AA"],
     "crowd": 2,
@@ -1395,7 +1472,7 @@
       "https://exhibitors.gamescom.global/en/exhibitor/frozen_district/",
       "https://www.gamescom.global/en/exhibitor/frozen-district"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "raw-fury",
@@ -1476,7 +1553,6 @@
     "hall": "10.1",
     "booth": "D060/E061",
     "locationConfirmed": true,
-    "officialUrl": "https://www.gamescom.global/en/exhibitor/thermaltake-germany-gmbh",
     "games": [],
     "tags": ["hardware", "components", "modding"],
     "crowd": 2,
@@ -1484,7 +1560,7 @@
       "https://exhibitors.gamescom.global/en/exhibitor/thermaltake_germany/",
       "https://www.gamescom.global/en/exhibitor/thermaltake-germany-gmbh"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "asrock",
@@ -1544,7 +1620,6 @@
     "hall": "10.2",
     "booth": "E046",
     "locationConfirmed": true,
-    "officialUrl": "https://www.gamescom.global/en/exhibitor/shenzhen-8bitdo-tech-co-ltd",
     "games": [],
     "tags": ["hardware", "retro", "peripherals"],
     "crowd": 2,
@@ -1552,7 +1627,7 @@
       "https://exhibitors.gamescom.global/en/exhibitor/shenzhen_8bitdo_tech/",
       "https://www.gamescom.global/en/exhibitor/shenzhen-8bitdo-tech-co-ltd"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-24"
   },
   {
     "id": "konsolenfan-audio",
@@ -1589,12 +1664,33 @@
     "lastUpdated": "2026-08-13"
   },
   {
+    "id": "indie-castle",
+    "name": "Indie Castle",
+    "type": "indie",
+    "hall": "10.2",
+    "booth": "E020/D021",
+    "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/insomnia-development-ug",
+    "games": [],
+    "tags": ["indie", "playable demos", "meet the devs"],
+    "crowd": 2,
+    "sources": [
+      "https://www.gamesmarket.global/indie-castle-by-indies-united-debuts-with-82-games/",
+      "https://www.gamesmarket.global/indies-united-offering-is-offering-booths-at-indie-castle-on-gamescom/",
+      "https://insomniadevelopment.com/gamescom",
+      "https://www.gamescom.global/en/exhibitor/insomnia-development-ug",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+    ],
+    "lastUpdated": "2026-08-25"
+  },
+  {
     "id": "daedalic",
     "name": "Daedalic Entertainment",
     "type": "publisher",
     "hall": "10.2",
     "booth": "E020/D021",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/daedalic-entertainment",
     "games": [
       { "title": "Woodo", "status": "confirmed", "playable": true, "platforms": ["PC"] },
       { "title": "Ghost Haunting", "status": "confirmed", "playable": true, "platforms": ["PC"] },
@@ -1607,9 +1703,10 @@
     "crowd": 2,
     "sources": [
       "https://www.gameswirtschaft.de/marketing-pr/daedalic-days-2026-showcase-140826/",
-      "https://exhibitors.gamescom.global/exhibitor/daedalic/"
+      "https://exhibitors.gamescom.global/exhibitor/daedalic/",
+      "https://www.gamescom.global/en/exhibitor/daedalic-entertainment"
     ],
-    "lastUpdated": "2026-08-16"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "gamescom-campus",
@@ -1899,6 +1996,7 @@
     "hall": "8.1",
     "booth": "B053a",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/urban-games-gmbh",
     "games": [
       { "title": "Transport Fever 3", "status": "confirmed", "playable": true, "platforms": ["PC"] },
       { "title": "Paradox grand-strategy catalog", "status": "rumored", "playable": null, "platforms": ["PC"] }
@@ -1907,9 +2005,10 @@
     "crowd": 2,
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
-      "https://exhibitors.gamescom.global/exhibitor/urban_games/"
+      "https://exhibitors.gamescom.global/exhibitor/urban_games/",
+      "https://www.gamescom.global/en/exhibitor/urban-games-gmbh"
     ],
-    "lastUpdated": "2026-08-23"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "xbox-business",
@@ -2943,14 +3042,16 @@
     "hall": "10.1",
     "booth": "F051",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/gateron",
     "games": [],
     "tags": ["hardware", "peripherals"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/_gateron/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/gateron"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "deepcool",
@@ -2959,14 +3060,16 @@
     "hall": "10.1",
     "booth": "B029",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/deepcool",
     "games": [],
     "tags": ["hardware", "components", "PC"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/deepcoolacetaia_bellei/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/deepcool"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "lexar",
@@ -2975,14 +3078,16 @@
     "hall": "10.1",
     "booth": "B071",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/lexar-europe-bv",
     "games": [],
     "tags": ["hardware", "storage"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/lexar_europe_bv/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/lexar-europe-bv"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "xppen",
@@ -2991,14 +3096,16 @@
     "hall": "10.1",
     "booth": "A031",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/xppen-hanvon-ugee-technology-co-ltd",
     "games": [],
     "tags": ["hardware", "drawing tablets"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/xppen-_hanvon_ugee_tacetaia_bellei/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/xppen-hanvon-ugee-technology-co-ltd"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "epomaker",
@@ -3007,14 +3114,16 @@
     "hall": "10.1",
     "booth": "A023",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/epomaker",
     "games": [],
     "tags": ["hardware", "keyboards", "peripherals"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/epomaker_inc/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/epomaker"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "iqunix",
@@ -3023,14 +3132,16 @@
     "hall": "10.1",
     "booth": "A072",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/iqunix",
     "games": [],
     "tags": ["hardware", "keyboards", "peripherals"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/iqunix/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/iqunix"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "genki",
@@ -3055,14 +3166,16 @@
     "hall": "10.1",
     "booth": "D052",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/guangzhou-havit-technology-coltd",
     "games": [],
     "tags": ["hardware", "peripherals"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/_havit/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/guangzhou-havit-technology-coltd"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "karnox",
@@ -3071,14 +3184,16 @@
     "hall": "10.1",
     "booth": "B048",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/karnox",
     "games": [],
     "tags": ["hardware", "chairs"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/karnox/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/karnox"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "diablo-chairs",
@@ -3103,14 +3218,16 @@
     "hall": "10.1",
     "booth": "A078",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/iiyama-benelux-bv",
     "games": [],
     "tags": ["hardware", "monitors"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/iiyama_benelux_bv/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/iiyama-benelux-bv"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "retro-games",
@@ -3119,14 +3236,16 @@
     "hall": "10.2",
     "booth": "A020",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/retro-games-ltd",
     "games": [],
     "tags": ["hardware", "retro", "family-friendly"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/retro_games_ltd/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/retro-games-ltd"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "ravensburger",
@@ -3135,14 +3254,16 @@
     "hall": "5.2",
     "booth": "B023/A022",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/ravensburger-verlag-gmbh",
     "games": [],
     "tags": ["tabletop", "family-friendly", "merch"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/ravensburgspieleverlag/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/ravensburger-verlag-gmbh"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "panini",
@@ -3167,14 +3288,16 @@
     "hall": "5.2",
     "booth": "B025/A024",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/bushiroad-international-pte-ltd",
     "games": [],
     "tags": ["TCG", "tabletop", "merch"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/bushiroad_internatio/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/bushiroad-international-pte-ltd"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "pegasus-spiele",
@@ -3199,14 +3322,16 @@
     "hall": "5.2",
     "booth": "B036",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/purearts",
     "games": [],
     "tags": ["merch", "collectibles"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/purearts/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/purearts"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "tsume-art",
@@ -3215,14 +3340,16 @@
     "hall": "5.1",
     "booth": "A012",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/tsume-art",
     "games": [],
     "tags": ["merch", "collectibles"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/tsume_art/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/tsume-art"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "fangamer",
@@ -3231,14 +3358,16 @@
     "hall": "5.1",
     "booth": "D025",
     "locationConfirmed": true,
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/fangamer-llc",
     "games": [],
     "tags": ["merch", "indie"],
     "crowd": 2,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/fangamer_europe/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/fangamer-llc"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "game-informer",
@@ -3263,14 +3392,27 @@
     "hall": "10.2",
     "booth": "E010/D011",
     "locationConfirmed": true,
-    "games": [],
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/shueisha-games",
+    "games": [
+      { "title": "BAKUDO", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "Chronoscript: The Endless End", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "UN:Me", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "Schrödinger's Call", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "JUJUTSU KAISEN RUMBLE: SURVIVATON", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "KochiKame: Ryo-san's Billion-yen Beat", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "ATMOSFAR", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "Seasons of Books and Keys", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "YAKOH SHINOBI OPS", "status": "expected", "playable": null, "platforms": [] },
+      { "title": "Wild Wild Eden", "status": "expected", "playable": null, "platforms": [] }
+    ],
     "tags": ["publisher", "manga"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/shueisha_games/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/shueisha-games"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "metanet",
@@ -3279,13 +3421,17 @@
     "hall": "10.2",
     "booth": "F011",
     "locationConfirmed": true,
-    "games": [],
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/metanet-software-inc",
+    "games": [
+      { "title": "N PLUS INFINITY TIMES TWO", "status": "expected", "playable": null, "platforms": [] }
+    ],
     "tags": ["indie", "platformer"],
     "crowd": 1,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/metanet_softwareassociacao_de_produt/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/exhibitor/metanet-software-inc"
     ],
-    "lastUpdated": "2026-08-21"
+    "lastUpdated": "2026-08-25"
   }
 ]

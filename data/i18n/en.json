@@ -149,6 +149,7 @@
     "robotics": "robotics",
     "sci-fi": "sci-fi",
     "shooter": "shooter",
+    "racing": "racing",
     "sim racing": "sim racing",
     "simulation": "simulation",
     "single-player": "single-player",
@@ -450,15 +451,15 @@
       }
     },
     "snail-games": {
-      "description": "The ARK publisher's Hall 8.1 stand: new ARK: Survival Ascended content alongside open-universe MMO For The Stars, medieval survival sim Bellwright and sandbox builder Honeycomb: The World Beyond — plus a first public look at an unannounced, internally developed AAA title.",
+      "description": "The ARK publisher's Hall 8.1 stand: new ARK: Survival Ascended content alongside open-universe MMO For The Stars, medieval survival sim Bellwright and sandbox builder Honeycomb: The World Beyond — plus 9 Yin Sutra: Immortal, which now fills the slot Snail had been describing as an unannounced AAA title.",
       "crowdNote": "ARK's community is large and a AAA reveal pulls walk-up interest, but it's a mid-size stand rather than a mega-booth.",
-      "visitAdvice": "If the unannounced title lands a splashy reveal, the stand will busy up the next morning — otherwise ARK fans can drop in most times.",
+      "visitAdvice": "If 9 Yin Sutra: Immortal lands a splashy reveal, the stand will busy up the next morning — otherwise ARK fans can drop in most times.",
       "games": {
         "ARK: Survival Ascended": "New content and franchise developments for the survival flagship.",
         "For The Stars": "Open-universe MMO.",
         "Bellwright": "Medieval survival/colony sim, 1M+ players on Steam.",
         "Honeycomb: The World Beyond": "Sci-fi sandbox builder.",
-        "Unannounced Snail AAA title": "First look promised for media and attendees."
+        "9 Yin Sutra: Immortal": "Named on Snail's gamescom booth page, where the guide previously carried an unannounced AAA slot; platforms and hands-on not announced."
       }
     },
     "plaion": {
@@ -505,22 +506,26 @@
       }
     },
     "giants-software": {
-      "description": "Farming Simulator's developer-publisher with its traditional community booth (plus a business-area stand in Hall 4.2). The booth program is unannounced — Farming Simulator 26 (Switch/mobile, out May 2026) and FS25 expansion content fresh from FarmCon are the likeliest showings, alongside merch.",
+      "description": "Farming Simulator's developer-publisher with its traditional community booth (plus a business-area stand in Hall 4.2). Its gamescom booth page registers three titles — the FS25 expansion Beans & Alpacas, a Farming Simulator: Signature Edition, and the sim racer Project Motor Racing — alongside the likely Farming Simulator 26 showing and merch.",
       "crowdNote": "One of the most loyal German communities at the show — steady all-day traffic rather than spike queues.",
       "visitAdvice": "Easy to combine with the surrounding Hall 6.1 AAA booths; merch tends to sell out on weekend days.",
       "games": {
         "Farming Simulator 26": "The Switch/mobile edition released May 19, 2026 — likely demo stations.",
-        "Farming Simulator 25: Beans & Alpacas": "First gameplay was shown July 28 at FarmCon; a gamescom showing fits its pre-release window."
+        "Farming Simulator 25: Beans & Alpacas": "First gameplay was shown July 28 at FarmCon; a gamescom showing fits its pre-release window.",
+        "Project Motor Racing": "The sim racer GIANTS published in November 2025, registered on its gamescom booth page — no hands-on announced.",
+        "Farming Simulator: Signature Edition": "Registered on the booth page; what the edition contains has not been detailed."
       }
     },
     "focus": {
-      "description": "A Hall 6.1 stand at B060/C061, in a stand block shared with Team17 and astragon, plus a trade-only business-area stand (Hall 4.2, A028). Its big release Resonance: A Plague Tale Legacy launches Aug 27, mid-show, and is playable at the Xbox booth.",
+      "description": "A Hall 6.1 stand at B060/C061, in a stand block shared with Team17 and astragon, plus a trade-only business-area stand (Hall 4.2, A028). Its own gamescom booth page now presents three games: Resonance: A Plague Tale Legacy, which launches Aug 27 mid-show and is playable at the Xbox booth, the haulage sim Road Kings, and the cozy management game BioEden.",
       "crowdNote": "No announced blockbuster hands-on at its own stand; Resonance demand mostly absorbed by the Xbox booth.",
-      "visitAdvice": "Queue for Resonance at the Xbox booth, where it's confirmed playable. Focus' own stand has no announced program yet.",
+      "visitAdvice": "Queue for Resonance at the Xbox booth, where it's confirmed playable. Focus' own stand presents Road Kings and BioEden as well, but has not said which of the three you can put your hands on there.",
       "games": {
         "Resonance: A Plague Tale Legacy": "Launches Aug 27; confirmed at Xbox's Hall 7 booth, likely also at Focus' own Hall 6.1 stand.",
         "Edge of Memories": "2026 JRPG-style title, plausible booth candidate.",
-        "Warhammer 40,000: Space Marine 3": "Too early for hands-on; trailer presence possible."
+        "Warhammer 40,000: Space Marine 3": "Too early for hands-on; trailer presence possible.",
+        "Road Kings": "Saber's 40-ton haulage sim, presented on Focus' own gamescom booth page — no hands-on announced.",
+        "BioEden": "Cozy ecosystem-management game, out Sept 3, the week after the show; presented on the same booth page with no hands-on announced."
       }
     },
     "hoyoverse": {
@@ -546,13 +551,18 @@
       }
     },
     "tencent-worlds-of-play": {
-      "description": "Tencent Games' Hall 8.1 stand shows Honor of Kings and Arena of Valor with cosplayers and competitions, and the company also runs the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27-29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's other playable games are at Level Infinite in Hall 6.1.",
+      "description": "Tencent Games' Hall 8.1 stand shows Honor of Kings and Arena of Valor with cosplayers and competitions, and its booth page adds five more: Honor of Kings: World, Honor of Kings: ACE, Rust Mobile, Roco Kingdom and Animula Nook. The company also runs the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27-29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's other playable games are at Level Infinite in Hall 6.1.",
       "crowdNote": "Timed/curated and off the main floor — moderate queues; the real crowds gather at Level Infinite.",
       "visitAdvice": "A calmer palate-cleanser between hall sessions; check whether entry needs free time-slot registration closer to the show.",
       "games": {
         "Worlds of Play (40-title art exhibition)": "Art exhibition Aug 27–29, off the main show floor.",
         "Honor of Kings": "On the Hall 8.1 stand, with cosplayers and competitions.",
-        "Arena of Valor": "On the Hall 8.1 stand, with cosplayers and competitions."
+        "Arena of Valor": "On the Hall 8.1 stand, with cosplayers and competitions.",
+        "Honor of Kings: World": "The open-world spin-off, out in China since April on PC and mobile; registered on the booth page, no hands-on announced.",
+        "Honor of Kings: ACE": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
+        "Rust Mobile": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
+        "Roco Kingdom": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
+        "Animula Nook": "Registered on Tencent Games' gamescom booth page; no hands-on announced."
       }
     },
     "netease": {
@@ -617,7 +627,7 @@
       }
     },
     "indie-arena-booth": {
-      "description": "The world's biggest indie booth — 2026 theme 'Democratree: games for everyone': ~200 games from 182 developers across 41 countries, with publisher pods (11 bit, Fireshine, Headup, Wired Productions) and a Nintendo section with Switch/Switch 2 stations. Audio brand beyerdynamic is this year's 'First Presenter' sponsor, kitting out 230+ developer stations with MMX 300 PRO headsets and running a vinyl soundtrack listening station.",
+      "description": "The world's biggest indie booth, spread across three stand blocks in Hall 10.2 — 2026 theme 'Democratree: games for everyone': ~200 games from 182 developers across 41 countries, with publisher pods (11 bit, Fireshine, Headup, Wired Productions) and a Nintendo section with Switch/Switch 2 stations. Audio brand beyerdynamic is this year's 'First Presenter' sponsor, kitting out 230+ developer stations with MMX 300 PRO headsets and running a vinyl soundtrack listening station.",
       "crowdNote": "Busy but far more bearable than AAA halls; short rotating lines per station, worst Saturday afternoon.",
       "visitAdvice": "Thu/Fri morning is ideal. Browse the lineup on indiearenabooth.de or the IAB Steam curator page beforehand and pick targets — devs are at their stations, so it's the best place to actually talk to the people making the games. Combine with the Retro & Family area in the same hall.",
       "games": {
@@ -634,8 +644,13 @@
         "Crowded": "City-builder where crows are the units."
       }
     },
+    "korea-showcase": {
+      "description": "KOCCA's consumer-side stand, a few steps from the Indie Arena Booth in Hall 10.2: ten Korean studios — CanOpener, Joe Yu Studio, MAYFLY, Project Moreum, Siloegi Operation, Studio BBB, SYLOPON, Team Flask, Urban Oasis and Yeop Studio — on one 131 m² block. The trade-badge Korea Pavilion in Hall 3.2 is the same agency's other stand.",
+      "crowdNote": "A small collective stand where each studio has a station or two; short rotating waits at best.",
+      "visitAdvice": "It sits right by the hall entrance, so it is an easy first or last stop on an Indie Arena Booth trip. The developers are at their own stations, which is the point of coming."
+    },
     "korea-pavilion": {
-      "description": "The Korea Creative Content Agency's umbrella stand for 13 small and mid-size Korean studios this year — consolidated into a single business-hall booth rather than the separate B2B/B2C pavilions of past shows. Krafton and Pearl Abyss show their own games elsewhere on the consumer floor.",
+      "description": "The Korea Creative Content Agency's business-hall stand for 13 small and mid-size Korean studios. KOCCA also runs a consumer stand in Hall 10.2, so the two-pavilion pattern of past shows survives after all. Krafton and Pearl Abyss show their own games elsewhere on the consumer floor.",
       "accessNote": "Hall 3.2 — an open demo counter with the one-on-one publisher, investor and distributor meetings booked behind it.",
       "offers": [
         "On-site demos of the 13 participating studios' PC, console and mobile titles",
@@ -651,11 +666,11 @@
       }
     },
     "bilibili": {
-      "description": "Chinese video/community platform and game publisher, with a booth in the indie-focused Hall 10.1. Its 2026 game lineup hasn't been announced yet.",
+      "description": "Chinese video/community platform and game publisher, with a booth in the indie-focused Hall 10.1. Escape From Duckov — the extraction shooter it published to half a million Steam sales in its first week — is the one game on its gamescom booth page.",
       "crowdNote": "Modest indie-area booth; short waits except during signing/creator events.",
       "visitAdvice": "Easy walk-up while touring the indie hall; check the app on-site for stage or giveaway schedules.",
       "games": {
-        "Bilibili-published titles (lineup TBA)": "Expect an indie-scale showcase similar to prior years."
+        "Escape From Duckov": "Team Soda's duck-themed extraction shooter, the only title registered on Bilibili's booth page; no hands-on announced."
       }
     },
     "aternos": {
@@ -679,16 +694,18 @@
       "crowdNote": "Limited driving rigs mean moderate rotating queues; fans linger to chat with the team.",
       "visitAdvice": "Rigs turn over slowly — come at hall opening if you want seat time.",
       "games": {
-        "Euro Truck Simulator 2": "Driving rigs are the stand's tradition; specific 2026 program unannounced.",
-        "American Truck Simulator": "Usually shown alongside ETS2 on the rigs."
+        "Euro Truck Simulator 2": "Driving rigs are the stand's tradition; the booth page registers the Iceland and Coaches expansions alongside the base game.",
+        "American Truck Simulator": "Shown alongside ETS2 on the rigs; the booth page also registers the British Columbia expansion and a Ford car pack."
       }
     },
     "bloober-team": {
-      "description": "The Silent Hill 2 remake and Cronos: The New Dawn studio takes a Hall 10.1 stand (plus a business-area stand); its 2026 booth program is unannounced — Cronos content or a look at its next horror project are the plausible showings. Cronos art also features in Tencent's offsite Worlds of Play exhibition.",
+      "description": "The Silent Hill 2 remake and Cronos: The New Dawn studio takes a Hall 10.1 stand (plus a business-area stand). Its gamescom booth page now registers three horror titles: Cronos: The New Dawn, the follow-up Cronos: Lazarus and SAW: Genesis. Cronos art also features in Tencent's offsite Worlds of Play exhibition.",
       "crowdNote": "A small stand with a devoted horror crowd — short lines unless a new reveal drops at ONL.",
       "visitAdvice": "If Bloober shows anything at Opening Night Live, expect the stand to spike the next morning — otherwise a quick stop.",
       "games": {
-        "Cronos: The New Dawn": "Nothing announced for the stand yet; Bloober's flagship since its Sept 2025 release."
+        "Cronos: The New Dawn": "Bloober's flagship since its Sept 2025 release, and registered on the booth page — the demo program is still unannounced.",
+        "Cronos: Lazarus": "The Cronos follow-up, registered on Bloober's gamescom booth page; no hands-on announced.",
+        "SAW: Genesis": "Bloober's take on the Saw films, registered on the same booth page; no hands-on announced."
       }
     },
     "coffee-stain": {
@@ -736,9 +753,12 @@
       "visitAdvice": "Not what you want an hour before a big queue — go after you're done playing for the day."
     },
     "xelerate-vr": {
-      "description": "A German VR stand at the back of Hall 10.1, registered across portable VR hardware, action/adventure, role-playing, simulation and sports — a headset experience rather than a game booth. The 2026 program is unannounced.",
+      "description": "A German VR stand at the back of Hall 10.1, registered across portable VR hardware, action/adventure, role-playing, simulation and sports — a headset experience rather than a game booth. Its booth page names the VR title Weeny Wise and its own ODT 1 headset rig.",
       "crowdNote": "VR sessions run one visitor at a time, so even a short line is a slow one.",
-      "visitAdvice": "Ask how long a session runs before joining the queue — that number matters more than the queue length."
+      "visitAdvice": "Ask how long a session runs before joining the queue — that number matters more than the queue length.",
+      "games": {
+        "Weeny Wise": "The one VR title on XelerateVR's gamescom booth page; session length and booking are unannounced."
+      }
     },
     "gamescom-lan": {
       "description": "The team behind gamescom LAN — the separate BYOC LAN and esports weekend held at Koelnmesse in March — runs an on-site area in Hall 10.1. It is registered for trading card games, organisations and agency services rather than a LAN party, and hosts the partner activations filed at E071a: TikTok, EDEKA, L'Oréal and Backforce seating. Don't come expecting to plug a tower in; the LAN itself is a different event on different dates.",
@@ -751,9 +771,9 @@
       "visitAdvice": "Do the whole retro corner in one pass: Commodore, Atari and MicroProse sit within a few metres of each other."
     },
     "microprose": {
-      "description": "The revived MicroProse — the Sid Meier-era sim and strategy label, relaunched out of Australia — takes a stand in Hall 10.1's retro corner, registered across action/adventure, RPG, simulation and strategy. The 2026 lineup is unannounced.",
+      "description": "The revived MicroProse — the Sid Meier-era sim and strategy label, relaunched out of Australia — takes a stand in Hall 10.1's retro corner. Its gamescom booth page registers 17 titles across naval, air and ground simulation, strategy and shooters, from Sea Power to GROUND BRANCH. That is the catalogue it brings, not a demo list: which of them you can actually play is unannounced.",
       "crowdNote": "A niche audience that knows exactly why it's there; expect conversation, not queues.",
-      "visitAdvice": "Pair it with Commodore and Atari a few stands away."
+      "visitAdvice": "Seventeen registered titles on one small stand means asking staff what is running rather than reading a sign. Pair it with Commodore and Atari a few stands away."
     },
     "embracer-freemode": {
       "description": "Freemode's stand is registered under three brands — Embracer Freemode, RedOctane and Stage Tour — and for input peripherals as well as games. Stage Tour is the relaunched Guitar Hero team's new plastic-instrument rhythm game: guitar, drums and vocals, up to four players in any combination, announced for autumn 2026 with its own Kramer-style guitar, drum kit and microphone.",
@@ -769,11 +789,14 @@
       "visitAdvice": "Low-queue stop; go when the big halls are at their worst."
     },
     "frozen-district": {
-      "description": "The House Flipper studio, registered at Hall 10.1 under both its own name and House Flipper 2 — and, fittingly for a cleaning-simulator developer, filed under the directory's care and cleaning product group as well as games.",
+      "description": "The House Flipper studio, registered at Hall 10.1 under both its own name and House Flipper 2 — and, fittingly for a cleaning-simulator developer, filed under the directory's care and cleaning product group as well as games. Its booth page also registers the robot-farming sim Farmbotic, the forgery sim Forgery Craft, the dream-painting puzzler Dreampainters and a House Flipper 2 pets expansion.",
       "crowdNote": "Cozy-sim fans browse rather than queue.",
       "visitAdvice": "Two stands from Raw Fury and three from MOZA — worth folding into one pass along the A row.",
       "games": {
-        "House Flipper 2": "Registered as a brand on the official exhibitor profile; the demo program is unannounced."
+        "House Flipper 2": "Registered as a brand on the official exhibitor profile, along with a pets expansion; the demo program is unannounced.",
+        "Farmbotic": "Robot-farming sim registered on Frozen District's gamescom booth page; no hands-on announced.",
+        "Forgery Craft": "Art-forgery sim registered on the same booth page; no hands-on announced.",
+        "Dreampainters": "First-person colour puzzler from Stability Games, published by Frozen District; on the booth page, no hands-on announced."
       }
     },
     "raw-fury": {
@@ -837,6 +860,11 @@
         "Horseguard: Winds of the North": "Nordic-set adventure title.",
         "The Curse of the Crimson Stag": "New adventure title."
       }
+    },
+    "indie-castle": {
+      "description": "A community booth built as an actual castle, four metres tall, in the indie half of Hall 10.2: 52 games on pods along the outside walls and in the courtyard, from around forty small studios and publishers. It is the first outing of the Indies United brand and is run by Hamburg's Insomnia Development; Dotemu, gamigo and Daedalic have pods here too.",
+      "crowdNote": "Forty small pods rather than one queue — waits are per-machine and short, busiest on Saturday afternoon.",
+      "visitAdvice": "Circle the outside walls first, then go into the courtyard — the pods inside are easy to walk past. It sits between the Indie Arena Booth and the Retro & Family Area, so it fits into the same Hall 10.2 pass."
     },
     "a-maze": {
       "description": "The Berlin independent-games festival's third Digital PlayGround at gamescom: experimental and art games curated well outside what the Indie Arena Booth covers, a few stands away in the same hall.",
@@ -1429,9 +1457,12 @@
       }
     },
     "secret-mode": {
-      "description": "Sumo Group's publishing label takes a Hall 6.1 stand at B040. Its gamescom entry files it under racing games and lists no titles, and nothing has been announced for the booth.",
+      "description": "Sumo Group's publishing label takes a Hall 6.1 stand at B040. It files under racing games, and its booth page now names one title: STAR WARS: Galactic Racer.",
       "crowdNote": "A small stand for an indie-scale publisher — walk-up.",
-      "visitAdvice": "Nothing announced yet, so treat it as something to glance at while passing B040 rather than a planned stop."
+      "visitAdvice": "A Star Wars racer on a small stand could draw more than the stand can absorb. Nothing hands-on is announced yet, so look before you commit to a queue.",
+      "games": {
+        "STAR WARS: Galactic Racer": "The one title on Secret Mode's gamescom booth page; no hands-on announced."
+      }
     },
     "pawprint-aniimo": {
       "description": "Singapore's Pawprint Interactive at Hall 6.1 C041, registered under its game's own brand: Aniimo, an open-world creature-collecting RPG for PC, console and mobile.",
@@ -1452,7 +1483,7 @@
       "visitAdvice": "A two-minute stop between Xbox and Konami if mobile storefronts are of interest."
     },
     "webedia-fyng-city": {
-      "description": "FYNG City, the games-media village Webedia builds in Hall 7.1: over 1,500 m² across several stand blocks, with the GameStar and MeinMMO editorial teams on site and Mercedes-Benz as main partner. Webedia's registered brands here include GameStar, GamePro, MeinMMO, Moviepilot and Filmstarts.",
+      "description": "FYNG City, the games-media village Webedia builds in Hall 7.1: over 1,500 m² across three stands — B051/C050, B041/C040 and C052 — with the GameStar and MeinMMO editorial teams on site and Mercedes-Benz as main partner. Webedia's registered brands here include GameStar, GamePro, MeinMMO, Moviepilot and Filmstarts.",
       "crowdNote": "A hangout area rather than a demo queue — busy but flowing.",
       "visitAdvice": "One of the few places in Hall 7 to sit down mid-hall. AMD's stand shares the same block at B041/C040."
     },
@@ -1485,12 +1516,13 @@
       "visitAdvice": "Part of the same Hall 8.1 hardware run as ASUS ROG, AGON by AOC and Logitech."
     },
     "mattel": {
-      "description": "Mattel's first gamescom with a stand of its own, and it has two: Hall 8.1 B020 in the hall entrance area beside CD Projekt Red and Square Enix, with six playable Mattel Game Studios titles, the Mattel Brick Shop sets (including a 3,500-piece Xbox console), a live stage and Minecraft and KPop Demon Hunters photo spots — plus the Mattel Fan Shop at Hall 5.1 C024 in the Merchandise Area, which is where the buying happens.",
+      "description": "Mattel's first gamescom with a stand of its own, and it has two: Hall 8.1 B020 in the hall entrance area beside CD Projekt Red and Square Enix, with six playable Mattel Game Studios titles, the Mattel Brick Shop sets (including a 3,500-piece Xbox console), a live stage and Minecraft and KPop Demon Hunters photo spots, with Barbie Rewind added to its booth page since — plus the Mattel Fan Shop at Hall 5.1 C024 in the Merchandise Area, which is where the buying happens.",
       "crowdNote": "Family-facing brand stand; the demos are short mobile sessions, so waits stay small except at the weekend and around stage slots.",
       "visitAdvice": "The Hall 8.1 stand is a quick stop on the way in or out of Hall 8 — five of its six demos are mobile and turn over fast. If you came to buy the Brick Shop sets rather than play, go to the Hall 5.1 fan shop instead; only it sells.",
       "games": {
         "He-Man and the Masters of the Universe: Dragon Pearl of Destruction": "The one PC/console title on the stand — Bitmap Bureau's retro brawler, out since April.",
-        "Skeletor: Until Next Time!": "Mattel Game Studios' first self-published game, an endless runner already on iOS and Android."
+        "Skeletor: Until Next Time!": "Mattel Game Studios' first self-published game, an endless runner already on iOS and Android.",
+        "Barbie Rewind": "Registered on Mattel's gamescom booth page after the six playable titles were announced; no hands-on announced."
       }
     },
     "jbl-quantum": {
@@ -1609,14 +1641,29 @@
       "visitAdvice": "A quick look if you're already in the area."
     },
     "shueisha-games": {
-      "description": "The games arm of manga publisher Shueisha (Shonen Jump), with a stand in Hall 10.2 — its lineup for the show isn't announced yet.",
-      "crowdNote": "Unclear until a lineup is announced.",
-      "visitAdvice": "Check back closer to the show for what's playable."
+      "description": "The games arm of manga publisher Shueisha (Shonen Jump), on a shared Hall 10.2 stand block. Its booth page now names ten titles, from the Jujutsu Kaisen action game and a KochiKame spin-off to small original work like ATMOSFAR and Wild Wild Eden. None is announced as hands-on.",
+      "crowdNote": "A browsing stand in the indie half of Hall 10.2 — short waits, if any.",
+      "visitAdvice": "Worth a pass if you follow Shonen Jump. It sits a few stands from the Indie Arena Booth, so fold it into that walk.",
+      "games": {
+        "BAKUDO": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "Chronoscript: The Endless End": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "UN:Me": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "Schrödinger's Call": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "JUJUTSU KAISEN RUMBLE: SURVIVATON": "The Jujutsu Kaisen title on the booth page — the best-known name on the stand; no hands-on announced.",
+        "KochiKame: Ryo-san's Billion-yen Beat": "Spin-off of the long-running Shueisha manga; no hands-on announced.",
+        "ATMOSFAR": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "Seasons of Books and Keys": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "YAKOH SHINOBI OPS": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "Wild Wild Eden": "On Shueisha Games' gamescom booth page; no hands-on announced."
+      }
     },
     "metanet": {
-      "description": "The Canadian indie studio behind the platformer N++, with a stand in Hall 10.2 — its show plans aren't announced yet.",
-      "crowdNote": "Unclear until a lineup is announced.",
-      "visitAdvice": "Check back closer to the show for what's playable."
+      "description": "The Canadian studio behind the ninja platformers N and N++ brings one title to its small Hall 10.2 stand: N PLUS INFINITY TIMES TWO, named on its gamescom booth page. Hands-on is not announced.",
+      "crowdNote": "A one-game stand in the indie half of the hall — little to no wait.",
+      "visitAdvice": "A two-minute stop on the way through Hall 10.2; the Indie Arena Booth is a few stands over.",
+      "games": {
+        "N PLUS INFINITY TIMES TWO": "The N++ follow-up, named on Metanet's gamescom booth page; no hands-on announced."
+      }
     }
   }
 }
