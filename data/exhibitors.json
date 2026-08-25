@@ -244,9 +244,10 @@
     "sources": [
       "https://news.ubisoft.com/en-us/article/6c99kNuqSEWK74Ltt0FJND/ubisoft-at-gamescom-2026-rayman-legends-retold-community-lounge-returns",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://news.ubisoft.com/en-us/article/1bJOlV0elnCLWK0qZSqg3N/ubisoft-gamescom-lineup-tune-in-for-rainbow-six-siege-the-division-anno-morbid-metal-and-more"
     ],
-    "lastUpdated": "2026-08-18"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "ea",
@@ -1369,16 +1370,16 @@
     "hall": "10.1",
     "booth": "C059/B050",
     "locationConfirmed": true,
-    "officialUrl": "https://www.gamescom.global/en/exhibitor/commodore-international-corporation",
+    "officialUrl": "https://www.gamescom.global/en/exhibitor/commodore",
     "games": [],
     "tags": ["retro", "hardware", "merch"],
     "crowd": 3,
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/commodore_internatio/",
-      "https://www.gamescom.global/en/exhibitor/commodore-international-corporation",
+      "https://www.gamescom.global/en/exhibitor/commodore",
       "https://commodore.net/c-you-soon-commodore-64-ultimate-line-up-expands-with-c64c-edition-later-this-year/"
     ],
-    "lastUpdated": "2026-08-13"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "microprose",
@@ -1734,7 +1735,8 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/lego-gmbh",
     "games": [
-      { "title": "LEGO video game lineup (TBC)", "status": "expected", "playable": true, "platforms": ["Multi"] },
+      { "title": "LEGO Batman: Legacy of the Dark Knight", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
+      { "title": "LEGO Fortnite", "status": "expected", "playable": null, "platforms": ["PC", "Consoles"] },
       { "title": "LEGO Skylines", "status": "rumored", "playable": null, "platforms": ["PC", "Consoles"] }
     ],
     "tags": ["family-friendly", "photo ops"],
@@ -1745,9 +1747,12 @@
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
       "https://www.vice.com/en/article/the-next-lego-game-could-be-confirmed-at-gamescom/",
-      "https://www.kitguru.net/tech-news/mustafa-mahmoud/leaked-lego-skylines-could-be-officially-announced-at-gamescom/"
+      "https://www.kitguru.net/tech-news/mustafa-mahmoud/leaked-lego-skylines-could-be-officially-announced-at-gamescom/",
+      "https://www.brickfanatics.com/lego-batman-mayhem-collection-dlc-confirmed-for-gamescom",
+      "https://bricksfanz.com/first-look-at-lego-batman-game-dlc-at-gamescom/",
+      "https://www.brickfanatics.com/what-to-expect-from-lego-at-gamescom-2026"
     ],
-    "lastUpdated": "2026-08-22"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "wizards-of-the-coast",
