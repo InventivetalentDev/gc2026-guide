@@ -1244,6 +1244,53 @@ const heatChip = () => {
     : "";
 };
 
+/* ---- "I'm here" — the position the guide's advice starts from ----
+
+   Storage, shape and decay live in js/marks.js; docs/IDEAS-im-here.md is the
+   design record. This page is the explicit way to set it — the map is the
+   thing you open *because* you are somewhere, and the hall on screen is
+   usually the hall around you — through the button in the stage's corner
+   (the whole hall) and the chip in the stand sheet (booth-accurate). Both
+   exist only while the queue surfaces do: a position is a show-floor fact,
+   and off-show there is no floor to stand on. Like every mark, setting it
+   here must show up over there: the guide picks the write up through the
+   same storage event the saved list uses. */
+const hereHallNow = () =>
+  window.GCQueues?.visible() ? GCMarks.readHere()?.hall || null : null;
+
+function updateHereBtn() {
+  const btn = $("#here-btn");
+  if (!btn) return; /* an installed shell one version old has no button */
+  const show = Boolean(window.GCQueues?.visible()) && !onOverview() && Boolean(state.hall);
+  btn.hidden = !show;
+  if (!show) return;
+  const on = GCMarks.readHere()?.hall === state.hall;
+  btn.dataset.on = on;
+  btn.setAttribute("aria-pressed", String(on));
+  btn.textContent = t(on ? "map.hereOn" : "map.here");
+  btn.setAttribute("aria-label", t(on ? "map.hereOnAria" : "map.hereAria", { hall: state.hall }));
+}
+
+/* Every surface that wears the position, brought back in step after a write —
+   ours or another tab's. The chip row is rebuilt under a finger that may be
+   scrolling it, so it is put back where it was (same care as prefetchRest). */
+function refreshHere() {
+  updateHereBtn();
+  if (!state.index) return;
+  const row = $("#halls");
+  const at = row.scrollLeft;
+  renderChips();
+  row.scrollLeft = at;
+  if (onOverview()) refreshCampus();
+  else if (state.sel) selectStand(state.sel);
+}
+
+$("#here-btn")?.addEventListener("click", () => {
+  if (onOverview() || !state.hall) return;
+  GCMarks.writeHere({ hall: state.hall, src: "map" });
+  refreshHere();
+});
+
 /* One scrolling row, but grouped: the halls of an area sit behind that
    area's name in that area's colour, so the row doubles as the legend
    and the business halls can't be mistaken for more of the show. The
@@ -1251,6 +1298,7 @@ const heatChip = () => {
    between chips. */
 function renderChips() {
   let last = null;
+  const hereHall = hereHallNow();
   $("#halls").innerHTML =
     overviewChip() +
     state.index.halls.map((h) => {
@@ -1275,8 +1323,11 @@ function renderChips() {
         t("where.hall", { hall: h.id }) +
         (area.label ? `, ${areaName(area)}` : "") +
         (area.trade ? t("map.tradeVisitorsOnly") : "") +
+        (h.id === hereHall ? t("map.chipHereAria") : "") +
         (n ? t(dayScoped() ? "map.chipPlannedAria" : "map.chipSavedAria", { n }) : "");
-      return `${head}<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}" type="button"
+      return `${head}<button class="chip hall-chip ${h.id === state.hall ? "active" : ""}${
+        h.id === hereHall ? " here" : ""
+      }" type="button"
         data-hall="${esc(h.id)}" style="--area:${esc(area.colour || "")}"
         aria-label="${esc(label)}">${esc(t("where.hall", { hall: h.id }))}${
         n ? ` <span class="chip-saved" aria-hidden="true">●${n}</span>` : ""
@@ -1661,13 +1712,21 @@ function renderCampus(campus) {
 function refreshCampus() {
   let total = 0;
   let open = 0;
+  /* The building you said you are in, marked on the diagram whose whole job
+     is "where is everything relative to me". Per building, not per level —
+     the overview draws no storeys to point at. */
+  const hereHall = hereHallNow();
   for (const plate of state.plates) {
     const n = plate.levels.reduce((sum, id) => sum + hallCount(id), 0);
     total += n;
     if (plate.open) open += 1;
     plate.saved.textContent = n ? `●${n}` : "";
     plate.num.setAttribute("y", n ? plate.up : plate.mid);
-    for (const el of [plate.g, plate.lg]) el.classList.toggle("saved", n > 0);
+    const isHere = Boolean(hereHall) && plate.levels.includes(hereHall);
+    for (const el of [plate.g, plate.lg]) {
+      el.classList.toggle("saved", n > 0);
+      el.classList.toggle("here", isHere);
+    }
   }
   $("#counts").textContent =
     t("map.campusCounts", { n: open }) +
@@ -1684,6 +1743,7 @@ async function showOverview() {
   state.hall = OVERVIEW;
   state.stands = [];
   renderChips();
+  updateHereBtn(); /* no single hall on screen to speak about */
   $("#halls .chip.active")?.scrollIntoView({ inline: "center", block: "nearest" });
   renderAccess(OVERVIEW);
   renderCampus(campus);
@@ -2417,7 +2477,7 @@ let lastTap = { t: 0, x: 0, y: 0 };
 stage.addEventListener("dragstart", (e) => e.preventDefault());
 
 stage.addEventListener("pointerdown", (e) => {
-  if (e.target.closest("#sheet, .map-zoom")) return;
+  if (e.target.closest("#sheet, .map-zoom, .map-here")) return;
   e.preventDefault();
   stage.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -2727,6 +2787,34 @@ function selectStand(rec, { zoom = false } = {}) {
       selectStand(rec);
     };
   }
+  /* "I'm here", booth-accurate: the stand you tapped is the stand you are
+     standing at far more often than not, and this is the one control that
+     stamps the exhibitor too — a shared stand stamps only its hall, because
+     guessing which of fourteen companies you meant would be worse than not
+     saying. Absent off-show like the button in the stage's corner; an old
+     cached shell has no element here, and the optional chain lets it stay a
+     page that works. */
+  const hereBtn = $("#sheet-here");
+  if (hereBtn) {
+    const canHere = Boolean(window.GCQueues?.visible());
+    hereBtn.hidden = !canHere;
+    if (canHere) {
+      const one = rec.exs.length === 1 ? rec.exs[0] : null;
+      const here = GCMarks.readHere();
+      const on = Boolean(here && here.hall === state.hall && one && here.ex === one.id);
+      hereBtn.dataset.on = on;
+      hereBtn.setAttribute("aria-pressed", String(on));
+      hereBtn.textContent = t(on ? "map.hereOn" : "map.here");
+      hereBtn.setAttribute(
+        "aria-label",
+        t(on ? "map.hereOnAria" : "map.hereAria", { hall: state.hall })
+      );
+      hereBtn.onclick = () => {
+        GCMarks.writeHere({ hall: state.hall, ex: one ? one.id : null, src: "map" });
+        refreshHere(); /* re-renders this sheet too — state.sel is this stand */
+      };
+    }
+  }
   /* Straight to the exhibitor's card in the guide when we know who this
      is; the saved list otherwise. A trade booth has no card to land on, so
      it offers the exhibitor's own official profile instead — a link into the
@@ -2791,6 +2879,14 @@ document.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("storage", (e) => {
+  /* An "I'm here" set on the guide's own hall picker: only the surfaces that
+     wear the position move — the chips' marker, the button's pressed state,
+     the overview plate, an open sheet. (A cleared storage falls through to
+     the full path, whose renderChips redraws them too.) */
+  if (e.key === GCMarks.HERE_KEY) {
+    refreshHere();
+    return;
+  }
   /* IT_KEY and ORDER_KEY too: assign a day on the plan board, or move a stop
      up it, and an open sheet's "planned · Thu" — and the route overlay's
      pins — follow without a reload, like the marks do. */
@@ -2873,6 +2969,7 @@ async function showHall(id, { standCode = null } = {}) {
     state.sel = null;
     $("#sheet").classList.remove("open");
     renderChips();
+    updateHereBtn(); /* the hall it speaks about just changed */
     /* Thirteen halls no longer fit the row, so a hall opened from a deep
        link or a chip at the far end is scrolled to rather than left off
        screen. Only on a hall change: doing it from refreshMarks would
@@ -2919,6 +3016,9 @@ window.addEventListener("gcqueueschange", () => {
   if (visible !== queuesVisible) {
     queuesVisible = visible;
     renderChips();
+    /* The "I'm here" surfaces are gated on the same flag as the heat chip. */
+    updateHereBtn();
+    if (state.sel) selectStand(state.sel);
   }
   if (!window.GCQueues?.paused?.()) refreshHeat();
 });
@@ -2998,8 +3098,8 @@ async function main() {
      is the same check a day losing its last stop has to pass anyway. */
   state.day = new URLSearchParams(location.search).get("day") || null;
 
-  /* deep link first, then the hall holding most of your saved stops,
-     then the default */
+  /* deep link first, then the hall you said you are in, then the hall
+     holding most of your saved stops, then the default */
   const [hallArg, code] = location.hash.slice(1).split("/");
   if (hallArg === OVERVIEW) {
     /* The one arrival that needs the layout before anything is drawn.
@@ -3008,6 +3108,14 @@ async function main() {
     if (onOverview()) return prefetchRest();
   }
   let start = hallExists(hallArg) ? hallArg : null;
+  /* A fresh position beats the saved-count guess: where you are outranks
+     where your list is, and a bare open mid-show is somebody looking around
+     the hall they are standing in. Decay makes this self-limiting — an old
+     stamp reads as no stamp (js/marks.js). */
+  if (!start) {
+    const hereHall = GCMarks.readHere()?.hall;
+    if (hereHall && hallExists(hereHall)) start = hereHall;
+  }
   if (!start) {
     let best = 0;
     for (const h of index.halls) {
