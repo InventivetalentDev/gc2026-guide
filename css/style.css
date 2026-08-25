@@ -893,8 +893,9 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 .dir-row {
   display: grid;
   /* name takes the slack; country and stands stay in their own columns so the
-     booth numbers line up into a readable rail down the right */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 130px) minmax(0, 250px);
+     booth numbers line up into a readable rail down the right, with the save
+     button in a track of its own past them */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 130px) minmax(0, 250px) auto;
   gap: 6px 14px;
   align-items: baseline;
   padding: 8px 16px;
@@ -965,8 +966,16 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   text-transform: uppercase;
 }
 
+/* The button keeps its own baseline: .dir-row aligns on the text baseline,
+   which hangs a bare button off the bottom of the row it belongs to. */
+.dir-row .row-actions { align-self: center; }
+
 @media (max-width: 640px) {
-  .dir-row { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  /* Narrow, the row stacks — but the save button stays beside the name
+     rather than taking a fourth line of its own under the booth numbers. */
+  .dir-row { grid-template-columns: minmax(0, 1fr) auto; gap: 3px 10px; }
+  .dir-country, .dir-stands { grid-column: 1; }
+  .dir-row .row-actions { grid-column: 2; grid-row: 1 / span 3; align-self: start; }
   .dir-country { font-size: .74rem; }
 }
 

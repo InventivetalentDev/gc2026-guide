@@ -25,18 +25,25 @@ const GCMarks = (() => {
   const MARK_KEYS = { saved: "gc2026.saved.v1", played: "gc2026.played.v1" };
   const PREFS_KEY = "gc2026.prefs.v1";
 
-  /* Trade exhibitors, the three facts both pages must agree on.
+  /* Directory booths, the facts both pages must agree on.
 
-     A booth in the business halls has no card of its own, so it is saved
-     under its directory slug. If the map minted a different key shape than
-     the guide reads, a booth saved on one would be invisible on the other —
-     the same class of silent drift boothCodes() is here to prevent. And
-     which halls *are* the business area decides which rows get a key at
-     all, so that predicate is shared too rather than written twice.
+     A booth the guide writes no card about is saved under its slug in the
+     official directory. If the map minted a different key shape than the
+     guide reads, a booth saved on one would be invisible on the other — the
+     same class of silent drift boothCodes() is here to prevent.
 
-     Halls 2-4, per gamescom's own "business area/halls 2-4". Hall 1 is the
-     public Event Arena, and parseFloat leaves the open-air "F8"/"FI" sites
-     as NaN, which fails both comparisons. */
+     That began as a business-hall rule and is now the whole show. An indie
+     studio sharing hall 10.2's 172-way Indie Arena stand has no card either,
+     and wanting to remember where it stands is the same want — so
+     isBusinessHall no longer decides which rows get a key. Every directory
+     row has one.
+
+     What it still decides is the part that really is about the business
+     area: which content the badge switch gates, and which stops the planner
+     warns about on a day those halls are shut. Halls 2-4, per gamescom's own
+     "business area/halls 2-4". Hall 1 is the public Event Arena, and
+     parseFloat leaves the open-air "F8"/"FI" sites as NaN, which fails both
+     comparisons. */
   const DIR_PREFIX = "dir:";
   const dirKey = (slug) => DIR_PREFIX + slug;
   const isDirKey = (key) => typeof key === "string" && key.startsWith(DIR_PREFIX);

@@ -492,35 +492,61 @@ def is_business_hall(hall):
 
 def check_share_tokens(entries):
     """Every identity a share link can carry, hashed the way the guide hashes
-    it. A token claimed twice is abandoned by both claimants at runtime — the
+    it. A token claimed twice is abandoned by every claimant at runtime — the
     item is silently unshareable rather than mistranslated — so this is a
     warning about what a visitor would quietly lose, not a corrupt file.
 
-    Only rows with a business-hall stand are counted, because those are the
-    only ones buildShareCodeMap() claims a "dir:" token for. Checking all 1658
-    rows instead reports collisions against tokens the guide never mints."""
+    Every row counts now, not only the ones with a business-hall stand:
+    buildShareCodeMap() mints a "dir:" token for the whole directory since an
+    entertainment booth became saveable too. That takes the namespace to
+    ~2,160 identities, which is where the first collisions live.
+
+    Mirrors that function's tie-break as well as its hash. A curated identity
+    — a card or a game somebody wrote — beats a directory row claiming the
+    same prefix, and only the row is dropped; two curated claimants still take
+    each other down, which is the case worth shouting about. So the two
+    outcomes are reported apart: a contested row is a note, a contested card
+    is a warning."""
     cards = pathlib.Path("data/exhibitors.json")
     identities = {}
+
+    def claim(key, curated):
+        identities.setdefault(tok36(key), []).append((key, curated))
+
     if cards.exists():
         exhibitors = json.loads(cards.read_text())
         for ex in exhibitors:
-            identities.setdefault(tok36(ex["id"]), []).append(ex["id"])
+            claim(ex["id"], True)
         for key in {
             " ".join(str(g["title"]).strip().lower().split())
             for ex in exhibitors
             for g in ex.get("games") or []
         }:
-            identities.setdefault(tok36(key), []).append(key)
+            claim(key, True)
     for entry in entries:
-        if not any(is_business_hall(s["hall"]) for s in entry.get("stands") or []):
-            continue
-        key = f"dir:{entry['slug']}"
-        identities.setdefault(tok36(key), []).append(key)
+        claim(f"dir:{entry['slug']}", False)
 
-    clashes = {tok: keys for tok, keys in identities.items() if len(keys) > 1}
-    total = sum(len(keys) for keys in identities.values())
+    total = sum(len(claims) for claims in identities.values())
+    lost = {}      # token -> the directory rows a curated identity outranked
+    clashes = {}   # token -> claimants that take each other down
+    for tok, claims in identities.items():
+        if len(claims) == 1:
+            continue
+        curated = [key for key, is_curated in claims if is_curated]
+        if len(curated) == 1:
+            lost[tok] = [key for key, is_curated in claims if not is_curated]
+        else:
+            clashes[tok] = [key for key, _ in claims]
+
+    if lost:
+        rows = sum(len(keys) for keys in lost.values())
+        print(f"note: {rows} directory row(s) lose their share token to a curated "
+              f"identity — saveable and plannable, but they cannot ride a share link:",
+              file=sys.stderr)
+        for tok, keys in sorted(lost.items()):
+            print(f"  {tok}: {', '.join(sorted(keys))}", file=sys.stderr)
     if not clashes:
-        print(f"share tokens: {total} identities, no collisions", file=sys.stderr)
+        print(f"share tokens: {total} identities, no unresolved collisions", file=sys.stderr)
         return
     print(f"warning: {len(clashes)} share-token collision(s) across {total} identities — "
           f"those items cannot ride a share link:", file=sys.stderr)

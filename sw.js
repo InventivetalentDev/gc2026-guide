@@ -111,8 +111,17 @@
    An older worker has no bypass, so it would put a live queue response into
    the stale-while-revalidate shell cache and answer the next reader with a
    minute-old wait as though it were current; an admin navigation would
-   replace the guide's own "./" fallback outright. */
-const VERSION = "v15";
+   replace the guide's own "./" fallback outright.
+
+   v16 is saving the booths the guide writes no card about. The stand sheet
+   grows a list of them in map.html and js/map.js fills it, which is the
+   dead-controls pairing this number exists for in the other direction too:
+   the old script under the new markup leaves an empty box on every shared
+   stand. data/directory.json joins the precache with it — the map now needs
+   it in every hall rather than only in the business ones, and a stand you
+   pinned a studio on has to come up lit in a hall with no reception, which
+   is the whole promise of precaching the hall plans beside it. */
+const VERSION = "v16";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;
@@ -167,6 +176,11 @@ const DATA = [
      hall with no signal has to work. */
   "data/i18n/en.json",
   "data/i18n/de.json",
+  /* The official directory, ~50 KB gzipped. It was runtime-cached while only
+     the business halls read it; now every hall does — it is what names the
+     823 entertainment-hall exhibitors the guide writes no card about, and
+     what lets a stand you saved one on come up lit with no signal. */
+  "data/directory.json",
   "data/hallplan/index.json",
   /* A couple of kilobytes of walls and doorways, and the one part of the
      map that is wayfinding rather than booth-finding — exactly what you

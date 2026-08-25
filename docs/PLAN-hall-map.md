@@ -687,6 +687,15 @@ the labelled stand buttons: a keyboard user gets the guide's list, which is
 better for that input anyway, and pretending otherwise with an arrow-key
 pan would be theatre. None of these change the architecture.
 
+One thing here has since been built and is worth naming, because it looks
+from the outside like it should have broken decision 7: the stand sheet now
+offers the uncarded booths the official directory files on a stand as
+saveable stops (`docs/PLAN-directory-stops.md`). It does *not* touch
+coverage — those rows are joined through a second index and never reach
+`byStand` — so "guide-covered names bright, official-only names dim" holds
+exactly as written above, and is asserted as a property rather than left to
+care.
+
 ## How it is wired
 
 1. **The page** is `map.html` (a shell, like `index.html`) + `js/map.js`

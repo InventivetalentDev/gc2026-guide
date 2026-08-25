@@ -527,11 +527,96 @@
   cursor: pointer;
 }
 .map-sheet-enable:hover { background: color-mix(in srgb, var(--warn) 24%, transparent); }
+/* --- the uncarded booths on this stand ---
+   Up to 172 rows, so the list is a scroll region of its own inside a sheet
+   that is already capped: without the cap here the sheet would grow past the
+   viewport and take its own close button off screen, which is the bug
+   .map-sheet-body's cap exists to prevent. Kept short enough that the Save
+   button and the guide link below it stay in view — the list is something you
+   work down, not the end of the card. */
+.map-sheet-listed { margin-top: 12px; }
+.map-listed-lede {
+  margin: 0 0 8px;
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.map-listed-filter {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--ground-2);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: .82rem;
+}
+.map-listed-filter:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+.map-listed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 42vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--rule-soft);
+}
+.map-listed-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 4px;
+  border: none;
+  border-bottom: 1px solid var(--rule-soft);
+  background: none;
+  color: var(--ink-mid);
+  font: inherit;
+  font-size: .82rem;
+  text-align: left;
+  cursor: pointer;
+}
+.map-listed-row:hover { background: var(--ground-3); color: var(--ink); }
+.map-listed-row:focus-visible { outline: 2px solid var(--signal); outline-offset: -2px; }
+/* The glyph is the state, so it holds a column of its own and never reflows
+   the name beside it when it changes between + and −. */
+.map-listed-mark {
+  flex: none;
+  width: 1em;
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  text-align: center;
+}
+.map-listed-name { flex: 1 1 auto; min-width: 0; }
+.map-listed-country { flex: none; color: var(--ink-dim); font-size: .72rem; }
+.map-listed-row[aria-pressed="true"] { color: var(--ink); }
+.map-listed-row[aria-pressed="true"] .map-listed-mark { color: var(--signal); }
+.map-listed-row[aria-pressed="true"] .map-listed-name { font-weight: 600; }
+.map-listed-empty {
+  margin: 0;
+  padding: 10px 4px;
+  color: var(--ink-dim);
+  font-size: .8rem;
+}
+
 .map-sheet-actions { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
 .map-sheet-actions .chip { font-family: var(--font-mono); font-size: .75rem; padding: 7px 12px; }
 .map-sheet-actions .chip[data-on="true"] {
   background: var(--signal); border-color: var(--signal); color: var(--signal-ink);
 }
+/* Sideways the sheet is a panel down the edge of a screen 390 px tall, where
+   42 vh is 160 px and the strips above have already taken most of it. The
+   list gives up its own scroll region there and lets .map-sheet-body do the
+   scrolling for the whole card, so the Save button under it stays reachable
+   by the same swipe. */
+@media (max-height: 500px) {
+  .map-listed-list { max-height: none; }
+}
+
 /* The corrections mail, one register below the actions it follows: used a
    handful of times a show, so it dresses as the footer's feedback link
    (.subtle-link, css/style.css) rather than competing with the save chip. */

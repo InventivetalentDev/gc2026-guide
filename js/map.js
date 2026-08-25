@@ -60,11 +60,24 @@ const state = {
   power: GCMarks.powerSaver(),
   labels: {},           // {countries, dirGroups} from data/i18n/<lang>.json
   exhibitors: [],       // data/exhibitors.json
-  trade: [],            // business-hall rows from data/directory.json, once loaded
+  trade: [],            // data/directory.json rows standing in the business halls
+  /* …and its rows standing anywhere else. Saveable, but never coverage: see
+     the note over listedByStand. A row with a stand on each side of the show
+     is the same object in both lists, so marking it is one booth either way. */
+  listed: [],
   halls: new Map(),     // hall id -> hall json
   rot: false,           // page-lifetime view; never a stored hall fact
   rotChosen: false,     // the visitor pressed the button, so stop deciding for them
-  byStand: new Map(),   // "hall:CODE" -> [exhibitor, …]
+  byStand: new Map(),   // "hall:CODE" -> [exhibitor, …] — who the guide covers here
+  /* "hall:CODE" -> [directory row, …] — who Koelnmesse files here that the
+     guide writes nothing about. Kept apart from byStand rather than folded
+     into it, because the two answer different questions: byStand decides
+     whether a stand reads as covered (bright name, editorial content), and
+     letting 823 directory rows into it would turn nearly every stand in the
+     entertainment halls bright while the guide still had nothing to say
+     about them. What these rows are good for is remembering where one is,
+     which is saving — so they light a stand you saved and nothing else. */
+  listedByStand: new Map(),
   hall: null,           // current hall id, or OVERVIEW
   stands: [],           // render records for the current hall
   plates: [],           // render records for the overview's hall plates
@@ -102,6 +115,13 @@ const exRank = (ex) =>
   state.planRanks.get(GCMarks.stopKey("exhibitor", ex.id)) ?? GCMarks.UNRANKED;
 
 const exSaved = (ex) => GCMarks.hasSaved(state.marks.saved, ex);
+
+/* What is *yours* on a stand: everyone the guide covers here, plus any
+   directory row you saved. A stand carrying 172 uncarded studios is not
+   marked by the 171 you walked past, so an unsaved listed row counts towards
+   neither colour nor badge — which is also what keeps `played` reading
+   exactly as it did on a stand with nothing listed saved on it. */
+const standMarks = (rec) => [...rec.exs, ...(rec.listed || []).filter(exSaved)];
 /* A booth reads as played when marked directly, or when every game you
    saved there is played — the same asymmetry as the guide's hasPlayed. */
 const exPlayed = (ex) => {
@@ -145,20 +165,39 @@ function toggleSaved(id) {
    everything downstream stops caring where a record came from. */
 function buildJoin() {
   state.byStand.clear();
-  const add = (ex, hall, booth) => {
+  state.listedByStand.clear();
+  const add = (index, ex, hall, booth) => {
     if (!hall || !booth) return;
     for (const code of GCMarks.boothCodes(booth)) {
       const key = `${hall}:${code}`;
-      if (!state.byStand.has(key)) state.byStand.set(key, []);
-      const at = state.byStand.get(key);
+      if (!index.has(key)) index.set(key, []);
+      const at = index.get(key);
       if (!at.includes(ex)) at.push(ex);
     }
   };
+  /* Coverage: the curated cards, and the directory rows the business halls
+     are browsed through. A directory row's *entertainment* stand is not
+     coverage even when the same row's business stand is — the guide knows no
+     more about the first than about any other uncarded booth — so it is left
+     to the listed index below. */
   for (const ex of [...state.exhibitors, ...state.trade].filter(offered)) {
-    add(ex, ex.hall, ex.booth);
-    for (const s of ex.stands || []) add(ex, s.hall, s.booth);
+    add(state.byStand, ex, ex.hall, ex.booth);
+    for (const s of ex.stands || []) {
+      if (ex.fromDirectory && !GCMarks.isBusinessHall(s.hall)) continue;
+      add(state.byStand, ex, s.hall, s.booth);
+    }
   }
+  /* Saveable, never coverage. Ungated, unlike the business rows: these name
+     the public floor of a public hall, which the map already prints off the
+     official filing — there is nothing here a badge decides. */
+  for (const ex of state.listed)
+    for (const s of ex.stands || [])
+      if (!GCMarks.isBusinessHall(s.hall)) add(state.listedByStand, ex, s.hall, s.booth);
 }
+
+/* Every record this page can mark, each exactly once — the two directory
+   lists share the rows that stand on both sides of the show. */
+const allRecords = () => [...new Set([...state.exhibitors, ...state.trade, ...state.listed])];
 
 /* Business-area content follows the guide's rule rather than the map's
    convenience: offered only in trade mode — else a consumer taps a Hall 2.1
@@ -201,7 +240,7 @@ function redrawJoin() {
   if (rec) selectStand(rec);
 }
 
-/* ================= trade exhibitors =================
+/* ================= the official directory =================
 
    The business halls are drawn, but only the guide's curated cards used to
    join to them, so a hall of 300 stands lit up almost none. The directory
@@ -211,37 +250,54 @@ function redrawJoin() {
 
    Same two rules as the guide (docs/PLAN-trade-exhibitors.md): the pref
    gates browsing, never resolution, and a booth's identity is its `dir:`
-   key wherever it was saved from. */
+   key wherever it was saved from.
+
+   The rest of the directory is here for a narrower job — see
+   docs/PLAN-directory-stops.md. 823 of its rows stand only in the
+   entertainment halls, most of them indie studios sharing one of hall 10's
+   big collective stands, and the guide cards almost none of them. It has no
+   editorial opinion to offer about any of them and does not pretend to: they
+   never make a stand read as covered. What they do is let you save one, so
+   the stand it stands on lights up like every other stop in your plan. */
 
 const DIRECTORY_URL = "data/directory.json";
 let directoryRequest = null;
 
-const wantsTrade = () =>
-  GCMarks.tradeMode() ||
-  [...state.marks.saved.exhibitors].some(GCMarks.isDirKey) ||
-  [...state.marks.played.exhibitors].some(GCMarks.isDirKey);
-
 /* A directory row in the same shape the rest of this file expects from an
    exhibitor: an id, a name, and stands to join on. `trade` is what the sheet
-   branches on — nothing else needs to know. */
-function tradeRecords(payload) {
+   branches on — nothing else needs to know.
+
+   One record per row, holding every stand the row files, sorted into the two
+   lists by where it stands. 96 rows stand on both sides of the show, and they
+   are pushed to both lists *as the same object*: `routeStops` keys a stop by
+   the record it found, so a second copy of one company would draw two pins
+   and number them separately. */
+function directoryRecords(payload) {
   const claimed = new Set(state.exhibitors.map((ex) => ex.dirSlug).filter(Boolean));
-  const out = [];
+  const trade = [];
+  const listed = [];
   for (const entry of payload.exhibitors || []) {
-    const stands = (entry.stands || []).filter((s) => GCMarks.isBusinessHall(s.hall));
+    const stands = entry.stands || [];
     if (!stands.length || claimed.has(entry.slug)) continue;
-    out.push({
+    const business = stands.some((s) => GCMarks.isBusinessHall(s.hall));
+    const record = {
       id: GCMarks.dirKey(entry.slug),
       name: entry.name,
-      trade: true,
+      /* About the record, and what `offered` gates it by. Which *stand* sits
+         behind the badge is asked per stand in buildJoin, because a row with
+         a booth in both areas is gated on one of them and not the other. */
+      trade: business,
+      fromDirectory: true,
       country: entry.country || "",
       cats: (entry.cats || []).map((id) => groupLabel(id, payload.groups?.[id])).filter(Boolean),
       profile: payload.profileBase && entry.slug ? `${payload.profileBase}${entry.slug}/` : "",
       stands,
       games: [],
-    });
+    };
+    if (business) trade.push(record);
+    if (stands.some((s) => !GCMarks.isBusinessHall(s.hall))) listed.push(record);
   }
-  return out;
+  return { trade, listed };
 }
 
 /* Country and product-group display names, fetched alongside the directory
@@ -261,8 +317,10 @@ function loadLabels() {
     });
 }
 
-function loadTrade() {
-  if (state.trade.length || directoryRequest) return directoryRequest;
+let directoryLoaded = false;
+
+function loadDirectory() {
+  if (directoryLoaded || directoryRequest) return directoryRequest;
   directoryRequest = Promise.all([
     fetch(`${DIRECTORY_URL}?v=${Date.now()}`).then((r) =>
       r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))
@@ -270,12 +328,16 @@ function loadTrade() {
     loadLabels(),
   ])
     .then(([payload]) => {
-      state.trade = tradeRecords(payload);
+      const { trade, listed } = directoryRecords(payload);
+      state.trade = trade;
+      state.listed = listed;
+      directoryLoaded = true;
       redrawJoin();
     })
     .catch(() => {
-      /* offline with a cold cache: the business halls simply stay as they
-         were, which is exactly the parent branch's behaviour */
+      /* offline with a cold cache: every hall simply stays as it was, which
+         is exactly the parent branch's behaviour. Not latched, so the next
+         hall change tries again. */
     })
     .finally(() => {
       directoryRequest = null;
@@ -285,11 +347,19 @@ function loadTrade() {
 
 function standRecord(hallId, s) {
   const codes = GCMarks.boothCodes([s.nr, ...(s.also || [])].join(" "));
-  const exs = [];
-  for (const code of codes)
-    for (const ex of state.byStand.get(`${hallId}:${code}`) || [])
-      if (!exs.includes(ex)) exs.push(ex);
-  return { data: s, codes, exs };
+  const pick = (index) => {
+    const out = [];
+    for (const code of codes)
+      for (const ex of index.get(`${hallId}:${code}`) || [])
+        if (!out.includes(ex)) out.push(ex);
+    return out;
+  };
+  const exs = pick(state.byStand);
+  /* Whoever the official directory files here that the guide is not already
+     covering. The filter is what keeps a row standing on both sides of the
+     show from appearing twice on its own business stand. */
+  const listed = pick(state.listedByStand).filter((ex) => !exs.includes(ex));
+  return { data: s, codes, exs, listed };
 }
 
 /* ================= hall data ================= */
@@ -1006,8 +1076,9 @@ function refreshMarks() {
     return;
   }
   for (const rec of state.stands) {
-    const isSaved = rec.exs.some(exSaved);
-    const isPlayed = rec.exs.length > 0 && rec.exs.every(exPlayed);
+    const mine = standMarks(rec);
+    const isSaved = mine.some(exSaved);
+    const isPlayed = mine.length > 0 && mine.every(exPlayed);
     for (const el of [rec.g, rec.lg]) {
       el.classList.toggle("saved", isSaved);
       el.classList.toggle("played", isPlayed);
@@ -1141,10 +1212,13 @@ function renderAccess(id) {
 function setTrade(on) {
   if (GCMarks.tradeMode() === on) return;
   GCMarks.setTradeMode(on);
-  /* Turning it on may need rows this page has never fetched — loadTrade()
-     redraws the hall itself once they land. Everything else redraws now. */
-  if (on && !state.trade.length) loadTrade();
-  else redrawJoin();
+  /* Turning it on may need rows this page has never fetched — loadDirectory()
+     redraws the hall itself once they land. The redraw happens either way and
+     not only in the else: what the switch gates is the *curated* trade cards
+     as well as the directory rows, so turning it off has to take them off a
+     hall that never managed to fetch anything. */
+  if (!directoryLoaded) loadDirectory();
+  redrawJoin();
   renderAccess(state.hall);
   if ($("#map")) refreshMarks(); // the counts line and the chip row both move
 }
@@ -1175,13 +1249,18 @@ function hallCountBy(id, counts) {
      a multi-stand trade record is counted in every hall it stands in, not
      only in the scalar `hall` a curated card carries. */
   if (!hall) {
-    return [...state.exhibitors, ...state.trade].filter(
+    return allRecords().filter(
       (ex) => counts(ex) && standsOf(ex).some((s) => String(s.hall) === id)
     ).length;
   }
   const stops = new Set();
-  for (const s of hall.stands)
-    for (const ex of standRecord(id, s).exs) if (counts(ex)) stops.add(ex);
+  for (const s of hall.stands) {
+    const rec = standRecord(id, s);
+    /* Both sides of the stand, one unit. Every `counts` predicate here starts
+       by asking whether the record is saved, so the hundreds of listed rows
+       nobody picked are filtered by the caller rather than counted here. */
+    for (const ex of [...rec.exs, ...rec.listed]) if (counts(ex)) stops.add(ex);
+  }
   return stops.size;
 }
 
@@ -1786,7 +1865,7 @@ const PIN_R = 4.2;         /* pin radius, in hall metres like every other mark h
    order the show runs in. */
 function planDays() {
   const seen = new Set();
-  for (const ex of [...state.exhibitors, ...state.trade])
+  for (const ex of allRecords())
     if (GCMarks.hasSaved(state.marks.saved, ex))
       for (const day of GCMarks.stopDays(state.marks.saved, state.itinerary, ex)) seen.add(day);
   return {
@@ -1806,7 +1885,10 @@ function routeStops() {
   if (!state.day) return [];
   const stops = new Map();
   for (const rec of state.stands) {
-    for (const ex of rec.exs) {
+    /* A saved directory row is a stop like any other — it is in the same plan,
+       under the same key, and the guide's hall lens numbers it in the same
+       list. The unsaved ones fall out on the very next line. */
+    for (const ex of [...rec.exs, ...rec.listed]) {
       if (!stops.has(ex)) {
         if (!GCMarks.hasSaved(state.marks.saved, ex)) continue;
         if (!GCMarks.stopDays(state.marks.saved, state.itinerary, ex).has(state.day)) continue;
@@ -2203,8 +2285,19 @@ function renderRoute() {
   const offered = planDays();
   const live = new Set([...offered.days, ...(offered.unplaced ? [PLAN_NONE] : [])]);
   /* A day whose last stop was unsaved — or a ?day= for a day nobody planned —
-     would strand the overlay on an empty hall with no lit chip to clear it. */
-  if (state.day && (!offered.days.length || !live.has(state.day))) {
+     would strand the overlay on an empty hall with no lit chip to clear it.
+
+     Not while the directory is still in flight, though. A saved "dir:" key
+     with no directory loaded is data that has not arrived, not a stop that
+     went away — the same reading tradeDataPending() takes in the guide — and
+     this runs on the first hall render, which is before the fetch it does not
+     wait for has landed. Dropping the day there would throw away the ?day=
+     the plan board had just handed over, permanently and without a lit chip
+     to say so: the redraw when the rows land re-runs this, but the parameter
+     is gone by then. */
+  const pending =
+    !directoryLoaded && [...state.marks.saved.exhibitors].some(GCMarks.isDirKey);
+  if (state.day && !pending && (!offered.days.length || !live.has(state.day))) {
     state.day = null;
     writeDayParam();
   }
@@ -2650,6 +2743,175 @@ function autoRotate(id) {
   }
 }
 
+/* ================= the picker for uncarded booths =================
+
+   Hall 10.2's Indie Arena Booth is one stand with 172 companies filed on it,
+   and 606 of the entertainment halls' directory rows stand on a shared stand
+   like it. So "save this stand" is not the question — "save which of these"
+   is, and the sheet has to be able to ask it.
+
+   The list is sorted with whatever you have already saved at the top, and
+   past ten rows it grows a filter box, because scrolling 172 names to find
+   11 bit studios is worse than typing four letters of it.
+
+   It is rebuilt when the stand changes and patched in place after that. A
+   rebuild on every save would take away the filter you typed and the place
+   you had scrolled to, both of which you are still using — you came here to
+   mark several. */
+
+const LISTED_FILTER_MIN = 10;
+let listedRows = [];
+let listedFilter = "";
+
+/* Saved first, then by name in the reading language. Read once per render
+   rather than per comparison — localeCompare on 172 names is cheap, a
+   storage-backed predicate inside the comparator is not. */
+function listedOrder(rows) {
+  const saved = new Set(rows.filter(exSaved).map((ex) => ex.id));
+  return [...rows].sort(
+    (a, b) =>
+      (saved.has(b.id) ? 1 : 0) - (saved.has(a.id) ? 1 : 0) ||
+      String(a.name).localeCompare(String(b.name), GCI18N.lang)
+  );
+}
+
+function listedRowHtml(ex) {
+  const on = exSaved(ex);
+  /* The guide's own sentence for this exact act, not a second wording of it:
+     these rows are booths and the list they go on is the same list. */
+  const label = t(on ? "mark.aria.booth.unsave" : "mark.aria.booth.save", { name: ex.name });
+  /* The whole row is the button: on a phone this list is the one thing on the
+     sheet you aim at repeatedly, and a name is a much bigger target than the
+     glyph beside it. */
+  return `<li><button class="map-listed-row" type="button" data-listed="${esc(ex.id)}"
+      data-listed-name="${esc(ex.name)}" aria-pressed="${on}"
+      title="${esc(label)}" aria-label="${esc(label)}"><span class="map-listed-mark"
+      aria-hidden="true">${on ? "−" : "+"}</span><span class="map-listed-name">${esc(
+    ex.name
+  )}</span>${
+    ex.country ? `<span class="map-listed-country">${esc(countryLabel(ex.country))}</span>` : ""
+  }</button></li>`;
+}
+
+/* Only the rows, so the filter box above them keeps its caret while you type
+   into it. */
+function renderListedRows() {
+  const host = $("#listed-rows");
+  if (!host) return;
+  const needle = listedFilter.trim().toLowerCase();
+  const shown = needle
+    ? listedRows.filter((ex) => ex.name.toLowerCase().includes(needle))
+    : listedRows;
+  host.innerHTML = shown.length
+    ? `<ul class="map-listed-list">${listedOrder(shown).map(listedRowHtml).join("")}</ul>`
+    : `<p class="map-listed-empty">${esc(t("map.listedNoMatch"))}</p>`;
+}
+
+function renderListed(rows) {
+  const box = $("#sheet-listed");
+  /* An installed shell whose cached map.html predates this feature has no
+     box to fill — the stand still opens, and its Save button still works. */
+  if (!box) return;
+  listedRows = rows;
+  box.hidden = !rows.length;
+  if (!rows.length) {
+    box.textContent = "";
+    return;
+  }
+  box.innerHTML =
+    `<p class="map-listed-lede">${esc(t("map.listedLede", { n: rows.length }))}</p>` +
+    (rows.length >= LISTED_FILTER_MIN
+      ? `<input class="map-listed-filter" type="search" autocomplete="off" value="${esc(
+          listedFilter
+        )}" placeholder="${esc(t("map.listedFilter"))}" aria-label="${esc(
+          t("map.listedFilterAria")
+        )}">`
+      : "") +
+    `<div id="listed-rows"></div>`;
+  renderListedRows();
+}
+
+/* The rows' own state, without touching the list around them. */
+function syncListed() {
+  for (const btn of $("#sheet-listed")?.querySelectorAll("[data-listed]") || []) {
+    const on = String(state.marks.saved.exhibitors.has(btn.dataset.listed));
+    if (btn.getAttribute("aria-pressed") === on) continue;
+    const label = t(on === "true" ? "mark.aria.booth.unsave" : "mark.aria.booth.save", {
+      name: btn.dataset.listedName,
+    });
+    btn.setAttribute("aria-pressed", on);
+    btn.setAttribute("aria-label", label);
+    btn.setAttribute("title", label);
+    btn.querySelector(".map-listed-mark").textContent = on === "true" ? "−" : "+";
+  }
+}
+
+$("#sheet-listed")?.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-listed]");
+  if (!btn) return;
+  /* toggleSaved -> refreshMarks has already recoloured the stand under the
+     sheet and renumbered the day's route; what is left is this row and the
+     badges at the top of the sheet, both patched rather than re-rendered. */
+  toggleSaved(btn.dataset.listed);
+  syncListed();
+  if (state.sel) renderSheetBadges(state.sel);
+});
+
+$("#sheet-listed")?.addEventListener("input", (e) => {
+  if (!e.target.closest(".map-listed-filter")) return;
+  listedFilter = e.target.value;
+  renderListedRows();
+});
+
+/* A directory row's own facts, which are few: a name, where it is from and
+   what it makes. No lineup, no queue forecast, no crowd note — the guide has
+   researched none of that, and the sheet says as much in the line under this
+   one. Shared by the business booths and the uncarded entertainment ones,
+   because the directory knows exactly the same things about both. */
+function directoryWho(ex) {
+  let who = `<b>${esc(ex.name)}</b>`;
+  if (ex.country) who += ` · ${esc(countryLabel(ex.country))}`;
+  if (ex.cats.length)
+    who += `<br>${esc(ex.cats.slice(0, 4).join(", "))}` +
+      (ex.cats.length > 4 ? esc(t("map.plusMore", { n: ex.cats.length - 4 })) : "");
+  return who;
+}
+
+/* The state line at the top of the sheet. Its own function because a save
+   made in the picker below has to move it without rebuilding the list that
+   save was made in.
+
+   Read off `standMarks` rather than `rec.exs`, so a stand whose only mark is
+   a directory row you saved still says so — which is the whole point of
+   having saved it. */
+function renderSheetBadges(rec) {
+  const mine = standMarks(rec);
+  const badges = [];
+  /* First: on a numbered stand this is the thing you tapped to check. */
+  if (rec.stop)
+    badges.push(
+      `<span class="badge badge-stop">${esc(
+        t("map.stopBadge", { n: rec.stop.n, total: state.route.length })
+      )}</span>`
+    );
+  if (mine.some(exSaved))
+    badges.push(`<span class="badge badge-saved">${esc(t("mark.saved"))}</span>`);
+  /* The day this stop is planned for, read from the same itinerary the plan
+     board writes — the map is where you stand when you wonder "was this a
+     Thursday thing?", and the answer should not cost a trip to the guide.
+     Weekday names come from the dates, like everywhere else (js/i18n.js). */
+  const days = [...new Set(mine.flatMap(plannedDays))].sort();
+  if (days.length)
+    badges.push(`<span class="badge">${esc(
+      t("map.plannedFor", { days: days.map((d) => dayName(d, "short")).join(", ") })
+    )}</span>`);
+  if (rec.exs[0] && rec.exs[0].locationConfirmed === false)
+    badges.push(`<span class="badge badge-unconf">${esc(t("map.unconfBadge"))}</span>`);
+  if (mine.length && mine.every(exPlayed))
+    badges.push(`<span class="badge">${esc(t("mark.played"))}</span>`);
+  $("#sheet-badges").innerHTML = badges.join("");
+}
+
 /* ================= selection & sheet ================= */
 
 function zoomToStand(rec) {
@@ -2665,6 +2927,12 @@ function zoomToStand(rec) {
 }
 
 function selectStand(rec, { zoom = false } = {}) {
+  /* A filter typed into one stand's picker means nothing on the next one, and
+     silently hiding most of another stand's occupants behind it would read as
+     the guide knowing less about that stand than it does. Kept across a
+     re-select of the same stand, which is what a save from inside the picker
+     does. */
+  if (state.sel !== rec) listedFilter = "";
   state.sel?.g.classList.remove("sel");
   state.sel = rec || null;
   const sheet = $("#sheet");
@@ -2686,48 +2954,29 @@ function selectStand(rec, { zoom = false } = {}) {
 
   const s = rec.data;
   const ex = rec.exs[0];
-  $("#sheet-name").textContent = ex ? ex.name : (s.names[0] || t("map.standNr", { nr: s.nr }));
+  /* One uncarded occupant and no card: that company *is* this stand, so it
+     gets the heading and the sheet's own Save button, and no list is offered
+     to pick it out of. Several, and the heading is the stand itself — naming
+     whichever of the thirty-three sorted first would read as the guide
+     picking one out, which it has not. */
+  const sole = !ex && rec.listed.length === 1 ? rec.listed[0] : null;
+  $("#sheet-name").textContent = ex
+    ? ex.name
+    : sole
+      ? sole.name
+      : rec.listed.length
+        ? t("map.standNr", { nr: s.nr })
+        : s.names[0] || t("map.standNr", { nr: s.nr });
   $("#sheet-loc").textContent =
     t("map.sheetLoc", { hall: state.hall, nr: s.nr }) +
     (s.also ? t("map.sheetAlso", { list: s.also.join(", ") }) : "") +
     (s.a ? ` · ~${s.a} m²` : "");
 
-  const badges = [];
-  /* First: on a numbered stand this is the thing you tapped to check. */
-  if (rec.stop)
-    badges.push(
-      `<span class="badge badge-stop">${esc(
-        t("map.stopBadge", { n: rec.stop.n, total: state.route.length })
-      )}</span>`
-    );
-  if (rec.exs.some(exSaved))
-    badges.push(`<span class="badge badge-saved">${esc(t("mark.saved"))}</span>`);
-  /* The day this stop is planned for, read from the same itinerary the plan
-     board writes — the map is where you stand when you wonder "was this a
-     Thursday thing?", and the answer should not cost a trip to the guide.
-     Weekday names come from the dates, like everywhere else (js/i18n.js). */
-  const days = [...new Set(rec.exs.flatMap(plannedDays))].sort();
-  if (days.length)
-    badges.push(`<span class="badge">${esc(
-      t("map.plannedFor", { days: days.map((d) => dayName(d, "short")).join(", ") })
-    )}</span>`);
-  if (ex && ex.locationConfirmed === false)
-    badges.push(`<span class="badge badge-unconf">${esc(t("map.unconfBadge"))}</span>`);
-  if (rec.exs.length && rec.exs.every(exPlayed))
-    badges.push(`<span class="badge">${esc(t("mark.played"))}</span>`);
-  $("#sheet-badges").innerHTML = badges.join("");
+  renderSheetBadges(rec);
 
   let who;
   if (ex && ex.trade) {
-    /* A directory-backed booth: no lineup, no queue forecast, nothing
-       editorial at all — what it does have is a country, its product groups
-       and the fact that you need a badge to be standing here. */
-    who = `<b>${esc(ex.name)}</b>`;
-    if (ex.country) who += ` · ${esc(countryLabel(ex.country))}`;
-    if (ex.cats.length) {
-      who += `<br>${esc(ex.cats.slice(0, 4).join(", "))}` +
-        (ex.cats.length > 4 ? esc(t("map.plusMore", { n: ex.cats.length - 4 })) : "");
-    }
+    who = directoryWho(ex);
     /* Shared business stands run large — one 837 m² stand in hall 2.1 holds
        fourteen companies — so the neighbours are capped the way the official
        plan's own name list is, rather than filling the sheet. */
@@ -2749,6 +2998,19 @@ function selectStand(rec, { zoom = false } = {}) {
     }
     if (rec.exs.length > 1)
       who += `<br>${esc(t("map.alsoHere"))}: ${rec.exs.slice(1).map((x) => esc(x.name)).join(", ")}`;
+  } else if (sole) {
+    /* The stand's one uncarded occupant, told the same way a business booth
+       is: the guide has no lineup or queue call for either, and the same two
+       facts about both. */
+    who = `${directoryWho(sole)}<br><span class="map-sheet-dim">${esc(
+      t("map.notCoveredSaveOne")
+    )}</span>`;
+  } else if (rec.listed.length) {
+    /* Named in the official directory but not in the guide, and saveable from
+       the list below. The names are not repeated up here: printing six of
+       them above a list of all of them is the same answer twice, and the
+       second one is the one you can act on. */
+    who = `<span class="map-sheet-dim">${esc(t("map.notCoveredSaveAny"))}</span>`;
   } else if (s.names.length) {
     /* Named in the official plan but not in the guide — say so rather
        than leave a blank booth looking like a data bug.
@@ -2776,14 +3038,21 @@ function selectStand(rec, { zoom = false } = {}) {
      answers with the exhibitor — or with the honest "not covered". */
   $("#sheet-trade")?.addEventListener("click", () => setTrade(true));
 
+  /* Everyone else on this stand, each saveable on their own. Before the Save
+     button below rather than after it: on a stand with no card the button is
+     `sole`'s, and a list of the others between a company's name and its own
+     Save button would separate the two. */
+  renderListed(sole ? [] : rec.listed);
+
   const save = $("#sheet-save");
-  save.hidden = !ex;
-  if (ex) {
-    const on = state.marks.saved.exhibitors.has(ex.id);
+  const target = ex || sole;
+  save.hidden = !target;
+  if (target) {
+    const on = state.marks.saved.exhibitors.has(target.id);
     save.dataset.on = on;
     save.textContent = on ? t("map.unsaveBooth") : t("map.saveBooth");
     save.onclick = () => {
-      toggleSaved(ex.id);
+      toggleSaved(target.id);
       selectStand(rec);
     };
   }
@@ -2816,17 +3085,18 @@ function selectStand(rec, { zoom = false } = {}) {
     }
   }
   /* Straight to the exhibitor's card in the guide when we know who this
-     is; the saved list otherwise. A trade booth has no card to land on, so
-     it offers the exhibitor's own official profile instead — a link into the
-     guide would drop the visitor on a grid that does not contain them. */
+     is; the saved list otherwise. A directory booth has no card to land on,
+     so it offers the exhibitor's own official profile instead — a link into
+     the guide would drop the visitor on a grid that does not contain them.
+     True of an uncarded indie studio exactly as it is of a trade booth. */
   const link = $("#sheet-link");
-  if (ex && ex.trade && ex.profile) {
-    link.href = ex.profile;
+  if (target && target.fromDirectory && target.profile) {
+    link.href = target.profile;
     link.textContent = t("map.officialProfile");
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener nofollow");
   } else {
-    link.href = ex && !ex.trade ? `./#exhibitors?ex=${encodeURIComponent(ex.id)}` : "./#exhibitors";
+    link.href = ex && !ex.fromDirectory ? `./#exhibitors?ex=${encodeURIComponent(ex.id)}` : "./#exhibitors";
     link.textContent = t("map.openInGuide");
     link.removeAttribute("target");
     link.removeAttribute("rel");
@@ -2842,10 +3112,19 @@ function selectStand(rec, { zoom = false } = {}) {
      link simply has nothing here to fill. */
   const report = $("#sheet-report");
   if (report) {
-    const listed = (rec.exs.length ? rec.exs.map((x) => x.name) : s.names).filter(Boolean);
-    const shown = listed.length
-      ? listed.slice(0, 6).join(", ") +
-        (listed.length > 6 ? t("map.plusMore", { n: listed.length - 6 }) : "")
+    /* What the sheet is claiming right now, in the order it claims it: the
+       guide's own names first, then the directory's where it has none of its
+       own, and the raw filing only where neither reaches. */
+    const claims = (
+      rec.exs.length
+        ? rec.exs.map((x) => x.name)
+        : rec.listed.length
+          ? rec.listed.map((x) => x.name)
+          : s.names
+    ).filter(Boolean);
+    const shown = claims.length
+      ? claims.slice(0, 6).join(", ") +
+        (claims.length > 6 ? t("map.plusMore", { n: claims.length - 6 }) : "")
       : t("map.reportShownNone");
     const here = `${location.origin}${location.pathname}#${state.hall}/${[...rec.codes][0] || ""}`;
     report.href =
@@ -2908,11 +3187,13 @@ window.addEventListener("storage", (e) => {
      main() renders the current state anyway once it lands. */
   if (!state.index) return;
   loadMarks();
-  /* Trade mode turned on in the guide, or a trade booth saved there — either
-     way this page now needs rows it has not fetched. loadTrade() redraws the
-     hall itself once they land; when it has nothing to fetch, the join still
-     has to be rebuilt, because which curated cards are offered just changed. */
-  if (wantsTrade() && !state.trade.length) loadTrade();
+  /* A directory this page never managed to fetch is worth another try on any
+     sign of life — it holds the trade rows the badge switch has just asked
+     for as much as the listed rows every hall wants. loadDirectory() redraws
+     the hall itself once they land; with nothing left to fetch, the join
+     still has to be rebuilt, because which curated cards are offered may
+     have just changed. */
+  if (!directoryLoaded) loadDirectory();
   else if (e.key === null || e.key === GCMarks.PREFS_KEY) redrawJoin();
   refreshMarks();
   /* The access banner reads the trade switch as well as the hall, and the
@@ -2977,6 +3258,12 @@ async function showHall(id, { standCode = null } = {}) {
     $("#halls .chip.active")?.scrollIntoView({ inline: "center", block: "nearest" });
     renderAccess(id);
     renderSourceNote(); /* its door clause is per hall */
+    /* A directory that never landed — the map opened in a dead hall with a
+       cold cache — is worth another try whenever the visitor asks for
+       something new. Fire-and-forget, like the one at boot: it redraws the
+       hall itself if it lands, and costs one request per hall change in the
+       one case where nothing else on the page can fill this in. */
+    if (!directoryLoaded) loadDirectory();
     if (!state.halls.has(id)) $("#load").hidden = false;
     await loadHall(id);
     /* Before the draw, not after: renderHall reads the orientation to lay the
@@ -3088,10 +3375,13 @@ async function main() {
   buildJoin();
   if (window.GCQueues && event) { GCQueues.configure({ event, exhibitors }); GCQueues.start(); }
   renderSourceNote();
-  /* Not awaited: the entertainment halls are the common case and must not
-     wait on a 43 KB file they don't use. The business halls fill in when it
-     lands, which is what the redraw in loadTrade() is for. */
-  if (wantsTrade()) loadTrade();
+  /* Not awaited, and no longer conditional: every hall wants the directory
+     now — the business halls to be browsable at all, the rest so a stand you
+     saved a studio on comes up lit and the sheet can offer the others. It is
+     precached with the hall plans, so the fetch is usually the cache. The
+     hall on screen fills in when it lands, which is what the redraw in
+     loadDirectory() is for. */
+  loadDirectory();
 
   /* A day handed over by the plan board's "Map →", or by a shared link.
      Nothing is validated here: renderRoute drops a day nobody planned, which
