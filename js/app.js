@@ -1902,11 +1902,18 @@ function haystackFor(scope, record, build) {
   if (!cache) haystacks.set(scope, (cache = new WeakMap()));
   let hay = cache.get(record);
   if (hay === undefined) {
-    /* `words` stays null until a short term asks for it — see matchesTerms.
+    /* A builder hands back one array of name-like fields, or {name, prose}
+       where free-running sentences are among them — a card's description.
+       The split only matters to short terms; see matchesTerms.
+
+       `words` stays null until a short term asks for it — see matchesTerms.
        Most queries are long enough to be answered by the single indexOf this
        cache already existed to make cheap, and splitting every directory row
        into a word list for those would hand back what caching the text won. */
-    cache.set(record, (hay = { text: build().join(" ").toLowerCase(), words: null }));
+    const built = build();
+    const name = (Array.isArray(built) ? built : built.name).join(" ").toLowerCase();
+    const prose = (Array.isArray(built) ? [] : built.prose || []).join(" ").toLowerCase();
+    cache.set(record, (hay = { text: prose ? `${name} ${prose}` : name, name, words: null, nameWords: null }));
   }
   return hay;
 }
@@ -1917,6 +1924,10 @@ function haystackFor(scope, record, build) {
    "Köln" is one word and "Aidshilfe Köln" is still findable by its second. */
 const WORD_BREAK = /[^\p{L}\p{N}.+]+/u;
 const wordsOf = (hay) => hay.words || (hay.words = hay.text.split(WORD_BREAK).filter(Boolean));
+const nameWordsOf = (hay) =>
+  hay.nameWords ||
+  (hay.nameWords =
+    hay.name === hay.text ? wordsOf(hay) : hay.name.split(WORD_BREAK).filter(Boolean));
 
 /* ---------- how a term matches ----------
 
@@ -1959,12 +1970,21 @@ const queryTerms = (q) => {
 /* Every term has to match, each on its own terms. Note what an infix term
    does *not* need: a word-boundary match is by definition a substring of the
    whole text, so `includes` already covers both ways a long term can match,
-   and the word list is never built for it. */
+   and the word list is never built for it.
+
+   A short term completes a *name*, not a sentence. Prefix matching exists so
+   "6" finds hall 6.1 and "io i" holds IO Interactive while "interactive" is
+   still being typed — it reaches into names, tags, titles and booth codes.
+   Left loose on prose it turns an initialism into noise: "onl" is the ONL
+   marker on a card running tonight's reveals, and it sat inside "only" in
+   fourteen descriptions. So against prose a short term matches a whole word
+   or not at all — a description that says "ONL" outright is still found. */
 const matchesTerms = (hay, terms) =>
   terms.every((term) =>
     term.infix
       ? hay.text.includes(term.text)
-      : wordsOf(hay).some((word) => word.startsWith(term.text))
+      : nameWordsOf(hay).some((word) => word.startsWith(term.text)) ||
+        (hay.name !== hay.text && wordsOf(hay).some((word) => word === term.text))
   );
 
 /* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
@@ -1977,29 +1997,33 @@ const matchesTerms = (hay, terms) =>
    searchable. */
 function matchesQuery(ex, terms) {
   if (!terms.length) return true;
-  const hay = haystackFor("card", ex, () => [
-    ex.name,
-    ex.description,
-    ex.country || "",
-    countryLabel(ex.country || ""),
-    /* Both spellings of "hall 7.1", so the word works in either language
-       whichever one the page is in. */
-    ex.hall ? `hall ${ex.hall} ${t("hall.word")} ${ex.hall}` : "",
-    ex.booth || "",
-    /* Raw tag and its localized label both match: a German visitor types
-       "Simracing", an English one "sim racing", and the chip they can see
-       is always searchable. */
-    ...(ex.tags || []),
-    ...(ex.tags || []).map(tagLabel),
-    ...visibleGames(ex).map((g) => g.title),
-    /* Shorthand and spelled-out name both find the booths running something
-       off gamescom's own stage — reading visibleGames keeps a gated premiere
-       out of it under "hide 18+", like the title itself. */
-    visibleGames(ex).some((g) => g.onl) ? "onl opening night live" : "",
-    /* Searching "18+" while hiding 18+ would return exactly the booths whose
-       gated titles are currently hidden. */
-    hasAdult(ex) && state.age !== "hide" ? "18+" : "",
-  ]);
+  const hay = haystackFor("card", ex, () => ({
+    name: [
+      ex.name,
+      ex.country || "",
+      countryLabel(ex.country || ""),
+      /* Both spellings of "hall 7.1", so the word works in either language
+         whichever one the page is in. */
+      ex.hall ? `hall ${ex.hall} ${t("hall.word")} ${ex.hall}` : "",
+      ex.booth || "",
+      /* Raw tag and its localized label both match: a German visitor types
+         "Simracing", an English one "sim racing", and the chip they can see
+         is always searchable. */
+      ...(ex.tags || []),
+      ...(ex.tags || []).map(tagLabel),
+      ...visibleGames(ex).map((g) => g.title),
+      /* Shorthand and spelled-out name both find the booths running something
+         off gamescom's own stage — reading visibleGames keeps a gated premiere
+         out of it under "hide 18+", like the title itself. */
+      visibleGames(ex).some((g) => g.onl) ? "onl opening night live" : "",
+      /* Searching "18+" while hiding 18+ would return exactly the booths whose
+         gated titles are currently hidden. */
+      hasAdult(ex) && state.age !== "hide" ? "18+" : "",
+    ],
+    /* The one free-running sentence in the pile: searchable in full, but a
+       short term has to hit one of its words whole — see matchesTerms. */
+    prose: [ex.description],
+  }));
   return matchesTerms(hay, terms);
 }
 
