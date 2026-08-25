@@ -799,6 +799,9 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
   border: 1px solid transparent;
 }
 .badge-playable { color: var(--signal); border-color: var(--signal-wash); background: var(--signal-wash); }
+/* Fresh off gamescom's own stage — the entertainment area's cyan, as a quiet
+   outline so the playable wash keeps the last word on a row wearing both. */
+.badge-onl { color: var(--entertainment); border-color: rgba(0, 185, 255, .3); }
 .badge-age { background: transparent; }
 .badge-age[data-age-status="confirmed"] { color: var(--alert); border-color: var(--alert); }
 .badge-age[data-age-status="expected"] { color: var(--warn); border-color: var(--warn); }

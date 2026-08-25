@@ -126,6 +126,10 @@ This document is the playbook for refreshing the data — written so a scheduled
    - Upgrade game `status` (`rumored` → `expected` → `confirmed`) as info firms up; **never downgrade silently** — remove a game only if it's officially not coming, and note why in the commit message.
    - Fill in `hall`/`booth` and flip `locationConfirmed` to `true` when officially published.
    - Set `playable` when hands-on demos are confirmed.
+   - Set `onl: true` on a game featured at Opening Night Live — a premiere, trailer,
+     date reveal or stage segment — and on **every** booth showing that title. It
+     marks lineup rows that exist; a stage appearance alone never invents one, and
+     it says nothing about hands-on, so it never implies `playable`.
    - Re-check show-floor age gates: set numeric game `age` and `ageStatus`, or booth-wide `ageRestricted`, only when a source supports the restriction.
    - Re-evaluate `crowd` when new info (booth size, lineup hype, ticket sellouts) changes the picture — and with it the `crowdNote` and `visitAdvice` **prose**, which lives in `data/i18n/en.json` and not in this file.
    - Add `officialUrl` for any exhibitor that gained a profile page, and drop it again if a page disappears.
@@ -366,6 +370,9 @@ editing `en.json`; see [Keeping the German in sync](#keeping-the-german-in-sync)
                                    // identity behind saved marks and share links
       "status": "confirmed",       // confirmed | expected | rumored
       "playable": true,            // true | false | null (unknown)
+      "onl": true,                 // optional: featured at Opening Night Live —
+                                   // wears the ONL badge and answers the
+                                   // "Featured at ONL" filter
       "age": 18,                   // optional: minimum age for this show-floor demo
       "ageStatus": "confirmed",   // optional: confirmed | expected (default expected)
       "platforms": ["Xbox Series X|S", "PC"]

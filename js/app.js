@@ -10,6 +10,7 @@ const state = {
   hall: "all",
   age: "all",
   playableOnly: false,
+  onlOnly: false,
   confirmedOnly: false,
   savedOnly: false,
   hidePlayed: false,
@@ -1901,11 +1902,18 @@ function haystackFor(scope, record, build) {
   if (!cache) haystacks.set(scope, (cache = new WeakMap()));
   let hay = cache.get(record);
   if (hay === undefined) {
-    /* `words` stays null until a short term asks for it — see matchesTerms.
+    /* A builder hands back one array of name-like fields, or {name, prose}
+       where free-running sentences are among them — a card's description.
+       The split only matters to short terms; see matchesTerms.
+
+       `words` stays null until a short term asks for it — see matchesTerms.
        Most queries are long enough to be answered by the single indexOf this
        cache already existed to make cheap, and splitting every directory row
        into a word list for those would hand back what caching the text won. */
-    cache.set(record, (hay = { text: build().join(" ").toLowerCase(), words: null }));
+    const built = build();
+    const name = (Array.isArray(built) ? built : built.name).join(" ").toLowerCase();
+    const prose = (Array.isArray(built) ? [] : built.prose || []).join(" ").toLowerCase();
+    cache.set(record, (hay = { text: prose ? `${name} ${prose}` : name, name, words: null, nameWords: null }));
   }
   return hay;
 }
@@ -1916,6 +1924,10 @@ function haystackFor(scope, record, build) {
    "Köln" is one word and "Aidshilfe Köln" is still findable by its second. */
 const WORD_BREAK = /[^\p{L}\p{N}.+]+/u;
 const wordsOf = (hay) => hay.words || (hay.words = hay.text.split(WORD_BREAK).filter(Boolean));
+const nameWordsOf = (hay) =>
+  hay.nameWords ||
+  (hay.nameWords =
+    hay.name === hay.text ? wordsOf(hay) : hay.name.split(WORD_BREAK).filter(Boolean));
 
 /* ---------- how a term matches ----------
 
@@ -1958,12 +1970,21 @@ const queryTerms = (q) => {
 /* Every term has to match, each on its own terms. Note what an infix term
    does *not* need: a word-boundary match is by definition a substring of the
    whole text, so `includes` already covers both ways a long term can match,
-   and the word list is never built for it. */
+   and the word list is never built for it.
+
+   A short term completes a *name*, not a sentence. Prefix matching exists so
+   "6" finds hall 6.1 and "io i" holds IO Interactive while "interactive" is
+   still being typed — it reaches into names, tags, titles and booth codes.
+   Left loose on prose it turns an initialism into noise: "onl" is the ONL
+   marker on a card running tonight's reveals, and it sat inside "only" in
+   fourteen descriptions. So against prose a short term matches a whole word
+   or not at all — a description that says "ONL" outright is still found. */
 const matchesTerms = (hay, terms) =>
   terms.every((term) =>
     term.infix
       ? hay.text.includes(term.text)
-      : wordsOf(hay).some((word) => word.startsWith(term.text))
+      : nameWordsOf(hay).some((word) => word.startsWith(term.text)) ||
+        (hay.name !== hay.text && wordsOf(hay).some((word) => word === term.text))
   );
 
 /* "Hide 18+" is a browsing filter — "don't show me demos I can't play" — and
@@ -1976,25 +1997,33 @@ const matchesTerms = (hay, terms) =>
    searchable. */
 function matchesQuery(ex, terms) {
   if (!terms.length) return true;
-  const hay = haystackFor("card", ex, () => [
-    ex.name,
-    ex.description,
-    ex.country || "",
-    countryLabel(ex.country || ""),
-    /* Both spellings of "hall 7.1", so the word works in either language
-       whichever one the page is in. */
-    ex.hall ? `hall ${ex.hall} ${t("hall.word")} ${ex.hall}` : "",
-    ex.booth || "",
-    /* Raw tag and its localized label both match: a German visitor types
-       "Simracing", an English one "sim racing", and the chip they can see
-       is always searchable. */
-    ...(ex.tags || []),
-    ...(ex.tags || []).map(tagLabel),
-    ...visibleGames(ex).map((g) => g.title),
-    /* Searching "18+" while hiding 18+ would return exactly the booths whose
-       gated titles are currently hidden. */
-    hasAdult(ex) && state.age !== "hide" ? "18+" : "",
-  ]);
+  const hay = haystackFor("card", ex, () => ({
+    name: [
+      ex.name,
+      ex.country || "",
+      countryLabel(ex.country || ""),
+      /* Both spellings of "hall 7.1", so the word works in either language
+         whichever one the page is in. */
+      ex.hall ? `hall ${ex.hall} ${t("hall.word")} ${ex.hall}` : "",
+      ex.booth || "",
+      /* Raw tag and its localized label both match: a German visitor types
+         "Simracing", an English one "sim racing", and the chip they can see
+         is always searchable. */
+      ...(ex.tags || []),
+      ...(ex.tags || []).map(tagLabel),
+      ...visibleGames(ex).map((g) => g.title),
+      /* Shorthand and spelled-out name both find the booths running something
+         off gamescom's own stage — reading visibleGames keeps a gated premiere
+         out of it under "hide 18+", like the title itself. */
+      visibleGames(ex).some((g) => g.onl) ? "onl opening night live" : "",
+      /* Searching "18+" while hiding 18+ would return exactly the booths whose
+         gated titles are currently hidden. */
+      hasAdult(ex) && state.age !== "hide" ? "18+" : "",
+    ],
+    /* The one free-running sentence in the pile: searchable in full, but a
+       short term has to hit one of its words whole — see matchesTerms. */
+    prose: [ex.description],
+  }));
   return matchesTerms(hay, terms);
 }
 
@@ -2005,6 +2034,7 @@ function filtersActive() {
     state.hall !== "all" ||
     state.age !== "all" ||
     state.playableOnly ||
+    state.onlOnly ||
     state.confirmedOnly ||
     state.savedOnly ||
     state.hidePlayed
@@ -2134,6 +2164,7 @@ function filtered() {
       if ((ex.games || []).length && !visibleGames(ex).length) return false;
     }
     if (state.playableOnly && !visibleGames(ex).some((g) => g.playable)) return false;
+    if (state.onlOnly && !visibleGames(ex).some((g) => g.onl)) return false;
     const face = faceOf(ex);
     if (state.confirmedOnly && !face.locationConfirmed) return false;
     if (state.savedOnly && !savedEitherFace(ex)) return false;
@@ -2760,6 +2791,7 @@ function gameRow(ex, g) {
       <span class="game-title">${esc(g.title)}</span>
       ${statusLabel}
       ${g.playable ? `<span class="badge badge-playable">${esc(t("badge.playable"))}</span>` : ""}
+      ${g.onl ? `<span class="badge badge-onl">${esc(t("badge.onl"))}</span>` : ""}
       ${isAdult(g) ? ageBadge(g.ageStatus) : ""}
     </span>
     ${plat ? `<span class="game-plat">${esc(plat)}</span>` : "<span></span>"}
@@ -2996,6 +3028,7 @@ function renderFilterSummary() {
   if (state.age === "hide") parts.push(t("summary.hideAdult"));
   if (state.age === "only") parts.push(t("summary.onlyAdult"));
   if (state.playableOnly) parts.push(t("summary.playableOnly"));
+  if (state.onlOnly) parts.push(t("summary.onlOnly"));
   if (state.confirmedOnly) parts.push(t("summary.confirmedOnly"));
   if (state.savedOnly) parts.push(t("summary.savedOnly"));
   if (state.hidePlayed) parts.push(t("summary.playedHidden"));
@@ -7283,6 +7316,7 @@ function resetFilters() {
     hall: "all",
     age: "all",
     playableOnly: false,
+    onlOnly: false,
     confirmedOnly: false,
     savedOnly: false,
     hidePlayed: false,
@@ -7290,6 +7324,9 @@ function resetFilters() {
   state.flipped.clear();
   $("#search").value = "";
   $("#playable-only").checked = false;
+  /* Guarded like #goto-plan: absent on a stale cached shell. */
+  const onlOnly = $("#onl-only");
+  if (onlOnly) onlOnly.checked = false;
   $("#confirmed-only").checked = false;
   $("#saved-only").checked = false;
   $("#hide-played").checked = false;
@@ -7736,6 +7773,11 @@ function bindControls() {
   });
   $("#playable-only").addEventListener("change", (e) => {
     state.playableOnly = e.target.checked;
+    renderExhibitors();
+  });
+  /* Optional-chained: absent on a stale cached shell — see renderPlan. */
+  $("#onl-only")?.addEventListener("change", (e) => {
+    state.onlOnly = e.target.checked;
     renderExhibitors();
   });
   $("#confirmed-only").addEventListener("change", (e) => {

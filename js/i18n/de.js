@@ -55,6 +55,7 @@ window.GC_STRINGS.de = {
   "toolbar.age": "Alter",
   "toolbar.onlyShow": "Nur zeigen",
   "toggle.playable": "Spielbare Demos",
+  "toggle.onl": "Bei ONL gezeigt",
   "toggle.confirmed": "Bestätigte Standorte",
   "toggle.saved": "Gemerkt",
   "toggle.savedOnly": "Nur gemerkte",
@@ -74,6 +75,7 @@ window.GC_STRINGS.de = {
   "summary.hideAdult": "ohne 18+",
   "summary.onlyAdult": "nur 18+",
   "summary.playableOnly": "nur spielbar",
+  "summary.onlOnly": "nur ONL",
   "summary.confirmedOnly": "nur bestätigt",
   "summary.savedOnly": "nur gemerkte",
   "summary.playedHidden": "gespielte ausgeblendet",
@@ -105,6 +107,7 @@ window.GC_STRINGS.de = {
   "status.expected": "erwartet",
   "status.rumored": "Vermutet",
   "badge.playable": "spielbar",
+  "badge.onl": "ONL",
 
   "age.filter.all": "Alle",
   "age.filter.hide": "Ohne 18+",

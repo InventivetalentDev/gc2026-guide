@@ -59,6 +59,7 @@ window.GC_STRINGS.en = {
   "toolbar.age": "Age",
   "toolbar.onlyShow": "Only show",
   "toggle.playable": "Playable demos",
+  "toggle.onl": "Featured at ONL",
   "toggle.confirmed": "Confirmed locations",
   "toggle.saved": "Saved",
   "toggle.savedOnly": "Saved only",
@@ -80,6 +81,7 @@ window.GC_STRINGS.en = {
   "summary.hideAdult": "hide 18+",
   "summary.onlyAdult": "18+ only",
   "summary.playableOnly": "playable only",
+  "summary.onlOnly": "ONL only",
   "summary.confirmedOnly": "confirmed only",
   "summary.savedOnly": "saved only",
   "summary.playedHidden": "played hidden",
@@ -115,6 +117,7 @@ window.GC_STRINGS.en = {
   "status.expected": "expected",
   "status.rumored": "rumored",
   "badge.playable": "playable",
+  "badge.onl": "ONL",
 
   "age.filter.all": "All",
   "age.filter.hide": "Hide 18+",

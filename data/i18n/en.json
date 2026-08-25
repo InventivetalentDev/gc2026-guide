@@ -24,7 +24,7 @@
     ],
     "onl": {
       "date": "Tue, Aug 25",
-      "note": "Hosted by Geoff Keighley, ~2 h show. Free stream on YouTube, Twitch and Steam. In-person tickets (€34.50) sold out."
+      "note": "Hosted by Geoff Keighley, the ~2 h show aired Tue Aug 25 — the VOD is on YouTube, Twitch and Steam. Every game it featured wears an ONL mark in the booth lineups here, and the Featured at ONL filter lists just those booths."
     },
     "days": {
       "2026-08-26": {
@@ -394,7 +394,7 @@
       "crowdNote": "The Townfall experience will queue like a theme-park attraction after its ONL trailer; Castlevania concentrates the demo demand.",
       "visitAdvice": "Do the Silent Hill experience in the first hour of the day or the last; on a trade badge, Wednesday is better still — before the ONL trailer turns into foot traffic. Castlevania is also playable at Xbox — use the shorter queue.",
       "games": {
-        "Silent Hill: Townfall": "Interactive walk-through experience, not a demo; new trailer at ONL Aug 25.",
+        "Silent Hill: Townfall": "Interactive walk-through experience, not a demo; cast revealed at ONL Aug 25, out in September.",
         "Castlevania: Belmont's Curse": "Playable throughout the show; also at the Xbox booth.",
         "Metal Gear Solid: Master Collection Vol. 2": "Photo opportunity in front of a Metal Gear unit.",
         "Yu-Gi-Oh! Trading Card Game": "Hands-on with the latest products at Konami's second stand, Hall 5.2 B021/A020 in the Cards & Boards Area, with staff walking newcomers through a duel; Master Duel and Duel Links are there too."
@@ -410,7 +410,9 @@
         "Assassin's Creed Shadows": "Community Lounge developer talk, not a demo station.",
         "Anno 117: Pax Romana": "Community Lounge sessions.",
         "Rainbow Six Siege": "Community Lounge sessions rather than a demo queue.",
-        "The Division 2": "Live-service community sessions."
+        "The Division 2": "Live-service community sessions.",
+        "Rainbow Six Tactics": "Turn-based tactics spin-off revealed at ONL Aug 25, due 2027 — a booth showing is unconfirmed.",
+        "Heroes of Might and Magic III Remake": "Full-3D remake of the 1999 classic on the Snowdrop engine, revealed at ONL Aug 25 for 2027 — a booth showing is unconfirmed."
       }
     },
     "ea": {
@@ -441,7 +443,7 @@
       "crowdNote": "CDPR theaters historically generate multi-hour lines (see Cyberpunk 2077 in 2019); a new Witcher reveal right after ONL will be a hall-wide magnet.",
       "visitAdvice": "Treat it like a timed show: queue at Hall 8 opening on your first day (Wednesday on a trade badge, otherwise Thursday), or try the final showings late Sunday. Hall 8 sits at the North entrance — enter there, not via the Boulevard.",
       "games": {
-        "The Witcher 3: Songs of the Past": "Cinema-style presentation, not hands-on; first trailer at ONL Aug 25; releases 2027."
+        "The Witcher 3: Songs of the Past": "Cinema-style presentation, not hands-on; premiered at ONL Aug 25; releases 2027. A free Witcher 3 remaster arrives end of September."
       }
     },
     "gryphline": {
@@ -477,11 +479,11 @@
       "crowdNote": "A PUBG-universe world premiere in the show's most congested hall guarantees heavy traffic once the reveal lands.",
       "visitAdvice": "Go first thing Thursday, or Wednesday on a trade badge, before the PUBG premiere is fully publicized; do the merch mission circuit early, before stock runs low.",
       "games": {
-        "Untitled PUBG STUDIOS project": "World-premiere reveal of a new PUBG-universe FPS at the show.",
         "NO LAW": "Open-world FPS from The Ascent developer Neon Giant — hands-on demo.",
         "Project ZETA": "Part of the five-title showcase.",
         "Age Twisters": "Part of the five-title showcase.",
-        "TARAE: The Unbound": "Dark-fantasy action RPG."
+        "TARAE: The Unbound": "Dark-fantasy action RPG.",
+        "PUBG: DED.NET": "The teased PUBG-universe world premiere, named at ONL Aug 25: a 1990s-set PvPvE shooter with roguelite runs; closed-beta signups are open."
       }
     },
     "embark": {
@@ -504,7 +506,8 @@
         "Construction Simulator Evolution": "astragon simulator lineup.",
         "Firefighting Simulator: Ignite": "astragon simulator lineup.",
         "Seafarer: The Ship Sim": "astragon simulator lineup.",
-        "Worms W.M.D.": "Team17 catalog station."
+        "Worms W.M.D.": "Team17 catalog station.",
+        "Worms: Galactic Tactics": "Revealed at ONL Aug 25 for 2027 — a booth showing is unconfirmed."
       }
     },
     "giants-software": {
@@ -539,7 +542,8 @@
         "Honkai: Star Rail": "Planarcadia-themed zone (Version 4.4 era).",
         "Zenless Zone Zero": "Dedicated exhibition area with latest content.",
         "Honkai: Nexus Anima": "World-premiere hands-on of the new creature-collecting strategy game.",
-        "Petit Planet": "Cozy life-sim hands-on with world exploration."
+        "Petit Planet": "Cozy life-sim hands-on with world exploration.",
+        "Nodus Fall": "Dark-fantasy co-op action RPG that opened ONL Aug 25 — no date or platforms yet, and a booth showing is unconfirmed."
       }
     },
     "level-infinite": {
@@ -576,7 +580,7 @@
         "Where Winds Meet": "Wuxia open-world RPG; Hidden Mountain finale content at booth B050.",
         "Sea of Remnants": "Stylized pirate adventure RPG, own booth A051; hands-on status not detailed in NetEase's release.",
         "Once Human next expansion + unannounced title": "Hands-on preview at NetEase's business-area stand (Hall 4.2, D050) — trade & media only, not reachable on a public ticket.",
-        "Ananta": "Fresh gameplay in an Opening Night Live segment on Aug 25 — not part of NetEase's Hall 7.1 lineup, and no hands-on announced anywhere at the show."
+        "Ananta": "Fresh gameplay in an Opening Night Live segment on Aug 25 — not part of NetEase's Hall 7.1 lineup, and no hands-on announced anywhere at the show. Launches Jan 15, 2027."
       }
     },
     "pearl-abyss": {
@@ -617,7 +621,7 @@
       "crowdNote": "Very large, dedicated European PC-ARPG audience and a venue-exclusive demo — long, steady lines plus merch demand.",
       "visitAdvice": "Hit it early on a weekday; ask staff whether merch has a separate line from the demo queue. Catch the Aug 25 Twitch reveal beforehand for a preview of what's playable.",
       "games": {
-        "Path of Exile 2": "Special demo exclusive to gamescom, post-'Return of the Ancients' era; new content reveal streams on gamescom's Twitch Aug 25, 20:00 CEST."
+        "Path of Exile 2": "Special demo exclusive to gamescom, post-'Return of the Ancients' era; the 1.0 launch was set for Dec 11 at ONL Aug 25."
       }
     },
     "eclipse-glow": {
@@ -643,7 +647,8 @@
         "Dungeon Clawler": "Claw-machine deckbuilder.",
         "We Were Here Tomorrow": "Co-op puzzle series entry.",
         "The 9th Dragon": "Voxel close-quarters action.",
-        "Crowded": "City-builder where crows are the units."
+        "Crowded": "City-builder where crows are the units.",
+        "There Are No Ghosts at the Grand": "Friday Sundae's haunted-hotel decorating game — its ONL trailer on Aug 25 set early access for December; playable at the booth."
       }
     },
     "korea-showcase": {
@@ -688,7 +693,8 @@
       "crowdNote": "60M+ players and a devoted community — steady lines if meet-and-greets or photo ops run.",
       "visitAdvice": "Check DbD's socials during the show for timed community events; otherwise an easy drop-in between Hall 10 indie sessions.",
       "games": {
-        "Dead by Daylight": "Nothing announced for the stand yet; an anniversary-year community presence is the likeliest showing."
+        "Dead by Daylight": "Nothing announced for the stand yet; an anniversary-year community presence is the likeliest showing.",
+        "Exterminauts": "Behaviour's new co-op shooter, revealed at ONL Aug 25 — a booth showing is unconfirmed."
       }
     },
     "scs-software": {
@@ -729,7 +735,10 @@
     "atari": {
       "description": "Anchor of Hall 10.1's retro corner: Atari's stand sits in a cluster with the revived Commodore (C059/B050) and MicroProse (A060/B061) — expect classic and modern-retro hardware, re-releases and collector merch across all three.",
       "crowdNote": "Browsing traffic and nostalgic dwell time rather than queues.",
-      "visitAdvice": "A good low-energy stop while sitting out peak queues elsewhere; merch lines grow on Saturday."
+      "visitAdvice": "A good low-energy stop while sitting out peak queues elsewhere; merch lines grow on Saturday.",
+      "games": {
+        "RollerCoaster Tycoon: Wonderworks": "Announced at ONL Aug 25 for Steam early access — a booth showing is unconfirmed."
+      }
     },
     "moza-racing": {
       "description": "Sim-racing and flight-sim rigs, registered under parent company Gudsen Technology: six simulator stations running the 2026 hardware line — R16 Ultra and R5 Pro wheelbases, MOZA's first motion platform, an AI motion-feedback system and an AI driving coach. Sessions are free but bookable in advance on MOZA's own gamescom page, one guest per slot, and you're asked to arrive five minutes early.",
@@ -885,7 +894,7 @@
       "games": {
         "LEGO Batman: Legacy of the Dark Knight": "First public look at the Mayhem Collection DLC before its September 18 release. A trailer also airs on IGN's gamescom stream on Wednesday; whether the booth has it playable is unannounced.",
         "LEGO Fortnite": "A themed booth section rather than an announced demo — the draw is a life-size build of the Rave Cave set.",
-        "LEGO Skylines": "Rated in South Korea earlier this year and widely expected as a Paradox collaboration, but neither LEGO nor Paradox has announced it."
+        "LEGO Skylines": "Revealed at ONL Aug 25 — a LEGO city-building game; how it shows at LEGO's booth is unconfirmed."
       }
     },
     "wizards-of-the-coast": {
