@@ -1059,7 +1059,8 @@
       { "title": "Dungeon Clawler", "status": "confirmed", "playable": true, "platforms": ["PC", "Mobile"] },
       { "title": "We Were Here Tomorrow", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
       { "title": "The 9th Dragon", "status": "confirmed", "playable": true, "platforms": ["PC"] },
-      { "title": "Crowded", "status": "confirmed", "playable": true, "platforms": ["PC"] }
+      { "title": "Crowded", "status": "confirmed", "playable": true, "platforms": ["PC"] },
+      { "title": "There Are No Ghosts at the Grand", "status": "confirmed", "playable": true, "onl": true, "platforms": ["PC"] }
     ],
     "tags": ["indie", "playable demos", "meet the devs"],
     "crowd": 2,
@@ -1067,9 +1068,10 @@
       "https://indiearenabooth.de/",
       "https://www.gamesmarket.global/indie-arena-booth-full-gamescom-2026-lineup/",
       "https://www.gamespress.com/beyerdynamic-to-become-First-Presenter-of-the-Indie-Arena-Booth-at-gam",
-      "https://www.gamescom.global/en/exhibitor/indie-arena-booth"
+      "https://www.gamescom.global/en/exhibitor/indie-arena-booth",
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-24"
+    "lastUpdated": "2026-08-25"
   },
   {
     "id": "korea-showcase",
