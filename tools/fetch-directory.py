@@ -10,22 +10,31 @@ lookup needs.
     python3 tools/fetch-directory.py            # full show, writes data/directory.json
     python3 tools/fetch-directory.py --hall 10.1  # one hall, prints to stdout
     python3 tools/fetch-directory.py --skip-categories  # names and stands only, ~1 min
+    python3 tools/fetch-directory.py --skip-brands      # no self-managed profile sweep
 
 The same endpoint also filters by product group, which is where `cats` comes
 from — see harvest_categories(). That sweep is what the trade list renders as
 an exhibitor's categories, and it is most of the tool's runtime.
+
+`brand` comes from somewhere else entirely — the self-managed profiles on
+gamescom.global, which file under a brand where this directory files under a
+legal entity. See harvest_brands(); ten requests, and it is what makes
+"Pipapo Games" find the row registered as "Hantschel, Hort, Müller und
+Neumann GbR".
 
 See docs/UPDATING.md. This file is the raw official list — the curated cards in
 data/exhibitors.json are written by hand and are not generated from it.
 """
 
 import argparse
+import html
 import json
 import pathlib
 import re
 import subprocess
 import sys
 import time
+import unicodedata
 import urllib.parse
 
 BASE = "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/"
@@ -111,9 +120,9 @@ def normalise_booth(raw):
     return "/".join(parts)
 
 
-def parse(html):
+def parse(page):
     out = []
-    body = html.split("<!-- AJAXRESULT -->", 1)[-1]
+    body = page.split("<!-- AJAXRESULT -->", 1)[-1]
     for chunk in ITEM_RE.findall(body):
         name_match = NAME_RE.search(chunk)
         if not name_match:
@@ -208,6 +217,244 @@ def harvest_categories():
         for slug in members:
             cats.setdefault(slug, []).append(keep)
     return groups, cats
+
+
+# ---------------------------------------------------------------- brands ----
+#
+# The directory files an exhibitor under the entity that signed the contract;
+# the self-managed profiles on gamescom.global file the same exhibitor under
+# the name it trades as. Neither side carries the other's key, so the two are
+# joined here on what they do share: the company name once its legal form is
+# stripped, the legal entity a profile names in its own imprint, and the stand.
+
+PARTNER_BASE = "https://www.gamescom.global/en/exhibitors"
+PARTNER_PAGES = 40  # a stop, not an expectation: the list repeats when exhausted
+
+# Legal forms as they are actually written, punctuation and inner spacing
+# tolerated. Only ever stripped from the *tail* of a name — "Co" leading a
+# name is a word, and "AS" inside one is usually an initialism.
+LEGAL_FORMS = [
+    r"sp\W*z\W*o\W*o", r"z\W*o\W*o", r"s\W*r\W*o", r"d\W*o\W*o", r"gmbh\W*co\W*kg",
+    r"co\W*ltd", r"pte\W*ltd", r"pvt\W*ltd", r"co\W*kg", r"s\W*a\W*r\W*l",
+    r"s\W*a\W*s\W*u", r"s\W*r\W*l", r"s\W*l\W*u", r"l\W*l\W*c", r"a\W*p\W*s",
+    r"o\W*y\W*j", r"e\W*v", r"e\W*k", r"k\W*k", r"a\W*s", r"s\W*a", r"s\W*l",
+    r"b\W*v", r"n\W*v", r"a\W*b", r"o\W*y",
+    r"gmbh", r"mbh", r"ug", r"ag", r"kgaa", r"kg", r"ohg", r"gbr", r"se",
+    r"ltda", r"ltd", r"limited", r"incorporated", r"inc", r"corporation",
+    r"corp", r"company", r"co", r"llp", r"plc", r"pty", r"pte", r"pvt",
+    r"private", r"sarl", r"sas", r"srl", r"kft", r"zrt", r"jsc", r"ooo", r"lp",
+    r"einzelunternehmen", r"ggmbh",
+]
+TAIL_RE = re.compile(rf"[\s,.\-]*\b(?:{'|'.join(LEGAL_FORMS)})\W*$", re.I)
+PAREN_NOISE = re.compile(
+    r"\(\s*(?:haftungsbeschr[äa]nkt|limited liability|limitada|in liquidation|"
+    r"in insolvenz|i\.\s?g\.?)\s*\)",
+    re.I,
+)
+LABEL_RE = re.compile(r"(?i)^(?:brand\s*name|company(?:\s*name)?|firma|name|firm)\s*[:\-]\s*")
+UMLAUT = str.maketrans({"ä": "ae", "ö": "oe", "ü": "ue", "Ä": "Ae", "Ö": "Oe",
+                        "Ü": "Ue", "ß": "ss"})
+
+CHUNK_RE = re.compile(r'self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)')
+
+
+def fold(name):
+    """A company name reduced to the part a human would recognise.
+
+    Legal forms come off with their punctuation attached, so "11 bit studios
+    S.A." and "11 bit studios" land on one key instead of on "11 bit studios s
+    a". Umlauts are transliterated the German way before accents are dropped,
+    so Müller meets Mueller."""
+    if not name:
+        return ""
+    text = LABEL_RE.sub("", html.unescape(str(name)))
+    text = PAREN_NOISE.sub(" ", text).translate(UMLAUT)
+    text = "".join(c for c in unicodedata.normalize("NFKD", text)
+                   if not unicodedata.combining(c)).lower()
+    previous = None
+    while previous != text:
+        previous = text
+        text = TAIL_RE.sub("", text).strip()
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", text).split())
+
+
+def json_at(text, start):
+    """The JSON value starting at `start`, found by balancing its brackets.
+
+    The payload is embedded in a script rather than served, so there is no
+    length to read and the surrounding page is not JSON."""
+    depth, index, in_string, escaped = 0, start, False, False
+    while index < len(text):
+        char = text[index]
+        if in_string:
+            # A backslash consumes the next character whatever it is, so the
+            # escaped flag has to be read before it is rewritten — otherwise a
+            # \" inside a description closes the string and the walk ends in
+            # the middle of the array.
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+        elif char == '"':
+            in_string, escaped = True, False
+        elif char in "{[":
+            depth += 1
+        elif char in "}]":
+            depth -= 1
+            if depth == 0:
+                return json.loads(text[start:index + 1])
+        index += 1
+    return None
+
+
+def partner_page(number):
+    """One page of self-managed profiles, or None when the page is unreadable.
+
+    The list is a server-rendered React tree: the data arrives as string
+    fragments pushed onto `self.__next_f`, which concatenate into one document
+    holding a `"partners":[…]` array of 100."""
+    page = curl(f"{PARTNER_BASE}?page={number}", floor=50000)
+    if page is None:
+        return None
+    document = "".join(
+        json.loads(f'"{fragment}"') for fragment in CHUNK_RE.findall(page)
+    )
+    marker = document.find('"partners":[')
+    if marker < 0:
+        return None
+    return json_at(document, marker + len('"partners":'))
+
+
+def imprint_entity(partner):
+    """The legal entity a profile names in its own legal notice — the join key
+    for a studio whose brand shares nothing with the name it registered under
+    (Pipapo Games / Hantschel, Hort, Müller und Neumann GbR)."""
+    raw = (partner.get("imprint") or {}).get("html") or ""
+    if not raw:
+        return ""
+    raw = re.sub(r"(?i)<br\s*/?>", "\n", raw)
+    raw = re.sub(r"(?i)</p>", "\n", raw)
+    for line in html.unescape(re.sub(r"<[^>]+>", "", raw)).split("\n"):
+        line = LABEL_RE.sub("", " ".join(line.split())).strip()
+        if line:
+            return line
+    return ""
+
+
+def stand_key(hall, booth):
+    parts = sorted(p.strip().upper() for p in re.split(r"[+,/]", str(booth)) if p.strip())
+    return f"{str(hall).strip()}|{'/'.join(parts)}"
+
+
+def partner_stands(partner):
+    """The stands a profile claims, in this file's own booth form. Positions
+    arrive as "F-010 E-019" and the hall rides in the area title."""
+    out = set()
+    for place in partner.get("places") or []:
+        area = re.search(r"([\d.]+)", (place.get("area") or {}).get("title") or "")
+        codes = [c.replace("-", "") for c in (place.get("position") or "").split() if c.strip()]
+        if area and codes:
+            out.add(stand_key(area.group(1), "/".join(codes)))
+    return out
+
+
+def already_findable(brand, entry):
+    """Would the guide's own search already reach this row by that brand?
+
+    Two ways it would, and either one means the brand is not worth writing
+    down. It may be the filed name shortened — "Konami" for "Konami Digital
+    Entertainment B.V." — which the substring test catches, mirroring
+    directoryMatches() in js/app.js term for term. Or it may be the same name
+    in different dress: "IO Interactive AB" against a row filed as "IO
+    Interactive A/S" is one company, one name and two legal forms, and
+    recording the profile's would put a wrong suffix on screen next to the
+    right one."""
+    haystack = f"{entry['name']} {entry.get('country', '')}".lower()
+    if all(term in haystack for term in brand.lower().split()):
+        return True
+    return fold(brand) == fold(entry["name"])
+
+
+def harvest_brands(entries):
+    """Fill `brand` from the self-managed profiles on gamescom.global.
+
+    Ten requests of 100 profiles, matched against the rows already swept. A
+    match has to be unambiguous or it is dropped: a name key shared by two rows
+    is only accepted when the profile's own stand picks one of them, and a
+    stand only identifies a row when it has exactly one occupant — which is why
+    this can name Bundeswehr's booth and never guesses at one of the 172
+    studios sharing the Indie Arena Booth stand."""
+    partners, page = {}, 1
+    while page <= PARTNER_PAGES:
+        batch = partner_page(page)
+        if not batch:
+            break
+        fresh = [p for p in batch if p.get("slug") and p["slug"] not in partners]
+        print(f"  profiles page {page}: {len(batch)} listed, {len(fresh)} new",
+              file=sys.stderr)
+        # The list repeats its last page forever rather than 404ing, so a page
+        # that adds nothing is the end of it.
+        if not fresh:
+            break
+        for partner in fresh:
+            partners[partner["slug"]] = partner
+        page += 1
+    if not partners:
+        print("warning: no self-managed profiles read — `brand` left unfilled", file=sys.stderr)
+        return 0
+
+    by_name, by_stand = {}, {}
+    for entry in entries:
+        by_name.setdefault(fold(entry["name"]), []).append(entry)
+        for stand in entry.get("stands") or []:
+            by_stand.setdefault(stand_key(stand["hall"], stand["booth"]), []).append(entry)
+
+    matched = written = 0
+    claimed = {}
+    for partner in partners.values():
+        brand = (partner.get("nameShort") or partner.get("name") or "").strip()
+        if not brand:
+            continue
+        stands = partner_stands(partner)
+        keys = {k for k in (fold(brand), fold(partner.get("name")),
+                            fold(imprint_entity(partner))) if k}
+        found = {e["slug"]: e for key in keys for e in by_name.get(key, [])}
+        if len(found) > 1 and stands:
+            narrowed = {
+                slug: e for slug, e in found.items()
+                if stands & {stand_key(s["hall"], s["booth"]) for s in e.get("stands") or []}
+            }
+            if len(narrowed) == 1:
+                found = narrowed
+        if not found and stands:
+            # A stand names a row only when nobody else is standing on it.
+            found = {e["slug"]: e for key in stands for e in by_stand.get(key, [])
+                     if len(by_stand[key]) == 1}
+            if len(found) > 1:
+                found = {}
+        if len(found) != 1:
+            continue
+        entry = next(iter(found.values()))
+        matched += 1
+        if already_findable(brand, entry):
+            continue
+        # Two profiles pointing at one row cannot both be its brand; neither is
+        # trusted, and the row keeps the name it was filed under. A third
+        # claimant finds the field already gone and must not be counted again.
+        if entry["slug"] in claimed:
+            claimed[entry["slug"]] = None
+            if entry.pop("brand", None) is not None:
+                written -= 1
+            continue
+        claimed[entry["slug"]] = brand
+        entry["brand"] = brand
+        written += 1
+
+    print(f"brands: {len(partners)} profiles · {matched} matched to a row · "
+          f"{written} named a brand search could not already find", file=sys.stderr)
+    return written
 
 
 TOK_LEN = 5
@@ -312,6 +559,8 @@ def main():
     ap.add_argument("--hall", help="restrict to one hall, e.g. 10.1 (prints to stdout)")
     ap.add_argument("--skip-categories", action="store_true",
                     help="names and stands only — skips the per-group sweep that fills `cats`")
+    ap.add_argument("--skip-brands", action="store_true",
+                    help="skip the self-managed profile sweep that fills `brand`")
     ap.add_argument("--out", default="data/directory.json")
     args = ap.parse_args()
 
@@ -342,6 +591,13 @@ def main():
         tagged = sum(1 for entry in entries if entry.get("cats"))
         print(f"categories: {len(groups)} groups · {tagged}/{len(entries)} exhibitors tagged",
               file=sys.stderr)
+
+    # Ten requests against a different host, so it runs even under
+    # --skip-categories: the reason to be in a hurry is that sweep, and a
+    # booth-number refresh that dropped every brand would leave the long tail
+    # filed under legal entities again.
+    if not args.skip_brands:
+        harvest_brands(entries)
 
     if args.hall:
         json.dump(payload, sys.stdout, indent=1, ensure_ascii=False)

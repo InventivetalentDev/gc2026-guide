@@ -908,6 +908,16 @@ a.hall-marker:focus-visible .hall-map-cue { opacity: 1; }
 .dir-name { min-width: 0; color: var(--ink); }
 .dir-name a { color: inherit; text-decoration: none; }
 .dir-name a:hover { color: var(--signal); text-decoration: underline; text-underline-offset: 3px; }
+/* The entity a branded row is registered under. Its own line, quieter than the
+   name above it: it is there to explain the row's link and its map label, not
+   to compete with the name someone is scanning for. */
+.dir-filed {
+  display: block;
+  color: var(--ink-dim);
+  font-size: .72rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
 .dir-country { color: var(--ink-dim); font-size: .78rem; }
 
 .dir-stands { display: flex; flex-wrap: wrap; gap: 4px 10px; min-width: 0; }
@@ -1981,6 +1991,17 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   padding: 2px 7px;
 }
 .route-hall-map:hover, .route-hall-map:focus-visible { color: var(--ink); border-color: var(--ink-dim); }
+/* "you're here" on a heading is status, not advice, so it takes the ok green
+   and never the signal orange — the one orange thing stays the stop you have
+   not walked to yet. */
+.route-hall-here {
+  font-family: var(--font-mono);
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ok);
+}
 .route-hall-count {
   margin-left: auto;
   font-family: var(--font-mono);
@@ -2158,6 +2179,41 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   color: var(--signal);
   margin-right: 8px;
 }
+/* With a position set the strip is up to three of these — one block, so the
+   accent edge reads as one piece of advice with facets, not three alerts. */
+.today-first-line { display: block; }
+.today-first-line + .today-first-line { margin-top: 3px; }
+
+/* The "where are you?" row — the hall picker, and the statement it folds to.
+   The chips are the plan's own day chips; only the words around them are new. */
+.today-here {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+}
+.today-here-q,
+.today-here-in {
+  font-family: var(--font-mono);
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-mid);
+  margin-right: 4px;
+}
+.today-here-in { color: var(--ok); }
+.today-here-change {
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: none; border: none; padding: 0;
+  color: var(--ink-dim);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.today-here-change:hover, .today-here-change:focus-visible { color: var(--ink); }
 /* Same warning voice as the plan's closed-day note, one level up the page. */
 .today-warn {
   margin-bottom: 16px;

@@ -16,7 +16,9 @@
       "Pick 5–10 must-play booths in advance (official gamescom app + hall plan) and hit your single most-wanted booth right at opening.",
       "Some large booths hand out time slots or fast-lane wristbands in the morning via their own apps — check exhibitors' socials the week before.",
       "A few booths take free bookings online before the show: MOZA Racing's six sim rigs in Hall 10.1 are the clearest example. Booking costs nothing and is the difference between sitting down and watching, so check the websites of any hands-on booth you care about.",
-      "Take the train/tram to Koeln Messe/Deutz — day tickets include free VRS public transport; don't drive.",
+      "Take public transport — day tickets include free VRS travel in the Cologne region and parking at the grounds is not worth the attempt. Check your line before you set off, though: Cologne's Rhine bridge works run straight through show week.",
+      "Stadtbahn lines 1, 7 and 9 do not cross the Rhine until early September: 1 and 9 terminate at Heumarkt, 7 at Neumarkt, with replacement buses from Neumarkt to Koelnmesse taking 10–20 minutes. Lines 3 and 4 still run to the East entrance and are the dependable way in.",
+      "On the rail side, RE 1, RE 5, S 1 and S 6 are cut back between Düsseldorf and Köln-Mülheim from Aug 21, and some trains skip Köln Hauptbahnhof and Köln Messe/Deutz entirely. Check your connection the morning you travel; coming from Düsseldorf, RE 6 is the recommended way round.",
       "Evening tickets (from 16:00, €10.50) are a cheap second visit and queues shrink in the last 2–3 hours — on sale for Thursday, Friday and Sunday; Saturday's have gone.",
       "Do gamescom epix quests — completing all chapters can earn a free Sunday ticket."
     ],
@@ -399,9 +401,9 @@
       }
     },
     "ubisoft": {
-      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo plus the returning Community Lounge — developer talks and live-streamed sessions (Aug 26–29) around Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 and The Division 2.",
+      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo — 20 minutes at one of 15 two-player couch co-op stations — plus the returning Community Lounge, running all five days around Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 and The Division 2.",
       "crowdNote": "One playable title plus a lounge format — moderate queues, no giant new AAA hands-on this year.",
-      "visitAdvice": "Rayman queues are manageable before noon on weekdays. Community Lounge sessions are schedule-based — check Ubisoft's channels for timings.",
+      "visitAdvice": "Rayman queues are manageable before noon on weekdays. The lounge splits its programme: some slots are meet-and-greets and dev sessions you have to be there for, the rest are streamed and lose nothing if you watch later. Each day's schedule goes up on screens at the stand. Ubisoft's own summary says the lounge opens Thursday, but its published schedule lists in-person sessions on trade Wednesday too.",
       "games": {
         "Rayman Legends Retold": "Demo: opening level, a new dragon-ride sequence and a classic musical level.",
         "Assassin's Creed Black Flag Resynced": "Community Lounge showcase of the Black Flag remake.",
@@ -551,13 +553,18 @@
       }
     },
     "tencent-worlds-of-play": {
-      "description": "Tencent Games' Hall 8.1 stand shows Honor of Kings and Arena of Valor with cosplayers and competitions, and the company also runs the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27-29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's other playable games are at Level Infinite in Hall 6.1.",
+      "description": "Tencent Games' Hall 8.1 stand shows Honor of Kings and Arena of Valor with cosplayers and competitions, and its booth page adds five more: Honor of Kings: World, Honor of Kings: ACE, Rust Mobile, Roco Kingdom and Animula Nook. The company also runs the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27-29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's other playable games are at Level Infinite in Hall 6.1.",
       "crowdNote": "Timed/curated and off the main floor — moderate queues; the real crowds gather at Level Infinite.",
       "visitAdvice": "A calmer palate-cleanser between hall sessions; check whether entry needs free time-slot registration closer to the show.",
       "games": {
         "Worlds of Play (40-title art exhibition)": "Art exhibition Aug 27–29, off the main show floor.",
         "Honor of Kings": "On the Hall 8.1 stand, with cosplayers and competitions.",
-        "Arena of Valor": "On the Hall 8.1 stand, with cosplayers and competitions."
+        "Arena of Valor": "On the Hall 8.1 stand, with cosplayers and competitions.",
+        "Honor of Kings: World": "The open-world spin-off, out in China since April on PC and mobile; registered on the booth page, no hands-on announced.",
+        "Honor of Kings: ACE": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
+        "Rust Mobile": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
+        "Roco Kingdom": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
+        "Animula Nook": "Registered on Tencent Games' gamescom booth page; no hands-on announced."
       }
     },
     "netease": {
@@ -784,13 +791,14 @@
       "visitAdvice": "Low-queue stop; go when the big halls are at their worst."
     },
     "frozen-district": {
-      "description": "The House Flipper studio, registered at Hall 10.1 under both its own name and House Flipper 2 — and, fittingly for a cleaning-simulator developer, filed under the directory's care and cleaning product group as well as games. Its booth page also registers the robot-farming sim Farmbotic, the forgery sim Forgery Craft and a House Flipper 2 pets expansion.",
+      "description": "The House Flipper studio, registered at Hall 10.1 under both its own name and House Flipper 2 — and, fittingly for a cleaning-simulator developer, filed under the directory's care and cleaning product group as well as games. Its booth page also registers the robot-farming sim Farmbotic, the forgery sim Forgery Craft, the dream-painting puzzler Dreampainters and a House Flipper 2 pets expansion.",
       "crowdNote": "Cozy-sim fans browse rather than queue.",
       "visitAdvice": "Two stands from Raw Fury and three from MOZA — worth folding into one pass along the A row.",
       "games": {
         "House Flipper 2": "Registered as a brand on the official exhibitor profile, along with a pets expansion; the demo program is unannounced.",
         "Farmbotic": "Robot-farming sim registered on Frozen District's gamescom booth page; no hands-on announced.",
-        "Forgery Craft": "Art-forgery sim registered on the same booth page; no hands-on announced."
+        "Forgery Craft": "Art-forgery sim registered on the same booth page; no hands-on announced.",
+        "Dreampainters": "First-person colour puzzler from Stability Games, published by Frozen District; on the booth page, no hands-on announced."
       }
     },
     "raw-fury": {
@@ -855,6 +863,11 @@
         "The Curse of the Crimson Stag": "New adventure title."
       }
     },
+    "indie-castle": {
+      "description": "A community booth built as an actual castle, four metres tall, in the indie half of Hall 10.2: 52 games on pods along the outside walls and in the courtyard, from around forty small studios and publishers. It is the first outing of the Indies United brand and is run by Hamburg's Insomnia Development; Dotemu, gamigo and Daedalic have pods here too.",
+      "crowdNote": "Forty small pods rather than one queue — waits are per-machine and short, busiest on Saturday afternoon.",
+      "visitAdvice": "Circle the outside walls first, then go into the courtyard — the pods inside are easy to walk past. It sits between the Indie Arena Booth and the Retro & Family Area, so it fits into the same Hall 10.2 pass."
+    },
     "a-maze": {
       "description": "The Berlin independent-games festival's third Digital PlayGround at gamescom: experimental and art games curated well outside what the Indie Arena Booth covers, a few stands away in the same hall.",
       "crowdNote": "Small, curated and quiet next to the Indie Arena Booth — machines free up quickly.",
@@ -866,11 +879,13 @@
       "visitAdvice": "Skip it unless you're job-hunting or studying. It is, however, a genuinely calm place to sit down mid-day, and the accessibility and youth-work stands are worth a look."
     },
     "lego": {
-      "description": "Multi-stand block in Hall 9.1 next to Nintendo, confirmed returning for 2026. The lineup is unannounced — the 2025 booth featured Batman, One Piece and Super Mario zones, so expect current LEGO video games plus set photo ops.",
+      "description": "Multi-stand block in Hall 9.1 next to Nintendo. The headline is LEGO Batman: Legacy of the Dark Knight, whose Mayhem Collection DLC gets its first public showing here ahead of a September 18 release, alongside a LEGO Fortnite section built around a life-size recreation of the Rave Cave set.",
       "crowdNote": "Family magnet in the same hall as Nintendo — photo-op and demo lines get long on the weekend.",
-      "visitAdvice": "Weekday mornings; weekends are dominated by families.",
+      "visitAdvice": "Weekday mornings; weekends are dominated by families. LEGO has not said whether the Batman DLC is hands-on or shown on screens, so treat a demo station as a bonus rather than the reason to queue.",
       "games": {
-        "LEGO video game lineup (TBC)": "LEGO historically reveals new games at gamescom/ONL; 2026 titles unannounced."
+        "LEGO Batman: Legacy of the Dark Knight": "First public look at the Mayhem Collection DLC before its September 18 release. A trailer also airs on IGN's gamescom stream on Wednesday; whether the booth has it playable is unannounced.",
+        "LEGO Fortnite": "A themed booth section rather than an announced demo — the draw is a life-size build of the Rave Cave set.",
+        "LEGO Skylines": "Rated in South Korea earlier this year and widely expected as a Paradox collaboration, but neither LEGO nor Paradox has announced it."
       }
     },
     "wizards-of-the-coast": {
@@ -1505,12 +1520,13 @@
       "visitAdvice": "Part of the same Hall 8.1 hardware run as ASUS ROG, AGON by AOC and Logitech."
     },
     "mattel": {
-      "description": "Mattel's first gamescom with a stand of its own, and it has two: Hall 8.1 B020 in the hall entrance area beside CD Projekt Red and Square Enix, with six playable Mattel Game Studios titles, the Mattel Brick Shop sets (including a 3,500-piece Xbox console), a live stage and Minecraft and KPop Demon Hunters photo spots — plus the Mattel Fan Shop at Hall 5.1 C024 in the Merchandise Area, which is where the buying happens.",
+      "description": "Mattel's first gamescom with a stand of its own, and it has two: Hall 8.1 B020 in the hall entrance area beside CD Projekt Red and Square Enix, with six playable Mattel Game Studios titles, the Mattel Brick Shop sets (including a 3,500-piece Xbox console), a live stage and Minecraft and KPop Demon Hunters photo spots, with Barbie Rewind added to its booth page since — plus the Mattel Fan Shop at Hall 5.1 C024 in the Merchandise Area, which is where the buying happens.",
       "crowdNote": "Family-facing brand stand; the demos are short mobile sessions, so waits stay small except at the weekend and around stage slots.",
       "visitAdvice": "The Hall 8.1 stand is a quick stop on the way in or out of Hall 8 — five of its six demos are mobile and turn over fast. If you came to buy the Brick Shop sets rather than play, go to the Hall 5.1 fan shop instead; only it sells.",
       "games": {
         "He-Man and the Masters of the Universe: Dragon Pearl of Destruction": "The one PC/console title on the stand — Bitmap Bureau's retro brawler, out since April.",
-        "Skeletor: Until Next Time!": "Mattel Game Studios' first self-published game, an endless runner already on iOS and Android."
+        "Skeletor: Until Next Time!": "Mattel Game Studios' first self-published game, an endless runner already on iOS and Android.",
+        "Barbie Rewind": "Registered on Mattel's gamescom booth page after the six playable titles were announced; no hands-on announced."
       }
     },
     "jbl-quantum": {
@@ -1629,14 +1645,29 @@
       "visitAdvice": "A quick look if you're already in the area."
     },
     "shueisha-games": {
-      "description": "The games arm of manga publisher Shueisha (Shonen Jump), with a stand in Hall 10.2 — its lineup for the show isn't announced yet.",
-      "crowdNote": "Unclear until a lineup is announced.",
-      "visitAdvice": "Check back closer to the show for what's playable."
+      "description": "The games arm of manga publisher Shueisha (Shonen Jump), on a shared Hall 10.2 stand block. Its booth page now names ten titles, from the Jujutsu Kaisen action game and a KochiKame spin-off to small original work like ATMOSFAR and Wild Wild Eden. None is announced as hands-on.",
+      "crowdNote": "A browsing stand in the indie half of Hall 10.2 — short waits, if any.",
+      "visitAdvice": "Worth a pass if you follow Shonen Jump. It sits a few stands from the Indie Arena Booth, so fold it into that walk.",
+      "games": {
+        "BAKUDO": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "Chronoscript: The Endless End": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "UN:Me": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "Schrödinger's Call": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "JUJUTSU KAISEN RUMBLE: SURVIVATON": "The Jujutsu Kaisen title on the booth page — the best-known name on the stand; no hands-on announced.",
+        "KochiKame: Ryo-san's Billion-yen Beat": "Spin-off of the long-running Shueisha manga; no hands-on announced.",
+        "ATMOSFAR": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "Seasons of Books and Keys": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "YAKOH SHINOBI OPS": "On Shueisha Games' gamescom booth page; no hands-on announced.",
+        "Wild Wild Eden": "On Shueisha Games' gamescom booth page; no hands-on announced."
+      }
     },
     "metanet": {
-      "description": "The Canadian indie studio behind the platformer N++, with a stand in Hall 10.2 — its show plans aren't announced yet.",
-      "crowdNote": "Unclear until a lineup is announced.",
-      "visitAdvice": "Check back closer to the show for what's playable."
+      "description": "The Canadian studio behind the ninja platformers N and N++ brings one title to its small Hall 10.2 stand: N PLUS INFINITY TIMES TWO, named on its gamescom booth page. Hands-on is not announced.",
+      "crowdNote": "A one-game stand in the indie half of the hall — little to no wait.",
+      "visitAdvice": "A two-minute stop on the way through Hall 10.2; the Indie Arena Booth is a few stands over.",
+      "games": {
+        "N PLUS INFINITY TIMES TWO": "The N++ follow-up, named on Metanet's gamescom booth page; no hands-on announced."
+      }
     }
   }
 }

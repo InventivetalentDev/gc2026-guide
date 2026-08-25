@@ -249,6 +249,75 @@ const GCMarks = (() => {
     (b.crowd || 0) - (a.crowd || 0) ||
     String(a.name).localeCompare(String(b.name), lang);
 
+  /* ---- where you are ----
+
+     The "I'm here" position (docs/IDEAS-im-here.md): the hall the visitor
+     last said they were in, set by one tap on either page or stamped as a
+     side effect of a queue report or a ✓ made while the doors are open. It
+     lives here because both pages write it and both read it — a position
+     the map stamped must be the position the guide advises from, which is
+     the same one-truth rule as the marks above.
+
+     It is an input to advice, never a record: it does not touch the plan
+     order, is not written into any link, and never leaves the device. And
+     it is fresh or absent — a position from an hour ago is wrong more often
+     than it is right, so past HERE_FRESH_SECONDS readHere() answers null
+     and every consumer falls back to behaving as if the feature were not
+     there. The decay is also why no date is stored: writers only fire
+     during show hours and the window is 45 minutes, so a stamp can never
+     survive into another show day on its own.
+
+     Shape: { hall, ex, at, src }. `hall` is a hall id as the guide files
+     them ("8.1"); `ex` is the exhibitor id when the statement was booth-
+     accurate (a dir: key for a business stand), null when only the hall is
+     known; `at` is epoch seconds; `src` names the gesture, for nothing but
+     honesty in debugging. Callers pass no clock in and get none out —
+     freshness is this file's own arithmetic, on the one clock both pages
+     share. */
+  const HERE_KEY = "gc2026.here.v1";
+  const HERE_FRESH_SECONDS = 45 * 60;
+
+  function readHere() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(HERE_KEY) || "null");
+      if (!raw || typeof raw !== "object") return null;
+      const hall = typeof raw.hall === "string" && raw.hall ? raw.hall : null;
+      const at = Number(raw.at);
+      if (!hall || !Number.isFinite(at)) return null;
+      const age = Date.now() / 1000 - at;
+      /* A stamp from the future is a wall clock that has been set back
+         since it was written; trusting it would pin the position open
+         indefinitely, which is the one thing the decay exists to prevent. */
+      if (age < -300 || age > HERE_FRESH_SECONDS) return null;
+      return {
+        hall,
+        ex: typeof raw.ex === "string" && raw.ex ? raw.ex : null,
+        at,
+        src: typeof raw.src === "string" ? raw.src : "",
+      };
+    } catch {
+      /* corrupt entry, or storage blocked entirely (Safari private mode) */
+      return null;
+    }
+  }
+
+  function writeHere({ hall, ex = null, src = "" } = {}) {
+    if (!hall) return;
+    try {
+      localStorage.setItem(
+        HERE_KEY,
+        JSON.stringify({
+          hall: String(hall),
+          ex: ex ? String(ex) : null,
+          at: Math.floor(Date.now() / 1000),
+          src: String(src),
+        })
+      );
+    } catch {
+      /* out of quota or storage denied — advice simply stays position-less */
+    }
+  }
+
   /* Booth codes, from either side, reduced to a comparable set:
      the guide writes "A061/C060", Koelnmesse files "A-061 C-060", and
      both mean the same two stands.
@@ -273,5 +342,6 @@ const GCMarks = (() => {
     powerSaver,
     IT_KEY, readItinerary, stopDays, compareStops,
     ORDER_KEY, UNRANKED, stopKey, readOrder, writeOrder, orderRanks,
+    HERE_KEY, readHere, writeHere,
   };
 })();

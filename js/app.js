@@ -423,10 +423,14 @@ function markLabel(mark, kind, name, marked) {
 
 function toggleMark(mark, kind, key) {
   const set = markSet(mark, kind);
-  set.has(key) ? set.delete(key) : set.add(key);
+  const adding = !set.has(key);
+  adding ? set.add(key) : set.delete(key);
   persistMarks(mark);
   /* Only the saved set scopes the itinerary; a played tick can't orphan it. */
   if (mark === "saved") prunePlan();
+  /* Setting a ✓, never clearing one: an untick is a correction to the
+     record, not a statement about where you are standing. */
+  if (mark === "played" && adding) stampHereFromPlayed(kind, key);
   onMarksChanged();
 }
 
@@ -3209,6 +3213,10 @@ function directoryMatches() {
     if (!terms.length) return true;
     const hay = haystackFor("directory", entry, () => [
       entry.name,
+      /* The name the exhibitor trades as, where the directory files it under
+         the entity that signed the contract. Nobody searches for "Hantschel,
+         Hort, Müller und Neumann GbR"; they search for Pipapo Games. */
+      entry.brand || "",
       entry.country,
       countryLabel(entry.country),
       ...stands.map((s) => `${t("hall.word")} ${s.hall} hall ${s.hall} ${s.booth}`),
@@ -3224,18 +3232,34 @@ function profileUrl(entry) {
   return base && entry.slug ? `${base}${entry.slug}/` : "";
 }
 
+/* Where a row carries a brand, that is what the row is called. The directory
+   files a company under the entity that signed the contract; gamescom's own
+   profile pages title the same company by the name it trades as, and this
+   section exists to answer "is this company even here?" — which only the name
+   someone recognises can answer. The filed name stays underneath rather than
+   being replaced: it is what the official entry, the map label and the link
+   target all say, so a reader who follows the link is not met by a stranger. */
 function profileLink(entry) {
   const href = profileUrl(entry);
-  return href
-    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(entry.name)}<span aria-hidden="true"> ↗</span><span class="sr-only">${esc(t("directory.entryAria"))}</span></a>`
-    : esc(entry.name);
+  const shown = entry.brand || entry.name;
+  const link = href
+    ? `<a href="${esc(href)}" target="_blank" rel="noopener">${esc(shown)}<span aria-hidden="true"> ↗</span><span class="sr-only">${esc(t("directory.entryAria"))}</span></a>`
+    : esc(shown);
+  return entry.brand
+    ? `${link}<span class="dir-filed">${esc(t("directory.filedAs", { name: entry.name }))}</span>`
+    : link;
 }
 
 /* Shared by the Full directory and the trade list, so a stand reads the same
    in both: the same amber plate for the business halls, the same map link,
    the same "at <host>" when a bigger booth is standing on it. `self` is the
-   row's own name, so a card never labels itself as its own neighbour. */
+   row's own name — or both of them, where it has a brand — so a card never
+   labels itself as its own neighbour. */
 function standChips(stands, byBooth, self = "") {
+  /* Both of a row's names, because either can be the host card's: Super Crowd
+     Entertainment GmbH is the company that runs the Indie Arena Booth, and a
+     row reading "Indie Arena Booth · at Indie Arena Booth" says nothing. */
+  const own = new Set([].concat(self).filter(Boolean));
   return (stands || [])
     .map((s) => {
       const host = byBooth.get(boothKey(s.hall, s.booth));
@@ -3247,7 +3271,7 @@ function standChips(stands, byBooth, self = "") {
       const where = `<span class="dir-stand-where"><b>${esc(s.hall)}</b>${
         s.booth ? ` · ${esc(s.booth)}` : ""
       }</span>${
-        host && host.name !== self
+        host && !own.has(host.name)
           ? `<i>${esc(t("directory.hostedAt", { name: host.name }))}</i>`
           : ""
       }`;
@@ -3272,7 +3296,7 @@ function standChips(stands, byBooth, self = "") {
 }
 
 function directoryRow(entry, byBooth) {
-  const stands = standChips(entry.stands, byBooth, entry.name);
+  const stands = standChips(entry.stands, byBooth, [entry.name, entry.brand]);
   /* Saveable from the row that names it. The map can pin the stand this
      company stands on, but 172 of them share the Indie Arena Booth's floor
      and searching a name is how you find one of those — so the answer to
@@ -3470,6 +3494,11 @@ function directoryRecord(entry) {
   const first = stands[0] || {};
   const record = {
     id: dirKey(entry.slug),
+    /* The filed name, not the brand, and deliberately: this is the stop a
+       visitor walks to, and every other place-like surface — the official
+       row, the map label, the hall plan — calls it that. The brand belongs to
+       the row you browse and search, which renders from the directory entry
+       itself. Only one business-hall row carries one at all. */
     name: entry.name,
     ...(trade ? { type: "trade", trade: true } : null),
     fromDirectory: true,
@@ -3647,6 +3676,7 @@ function tradeMatches({ category = true } = {}) {
     if (!terms.length) return true;
     const hay = haystackFor("trade", entry, () => [
       entry.name,
+      entry.brand || "",
       entry.country,
       countryLabel(entry.country),
       ...(entry.stands || []).map(
@@ -3683,9 +3713,9 @@ function tradeRow(entry, byBooth) {
   return `<li class="dir-row trade-row" data-saved="${isSaved("exhibitor", key)}">
     <span class="dir-name">${profileLink(entry)}</span>
     <span class="dir-country">${esc(entry.country ? countryLabel(entry.country) : "")}</span>
-    <span class="dir-stands">${standChips(entry.stands, byBooth, entry.name)}${shared}</span>
+    <span class="dir-stands">${standChips(entry.stands, byBooth, [entry.name, entry.brand])}${shared}</span>
     <span class="trade-tags">${cats}</span>
-    ${markButton("saved", "exhibitor", key, entry.name)}
+    ${markButton("saved", "exhibitor", key, entry.brand || entry.name)}
   </li>`;
 }
 
@@ -4704,6 +4734,67 @@ function hallSteps(fromHall, toHall) {
   return null;
 }
 
+/* The distance labels both the hall headings and Today's advice strip put on
+   a step count — one mapping, so "next hall along" means the same walk
+   wherever it is printed. */
+const stepsLabel = (steps) =>
+  steps === 1
+    ? t("route.stepsNear")
+    : steps === 2 || steps === 3
+      ? t("route.stepsAcross")
+      : steps >= 4
+        ? t("route.stepsFar")
+        : "";
+
+/* ---- where you are — the "I'm here" position ----
+
+   The advice surfaces below read the plan as if the visitor were at its top;
+   this is the fact that lets them start from where the visitor actually
+   stands instead (docs/IDEAS-im-here.md). Storage and decay live in
+   js/marks.js, because the map writes the same key; what belongs here is the
+   one rule about setting it: only statements of physical fact stamp a
+   position — a queue report, a ✓ made while the doors are open, an explicit
+   tap — never attention and never intent. Opening a hall on the map is
+   browsing; saving a booth is wanting; neither means standing there, and one
+   wrong "you're in hall 4" teaches the visitor to distrust every
+   position-flavoured line the guide ever renders. */
+const hereNow = () => GCMarks.readHere();
+
+function stampHere(hall, ex = null, src = "") {
+  if (!hall) return;
+  GCMarks.writeHere({ hall: String(hall), ex, src });
+  /* This tab gets no storage event for its own write; the two surfaces that
+     advise from the position redraw through the same idle queue every mark
+     change uses. */
+  refreshViews("planner", "today");
+}
+
+/* A queue report is booth-accurate: you do not count the people ahead of you
+   in a line you are not standing in. Called from the gesture handlers, never
+   from the transport — a deferred completion replays when the network comes
+   back, possibly hours later and halls away, and must not claim you are
+   still at the booth. */
+function stampHereAtBooth(exhibitorId, src) {
+  const ex = state.exhibitors.find((entry) => entry.id === exhibitorId);
+  if (ex?.hall && !isAbsent(ex)) stampHere(ex.hall, ex.id, src);
+}
+
+/* The ✓ is the other statement of presence — you tick it walking away from
+   the demo — but only while the doors are open: people tidy their lists from
+   the hotel at night, and an evening stamp would open tomorrow's advice on
+   yesterday's hall. A game ticked at one of the two-booth titles is skipped
+   as ambiguous rather than guessed at. */
+function stampHereFromPlayed(kind, key) {
+  const d = showDay();
+  if (!d || dayStatus(d).state !== "open") return;
+  const holds = (ex) =>
+    kind === "exhibitor"
+      ? ex.id === key
+      : (ex.games || []).some((game) => gameKey(game.title) === key);
+  const at = state.exhibitors.filter((ex) => holds(ex) && ex.hall && !isAbsent(ex));
+  if (at.length === 1) stampHere(at[0].hall, at[0].id, "played");
+}
+
 /* Which days a stop is planned for. Shared with the map's route overlay, which
    has to bucket the same booth onto the same day (js/marks.js). */
 const stopDays = (ex) => GCMarks.stopDays(state.marks.saved, state.itinerary, ex);
@@ -4831,8 +4922,11 @@ function routeRow(
   </div>`;
 }
 
-/* The hall heading above a run of those rows — also shared with Today. */
-function routeHallHeader(group, { dayFilter = null, from = null } = {}) {
+/* The hall heading above a run of those rows — also shared with Today.
+   `here` marks the hall the visitor said they are in, and displaces the step
+   label: steps describe the walk to a hall you have not reached, and "across
+   the site" on the hall you are standing in is wrong twice over. */
+function routeHallHeader(group, { dayFilter = null, from = null, here = false } = {}) {
   const kicker =
     group.key === "offsite" || group.key === "tba"
       ? t("route.locationKicker")
@@ -4844,15 +4938,8 @@ function routeHallHeader(group, { dayFilter = null, from = null } = {}) {
         ? t("plate.tba")
         : group.key;
   const countLabel = t("route.stops", { n: group.items.length });
-  const steps = hallSteps(from, group.key);
-  const stepLabel =
-    steps === 1
-      ? t("route.stepsNear")
-      : steps === 2 || steps === 3
-        ? t("route.stepsAcross")
-        : steps >= 4
-          ? t("route.stepsFar")
-          : "";
+  const stepLabel = here ? "" : stepsLabel(hallSteps(from, group.key));
+  const hereTag = here ? `<span class="route-hall-here">${esc(t("route.hereTag"))}</span>` : "";
   /* The header opens the whole hall — the overview you want before
      walking into it. Each stop's booth number below opens that stand. */
   const toMap = hasMap(group.key)
@@ -4862,10 +4949,11 @@ function routeHallHeader(group, { dayFilter = null, from = null } = {}) {
         )}">${esc(t("map.cue"))}</a>`
     : "";
   return `<h4 class="route-hall" aria-label="${esc(
-    [group.label, stepLabel, countLabel].filter(Boolean).join(", ")
+    [group.label, here ? t("route.hereTag") : "", stepLabel, countLabel].filter(Boolean).join(", ")
   )}">
     <span class="route-hall-kicker">${esc(kicker)}</span>
     <span class="route-hall-num">${esc(number)}</span>
+    ${hereTag}
     ${stepLabel ? `<span class="route-hall-steps">${esc(stepLabel)}</span>` : ""}
     <span class="route-hall-count">${esc(countLabel)}</span>
     ${toMap}
@@ -4881,14 +4969,23 @@ function routeHallHeader(group, { dayFilter = null, from = null } = {}) {
    played stops folded away, so an arrow there would arrange a list against a
    set the visitor cannot see. Arranging belongs to the plan, which shows the
    whole of it — Today only has to honour the order, which routeGroups()
-   already sorts by. */
-const routeBoard = (groups, { dayFilter = null, move = true, deadlines = null } = {}) =>
-  groups
+   already sorts by.
+
+   The position changes what the headings *say*, never what order the groups
+   come in: the first hall's steps are measured from where you are (the walk
+   to it starts there, and with no position it had no steps at all), and the
+   hall you said you are in wears a tag. Re-sorting the board by proximity
+   would move the map's numbered pins with it — anything that arranges by
+   position is its own lens, not a mutation of the walking route. */
+const routeBoard = (groups, { dayFilter = null, move = true, deadlines = null } = {}) => {
+  const here = hereNow();
+  return groups
     .map(
       (group, groupIndex) =>
         routeHallHeader(group, {
           dayFilter,
-          from: groupIndex ? groups[groupIndex - 1].key : null,
+          from: groupIndex ? groups[groupIndex - 1].key : here?.hall || null,
+          here: Boolean(here && group.key === here.hall),
         }) +
         group.items
           .map((ex, i) =>
@@ -4903,6 +5000,7 @@ const routeBoard = (groups, { dayFilter = null, move = true, deadlines = null } 
           .join("")
     )
     .join("");
+};
 
 function renderRoute() {
   const routeList = $("#plan-board");
@@ -5318,13 +5416,51 @@ function todayFitMarkup(groups, day, now) {
   )}${result.unmeasured ? esc(t("today.fitUnmeasured", { n: result.unmeasured })) : ""}</p>`;
 }
 
-/* The one stop worth walking to first: the longest queue still left today.
-   Only offered when there is a choice to make. With nothing measured the old
-   bad-queue threshold still applies, so a quiet morning stays quiet. Business
-   stops run on appointments, so they are never the answer to "where is the
-   queue". */
+/* The stops the strip below is allowed to advise: business stops run on
+   appointments, so they are never the answer to "where next" or "where is
+   the queue". */
+const todayAdvisable = (groups) =>
+  groups.flatMap((group) => group.items).filter((ex) => !inBusinessArea(ex));
+
+/* The wait a named stop is quoted with: the live figure where one exists,
+   the editorial forecast where it doesn't, nothing where there is neither —
+   the same preference every other live surface has. */
+function stopWaitDetail(ex) {
+  const entry = worstOpenTrustedQueue(ex);
+  if (entry) return queueLiveMain(entry.live);
+  const crowd = ex.crowd || 0;
+  return crowd ? t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) }) : "";
+}
+
+/* What the position adds to the strip: the first remaining stop in the hall
+   you are standing in, and the nearest one outside it. "First" and "nearest,
+   among the equally near" both defer to the plan's own comparator rather
+   than a worth formula of their own — the order you arranged is the order
+   the advice respects. Only offered when there is a choice to make, like the
+   longest-queue line below. */
+function todayHereEntries(groups) {
+  const here = hereNow();
+  if (!here) return null;
+  const stops = todayAdvisable(groups);
+  if (stops.length < 2) return null;
+  const rank = GCMarks.compareStops(hasPlayed, GCI18N.lang, exPlanRank);
+  const inHall = stops.filter((ex) => String(ex.hall) === here.hall).sort(rank)[0] || null;
+  /* Steps of 0 is the other floor of the same building — kept, with no
+     distance word, rather than dropped between "here" and "next hall". */
+  const near =
+    stops
+      .filter((ex) => String(ex.hall) !== here.hall)
+      .map((ex) => ({ ex, steps: hallSteps(here.hall, ex.hall) }))
+      .filter((entry) => entry.steps !== null)
+      .sort((a, b) => a.steps - b.steps || rank(a.ex, b.ex))[0] || null;
+  return { inHall, near };
+}
+
+/* The longest queue still left today. Only offered when there is a choice to
+   make. With nothing measured the old bad-queue threshold still applies, so
+   a quiet morning stays quiet. */
 function todayFirstEntry(groups) {
-  const stops = groups.flatMap((group) => group.items).filter((ex) => !inBusinessArea(ex));
+  const stops = todayAdvisable(groups);
   if (stops.length < 2) return null;
 
   if (QUEUES?.visible()) {
@@ -5342,15 +5478,41 @@ function todayFirstEntry(groups) {
   return ex && (ex.crowd || 0) >= 4 ? { ex, live: null } : null;
 }
 
+/* The advice strip: one block, up to three short lines. Position-less it is
+   the line it has always been — the longest queue, labelled as the place to
+   go first. With a position the strip answers "from here" instead: your
+   hall, the nearest next stop, and the longest queue renamed to the
+   observation it is — three suggestions would be noise, but three facts let
+   the visitor make the trade the guide cannot make for them. A stop already
+   named is not named twice. */
 function todayFirstMarkup(groups) {
-  const entry = todayFirstEntry(groups);
-  if (!entry) return "";
-  const crowd = entry.ex.crowd || 0;
-  const forecast = t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) });
-  const detail = (entry.live && queueLiveMain(entry.live)) || forecast;
-  return `<p class="today-first"><span class="today-first-label">${esc(
-    t("today.firstLabel")
-  )}</span> <strong>${esc(entry.ex.name)}</strong> — ${esc(detail)}</p>`;
+  const positioned = todayHereEntries(groups);
+  const worst = todayFirstEntry(groups);
+  const line = (label, ex, detail) =>
+    `<span class="today-first-line"><span class="today-first-label">${esc(
+      label
+    )}</span> <strong>${esc(ex.name)}</strong>${detail ? ` — ${esc(detail)}` : ""}</span>`;
+  const lines = [];
+  const named = new Set();
+  if (positioned?.inHall) {
+    lines.push(line(t("today.hereLabel"), positioned.inHall, stopWaitDetail(positioned.inHall)));
+    named.add(positioned.inHall.id);
+  }
+  if (positioned?.near) {
+    const detail = [stepsLabel(positioned.near.steps), stopWaitDetail(positioned.near.ex)]
+      .filter(Boolean)
+      .join(" · ");
+    lines.push(line(t("today.nearestLabel"), positioned.near.ex, detail));
+    named.add(positioned.near.ex.id);
+  }
+  if (worst && !named.has(worst.ex.id)) {
+    const crowd = worst.ex.crowd || 0;
+    const detail =
+      (worst.live && queueLiveMain(worst.live)) ||
+      t("plan.queueWith", { n: crowd, label: crowdLabel(crowd) });
+    lines.push(line(t(named.size ? "today.longestLabel" : "today.firstLabel"), worst.ex, detail));
+  }
+  return lines.length ? `<p class="today-first">${lines.join("")}</p>` : "";
 }
 
 function refreshTodayLive() {
@@ -5364,12 +5526,71 @@ function refreshTodayLive() {
   const fitMarkup = todayFitMarkup(groups, day, showNow());
   if (firstTarget && firstTarget.innerHTML !== firstMarkup) firstTarget.innerHTML = firstMarkup;
   if (fitTarget && fitTarget.innerHTML !== fitMarkup) fitTarget.innerHTML = fitMarkup;
+  /* The here row ages like the strip does — a position expires between full
+     renders, and a row still claiming a hall above a strip that has stopped
+     advising from it would be the two disagreeing. Never patched under a
+     focused chip: yanking the picker out from under a thumb to note an
+     expiry is the worse trade. */
+  const hereTarget = $("#today-here-row");
+  if (hereTarget && !hereTarget.contains(document.activeElement)) {
+    const hereMarkup = todayHereRowMarkup(day, dayStatus(day, showNow()), groups);
+    if (hereTarget.innerHTML !== hereMarkup) hereTarget.innerHTML = hereMarkup;
+  }
 }
 
 /* The Done fold is rebuilt from scratch on every tick, so its open state has
    to live out here — otherwise un-ticking a mis-tapped ✓ slams the drawer it
    was in. */
 let todayDoneOpen = false;
+
+/* The hall picker's two transient states live out here for the same reason:
+   "change" and "elsewhere" both re-render the header they sit in. Neither is
+   a preference — a reload starts folded, which is the right cold state. */
+let todayHerePickerOpen = false;
+let todayHereAllOpen = false;
+
+/* Today's own way to set the position — the one place the guide volunteers
+   the question. While the doors are open and no fresh position exists, a row
+   of hall chips asks it, today's own halls first (that is usually the
+   answer) and the rest behind one more tap; once set, the row folds to a
+   statement with the way to change it. Off-hours it is nothing at all: you
+   are not standing in a hall before the doors, and after them the advice the
+   position feeds has gone home too. */
+function todayHereRowMarkup(d, status, groups) {
+  if (status.state !== "open") return "";
+  const here = hereNow();
+  if (here && !todayHerePickerOpen) {
+    return `<p class="today-here">
+      <span class="today-here-in">${esc(t("today.hereIn", { hall: here.hall }))}</span>
+      <button class="today-here-change" type="button" data-here-change>${esc(
+        t("today.hereChange")
+      )}</button>
+    </p>`;
+  }
+  const todays = groups.map((group) => group.key).filter((key) => key !== "offsite" && key !== "tba");
+  const rest = [...state.mapHalls]
+    .filter((hall) => !todays.includes(hall))
+    .sort((a, b) => hallRank(a) - hallRank(b));
+  if (!todays.length && !rest.length) return "";
+  const showAll = todayHereAllOpen || !todays.length;
+  const chip = (hall, extra = "") =>
+    `<button class="day-chip${here?.hall === hall ? " active" : ""}" type="button"
+      data-here-hall="${esc(hall)}"${extra} aria-pressed="${here?.hall === hall}"
+      aria-label="${esc(t("today.hereSetAria", { hall }))}">${esc(hall)}</button>`;
+  return `<div class="today-here" role="group" aria-label="${esc(t("today.hereAria"))}">
+    <span class="today-here-q">${esc(t("today.hereQuestion"))}</span>
+    ${todays.map((hall) => chip(hall)).join("")}
+    ${
+      showAll
+        ? rest.map((hall, i) => chip(hall, i === 0 ? ' data-here-rest="true"' : "")).join("")
+        : rest.length
+          ? `<button class="day-chip" type="button" data-here-more>${esc(
+              t("today.hereElsewhere")
+            )}</button>`
+          : ""
+    }
+  </div>`;
+}
 
 function renderTodayTab(day = showDay()) {
   const tab = $('.tab[data-view="today"]');
@@ -5420,6 +5641,8 @@ function renderToday() {
   const now = showNow();
   const status = dayStatus(d, now);
   const pct = total ? Math.round((done.length / total) * 100) : 0;
+  /* A picker left open when the doors shut would greet tomorrow half-open. */
+  if (status.state !== "open") todayHerePickerOpen = todayHereAllOpen = false;
 
   $("#today-head").innerHTML = `<div class="today-strip" data-state="${esc(status.state)}">
       <span class="today-when">
@@ -5429,6 +5652,7 @@ function renderToday() {
       <span class="day-access ${isTradeDay(d) ? "trade" : "public"}">${esc(d.access)}</span>
       <span class="today-status">${esc(dayStatusLine(d))}</span>
     </div>
+    <div id="today-here-row">${todayHereRowMarkup(d, status, groups)}</div>
     ${
       total
         ? `<div class="today-progress">
@@ -6006,7 +6230,16 @@ function queueItem(kind, key) {
 
 let queueIndex = [];
 let queueScopeEx = null;
+/* The other scope: one hall's queues, offered off the "I'm here" position
+   (docs/IDEAS-im-here.md, follow-up 4). Standing in an impromptu line, the
+   dozen-odd queues around you are the whole answer, and typing a name with a
+   phone in one hand and a spot in the queue at stake is the flow this
+   removes. A filter once applied, like the booth scope — it does not expire
+   with the position that offered it. */
+let queueScopeHall = null;
 let queueQuery = "";
+
+const queuesInHall = (hall) => queueIndex.filter((entry) => String(entry.ex.hall) === hall);
 
 function buildQueueIndex() {
   queueIndex = [];
@@ -6032,10 +6265,13 @@ function buildQueueIndex() {
 }
 
 /* Ranked so a typed title beats a booth that merely mentions it: exact lead,
-   then lead prefix, then a word start anywhere, then any substring. Pure, and
-   deliberately no fuzzy matching — "hlo" should not offer Halo to somebody
-   standing in front of a sign. */
-function matchQueues(query, entries) {
+   then lead prefix, then a word start anywhere, then any substring. Within a
+   tier, the queues of the hall you said you are in come first — never above a
+   better match, because the sign in front of you still beats proximity. Pure
+   (the hall is passed in, not reached for), and deliberately no fuzzy
+   matching — "hlo" should not offer Halo to somebody standing in front of a
+   sign. */
+function matchQueues(query, entries, hereHall = null) {
   const needle = String(query || "").trim().toLowerCase();
   if (!needle) return [];
   const scored = [];
@@ -6047,8 +6283,9 @@ function matchQueues(query, entries) {
     else if (entry.haystack.includes(needle)) score = 3;
     if (score >= 0) scored.push({ entry, score });
   }
+  const near = (candidate) => (hereHall && String(candidate.entry.ex.hall) === hereHall ? 0 : 1);
   return scored
-    .sort((a, b) => a.score - b.score || byName(a.entry.title, b.entry.title))
+    .sort((a, b) => a.score - b.score || near(a) - near(b) || byName(a.entry.title, b.entry.title))
     .map(({ entry }) => entry);
 }
 
@@ -6132,14 +6369,41 @@ function renderQueuesMine() {
   if (reportNum) reportNum.textContent = section.hidden ? "01" : "02";
 }
 
+/* The scope strip wears one of three faces: the booth scope a card link set,
+   the hall scope the visitor chose, or — unscoped, with a fresh position —
+   the offer to take it. The offer is a statement and a button in the same
+   shape as the active scopes, so taking it reads as the strip folding into
+   what it promised; without a position, or in a hall with nothing reportable,
+   the strip is simply absent and the view is exactly what it always was. */
 function renderQueuesScope() {
   const scope = $("#queues-scope");
   if (!scope) return;
+  const clear = `<button class="chip" type="button" id="queues-scope-clear">${esc(
+    t("queues.showAll")
+  )}</button>`;
   const ex = queueScopeEx && state.exhibitors.find((entry) => entry.id === queueScopeEx);
-  scope.hidden = !ex;
-  scope.innerHTML = ex
-    ? `<span class="queues-scope-label">${esc(t("queues.scopedTo", { exhibitor: ex.name }))}</span>
-       <button class="chip" type="button" id="queues-scope-clear">${esc(t("queues.showAll"))}</button>`
+  if (ex) {
+    scope.hidden = false;
+    scope.innerHTML = `<span class="queues-scope-label">${esc(
+      t("queues.scopedTo", { exhibitor: ex.name })
+    )}</span> ${clear}`;
+    return;
+  }
+  if (queueScopeHall) {
+    scope.hidden = false;
+    scope.innerHTML = `<span class="queues-scope-label">${esc(
+      t("queues.scopedToHall", { hall: queueScopeHall })
+    )}</span> ${clear}`;
+    return;
+  }
+  const here = hereNow();
+  const n = here ? queuesInHall(here.hall).length : 0;
+  scope.hidden = !n;
+  scope.innerHTML = n
+    ? `<span class="queues-scope-label">${esc(t("today.hereIn", { hall: here.hall }))}</span>
+       <button class="chip" type="button" id="queues-near" data-hall="${esc(here.hall)}">${esc(
+        t("queues.nearShow", { n })
+      )}</button>`
     : "";
 }
 
@@ -6149,16 +6413,20 @@ function renderQueuesResults() {
   const empty = $("#queues-empty");
   if (!list || !count || !empty) return;
 
-  const scoped = queueScopeEx ? queueIndex.filter((entry) => entry.ex.id === queueScopeEx) : queueIndex;
-  /* Scoped to a booth, the whole (short) list is the answer and typing
-     narrows it. Unscoped, an untyped list of 162 queues is not a useful
-     starting point, so the saved list stands in for it. */
+  const scoped = queueScopeEx
+    ? queueIndex.filter((entry) => entry.ex.id === queueScopeEx)
+    : queueScopeHall
+      ? queuesInHall(queueScopeHall)
+      : queueIndex;
+  /* Scoped to a booth or a hall, the whole (short) list is the answer and
+     typing narrows it. Unscoped, an untyped list of 162 queues is not a
+     useful starting point, so the saved list stands in for it. */
   let rows;
   let heading = "";
   if (queueQuery) {
-    rows = matchQueues(queueQuery, scoped);
+    rows = matchQueues(queueQuery, scoped, hereNow()?.hall || null);
     heading = t("queues.countMatches", { n: rows.length });
-  } else if (queueScopeEx) {
+  } else if (queueScopeEx || queueScopeHall) {
     rows = scoped;
     heading = t("queues.countMatches", { n: rows.length });
   } else {
@@ -6172,7 +6440,11 @@ function renderQueuesResults() {
   empty.hidden = shown.length > 0;
   if (!shown.length) {
     empty.textContent = queueQuery
-      ? t(queueScopeEx ? "queues.emptyScoped" : "queues.emptySearch", { query: queueQuery })
+      ? queueScopeEx
+        ? t("queues.emptyScoped", { query: queueQuery })
+        : queueScopeHall
+          ? t("queues.emptyScopedHall", { query: queueQuery, hall: queueScopeHall })
+          : t("queues.emptySearch", { query: queueQuery })
       : t("queues.emptyDefault");
   }
 }
@@ -6241,11 +6513,16 @@ function renderQueues() {
   renderQueuesResults();
 }
 
-/* Narrow the view to one booth, or clear it. Landing scoped also clears any
-   stale query, so arriving from a card never shows another booth's matches. */
-function applyQueueScope(exhibitorId) {
+/* Narrow the view to one booth or one hall, or clear it. Landing scoped also
+   clears any stale query, so arriving from a card never shows another booth's
+   matches. The booth wins when a link names both — it is the narrower claim —
+   and a hall is only taken when something there is reportable, so a link to a
+   business hall lands unscoped rather than on an empty list. */
+function applyQueueScope(exhibitorId, hall = null) {
   const ex = exhibitorId && state.exhibitors.find((entry) => entry.id === exhibitorId);
   queueScopeEx = ex ? ex.id : null;
+  if (!queueIndex.length) buildQueueIndex();
+  queueScopeHall = !ex && hall && queuesInHall(String(hall)).length ? String(hall) : null;
   queueQuery = "";
   const search = $("#queues-search");
   if (search) search.value = "";
@@ -6573,6 +6850,9 @@ async function submitQueueDialog(action, value) {
   }
 
   const stateAtSubmit = queueDialogState;
+  /* Joining, updating your place and voting the mechanics are the strongest
+     "I'm here" the guide ever hears — you counted the people ahead of you. */
+  stampHereAtBooth(stateAtSubmit.queue.exhibitor, "queue");
   stateAtSubmit.busy = true;
   stateAtSubmit.status = t("queue.sending");
   renderQueueDialog();
@@ -6639,6 +6919,10 @@ async function runQueueAction(queue, action, source = null) {
     return;
   }
   pendingQueueActions.add(pendingKey);
+  /* Before the report, not after it: the tap is the statement of presence —
+     entered, left and a closure vote are all made looking at the booth — and
+     it holds whether or not the write gets through. */
+  stampHereAtBooth(queue.exhibitor, "queue");
   if (source) {
     source.disabled = true;
     source.setAttribute("aria-busy", "true");
@@ -6723,11 +7007,25 @@ function bindQueueControls() {
     queueQuery = search.value.trim();
     renderQueuesResults();
   });
-  /* The scope chip is replaced on every render, so the listener lives on its
-     container rather than the button. */
+  /* The scope chips are replaced on every render, so the listener lives on
+     their container rather than the buttons. */
   $("#queues-scope")?.addEventListener("click", (event) => {
+    const near = event.target.closest("#queues-near");
+    if (near) {
+      /* Taking the offer, in place: no applyQueueScope, whose scroll-to-top
+         exists for arrivals from elsewhere — this tap happens inside the
+         view, on a strip that stays where it is. */
+      queueScopeEx = null;
+      queueScopeHall = near.dataset.hall;
+      queueQuery = "";
+      if (search) search.value = "";
+      renderQueues();
+      restoreFocus($("#queues-scope-clear"));
+      return;
+    }
     if (!event.target.closest("#queues-scope-clear")) return;
     queueScopeEx = null;
+    queueScopeHall = null;
     renderQueuesScope();
     renderQueuesResults();
     search?.focus();
@@ -7415,6 +7713,34 @@ function bindControls() {
     window.scrollTo(0, 0);
     $('.tab[data-view="exhibitors"]')?.focus({ preventScroll: true });
   });
+  /* The hall picker. Delegated on the section rather than bound per render —
+     the header it sits in is rebuilt on every tick — and every branch ends in
+     restoreFocus, because each press replaces the control that was pressed. */
+  $("#view-today")?.addEventListener("click", (event) => {
+    const pick = event.target.closest("[data-here-hall]");
+    if (pick) {
+      todayHerePickerOpen = false;
+      todayHereAllOpen = false;
+      /* stampHere re-renders Today, which folds the picker to the statement
+         row — so the control to land on is the one that opens it again. */
+      stampHere(pick.dataset.hereHall, null, "asked");
+      restoreFocus($("#view-today [data-here-change]"));
+      return;
+    }
+    if (event.target.closest("[data-here-change]")) {
+      todayHerePickerOpen = true;
+      renderToday();
+      restoreFocus(
+        $("#view-today .today-here .day-chip.active") || $("#view-today [data-here-hall]")
+      );
+      return;
+    }
+    if (event.target.closest("[data-here-more]")) {
+      todayHereAllOpen = true;
+      renderToday();
+      restoreFocus($('#view-today [data-here-rest="true"]'));
+    }
+  });
   /* Today's header is a clock, and every other surface in the app is
      timeless — so this is the one listener of its kind. A phone that spent
      the last hour in a pocket must not come back to "closes in 3h". */
@@ -7525,6 +7851,17 @@ function bindControls() {
   });
   /* Same marks, second tab: keep them from overwriting each other. */
   window.addEventListener("storage", (e) => {
+    /* The position is read fresh at render time, so an "I'm here" from the
+       map tab only needs the surfaces that advise from it redrawn — not the
+       full re-render below, which rebuilds the grid for keys that scope it.
+       Queues is here for its near-you offer strip; same-tab stamps need no
+       entry, because every gesture that stamps already re-renders the view
+       it happened on. (A cleared storage falls through: the full path
+       redraws all three as well.) */
+    if (e.key === GCMarks.HERE_KEY) {
+      refreshViews("planner", "today", "queues");
+      return;
+    }
     const watched = [...Object.values(MARK_KEYS), IT_KEY, ORDER_KEY, PREFS_KEY];
     if (e.key !== null && !watched.includes(e.key)) return;
     if (e.key === null || e.key === MARK_KEYS.saved) state.marks.saved = loadMarks("saved");
@@ -7630,7 +7967,8 @@ function bindControls() {
     if (incoming) offerIncomingWhenReady(incoming);
     /* `?ex=` means "this booth" on both views, and each reads it its own way:
        the grid scrolls to the card, the queues view narrows to its lines. */
-    else if (landing.route === "queues") applyQueueScope(landing.params.get("ex"));
+    else if (landing.route === "queues")
+      applyQueueScope(landing.params.get("ex"), landing.params.get("hall"));
     else focusExhibitor(landing.params.get("ex"));
   });
 }
@@ -7716,7 +8054,7 @@ async function main() {
      already rendered, so a dead hall connection can never hold first paint. */
   QUEUES?.start();
   if (!incoming) {
-    if (route === "queues") applyQueueScope(landing.params.get("ex"));
+    if (route === "queues") applyQueueScope(landing.params.get("ex"), landing.params.get("hall"));
     else focusExhibitor(landing.params.get("ex"));
   }
   if (offer) offerIncomingWhenReady(offer);

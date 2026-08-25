@@ -166,6 +166,13 @@
     <button class="map-zoom-btn" id="zoom-out" type="button" aria-label="Zoom out" data-i18n-attr="aria-label:map.zoomOut">−</button>
     <button class="map-zoom-btn" id="zoom-fit" type="button" aria-label="Show the whole hall" data-i18n-attr="aria-label:map.zoomFit"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
   </div>
+  <!-- "I'm here" — sets the position the guide's advice starts from
+       (docs/IDEAS-im-here.md). In the stage's other corner rather than in
+       the scrolling chip row, because the hall on screen is the hall it
+       speaks about and the far end of the row is off screen exactly when a
+       thumb needs it. Hidden off-show and on the overview; js/map.js fills
+       it in. -->
+  <button class="map-here" id="here-btn" type="button" hidden aria-pressed="false"></button>
 </div>
 
 <!-- The stand you tapped. Outside #stage for two reasons, both of them the
@@ -191,6 +198,7 @@
     <div class="map-sheet-listed" id="sheet-listed" hidden></div>
     <div class="map-sheet-actions">
       <button class="chip" id="sheet-save" type="button" hidden></button>
+      <button class="chip" id="sheet-here" type="button" hidden></button>
       <a class="reset" id="sheet-link" href="./" data-i18n="map.openInGuide">open in guide →</a>
     </div>
     <!-- Corrections, offered where errors are actually noticed: standing in
