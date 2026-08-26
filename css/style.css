@@ -1853,6 +1853,14 @@ a.dir-stand:focus-visible b { color: var(--signal); }
   border-color: var(--warn);
   color: var(--signal-ink);
 }
+/* Part of this stop is on that day and part of it is not — a booth where you
+   saved two games and put one of them on Thursday. Washed rather than filled:
+   pressing it pulls the rest across, so it must not already read as done. */
+.day-chip[data-partial="true"] {
+  background: var(--signal-wash);
+  border-color: var(--signal);
+  color: var(--signal);
+}
 .it-item .bm { grid-column: -2 / -1; grid-row: 1; align-self: center; }
 
 /* The consequence spelled out, on the row and once at the top of the day. */
@@ -2034,22 +2042,12 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .route-deadline { grid-column: 4; grid-row: 1; }
 .route-item .row-actions { grid-column: -2 / -1; grid-row: 1; align-self: center; }
 .route-item .priority-saved { grid-column: 1 / -1; }
+/* A line of its own under the stop, left-aligned: the row above it is already
+   five columns of address, queue and controls, and the chips are the widest
+   thing on it. Left rather than right, unlike the day lens, because here they
+   sit under the name they belong to rather than in a column of their own. */
+.route-item .route-days { grid-column: 1 / -1; justify-content: flex-start; margin-top: 4px; }
 .route-name { font-weight: 700; font-size: .95rem; }
-/* the day a stop is planned for, read straight off the itinerary */
-.route-day {
-  font-family: var(--font-mono);
-  font-size: .62rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--signal);
-  background: var(--signal-wash);
-  border-radius: var(--radius-sm);
-  padding: 2px 6px;
-  margin-left: 8px;
-  vertical-align: .14em;
-  white-space: nowrap;
-}
 .route-booth {
   font-family: var(--font-mono);
   font-size: .76rem;
@@ -3112,7 +3110,7 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .it-loc { grid-column: 1 / -1; grid-row: 2; }
   .it-crowd { grid-column: 2; grid-row: 1; }
   .it-item .row-move { grid-column: 3; grid-row: 1; }
-  .it-days { grid-column: 1 / -1; grid-row: 3; justify-content: flex-start; }
+  .it-item .it-days { grid-column: 1 / -1; grid-row: 3; justify-content: flex-start; }
   .it-warn { grid-column: 1 / -1; grid-row: 4; }
   .route-item > .queue-summary { grid-column: 1 / -1; }
   .wristband-item { grid-template-columns: 1fr auto; }

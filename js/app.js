@@ -548,6 +548,8 @@ function keepingFocus(container, render, fallback) {
       ? `.mv[data-move-key="${CSS.escape(el.dataset.moveKey)}"][data-move-dir="${CSS.escape(el.dataset.moveDir)}"]`
       : el.dataset.itDay
       ? `[data-it-kind="${CSS.escape(el.dataset.itKind)}"][data-it-key="${CSS.escape(el.dataset.itKey)}"][data-it-day="${CSS.escape(el.dataset.itDay)}"]`
+      : el.dataset.stopDay
+      ? `[data-stop-ex="${CSS.escape(el.dataset.stopEx)}"][data-stop-day="${CSS.escape(el.dataset.stopDay)}"]`
       : el.dataset.mark && el.dataset.bmKey
       ? `.bm[data-mark="${CSS.escape(el.dataset.mark)}"][data-bm-kind="${CSS.escape(el.dataset.bmKind)}"][data-bm-key="${CSS.escape(el.dataset.bmKey)}"]`
       : el.dataset.srcKind
@@ -1796,6 +1798,78 @@ function assignToDay(kind, key, date) {
   map.get(key) === date ? map.delete(key) : map.set(key, date);
   persistItinerary();
   onItineraryChanged();
+}
+
+/* ---- assigning a day from the hall lens ----
+
+   The day lens's chips act on a plan item, because that is what one of its
+   rows is. A hall-lens row is a booth — one walk to one stand — and the
+   things standing at it are the booth itself, when you saved it, and every
+   saved game shown there. So a chip over there has to move all of them, or
+   "Thursday" on a publisher showing four games you saved would mean four
+   separate decisions to make one visit.
+
+   A game shown at two booths is one game with one day: assigning it here
+   moves it in the other booth's row too. That follows from the itinerary
+   storing a day per item and not per stand, which is the same rule the day
+   lens has always worked by — a title is a thing you go and play once. */
+function stopElements(ex) {
+  const parts = [];
+  if (isSaved("exhibitor", ex.id)) parts.push({ kind: "exhibitor", key: ex.id });
+  for (const g of savedGames(ex)) parts.push({ kind: "game", key: gameKey(g.title) });
+  return parts;
+}
+
+/* How much of a stop sits on one day: all of it, some of it, or none. The
+   chips wear the difference, because a booth whose saved games are split
+   across two days is a real plan — and one that must not read as though it
+   were on neither. */
+function stopDayState(ex, date) {
+  const parts = stopElements(ex);
+  if (!parts.length) return "none";
+  const on = parts.filter((part) => assignedDay(part.kind, part.key) === date).length;
+  return on === parts.length ? "all" : on ? "some" : "none";
+}
+
+let stopDayToast = null;
+
+/* Toggles the way the day lens's chips do: pressing the day a stop is
+   already wholly on takes it back off, and pressing any other day pulls the
+   whole stop onto it.
+
+   Pulling a split stop together is the one move here that loses something —
+   which game was on which day — so it is handed straight back through the
+   toast, the way resetPlanOrder hands back an arrangement. Clearing needs no
+   toast: the chip you just pressed puts it back. */
+function assignStopToDay(ex, date) {
+  const parts = stopElements(ex);
+  if (!parts.length) return;
+  const before = parts.map((part) => ({ ...part, day: assignedDay(part.kind, part.key) }));
+  const clearing = before.every((part) => part.day === date);
+  const write = (entries) => {
+    for (const part of entries) {
+      const map = itMap(part.kind);
+      part.day ? map.set(part.key, part.day) : map.delete(part.key);
+    }
+    persistItinerary();
+    onItineraryChanged();
+  };
+  write(parts.map((part) => ({ ...part, day: clearing ? null : date })));
+  if (clearing || !before.some((part) => part.day && part.day !== date)) return;
+  /* One of these on screen at a time, and always the newest. Unlike the
+     order reset this is a control you press over and over, and an Undo left
+     standing from two stops ago answers a question nobody is asking — while
+     the one the visitor actually wants sits behind it in the queue. */
+  if (stopDayToast) hideToast(stopDayToast);
+  const shown = showToast(
+    t("toast.dayMoved", { name: ex.name, day: dayName(date) }),
+    t("action.undo"),
+    () => {
+      write(before);
+      hideToast(shown);
+    }
+  );
+  stopDayToast = shown;
 }
 
 /* Both stores are scoped by the saved list: an assignment or a position for
@@ -4974,16 +5048,46 @@ function routeGroups({ day = state.planDay, hidePlayed = state.hidePlayed } = {}
   };
 }
 
-/* Short day tags on a stop — the hall lens reading the day lens back. Only in
-   the all-days view; under a single-day filter every row would repeat the
-   same tag. */
-function routeDayTags(ex) {
-  const assigned = new Set([...stopDays(ex)].filter((day) => day !== "none"));
-  if (!assigned.size) return "";
-  return (state.event.days || [])
-    .filter((d) => assigned.has(d.date))
-    .map((d) => `<span class="route-day">${esc(shortDay(d.date))}</span>`)
-    .join("");
+/* The same chips the day lens wears, reading and writing one booth's whole
+   stop (assignStopToDay). They took over from a row of short day tags beside
+   the name: a pressed chip says "planned for Thursday" as plainly as a tag
+   did, and two renderings of one fact on one row is one too many.
+
+   A stop split across days lights its chips partially instead of not at all;
+   the group's label is the one place the "everything here moves together"
+   rule is spelled out, because a booth holding a single saved item — most of
+   them — has nothing to spell out. */
+function routeDayChips(ex) {
+  const parts = stopElements(ex);
+  if (!parts.length) return "";
+  const label =
+    parts.length > 1
+      ? t("plan.assignStopAria", { name: ex.name })
+      : t("plan.assignAria", { name: ex.name });
+  const business = inBusinessArea(ex);
+  return `<span class="it-days route-days" role="group" aria-label="${esc(label)}">${(
+    state.event.days || []
+  )
+    .map((d) => {
+      const on = stopDayState(ex, d.date);
+      const trade = isTradeDay(d);
+      const shut = business && !isBusinessOpenDay(d);
+      const day = dayName(d.date);
+      const action =
+        on === "all" ? t("plan.removeFromDay", { day }) : t("plan.assignToDay", { day });
+      const title = shut
+        ? t("plan.dayClosedSuffix", { action, day })
+        : trade
+          ? t("plan.dayTradeSuffix", { action })
+          : action;
+      return `<button class="day-chip${on === "all" ? " active" : ""}" type="button"
+        data-stop-ex="${esc(ex.id)}" data-stop-day="${esc(d.date)}"
+        data-trade="${esc(String(trade))}" data-closed="${esc(String(shut))}"
+        data-partial="${esc(String(on === "some"))}"
+        aria-pressed="${esc(String(on === "all"))}"
+        title="${esc(title)}" aria-label="${esc(title)}">${esc(shortDay(d.date))}</button>`;
+    })
+    .join("")}</span>`;
 }
 
 /* One stop on the walking route. Shared with Today, which is this same row
@@ -4991,16 +5095,18 @@ function routeDayTags(ex) {
    grew a field, and it has already grown two.
 
    `dayFilter` is the day the list is already scoped to, or null on the
-   all-days view; a row under a single-day heading would otherwise repeat that
-   day's tag on every line, and the map link carries the day so a stand opens
-   with the right route drawn.
+   all-days view: the map link carries it so a stand opens with the right
+   route drawn, and the "Saved here" line lists only that day's games.
 
    `total` is how many stops the arrows are allowed to move this one through,
    and passing 0 is how a view says it does not arrange anything — see
-   routeBoard. */
+   routeBoard. `days: false` is the same kind of statement about the day
+   chips, and Today makes it for the same reason it refuses the arrows: it is
+   one fixed day's list, and a control that moves a stop off that day would
+   act on a plan the screen is not showing. */
 function routeRow(
   ex,
-  { dayFilter = null, group = "", index = 0, total = 0, deadlines = null } = {}
+  { dayFilter = null, group = "", index = 0, total = 0, deadlines = null, days = false } = {}
 ) {
   const baseLocation = ex.booth
     ? ex.booth
@@ -5023,7 +5129,7 @@ function routeRow(
      an arrow here moves a pin there. */
   return `<div class="route-item" data-saved="${isSaved("exhibitor", ex.id)}" data-played="${hasPlayed(ex)}"
     data-stop-key="${esc(key)}" data-stop-group="${esc(group)}">
-    <span class="route-name">${esc(ex.name)}${dayFilter ? "" : routeDayTags(ex)}</span>
+    <span class="route-name">${esc(ex.name)}</span>
     <span class="route-booth">${hallLink(ex.hall, ex.booth, baseLocation, dayFilter)}${unconf}</span>
     ${crowdCell("route-crowd", ex.crowd || 0, inBusinessArea(ex))}
     ${queueSummary(ex, { compact: true, kind: "route" })}
@@ -5034,6 +5140,7 @@ function routeRow(
       ${markButton("saved", "exhibitor", ex.id, ex.name)}
     </span>
     ${savedHereChips(ex, { day: dayFilter })}
+    ${days ? routeDayChips(ex) : ""}
   </div>`;
 }
 
@@ -5092,7 +5199,10 @@ function routeHallHeader(group, { dayFilter = null, from = null, here = false } 
    hall you said you are in wears a tag. Re-sorting the board by proximity
    would move the map's numbered pins with it — anything that arranges by
    position is its own lens, not a mutation of the walking route. */
-const routeBoard = (groups, { dayFilter = null, move = true, deadlines = null } = {}) => {
+const routeBoard = (
+  groups,
+  { dayFilter = null, move = true, deadlines = null, days = false } = {}
+) => {
   const here = hereNow();
   return groups
     .map(
@@ -5110,6 +5220,7 @@ const routeBoard = (groups, { dayFilter = null, move = true, deadlines = null } 
               index: i,
               total: move ? group.items.length : 0,
               deadlines,
+              days,
             })
           )
           .join("")
@@ -5123,7 +5234,7 @@ function renderRoute() {
   const { groups, absent, played } = routeGroups();
   const stopCount = groups.reduce((total, group) => total + group.items.length, 0);
   const hallCount = groups.filter((group) => group.key !== "offsite" && group.key !== "tba").length;
-  const html = routeBoard(groups, { dayFilter });
+  const html = routeBoard(groups, { dayFilter, days: true });
 
   /* Above the board before the board — see the note in renderItinerary. */
   $("#plan-count").textContent =
@@ -8005,6 +8116,16 @@ function bindControls() {
     const day = e.target.closest("[data-it-day]");
     if (day) {
       assignToDay(day.dataset.itKind, day.dataset.itKey, day.dataset.itDay);
+      return;
+    }
+    /* The hall lens's copy of that chip. It names a booth rather than a plan
+       item, because over there a row is the visit — see assignStopToDay. A
+       booth that has since left the plan resolves to nothing and the press
+       does nothing, rather than writing a day for a stop that is gone. */
+    const stopDay = e.target.closest("[data-stop-day]");
+    if (stopDay) {
+      const ex = plannedExhibitors().find((entry) => entry.id === stopDay.dataset.stopEx);
+      if (ex) assignStopToDay(ex, stopDay.dataset.stopDay);
       return;
     }
     const src = e.target.closest("[data-src-kind]");

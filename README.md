@@ -15,7 +15,7 @@ An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 20
 - **Share one booth** — every card's corner carries a Share row beside Save and Played. It hands out a link that opens the guide *on that card*, scrolled to it and lit for a moment, rather than at the top of a list of a hundred and eleven — so "Capcom is in 9.1" can be a link instead of a description. A card turned to its business booth shares the business booth, and a link naming one switches the trade exhibitors on to answer it
 - Crowd forecasts (1–5) per exhibitor and a **Visit planner** with queue-priority list, 18+ wristband checklist and day-by-day advice
 - **Live queue times during the show** — a **Live queues** tab, open only while the show is on, that lists the lines you are standing in and searches all ~160 queues to report a new one; the cards themselves just show the figures, with one *Report a queue* link that opens the tab already narrowed to that booth. Optional reports under a random, resettable device id per playable game (or per booth where there is no playable lineup), server-side aggregation with report count and age, measured waits that can finish offline, and a phone-first moderation console. How a line moves — one by one, in pairs, in groups or waves of ~n — can be said from the row of any line you are in, not only in the dialog that starts the timer: a wave queue usually reveals itself twenty minutes in, long after that dialog was closed
-- **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with per-stop day tags and a single-day filter); the five-days board counts each day's planned stops and taps through to them. Each stop wears its queue index in both arrangements, and ▲▼ put the list in **the order you'll actually walk it** — the guide opens with busiest-queue-first and hands the order over the moment you disagree; the hall map numbers its pins from the same order. Either arrangement reaches the map from its own headings — a hall heading opens that hall, a day heading opens the whole site with that day lit
+- **Your plan** — one board for everything you saved, arranged **by day** (assign each stop a day, see that day's hours inline, export to calendar) or **by hall** (walking order, with the same day chips on every stop and a single-day filter); the five-days board counts each day's planned stops and taps through to them. Each stop wears its queue index in both arrangements, and ▲▼ put the list in **the order you'll actually walk it** — the guide opens with busiest-queue-first and hands the order over the moment you disagree; the hall map numbers its pins from the same order. Either arrangement reaches the map from its own headings — a hall heading opens that hall, a day heading opens the whole site with that day lit
 - **Hall map** — every hall drawn booth by booth, with exhibitor names *on* the booths and your saved ones lit up. Tap a booth for its lineup, its queue call and — once you've assigned it in the planner — the day you planned it for. Entertainment halls and trade-only business halls are each washed in the colour the official plan gives that area, and the business ones are flagged as the door a consumer ticket does not open. Pick a day and that day's stops are pinned on the floor in your plan's own order — the one you arranged, or busiest first with played ones last until you do — so "Thursday, hall 7.1" is a picture rather than a list. It does not stop at the wall: the halls either side of this one in the plan are named in the bar, a tap from opening, and where a doorway is known to start the way there the route runs out to it and an arrow points through. The overview answers the same question for the whole site — every hall that day touches, lit and numbered in order. Every hall or booth number named anywhere in the guide — card plates, your plan, queue priority, the full directory, the halls and areas in Event info — opens the map on that stand. It works offline like everything else
 - **The booths the guide never carded, saveable anyway.** The guide writes
   170 cards; Koelnmesse's directory files 1,785 exhibitors, and 823 of them
@@ -240,14 +240,18 @@ rather than the whole list. Answer it, or close the tab, and the copy is gone.
 The Visit Planner turns those bookmarks into a plan — one board, two arrangements.
 The day view is the itinerary: assign each stop a day, see that day's hours and crowd
 advice inline, export the assignments to a calendar file. The hall view is the walking
-route, and it reads the same assignments back: each stop carries tags for the days it
-is planned on, and once anything is placed, day chips filter the route down to a single
-day's stops in hall order. Filtered to a day, the hall view's map links hand that day
-to the hall map, which numbers the same stops on the floor in the same order — the
-numbers and the rows come from one comparator, so they can never disagree. Assignments
-are kept separately under `gc2026.itinerary.v1`, follow the same booth and game keys,
-and stay on this device too; the arrangement you last picked is a view preference in
-`gc2026.prefs.v1`.
+route, and it writes those assignments as well as reading them: every stop wears the
+same row of day chips the day view gives it, so a stop can be placed — or moved, booth
+and saved games together — without leaving the walking order. A stop split across two
+days lights both chips part-way rather than reading as unplaced, and pulling it back
+onto one day is the one move here that forgets something, so the toast hands it
+straight back. Once anything is placed, a filter row above the board narrows the route
+to a single day's stops in hall order. Filtered to a day, the hall view's map links
+hand that day to the hall map, which numbers the same stops on the floor in the same
+order — the numbers and the rows come from one comparator, so they can never disagree.
+Assignments are kept separately under `gc2026.itinerary.v1`, follow the same booth and
+game keys, and stay on this device too; the arrangement you last picked is a view
+preference in `gc2026.prefs.v1`.
 
 Within a day, or within a hall, the order is the queue index descending with played
 stops last — until you say otherwise. The ▲▼ on each row move a stop up or down its
