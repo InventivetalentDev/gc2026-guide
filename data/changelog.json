@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-08-26",
+    "revision": 57,
+    "changes": [
+      { "kind": "content", "text": "gamescom runs a free Fastlane of its own: book a slot at a participating booth, show the QR code at its fast lane entrance and skip the queue. Slots only open two hours ahead on the day, and it needs a Koelnmesse account on your ticket's email." }
+    ]
+  },
+  {
+    "date": "2026-08-26",
     "revision": 56,
     "changes": [
       { "kind": "content", "text": "Nintendo's booth list is complete: Star Fox, Mario Kart World, Donkey Kong Bananza, Yoshi and the Mysterious Book, Super Mario Bros. Wonder, Super Mario Galaxy + Super Mario Galaxy 2 and Minecraft join the lineup — 16 playable stations, with daily tournaments." },
