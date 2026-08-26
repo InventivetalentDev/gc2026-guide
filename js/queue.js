@@ -45,6 +45,10 @@ const GCQueues = (() => {
   const SESSION_IDLE_SECONDS = 4 * 60 * 60;
   const MAX_DEFERRED_SECONDS = 16 * 60 * 60;
   const PENDING_MAX_SECONDS = 24 * 60 * 60;
+  /* The Worker takes one mechanics vote per device and queue a day. Mirrored
+     here so the offer can be withdrawn once it is spent, rather than sending a
+     report that can only come back 409. */
+  const META_WINDOW_SECONDS = 24 * 60 * 60;
   const FRESH_SECONDS = { flow: 900, sofar: 900, done: 3600, closed: 3600 };
   const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -139,10 +143,21 @@ const GCQueues = (() => {
       if (session) sessions[queueKey(session.exhibitor, session.game)] = session;
     }
     const pending = Array.isArray(raw?.pending) ? raw.pending.map(cleanPending).filter(Boolean) : [];
+    /* Wall clock rather than the server one: this is storage hygiene, and
+       normalisation runs on paths that have never spoken to the server. A
+       skewed phone at worst re-offers a vote the server then refuses, which
+       records itself again. */
+    const floor = Math.floor(Date.now() / 1000) - META_WINDOW_SECONDS;
+    const meta = {};
+    for (const [key, value] of Object.entries(raw?.meta && typeof raw.meta === "object" ? raw.meta : {})) {
+      const at = Math.floor(Number(value));
+      if (Number.isFinite(at) && at > floor) meta[key] = at;
+    }
     return {
       client: typeof raw?.client === "string" && UUID_V4.test(raw.client) ? raw.client : null,
       sessions,
       pending: [...new Map(pending.map((item) => [item.id, item])).values()],
+      meta,
     };
   }
 
@@ -485,6 +500,13 @@ const GCQueues = (() => {
     return value && !sessionExpired(value) ? value : null;
   };
   const sessions = () => Object.values(store.sessions).filter((value) => !sessionExpired(value));
+  /* Has this device already spent its mechanics vote on this queue today?
+     Only the local record can answer it — the aggregate in the live payload is
+     everybody's votes, and says nothing about whose. */
+  const metaReported = (queueRef) => {
+    const at = queueRef ? Number(store.meta?.[queueKey(queueRef.exhibitor, queueRef.game)]) : 0;
+    return Number.isFinite(at) && at > 0 && serverNow() - at < META_WINDOW_SECONDS;
+  };
   const elapsed = (value) => {
     const joinedAt = Number(value?.joinedAt || serverNow());
     const current = Math.max(serverNow(), Number(value?.lastServerAt || joinedAt));
@@ -540,10 +562,18 @@ const GCQueues = (() => {
     });
   }
 
+  async function markMetaReported(queueRef, at) {
+    const key = queueKey(queueRef.exhibitor, queueRef.game);
+    await mutateStore((next) => {
+      next.meta[key] = Math.floor(at);
+    });
+  }
+
   async function clearDeniedClientState() {
     await mutateStore((next) => {
       next.sessions = {};
       next.pending = [];
+      next.meta = {};
     });
     if (pendingRetryTimer) window.clearTimeout(pendingRetryTimer);
     pendingRetryTimer = 0;
@@ -650,6 +680,14 @@ const GCQueues = (() => {
            timers and tombstones that can no longer be reconciled. */
         await clearDeniedClientState();
         notify("session-expired", { queue: queueRef });
+      } else if (kind === "meta" && error.code === "meta_already_reported") {
+        /* A vote this device does not remember casting — storage cleared, or a
+           second tab that got there first. Take the server's word for it and
+           back-date the record by what Retry-After says is left to run, so the
+           offer disappears here too instead of failing the same way again. */
+        const remaining = Math.min(META_WINDOW_SECONDS, Number(error.retryAfter) || META_WINDOW_SECONDS);
+        await markMetaReported(queueRef, Math.floor(serverNow()) - (META_WINDOW_SECONDS - remaining));
+        notify("meta-refused", { queue: queueRef });
       }
       throw error;
     }
@@ -683,6 +721,8 @@ const GCQueues = (() => {
       });
     } else if ((kind === "entered" || kind === "left") && active) {
       await closeLocal(queueRef, active?.joinedAt ?? null);
+    } else if (kind === "meta") {
+      await markMetaReported(queueRef, Math.floor(Number(payload.serverAt) || serverNow()));
     }
     notify("report", { kind, queue: queueRef });
     return payload;
@@ -867,6 +907,7 @@ const GCQueues = (() => {
     worst,
     session,
     sessions,
+    metaReported,
     elapsed,
     promptCandidate,
     report,

@@ -191,6 +191,11 @@ window.GC_STRINGS.en = {
   "queue.action.leftAria": "Report that you left the queue for {queue}",
   "queue.action.closed": "Queue closed",
   "queue.action.closedAria": "Report that the queue for {queue} is closed",
+  /* The mechanics vote, reachable from a line you are already in. Shorter
+     than the disclosure it mirrors ("Queue details"), because here it sits in
+     a row of buttons rather than above the chips it opens. */
+  "queue.action.details": "How it moves",
+  "queue.action.detailsAria": "Report how the queue for {queue} moves",
   "queue.dialogOverline": "Live queue",
   "queue.dialogTitle": "Queue report",
   "queue.closeAria": "Close queue report",
@@ -218,6 +223,7 @@ window.GC_STRINGS.en = {
   "queue.ahead.200": "200+",
   "queue.aheadSkip": "Not sure / skip",
   "queue.details": "Queue details",
+  "queue.detailsQuestion": "How does this queue move?",
   "queue.detailsHelp": "Optional: add how this queue moves if you can tell, then hit Done.",
   "queue.typeAria": "How this queue moves",
   "queue.type.single": "One by one",
