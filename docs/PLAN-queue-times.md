@@ -396,13 +396,28 @@ behind a "queue details" disclosure for those who know: mechanics chips
 optional, because you can be twenty minutes into a wave queue before
 learning it moves in waves.
 
+That last sentence is also why the disclosure cannot be the *only* way to cast
+the vote. The join dialog is closed within seconds of the timer starting —
+that is the point of it — and the fact it asks for often arrives long after:
+the queue splits into pairs at the stanchion, or fifty people go in at once
+and the shape of the thing is suddenly obvious. So the same chips are reachable
+from the row of any line you are in, as a fourth button ("How it moves") beside
+the three below, and they are the whole dialog when opened that way rather than
+something folded away inside it. The offer is withdrawn once the vote is spent:
+`meta` is one report per device and queue a day, so the client records the vote
+in its own store (`meta`, keyed like `sessions`, expiring on the Worker's own
+24-hour rule) and stops offering what the server can only refuse. A 409 for a
+vote this device does not remember — cleared storage, a second tab — records
+itself from the response's `Retry-After` and withdraws the offer too.
+
 **Living with a session.** The client keeps the active session in
 localStorage (`gc2026.queue.v1`): queue, joined-at, last-ahead. While it is
 open, its row in the queues view is a live timer with three buttons — **Still
 waiting** (optionally re-asking the ahead bucket), **I'm in!**, **I left** —
-its booth's card link reads "You're in 1 line here", and, the load-bearing
-nudge: whenever the app is reopened or the tab
-refocuses with a session past ~10 min, a quiet prompt bar surfaces it:
+and a fourth, **How it moves**, for as long as the day's mechanics vote on that
+queue is unspent. Its booth's card link reads "You're in 1 line here", and, the
+load-bearing nudge: whenever the app is reopened or the tab refocuses with a
+session past ~10 min, a quiet prompt bar surfaces it:
 "Still queueing for Fable? 23 min · [Still waiting] [I'm in!] [I left]".
 That reopen moment is when ground truth gets captured or lost — no
 notifications, no background anything, just meeting the visitor at the

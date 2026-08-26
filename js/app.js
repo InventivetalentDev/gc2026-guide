@@ -2200,6 +2200,11 @@ function esc(s) {
 const queueForGame = (ex, game) =>
   QUEUES && game?.playable === true ? QUEUES.queue(ex.id, gameKey(game.title)) : null;
 const boothQueue = (ex) => QUEUES?.queue(ex.id, QUEUES.BOOTH) || null;
+/* Feature-detected rather than called outright: queue.js and app.js are cached
+   separately and can land a load apart, and a module that has never heard of
+   the mechanics record should leave the offer standing rather than throw. The
+   Worker still refuses a second vote, which is what the record mirrors. */
+const queueMetaReported = (queue) => Boolean(queue && QUEUES?.metaReported?.(queue));
 
 function queueEx(queue) {
   return queue && state.exhibitors.find((ex) => ex.id === queue.exhibitor);
@@ -6427,6 +6432,11 @@ function queueRowMarkup(entry) {
   if (pending) {
     actions = `<span class="queue-session-time">${esc(t("queue.pendingCompletion"))}</span>`;
   } else if (active) {
+    /* How the line moves is the one report you often cannot make at the moment
+       you join — twenty minutes in is when a wave queue reveals itself, and by
+       then the join dialog is long closed. So the mechanics vote gets a button
+       of its own on the line you are in, for as long as it is unspent. */
+    const mechanics = canReport && !queueMetaReported(queue);
     actions = `${queueElapsedMarkup(queue, active)}
       <span class="queue-session-actions">
         ${
@@ -6439,6 +6449,14 @@ function queueRowMarkup(entry) {
           aria-label="${esc(t("queue.action.enteredAria", { queue: name }))}">${esc(t("queue.action.entered"))}</button>
         <button class="queue-action" type="button" data-queue-action="left" ${queueAttrs(queue)}
           aria-label="${esc(t("queue.action.leftAria", { queue: name }))}">${esc(t("queue.action.left"))}</button>
+        ${
+          mechanics
+            ? `<button class="queue-action" type="button" data-queue-action="details" ${queueAttrs(queue)}
+                aria-label="${esc(t("queue.action.detailsAria", { queue: name }))}">${esc(
+                  t("queue.action.details")
+                )}</button>`
+            : ""
+        }
       </span>`;
   } else if (canReport) {
     actions = `<span class="queue-session-actions">
@@ -6769,6 +6787,34 @@ function queueDialogAhead() {
   </div>`;
 }
 
+/* The chips themselves, without the frame around them: the join flow tucks
+   them behind a disclosure, the standalone mechanics dialog is nothing else. */
+function queueDialogMechanics() {
+  const selected = queueDialogState?.qtype || "";
+  const wantsBatch = selected === "group" || selected === "wave";
+  return `<div class="queue-choice-row" role="group" aria-label="${esc(t("queue.typeAria"))}">
+    ${QUEUE_TYPES.map(
+      (value) => `<button class="queue-choice${selected === value ? " active" : ""}" type="button"
+        data-queue-dialog-action="qtype" data-value="${value}" aria-pressed="${selected === value}">${esc(
+          t(`queue.type.${value}`)
+        )}</button>`
+    ).join("")}
+  </div>
+  ${
+    wantsBatch
+      ? `<p class="queue-dialog-question">${esc(t("queue.batchQuestion"))}</p>
+        <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.batchAria"))}">
+          ${QUEUE_BATCHES.map(
+            (value) => `<button class="queue-choice${queueDialogState.batch === value ? " active" : ""}" type="button"
+              data-queue-dialog-action="batch" data-value="${value}" aria-pressed="${
+                queueDialogState.batch === value
+              }">~${value}</button>`
+          ).join("")}
+        </div>`
+      : ""
+  }`;
+}
+
 /* No save button of its own: "Done" at the foot of the dialog commits whatever
    is picked here. It used to have one, and the two buttons read as a choice —
    the instinct is to reach for the primary action at the bottom, which closed
@@ -6776,33 +6822,11 @@ function queueDialogAhead() {
    the way the claim and ahead rows do, because `meta` is one report per device
    and queue per day: the type and its batch size have to travel together. */
 function queueDialogDetails() {
-  if (queueDialogState?.metaSaved) return "";
-  const selected = queueDialogState?.qtype || "";
-  const wantsBatch = selected === "group" || selected === "wave";
+  if (queueDialogState?.metaSaved || queueMetaReported(queueDialogState?.queue)) return "";
   return `<details class="queue-details"${queueDialogState.detailsOpen ? " open" : ""}>
     <summary>${esc(t("queue.details"))}</summary>
     <p>${esc(t("queue.detailsHelp"))}</p>
-    <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.typeAria"))}">
-      ${QUEUE_TYPES.map(
-        (value) => `<button class="queue-choice${selected === value ? " active" : ""}" type="button"
-          data-queue-dialog-action="qtype" data-value="${value}" aria-pressed="${selected === value}">${esc(
-            t(`queue.type.${value}`)
-          )}</button>`
-      ).join("")}
-    </div>
-    ${
-      wantsBatch
-        ? `<p class="queue-dialog-question">${esc(t("queue.batchQuestion"))}</p>
-          <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.batchAria"))}">
-            ${QUEUE_BATCHES.map(
-              (value) => `<button class="queue-choice${queueDialogState.batch === value ? " active" : ""}" type="button"
-                data-queue-dialog-action="batch" data-value="${value}" aria-pressed="${
-                  queueDialogState.batch === value
-                }">~${value}</button>`
-            ).join("")}
-          </div>`
-        : ""
-    }
+    ${queueDialogMechanics()}
   </details>`;
 }
 
@@ -6842,6 +6866,14 @@ function renderQueueDialog() {
     </div>`;
   } else if (queueDialogState.mode === "update") {
     flow.innerHTML = queueDialogAhead();
+  } else if (queueDialogState.mode === "mechanics") {
+    /* Asked for on purpose from a line you are already standing in, so the
+       disclosure the join flow hides the chips behind would be a lid on the
+       one thing this dialog is. */
+    flow.innerHTML = `<div class="queue-dialog-step">
+      <p class="queue-dialog-question">${esc(t("queue.detailsQuestion"))}</p>
+      ${queueDialogMechanics()}
+    </div>`;
   } else {
     flow.innerHTML = `${queueDialogState.aheadDone ? "" : queueDialogAhead()}${queueDialogDetails()}`;
   }
@@ -6853,7 +6885,7 @@ function renderQueueDialog() {
     if (queueDialogState) queueDialogState.detailsOpen = details.open;
   });
   $("#queue-dialog-status").textContent = queueDialogState.status || "";
-  $("#queue-dialog-done").hidden = queueDialogState.mode !== "details";
+  $("#queue-dialog-done").hidden = !["details", "mechanics"].includes(queueDialogState.mode);
 }
 
 let queueDialogInvoker = null;
@@ -7018,14 +7050,17 @@ async function runQueueAction(queue, action, source = null) {
   const actionGroup = action === "entered" || action === "left" ? "outcome" : action;
   const pendingKey = `${QUEUES.queueKey(queue.exhibitor, queue.game)}:${actionGroup}`;
   if (pendingQueueActions.has(pendingKey)) return;
-  if (action === "join" || action === "update") {
+  if (action === "join" || action === "update" || action === "details") {
     queuePromptKey = null;
     renderQueuePrompt(false);
     /* One line at a time. Joining closes whatever else is open — the Worker
        does that regardless — so say which line is about to end rather than
        ending it behind their back. */
     const held = action === "join" ? otherOpenSession(queue) : null;
-    openQueueDialog(queue, held ? "switch" : action, source, held);
+    /* "details" opens the mechanics chips alone: the vote the join dialog
+       tucks away, asked for later from the line it is about. */
+    const mode = action === "details" ? "mechanics" : held ? "switch" : action;
+    openQueueDialog(queue, mode, source, held);
     return;
   }
   pendingQueueActions.add(pendingKey);

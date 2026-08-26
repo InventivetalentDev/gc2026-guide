@@ -319,6 +319,46 @@ describe("report lifecycle", () => {
       ).bind(CLIENT).first("n")
     ).toBe(1);
   });
+
+  /* One vote per device and queue a day — and the client mirrors that window
+     rather than discovering it. It withdraws the chips once its own vote is in,
+     and when it has no memory of voting (cleared storage, a second tab) it
+     takes the countdown in the refusal as the record. So both the code and the
+     seconds left in it are contract, not an implementation detail. */
+  it("takes one mechanics vote per device and queue a day, and says how long that stands", async () => {
+    const now = at("2026-08-27T10:00:00+02:00");
+    const first = await handleReport(
+      report({ kind: "meta", qtype: "group", batch: 10 }), testEnv(), site, now
+    );
+    expect(first.status).toBe(200);
+
+    await expect(
+      handleReport(report({ kind: "meta", qtype: "wave", batch: 50 }), testEnv(), site, now + 3600)
+    ).rejects.toMatchObject({
+      status: 409,
+      code: "meta_already_reported",
+      extra: { retryAfter: 23 * 60 * 60 },
+    });
+
+    /* A refused vote changes nothing: the first one still stands. */
+    expect(
+      await env.QUEUE_DB.prepare(`SELECT qtype, batch FROM queue_meta`).first()
+    ).toMatchObject({ qtype: "group", batch: 10 });
+
+    /* Another device votes for itself, and this one again a day later. */
+    const other = await handleReport(
+      report({ kind: "meta", qtype: "wave", batch: 50 }, "223e4567-e89b-42d3-a456-426614174000"),
+      testEnv(), site, now + 3600
+    );
+    expect(other.status).toBe(200);
+    const nextDay = await handleReport(
+      report({ kind: "meta", qtype: "single" }), testEnv(), site, now + 24 * 60 * 60
+    );
+    expect(nextDay.status).toBe(200);
+    expect(
+      await env.QUEUE_DB.prepare(`SELECT qtype, batch FROM queue_meta WHERE client = ?`).bind(CLIENT).first()
+    ).toMatchObject({ qtype: "single", batch: null });
+  });
 });
 
 describe("retention and routing", () => {
