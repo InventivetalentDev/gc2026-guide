@@ -325,7 +325,11 @@ actually is: your stops for today in hall order, the ones you have ticked `✓`
 folded away at the bottom, and a header that says whether the halls are open,
 what time they close and how long that leaves. When more than one stop is left it
 names the one with the worst queue, because that is the decision the morning
-actually turns on.
+actually turns on. Stops with a trusted live wait also carry the last moment you
+can join their line and still be let in, and that moment is only stated once it
+is one to act on: within the next hour and a half, past the halfway point of the
+day's own hours, or already gone, in which case the row says so. A column of
+times that are all hours away buries the one that is not.
 
 It is a lens, not a fourth list. Today reads the saved list, the played marks,
 the day assignments and the order you put the plan in, and stores nothing of its
