@@ -20,7 +20,8 @@
       "Stadtbahn lines 1, 7 and 9 do not cross the Rhine until early September: 1 and 9 terminate at Heumarkt, 7 at Neumarkt, with replacement buses from Neumarkt to Koelnmesse taking 10–20 minutes. Lines 3 and 4 still run to the East entrance and are the dependable way in.",
       "On the rail side, RE 1, RE 5, S 1 and S 6 are cut back between Düsseldorf and Köln-Mülheim from Aug 21, and some trains skip Köln Hauptbahnhof and Köln Messe/Deutz entirely. Check your connection the morning you travel; coming from Düsseldorf, RE 6 is the recommended way round.",
       "Evening tickets (from 16:00, €10.50) are a cheap second visit and queues shrink in the last 2–3 hours — on sale for Thursday, Friday and Sunday; Saturday's have gone.",
-      "Do gamescom epix quests — completing all chapters can earn a free Sunday ticket."
+      "Do gamescom epix quests — completing all chapters can earn a free Sunday ticket.",
+      "Inside Cologne, KVB lines 1, 7 and 9 can't cross the Deutzer Brücke until Sept 2 — take lines 3 or 4 via Severinsbrücke to the Koelnmesse stop instead, or walk over the Hohenzollernbrücke from the Hauptbahnhof to Deutz."
     ],
     "onl": {
       "date": "Tue, Aug 25",
@@ -161,7 +162,6 @@
     "tabletop": "tabletop",
     "tech showcase": "tech showcase",
     "theater": "theater",
-    "unconfirmed": "unconfirmed",
     "world premiere": "world premiere",
     "analytics": "analytics",
     "association": "association",
@@ -293,7 +293,7 @@
       "games": {
         "Call of Duty: Modern Warfare 4": "First public 6v6 multiplayer hands-on — expected to be the single biggest queue of the show.",
         "Gears of War: E-Day": "First public campaign hands-on ahead of the Oct 6, 2026 release.",
-        "Fable": "Live gameplay theater by Playground Games — not hands-on (reported release Feb 2027).",
+        "Fable": "Live gameplay theater by Playground Games — not hands-on (reported release Feb 23, 2027).",
         "Minecraft Dungeons II": "First public playable build.",
         "METRO 2039": "First hands-on anywhere; also at Plaion's Hall 9 booth.",
         "Stranger Than Heaven": "Sega/RGG Studio — also at SEGA's Hall 7 booth.",
@@ -313,11 +313,11 @@
         "Terrible Lizards": "Demo at the booth.",
         "Armatus": "On the official Xbox Wire booth lineup.",
         "Bad Magpie": "Indie title at the booth.",
-        "Unannounced titles (~3 slots)": "Xbox says 25 games but has named ~22 — reveals expected around Opening Night Live."
+        "Unannounced titles (~3 slots)": "Xbox says 25 games but has named ~22 — the last slots stayed unnamed through ONL; watch the booth broadcasts on Aug 26–27."
       }
     },
     "nintendo": {
-      "description": "Nintendo's traditional giant Hall 9 booth, all-in on Switch 2 with nine confirmed playable titles 'and more' — headlined by the first publicly playable Call of Duty on Nintendo hardware in over a decade (a native Switch 2 port).",
+      "description": "Nintendo's traditional giant Hall 9 booth, all-in on Switch 2 with 16 playable stations — headlined by the first publicly playable Call of Duty on Nintendo hardware in over a decade, plus a Super Mario Area from Mario Kart World to Donkey Kong Bananza. Daily fun tournaments; checking in with a Nintendo Account earns a goodie and 100 platinum points.",
       "crowdNote": "Historically the most-queued family destination at gamescom; the MW4-on-Switch-2 novelty, Pokémon and Splatoon add up to 2 h+ waits, worst Sat/Sun.",
       "visitAdvice": "Thu or Fri at opening; hit MW4 or 007 First Light first. Nintendo often runs virtual queue tickets via booth/app — grab a slot early. Avoid the weekend.",
       "games": {
@@ -331,7 +331,13 @@
         "Pokémon Pokopia (Expansion Pass)": "Expansion Pass content playable — expect huge Pokémon queues.",
         "Splatoon Raiders": "First-party spin-off hands-on.",
         "Elden Ring: Tarnished Edition": "Bandai Namco confirmed it's playable here, not at its own Hall 6 booth; releases Aug 28, mid-show.",
-        "Additional unannounced titles": "Nintendo's announcement explicitly says 'and more'."
+        "Star Fox": "The series reboot, out since June 25 — playable stations and a daily tournament.",
+        "Mario Kart World": "Super Mario Area station with daily tournaments.",
+        "Donkey Kong Bananza": "Super Mario Area station — home of the daily 'DK Challenge'.",
+        "Yoshi and the Mysterious Book": "Super Mario Area station.",
+        "Super Mario Bros. Wonder – Nintendo Switch 2 Edition + Meetup in Bellabel Park": "Super Mario Area station with daily tournaments.",
+        "Super Mario Galaxy + Super Mario Galaxy 2": "The Switch 2 double-pack, in the Super Mario Area.",
+        "Minecraft – Nintendo Switch 2 Edition": "Third-party station alongside Minecraft Dungeons II."
       }
     },
     "playstation": {
@@ -401,7 +407,7 @@
       }
     },
     "ubisoft": {
-      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo — 20 minutes at one of 15 two-player couch co-op stations — plus the returning Community Lounge, running all five days around Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117 and The Division 2.",
+      "description": "Traditional spot at the Hall 6 entrance with a playable Rayman Legends Retold demo — 20 minutes at one of 15 two-player couch co-op stations — plus the returning Community Lounge, running all five days around Rainbow Six Siege, AC Black Flag Resynced, Assassin's Creed Shadows, Anno 117, The Division 2 and The Crew Motorfest. The ONL reveals Rainbow Six Tactics and Heroes of Might and Magic III Remake stayed on the stream — only the latter is even registered on the booth page.",
       "crowdNote": "One playable title plus a lounge format — moderate queues, no giant new AAA hands-on this year.",
       "visitAdvice": "Rayman queues are manageable before noon on weekdays. The lounge splits its programme: some slots are meet-and-greets and dev sessions you have to be there for, the rest are streamed and lose nothing if you watch later. Each day's schedule goes up on screens at the stand. Ubisoft's own summary says the lounge opens Thursday, but its published schedule lists in-person sessions on trade Wednesday too.",
       "games": {
@@ -411,18 +417,18 @@
         "Anno 117: Pax Romana": "Community Lounge sessions.",
         "Rainbow Six Siege": "Community Lounge sessions rather than a demo queue.",
         "The Division 2": "Live-service community sessions.",
-        "Rainbow Six Tactics": "Turn-based tactics spin-off revealed at ONL Aug 25, due 2027 — a booth showing is unconfirmed.",
-        "Heroes of Might and Magic III Remake": "Full-3D remake of the 1999 classic on the Snowdrop engine, revealed at ONL Aug 25 for 2027 — a booth showing is unconfirmed."
+        "Heroes of Might and Magic III Remake": "Full-3D remake of the 1999 classic on the Snowdrop engine, revealed at ONL for 2027 — now registered on Ubisoft's own booth page, but no showing announced.",
+        "The Crew Motorfest": "Community Lounge dev talk on Friday (plus a streamed session Thursday) — not a demo station."
       }
     },
     "ea": {
-      "description": "Back as an exhibitor with a booth at the Hall 6 entrance next to Ubisoft. EA Sports FC 27, launching weeks after the show, is the confirmed centerpiece.",
+      "description": "Back as an exhibitor with a booth at the Hall 6 entrance next to Ubisoft. EA Sports FC 27, launching weeks after the show, is the confirmed centerpiece; STAR WARS Zero Company is registered on the booth page ahead of its mid-show launch.",
       "crowdNote": "FC 27 stations traditionally draw steady but fast-moving queues; busy rather than overwhelming without a big reveal.",
       "visitAdvice": "FC has many stations and short rotations — fine midday.",
       "games": {
         "EA Sports FC 27": "Confirmed for the booth; launches weeks after gamescom. Switch 2 version separately confirmed at Nintendo's booth.",
-        "Battlefield 6 (seasonal content)": "German trade press says BF6 'may play a role' at the booth.",
-        "skate.": "Live-service title in active rollout; plausible but unannounced."
+        "Battlefield 6 (seasonal content)": "German trade press said BF6 'may play a role' — but day 1 brought no sign of it, and EA's booth page registers only FC 27 and Zero Company.",
+        "STAR WARS Zero Company": "Registered on EA's booth page ahead of its Aug 27 mid-show launch; the confirmed hands-on stations are at Xbox's Hall 7 booth."
       }
     },
     "square-enix": {
@@ -455,15 +461,15 @@
       }
     },
     "snail-games": {
-      "description": "The ARK publisher's Hall 8.1 stand: new ARK: Survival Ascended content alongside open-universe MMO For The Stars, medieval survival sim Bellwright and sandbox builder Honeycomb: The World Beyond — plus 9 Yin Sutra: Immortal, which now fills the slot Snail had been describing as an unannounced AAA title.",
+      "description": "The ARK publisher's Hall 8.1 stand: new ARK: Survival Ascended content alongside open-universe MMO For The Stars, medieval survival sim Bellwright and sandbox builder Honeycomb: The World Beyond — headlined by 9 Yin Sutra: Immortal, with CEO Hai Shi set to unveil a second Age of Wushu-universe AAA title at the show.",
       "crowdNote": "ARK's community is large and a AAA reveal pulls walk-up interest, but it's a mid-size stand rather than a mega-booth.",
       "visitAdvice": "If 9 Yin Sutra: Immortal lands a splashy reveal, the stand will busy up the next morning — otherwise ARK fans can drop in most times.",
       "games": {
         "ARK: Survival Ascended": "New content and franchise developments for the survival flagship.",
-        "For The Stars": "Open-universe MMO.",
-        "Bellwright": "Medieval survival/colony sim, 1M+ players on Steam.",
-        "Honeycomb: The World Beyond": "Sci-fi sandbox builder.",
-        "9 Yin Sutra: Immortal": "Named on Snail's gamescom booth page, where the guide previously carried an unannounced AAA slot; platforms and hands-on not announced."
+        "For The Stars": "Showcase per Snail's lineup release — no hands-on claim.",
+        "Bellwright": "An early look at the next major update, celebrating 1M+ players.",
+        "Honeycomb: The World Beyond": "Look-only at the booth — the hands-on it promises is a free PC preview demo hitting Steam Aug 31, the day after the show.",
+        "9 Yin Sutra: Immortal": "Headlines Snail's gamescom lineup after its ChinaJoy unveil — and the CEO unveils another Age of Wushu-universe AAA at the show. No hands-on announced."
       }
     },
     "plaion": {
@@ -475,24 +481,23 @@
       }
     },
     "krafton": {
-      "description": "One of Hall 9's largest presences, spread over two stand blocks (B050/C051 and B040/C041), with five titles headlined by a still-secret world-premiere FPS from PUBG STUDIOS (set in the Pacific Northwest) plus Neon Giant's cyber-noir shooter NO LAW. Interactive missions earn themed merch.",
+      "description": "One of Hall 9's largest presences, spread over two stand blocks (B050/C051 and B040/C041) — and all five titles are hands-on, headlined by the world-premiere PUBG: DED.NET demo straight from its ONL reveal. Interactive missions earn themed merch.",
       "crowdNote": "A PUBG-universe world premiere in the show's most congested hall guarantees heavy traffic once the reveal lands.",
       "visitAdvice": "Go first thing Thursday, or Wednesday on a trade badge, before the PUBG premiere is fully publicized; do the merch mission circuit early, before stock runs low.",
       "games": {
         "NO LAW": "Open-world FPS from The Ascent developer Neon Giant — hands-on demo.",
-        "Project ZETA": "Part of the five-title showcase.",
-        "Age Twisters": "Part of the five-title showcase.",
-        "TARAE: The Unbound": "Dark-fantasy action RPG.",
-        "PUBG: DED.NET": "The teased PUBG-universe world premiere, named at ONL Aug 25: a 1990s-set PvPvE shooter with roguelite runs; closed-beta signups are open."
+        "Project ZETA": "Hands-on: multi-team tactical arena — squads fight to secure and return the Prism.",
+        "Age Twisters": "Hands-on: Piccolo Studio's two-player co-op age-shifting adventure — bring a partner.",
+        "TARAE: The Unbound": "Dark-fantasy action RPG hands-on with high-pressure boss encounters.",
+        "PUBG: DED.NET": "World-premiere hands-on of the 1990s-set PvPvE shooter, named at ONL — closed-beta signups are open."
       }
     },
     "embark": {
-      "description": "Riding ARC Raiders' breakout success, the Swedish studio has a Hall 6 booth reportedly twice the size of EA's — its first big gamescom showing, built around its extraction-shooter hit.",
+      "description": "Riding ARC Raiders' breakout success, the Swedish studio has a Hall 6 booth reportedly twice the size of EA's — an immersive ARC Raiders supply-scavenging experience with dev meet-and-greets and merch. THE FINALS isn't part of the showing.",
       "crowdNote": "Massive active player base and a first big booth — community turnout plus any new-season reveal will pack it.",
       "visitAdvice": "Community events and creator meetups spike traffic unpredictably — check Embark's socials for the stage schedule and go during downtime.",
       "games": {
-        "ARC Raiders": "Booth focus; expect new-content showcases for the live-service hit.",
-        "THE FINALS": "Embark's other live title; not yet listed for the booth."
+        "ARC Raiders": "The whole booth: an immersive supply-scavenging experience, dev meet-and-greets and merch drops."
       }
     },
     "team17-astragon": {
@@ -507,30 +512,30 @@
         "Firefighting Simulator: Ignite": "astragon simulator lineup.",
         "Seafarer: The Ship Sim": "astragon simulator lineup.",
         "Worms W.M.D.": "Team17 catalog station.",
-        "Worms: Galactic Tactics": "Revealed at ONL Aug 25 for 2027 — a booth showing is unconfirmed."
+        "Worms: Galactic Tactics": "Revealed at ONL for 2027 — the trailer also teased a 2.5D remake of the original Worms; still nothing of it at the booth."
       }
     },
     "giants-software": {
-      "description": "Farming Simulator's developer-publisher with its traditional community booth (plus a business-area stand in Hall 4.2). Its gamescom booth page registers three titles — the FS25 expansion Beans & Alpacas, a Farming Simulator: Signature Edition, and the sim racer Project Motor Racing — alongside the likely Farming Simulator 26 showing and merch.",
+      "description": "Farming Simulator's developer-publisher with its traditional community booth (plus a business-area stand in Hall 4.2) — and everything on it is hands-on this year: the Beans & Alpacas expansion premiere, Farming Simulator 26, the Switch 2 Signature Edition and Project Motor Racing, with Bale Race competitions and PMR hotlap races on the stage.",
       "crowdNote": "One of the most loyal German communities at the show — steady all-day traffic rather than spike queues.",
       "visitAdvice": "Easy to combine with the surrounding Hall 6.1 AAA booths; merch tends to sell out on weekend days.",
       "games": {
-        "Farming Simulator 26": "The Switch/mobile edition released May 19, 2026 — likely demo stations.",
-        "Farming Simulator 25: Beans & Alpacas": "First gameplay was shown July 28 at FarmCon; a gamescom showing fits its pre-release window.",
-        "Project Motor Racing": "The sim racer GIANTS published in November 2025, registered on its gamescom booth page — no hands-on announced.",
-        "Farming Simulator: Signature Edition": "Registered on the booth page; what the edition contains has not been detailed."
+        "Farming Simulator 26": "The mobile edition (out since May) is what's playable; the stage adds Bale Race competitions and giveaways.",
+        "Farming Simulator 25: Beans & Alpacas": "Hands-on premiere — first public play of the Catuaí coffee-region map before the Oct 27 launch.",
+        "Project Motor Racing": "Playable, with hotlap races on the booth stage.",
+        "Farming Simulator: Signature Edition": "The Nintendo Switch 2 edition of FS25 (out since Dec 9, 2025) — playable at the stand."
       }
     },
     "focus": {
-      "description": "A Hall 6.1 stand at B060/C061, in a stand block shared with Team17 and astragon, plus a trade-only business-area stand (Hall 4.2, A028). Its own gamescom booth page now presents three games: Resonance: A Plague Tale Legacy, which launches Aug 27 mid-show and is playable at the Xbox booth, the haulage sim Road Kings, and the cozy management game BioEden.",
+      "description": "A Hall 6.1 stand at B060/C061, in a stand block shared with Team17 and astragon, plus a trade-only business-area stand (Hall 4.2, A028). Resonance: A Plague Tale Legacy is playable here all show, launching mid-show on Aug 27; the booth page also registers the haulage sim Road Kings, the cozy management game BioEden and the ONL reveal Elta: Defy All Gods.",
       "crowdNote": "No announced blockbuster hands-on at its own stand; Resonance demand mostly absorbed by the Xbox booth.",
       "visitAdvice": "Queue for Resonance at the Xbox booth, where it's confirmed playable. Focus' own stand presents Road Kings and BioEden as well, but has not said which of the three you can put your hands on there.",
       "games": {
-        "Resonance: A Plague Tale Legacy": "Launches Aug 27; confirmed at Xbox's Hall 7 booth, likely also at Focus' own Hall 6.1 stand.",
-        "Edge of Memories": "2026 JRPG-style title, plausible booth candidate.",
+        "Resonance: A Plague Tale Legacy": "Playable demo all show at both Focus' own stand and the Xbox booth; launches mid-show Aug 27.",
         "Warhammer 40,000: Space Marine 3": "Too early for hands-on; trailer presence possible.",
-        "Road Kings": "Saber's 40-ton haulage sim, presented on Focus' own gamescom booth page — no hands-on announced.",
-        "BioEden": "Cozy ecosystem-management game, out Sept 3, the week after the show; presented on the same booth page with no hands-on announced."
+        "Road Kings": "Saber's 40-ton haulage sim, on Focus' booth page — its ONL trailer set the release for March 11, 2027; no hands-on announced.",
+        "BioEden": "Cozy ecosystem-management game, out Sept 3 on PC (consoles later) — a free Steam demo is already up; presented on the booth page with no hands-on announced.",
+        "Elta: Defy All Gods": "Science-fantasy action-platformer from the Dreamscaper team, revealed at ONL for early 2027 — on Focus' booth page, Steam demo Oct 1; booth showing unconfirmed."
       }
     },
     "hoyoverse": {
@@ -543,7 +548,7 @@
         "Zenless Zone Zero": "Dedicated exhibition area with latest content.",
         "Honkai: Nexus Anima": "World-premiere hands-on of the new creature-collecting strategy game.",
         "Petit Planet": "Cozy life-sim hands-on with world exploration.",
-        "Nodus Fall": "Dark-fantasy co-op action RPG that opened ONL Aug 25 — no date or platforms yet, and a booth showing is unconfirmed."
+        "Nodusfall": "Dark-fantasy co-op action RPG that opened ONL — its world-premiere trailer runs at the main booth from Aug 26. No hands-on, and no date or platforms yet."
       }
     },
     "level-infinite": {
@@ -553,21 +558,22 @@
       "games": {
         "CONTROL Resonant": "First time playable anywhere; launches Sept 24, 2026 — the booth's biggest draw.",
         "Dune: Awakening (console)": "First public hands-on of the console build.",
-        "Hunt: Showdown 1896": "Playable with devs present; new in-game event preview."
+        "Hunt: Showdown 1896": "Playable with devs present; new in-game event preview.",
+        "Exterminauts": "Behaviour's ONL-revealed co-op shooter is registered under publisher Level Infinite at this stand — possibly the unannounced fourth hands-on slot in its lineup; nothing confirmed."
       }
     },
     "tencent-worlds-of-play": {
-      "description": "Tencent Games' Hall 8.1 stand shows Honor of Kings and Arena of Valor with cosplayers and competitions, its booth page adds four more — Honor of Kings: World, Honor of Kings: ACE, Rust Mobile and Roco Kingdom — and cozy life sim Animula Nook brings a playable new Beta to a themed corner of the stand. The company also runs the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27-29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's other playable games are at Level Infinite in Hall 6.1.",
+      "description": "Tencent Games' Hall 8.1 stand is a playable Honor of Kings universe: Honor of Kings, Arena of Valor, Honor of Kings: World and a world-first Honor of Kings: ACE hands-on, with stage matchups, cosplayers and competitions — plus a playable new Beta of cozy life sim Animula Nook in a themed corner. Rust Mobile appears with prize challenges, its gameplay tent standing at gamescom Camp in the Jugendpark. The company also runs the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27–29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's other playable games are at Level Infinite in Hall 6.1.",
       "crowdNote": "Timed/curated and off the main floor — moderate queues; the real crowds gather at Level Infinite.",
       "visitAdvice": "A calmer palate-cleanser between hall sessions; check whether entry needs free time-slot registration closer to the show.",
       "games": {
         "Worlds of Play (40-title art exhibition)": "Art exhibition Aug 27–29, off the main show floor.",
-        "Honor of Kings": "On the Hall 8.1 stand, with cosplayers and competitions.",
-        "Arena of Valor": "On the Hall 8.1 stand, with cosplayers and competitions.",
-        "Honor of Kings: World": "The open-world spin-off, out in China since April on PC and mobile; registered on the booth page, no hands-on announced.",
-        "Honor of Kings: ACE": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
-        "Rust Mobile": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
-        "Roco Kingdom": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
+        "Honor of Kings": "Playable at the stand, with stage matchups, cosplayers and competitions.",
+        "Arena of Valor": "Playable at the stand, with competitive activities.",
+        "Honor of Kings: World": "The open-world spin-off, out in China since April — returns with a new playable demo at the stand.",
+        "Honor of Kings: ACE": "Playable on PC and mobile for the first time — a world-first public hands-on.",
+        "Rust Mobile": "Show elements and prize challenges at the stand — the playable tent is at gamescom Camp in the Jugendpark, outside the fairground.",
+        "Roco Kingdom": "The global version was revealed at ONL, first closed beta Oct 27 — still no booth showing announced.",
         "Animula Nook": "Hands-on: a new Beta of the cozy miniature life sim, in a themed corner of the stand with a four-metre inflatable Wupa. 10 million pre-registrations since February."
       }
     },
@@ -578,9 +584,9 @@
       "games": {
         "Marvel Rivals": "Multi-station 6v6 setups; Season 9.5 content at booth B050.",
         "Where Winds Meet": "Wuxia open-world RPG; Hidden Mountain finale content at booth B050.",
-        "Sea of Remnants": "Stylized pirate adventure RPG, own booth A051; hands-on status not detailed in NetEase's release.",
-        "Once Human next expansion + unannounced title": "Hands-on preview at NetEase's business-area stand (Hall 4.2, D050) — trade & media only, not reachable on a public ticket. The ONL segment was the console launch: Once Human is now free on PS5 and Xbox, with cross-play.",
-        "Ananta": "Fresh gameplay in an Opening Night Live segment on Aug 25 — not part of NetEase's Hall 7.1 lineup, and no hands-on announced anywhere at the show. Launches Jan 15, 2027."
+        "Sea of Remnants": "Hands-on at booth A051 — Orbtopia city and archipelago demo, puppet customization, daily cosplay shows; closed beta in December.",
+        "Once Human next expansion + unannounced title": "The expansion got its name at ONL: Isles of Abyss, an ocean region arriving October. Hands-on preview stays at NetEase's business-area stand (Hall 4.2, D050) — trade & media only — and the second title is still unnamed. The ONL segment was also the console launch: Once Human is now free on PS5 and Xbox, with cross-play.",
+        "Ananta": "Registered on NetEase's booth profile with its ONL trailer — a trailer showing, no hands-on anywhere at the show. Launches Jan 15, 2027."
       }
     },
     "pearl-abyss": {
@@ -592,28 +598,31 @@
       }
     },
     "infold": {
-      "description": "Publisher of Infinity Nikki and Love and Deepspace. The Infinity Nikki booth hosts meet-and-greets with Nikki and Momo, activity stations with exclusive merch rewards and special events with guest appearances; Love and Deepspace shared Infold's booth in 2025 and is expected back.",
+      "description": "Publisher of Infinity Nikki and Love and Deepspace, both officially at booth 9-A054 — as activity booths, not demo floors: meet-and-greets with Nikki and Momo, activity stations with exclusive merch rewards, cosplayer interactions and reservation-only giveaway packs.",
       "crowdNote": "Both games have enormous, dedicated fandoms; merch and photo-op lines at comparable booths ran 60+ min in 2025.",
       "visitAdvice": "Go at hall opening for limited daily merch and event slots — activity rewards tend to run out by early afternoon on public days.",
       "games": {
-        "Infinity Nikki": "Official booth events, activities and exclusive merch — expect activity queues rather than demo stations.",
-        "Love and Deepspace": "Not yet officially named for 2026; shared the Infold booth in 2025."
+        "Infinity Nikki": "Official booth events, activities and exclusive merch — no demo stations; expect activity queues rather than demo lines.",
+        "Love and Deepspace": "Confirmed at the stand Aug 26–30 — cosplayer interactions and giveaway packs redeemed via advance reservation (account Level 60+), not a playable showing."
       }
     },
     "aerosoft": {
-      "description": "The Paderborn simulation specialist brings Winter Resort 3 and Professional Ship Simulator alongside the simulators it first revealed for the show, now named: emergency-services, firefighting, hospital, haulage, mining, forensics and crab fishing. A compact stand among Hall 9.1's big booths (plus a business-area stand in Hall 4.2).",
+      "description": "The Paderborn simulation specialist's stand splits into play and show: emergency, hospital, haulage, forensics and rescue sims are playable, the new reveals are display-only, and a cockpit corner puts The Bus, Fernbus Simulator, SubwaySim 2 and Microsoft Flight Simulator on real rigs. A compact stand among Hall 9.1's big booths (plus a business-area stand in Hall 4.2).",
       "crowdNote": "Dedicated sim niche — steady interest but rarely long lines.",
       "visitAdvice": "Pairs into a sim circuit with GIANTS and the Team17 × astragon stand in Hall 6.1; reveal stations are busiest right after doors.",
       "games": {
-        "Winter Resort 3": "Alpine ski-resort sim sequel.",
-        "Professional Ship Simulator": "Part of the confirmed lineup.",
-        "Notruf 112 – Die Feuerwehr": "German emergency-services sim.",
-        "Firefighters Code Red": "Firefighting sim.",
-        "Notaufnahme Simulator": "Hospital emergency-room sim.",
-        "Heavy Cargo: The Truck Simulator": "Heavy-haulage trucking sim.",
-        "Bergwerk: A Mining Sim": "Mining sim.",
-        "Forensics: Crime Scene Detective": "Crime-scene investigation sim; also shown at Binary Impact in Hall 10.2.",
-        "Seaworks: Trap Season": "Crab-fishing sim; also shown at Binary Impact in Hall 10.2."
+        "Winter Resort 3": "Alpine ski-resort sim sequel — shown, not playable.",
+        "Professional Ship Simulator": "Shown, not playable.",
+        "Firefighters Code Red": "Firefighting sim with cross-platform multiplayer — shown, not playable.",
+        "Notaufnahme Simulator": "Playable station — hospital emergency-room sim.",
+        "Heavy Cargo: The Truck Simulator": "Playable, shown with the new Heavy-South DLC.",
+        "Bergwerk: A Mining Sim": "Shown, not playable.",
+        "Forensics: Crime Scene Detective": "Playable — with real forensic experts from the state criminal police at the stand; also shown at the GameUp! Rheinland-Pfalz stand in Hall 10.2 (D043g).",
+        "Seaworks: Trap Season": "Crab-fishing sim — shown, not playable; also at the GameUp! Rheinland-Pfalz stand in Hall 10.2 (D043g).",
+        "Notruf 112 – Die Feuerwehrsimulation 3": "Playable station — the German emergency-services sim, third of its line.",
+        "Global Rescue": "Playable station — rescue sim, new to the lineup.",
+        "Autobahn Police Simulator 4": "First showing — display only.",
+        "Road Construction Simulator": "First showing — display only."
       }
     },
     "ggg-poe2": {
@@ -669,7 +678,7 @@
       "crowdNote": "Small stand in the indie/merch hall — browsing traffic unless something playable turns up.",
       "visitAdvice": "Check on-site: a playable Attack on Titan 3 or Nioh 3 station would queue fast; otherwise a quick stop on your Indie Arena Booth round.",
       "games": {
-        "Attack on Titan 3": "Winter 2026 release timing makes a showing plausible — our inference, nothing announced."
+        "Attack on Titan 3": "Winter release (Dec 10) made a showing plausible, but its playable outing is TGS in September and nothing is announced for this stand — our inference, weaker by the day."
       }
     },
     "bilibili": {
@@ -677,7 +686,7 @@
       "crowdNote": "Modest indie-area booth; short waits except during signing/creator events.",
       "visitAdvice": "Easy walk-up while touring the indie hall; check the app on-site for stage or giveaway schedules.",
       "games": {
-        "Escape From Duckov": "Team Soda's duck-themed extraction shooter, the only title registered on Bilibili's booth page; no hands-on announced."
+        "Escape From Duckov": "Team Soda's duck extraction shooter, playable at the stand — a gamescom award nominee (Most Entertaining), and nominees are playable in the entertainment area."
       }
     },
     "aternos": {
@@ -689,47 +698,47 @@
       }
     },
     "behaviour": {
-      "description": "Dead by Daylight's studio takes a Hall 10.1 stand in the game's 10th-anniversary year. The booth program is unannounced — expect anniversary content and community activities rather than a AAA-style demo floor.",
+      "description": "Dead by Daylight's studio takes a Hall 10.1 stand in the game's 10th-anniversary year — the presence is officially confirmed, the program still isn't. Expect anniversary content and community activities rather than a AAA-style demo floor.",
       "crowdNote": "60M+ players and a devoted community — steady lines if meet-and-greets or photo ops run.",
       "visitAdvice": "Check DbD's socials during the show for timed community events; otherwise an easy drop-in between Hall 10 indie sessions.",
       "games": {
-        "Dead by Daylight": "Nothing announced for the stand yet; an anniversary-year community presence is the likeliest showing.",
-        "Exterminauts": "Behaviour's new co-op shooter, revealed at ONL Aug 25 — a booth showing is unconfirmed."
+        "Dead by Daylight": "Officially confirmed for the stand in the 10th-anniversary year — program unannounced; 2025's showing was community and cosplay, not demo stations."
       }
     },
     "scs-software": {
-      "description": "The Euro Truck Simulator 2 / American Truck Simulator studio brings its traditional community stand — truck-seat driving rigs, team meet-and-greets and merch, a gamescom fixture for years (plus a business-area stand in Hall 4.1).",
+      "description": "The Euro Truck Simulator 2 / American Truck Simulator studio brings its traditional community stand — truck-seat rigs running exclusive demo builds of upcoming map expansions, the returning 4D motion simulator, team meet-and-greets and merch, plus a brand-new Thrustmaster product to test first (and a business-area stand in Hall 4.1).",
       "crowdNote": "Limited driving rigs mean moderate rotating queues; fans linger to chat with the team.",
       "visitAdvice": "Rigs turn over slowly — come at hall opening if you want seat time.",
       "games": {
-        "Euro Truck Simulator 2": "Driving rigs are the stand's tradition; the booth page registers the Iceland and Coaches expansions alongside the base game.",
-        "American Truck Simulator": "Shown alongside ETS2 on the rigs; the booth page also registers the British Columbia expansion and a Ford car pack."
+        "Euro Truck Simulator 2": "On the rigs with an exclusive Iceland-expansion demo build; the 4D motion simulator returns.",
+        "American Truck Simulator": "British Columbia and South Dakota expansion demo builds on the rigs."
       }
     },
     "bloober-team": {
-      "description": "The Silent Hill 2 remake and Cronos: The New Dawn studio takes a Hall 10.1 stand (plus a business-area stand). Its gamescom booth page now registers three horror titles: Cronos: The New Dawn, the follow-up Cronos: Lazarus and SAW: Genesis. Cronos art also features in Tencent's offsite Worlds of Play exhibition.",
+      "description": "The Silent Hill 2 remake and Cronos studio's first own gamescom stand (plus a business-area stand): the first publicly playable build of Cronos: Lazarus, next to a walk-through SAW: Genesis scare activation with live performers. Cronos art also features in Tencent's offsite Worlds of Play exhibition.",
       "crowdNote": "A small stand with a devoted horror crowd — short lines unless a new reveal drops at ONL.",
       "visitAdvice": "If Bloober shows anything at Opening Night Live, expect the stand to spike the next morning — otherwise a quick stop.",
       "games": {
-        "Cronos: The New Dawn": "Bloober's flagship since its Sept 2025 release, and registered on the booth page — the demo program is still unannounced.",
-        "Cronos: Lazarus": "The Cronos follow-up, registered on Bloober's gamescom booth page; no hands-on announced.",
-        "SAW: Genesis": "Bloober's take on the Saw films, registered on the same booth page; no hands-on announced."
+        "Cronos: The New Dawn": "Registered for the booth — but the actual demo is the Lazarus expansion; no standalone New Dawn station announced.",
+        "Cronos: Lazarus": "First publicly playable build of the Warden-focused paid expansion (out Fall 2026) — more action-oriented, with teleportation and the Gladius melee weapon.",
+        "SAW: Genesis": "A walk-through SAW-themed scare corridor with live performers — the 3v1 game itself is hands-on for press only, in the business hall."
       }
     },
     "coffee-stain": {
-      "description": "The Satisfactory studio — also the publisher of Valheim and Deep Rock Galactic — takes a Hall 10.1 stand; its program is unannounced. Satisfactory's 1.2 update shipped in June and an official Satisfactory board game is due late 2026 — demo stations and merch are the safe bets.",
+      "description": "The Satisfactory studio — also the publisher of Valheim and Deep Rock Galactic — takes a Hall 10.1 stand. Iron Gate's devs are on it ahead of Valheim 1.0 (Sept 9), with a new trailer premiering during the show; Satisfactory's own program is still unannounced.",
       "crowdNote": "Beloved catalog but a low-key stand — browsing traffic more than queues.",
       "visitAdvice": "Easy drop-in next to the other Hall 10.1 publisher stands (SCS, Bloober, Kepler).",
       "games": {
-        "Satisfactory": "Nothing announced for the stand yet; the 1.2 update (June 2026) makes it the obvious centerpiece."
+        "Satisfactory": "Still nothing announced for the stand — no demo or program confirmed by day 1.",
+        "Valheim": "Iron Gate devs at the stand ahead of Valheim 1.0 on Sept 9, when PS5 and Switch 2 versions land — a new trailer premieres during the show; hands-on unannounced."
       }
     },
     "kepler-interactive": {
-      "description": "The publisher collective behind Clair Obscur: Expedition 33 brings ONTOS as its featured title: a sci-fi narrative mystery from Frictional Games (SOMA, Amnesia), set aboard the repurposed moon hotel Samsara and due 2026. Expect a presentation-style stand rather than a mass demo floor.",
+      "description": "The publisher collective behind Clair Obscur: Expedition 33 brings ONTOS as its featured title: a sci-fi narrative mystery from Frictional Games (SOMA, Amnesia), set aboard the repurposed moon hotel Samsara and now due 2027. The booth is a staged activation, not a demo floor.",
       "crowdNote": "Strong word-of-mouth brand but a small Hall 10.1 stand — short lines except right after any stage or ONL showing.",
       "visitAdvice": "Pair with the Indie Arena Booth one level up; afternoons are quieter once the school groups thin out.",
       "games": {
-        "ONTOS": "SOMA spiritual successor from Frictional Games, releasing 2026; listed on Kepler's official gamescom profile."
+        "ONTOS": "The booth recreates the rat-server 'Experiment' with actor scientists and thought experiments — no demo stations; a hands-on gameplay video premieres Aug 26. Now due 2027."
       }
     },
     "atari": {
@@ -737,7 +746,7 @@
       "crowdNote": "Browsing traffic and nostalgic dwell time rather than queues.",
       "visitAdvice": "A good low-energy stop while sitting out peak queues elsewhere; merch lines grow on Saturday.",
       "games": {
-        "RollerCoaster Tycoon: Wonderworks": "Announced at ONL Aug 25 for Steam early access — a booth showing is unconfirmed."
+        "RollerCoaster Tycoon: Wonderworks": "Announced in the ONL pre-show (Springloaded; Steam early access this winter at $24.99) — a booth showing is still unconfirmed."
       }
     },
     "moza-racing": {
@@ -764,11 +773,11 @@
       "visitAdvice": "Not what you want an hour before a big queue — go after you're done playing for the day."
     },
     "xelerate-vr": {
-      "description": "A German VR stand at the back of Hall 10.1, registered across portable VR hardware, action/adventure, role-playing, simulation and sports — a headset experience rather than a game booth. Its booth page names the VR title Weeny Wise and its own ODT 1 headset rig.",
+      "description": "A German VR stand at the back of Hall 10.1 — a walking-platform experience rather than a game booth: Unco Games' co-op puzzle adventure Weeny Wise is playable on XelerateVR's own ODT omnidirectional treadmill.",
       "crowdNote": "VR sessions run one visitor at a time, so even a short line is a slow one.",
       "visitAdvice": "Ask how long a session runs before joining the queue — that number matters more than the queue length.",
       "games": {
-        "Weeny Wise": "The one VR title on XelerateVR's gamescom booth page; session length and booking are unannounced."
+        "Weeny Wise": "Playable on the ODT omnidirectional treadmill — Unco Games' co-op VR puzzle adventure, on Steam Q4 2026."
       }
     },
     "gamescom-lan": {
@@ -782,16 +791,23 @@
       "visitAdvice": "Do the whole retro corner in one pass: Commodore, Atari and MicroProse sit within a few metres of each other."
     },
     "microprose": {
-      "description": "The revived MicroProse — the Sid Meier-era sim and strategy label, relaunched out of Australia — takes a stand in Hall 10.1's retro corner. Its gamescom booth page registers 17 titles across naval, air and ground simulation, strategy and shooters, from Sea Power to GROUND BRANCH. That is the catalogue it brings, not a demo list: which of them you can actually play is unannounced.",
+      "description": "The revived MicroProse — the Sid Meier-era sim and strategy label, relaunched out of Australia — turns its Hall 10.1 retro-corner stand into a demo floor: 15 of its 18 games are playable, with Combat Air Patrol 2 flown from a Boeing-branded motion flight seat as the centerpiece, and the developers of six titles at the booth in person.",
       "crowdNote": "A niche audience that knows exactly why it's there; expect conversation, not queues.",
-      "visitAdvice": "Seventeen registered titles on one small stand means asking staff what is running rather than reading a sign. Pair it with Commodore and Atari a few stands away."
+      "visitAdvice": "Seventeen registered titles on one small stand means asking staff what is running rather than reading a sign. Pair it with Commodore and Atari a few stands away.",
+      "games": {
+        "Combat Air Patrol 2: Military Flight Simulator": "The centerpiece — an AV-8B Harrier II demo flown from a Next Level Racing Boeing military flight seat.",
+        "Sea Power: Naval Combat in the Missile Age": "Playable; Triassic devs at the booth Wed–Fri, with a Falklands expansion targeted for October.",
+        "Death by Scrolling": "At the booth, but not on MicroProse's playable list.",
+        "GROUND BRANCH": "At the booth, but not on MicroProse's playable list.",
+        "Gunship Origins": "Jammin Games' co-op combat-helicopter sim — shown at the booth, not on the playable list."
+      }
     },
     "embracer-freemode": {
-      "description": "Freemode's stand is registered under three brands — Embracer Freemode, RedOctane and Stage Tour — and for input peripherals as well as games. Stage Tour is the relaunched Guitar Hero team's new plastic-instrument rhythm game: guitar, drums and vocals, up to four players in any combination, announced for autumn 2026 with its own Kramer-style guitar, drum kit and microphone.",
+      "description": "Freemode's stand is registered under three brands — Embracer Freemode, RedOctane and Stage Tour — and the relaunched Guitar Hero team's rhythm game is hands-on all five days on custom Stage Tour arcade cabinets. Its ONL segment set the release: Dec 10, 2026, with guitar, drum and microphone pre-orders open.",
       "crowdNote": "If the instruments are out on the floor this is a booth people queue for; if it's a display stand, barely a wait. Unknown until the show.",
       "visitAdvice": "Check the stand early in the day to see whether it's playable, then come back — plastic-instrument demos build the longest queues in the afternoon.",
       "games": {
-        "Stage Tour": "Registered as a brand on the official exhibitor profile, which is not the same as a confirmed hands-on demo. A closed alpha ran in summer 2026."
+        "Stage Tour": "Hands-on all five days on custom Stage Tour arcade cabinets — a Dec 10, 2026 release and instrument pre-orders were announced at ONL."
       }
     },
     "rocketwerkz": {
@@ -804,10 +820,10 @@
       "crowdNote": "Cozy-sim fans browse rather than queue.",
       "visitAdvice": "Two stands from Raw Fury and three from MOZA — worth folding into one pass along the A row.",
       "games": {
-        "House Flipper 2": "Registered as a brand on the official exhibitor profile, along with a pets expansion; the demo program is unannounced.",
-        "Farmbotic": "Robot-farming sim registered on Frozen District's gamescom booth page; no hands-on announced.",
+        "House Flipper 2": "Playable: an exclusive Pets-DLC demo, with the devs at the stand — the DLC lands Dec 3.",
+        "Farmbotic": "Frozen Way devs at the stand; the playable build is a Steam Early Playtest running Aug 26–Sep 7, at home.",
         "Forgery Craft": "Art-forgery sim registered on the same booth page; no hands-on announced.",
-        "Dreampainters": "First-person colour puzzler from Stability Games, published by Frozen District; on the booth page, no hands-on announced."
+        "Dreampainters": "Stability Games' first showcase abroad — devs at the booth; the Steam playtest reopens during the show."
       }
     },
     "raw-fury": {
@@ -816,12 +832,12 @@
       "visitAdvice": "Good discovery stop between the bigger 10.1 stands; ask what's on the machines rather than reading the signage."
     },
     "area-35": {
-      "description": "The Japanese studio behind the TINY METAL tactics games takes a Hall 10.1 stand, registered under TINY METAL, TINY METAL 2 and PROJECT BLITZ.",
+      "description": "The Japanese studio behind the TINY METAL tactics games takes a Hall 10.1 stand — and both its games are hands-on: TINY METAL 2 and the arcade party spin-off PROJECT BLITZ.",
       "crowdNote": "Turn-based tactics is a slow-burn crowd — people sit down and stay.",
       "visitAdvice": "If a machine is free, take it; the demos run long and turnover is poor.",
       "games": {
-        "PROJECT BLITZ": "Registered as a brand on the official exhibitor profile; nothing else announced.",
-        "TINY METAL 2": "Registered as a brand on the official exhibitor profile."
+        "PROJECT BLITZ": "Playable — a 4-player arcade party game in the TINY METAL universe, shown to gauge its future role in the series.",
+        "TINY METAL 2": "Hands-on — the series' first naval combat; Spring 2027 on PC, with an online multiplayer playtest on Steam through Sep 13."
       }
     },
     "corsair": {
@@ -892,9 +908,9 @@
       "crowdNote": "Family magnet in the same hall as Nintendo — photo-op and demo lines get long on the weekend.",
       "visitAdvice": "Weekday mornings; weekends are dominated by families. LEGO has not said whether the Batman DLC is hands-on or shown on screens, so treat a demo station as a bonus rather than the reason to queue.",
       "games": {
-        "LEGO Batman: Legacy of the Dark Knight": "First public look at the Mayhem Collection DLC before its September 18 release. A trailer also airs on IGN's gamescom stream on Wednesday; whether the booth has it playable is unannounced.",
-        "LEGO Fortnite": "A themed booth section rather than an announced demo — the draw is a life-size build of the Rave Cave set.",
-        "LEGO Skylines": "Revealed at ONL Aug 25 — a LEGO city-building game; how it shows at LEGO's booth is unconfirmed."
+        "LEGO Batman: Legacy of the Dark Knight": "First public look at the Mayhem Collection DLC at the stand before its Sept 18 release — the Switch 2 version lands the same day; whether it's playable is still unstated.",
+        "LEGO Fortnite": "The booth's main draw — a life-size Rave Cave build and photo ops, not a playable demo.",
+        "LEGO Skylines": "Revealed at ONL — but it's Paradox-published (Iceflake), and a LEGO-booth showing remains unconfirmed; German LEGO press calls it speculation."
       }
     },
     "wizards-of-the-coast": {
@@ -945,24 +961,21 @@
       "crowdNote": "No show-floor booth in 2026, so nothing to queue for on-site; the offsite party is ticketed and capped separately.",
       "visitAdvice": "Skip the show floor for Wargaming — grab Community Party tickets on Eventbrite early if you're a player, since it's capped.",
       "games": {
-        "World of Tanks / Warships / HEAT": "No show-floor demo booth in 2026 — appearing only at the offsite Community Party (Aug 28), not in the entertainment area."
+        "World of Tanks / Warships / HEAT": "No show-floor demo booth in 2026 — only the offsite Community Party (Aug 28, HERBRAND's Ehrenfeld), a social meet-up with devs and community rather than a demo event."
       }
     },
     "kuro-games": {
-      "description": "Wuthering Waves developer exhibited in 2024 and 2025 but has made no gamescom 2026 announcement — attendance looks doubtful; its current focus is the WuWa 3.6 broadcast and the new Elysium anime. Wuthering Waves artwork does appear at the show, but only inside Tencent's own offsite \"Worlds of Play\" exhibition — not a Kuro-run booth.",
+      "description": "Did not exhibit in 2026: no booth, and no announcement all summer — Kuro's year is WuWa's 3.6 broadcast, the Elysium anime and its concert tour. Wuthering Waves appears at the show only as artwork inside Tencent's offsite Worlds of Play exhibition.",
       "crowdNote": "Nothing confirmed to queue for; if a booth materializes expect HoYoverse-style merch crowds.",
       "visitAdvice": "Don't plan around Kuro Games; re-check the official directory and @Wuthering_Waves socials in the final two weeks.",
-      "games": {
-        "Wuthering Waves": "Expected only from past-year patterns; no 2026 booth confirmed."
-      }
+      "games": {}
     },
     "take-two": {
-      "description": "No consumer booth: Take-Two's only registration in the official directory is a shared industry stand in business Hall 4.1 (trade only). The GTA 6 moment happens offsite: an 'Extended Look' premieres on Netflix on Thursday Aug 27 (YouTube six hours later), deliberately timed to gamescom week. GTA 6 launches Nov 19, 2026.",
+      "description": "No consumer booth: Take-Two's only registration in the official directory is a shared industry stand in business Hall 4.1 (trade only), and 2K sat the show out too. The GTA 6 moment happens offsite: an 'Extended Look' premieres on Netflix on Thursday Aug 27 (YouTube six hours later), deliberately timed to gamescom week. GTA 6 launches Nov 19, 2026.",
       "crowdNote": "No confirmed physical presence.",
       "visitAdvice": "Watch the GTA 6 Extended Look on Netflix/YouTube on Aug 27 during the show; keep an eye on late exhibitor updates in case 2K books space.",
       "games": {
-        "Grand Theft Auto VI — Extended Look": "Streaming showcase on Netflix Aug 27, 21:00 CEST — not at the show.",
-        "NBA 2K27 / 2K catalog": "2K exhibited in 2025 but has made no 2026 announcement."
+        "Grand Theft Auto VI — Extended Look": "Streaming showcase on Netflix Aug 27, 21:00 CEST — not at the show."
       }
     },
     "thq-nordic": {
@@ -979,7 +992,7 @@
       "visitAdvice": "Watch the ONL stream on Tuesday evening. On the floor, the Wizards of the Coast stand in Hall 5.2 is a Magic: The Gathering card booth and shows neither game.",
       "games": {
         "Warlock: Dungeons & Dragons": "First gameplay at ONL Aug 25 — Invoke's D&D action-adventure, out 2027. Stream only, no show-floor demo.",
-        "Exodus": "New trailer, a companion reveal and further news at ONL Aug 25; Archetype's sci-fi RPG lands 2027. Stream only, no show-floor demo."
+        "Exodus": "New trailer, a companion reveal and a date at ONL: Archetype's sci-fi RPG launches April 7, 2027. Stream only, no show-floor demo."
       }
     },
     "playside": {
@@ -991,12 +1004,11 @@
       }
     },
     "paradox-urban": {
-      "description": "No booth of its own: Paradox co-presents Transport Fever 3 with Urban Games, whose stand is in Hall 8.1 at B053a — complete with a London double-decker bus as the eye-catcher. Paradox is separately registered at Level Infinite's shared Hall 6.1 stand, so a presence in the Tencent area looks likely.",
+      "description": "No booth of its own: Paradox co-presents Transport Fever 3 with Urban Games, whose stand is in Hall 8.1 at B053a — complete with a London double-decker bus as the eye-catcher. Paradox is separately registered at Level Infinite's shared Hall 6.1 stand, with nothing announced there.",
       "crowdNote": "Niche-but-devoted audience — steady sim fans rather than mass queues.",
       "visitAdvice": "Queues reasonable even at peak; combine with CDPR and Square Enix in the same hall.",
       "games": {
-        "Transport Fever 3": "Shown with Urban Games in Hall 8; double-decker photo op.",
-        "Paradox grand-strategy catalog": "Paradox's own registration sits at Level Infinite's Hall 6.1 stand; nothing announced about what it shows there."
+        "Transport Fever 3": "Hands-on sessions of up to an hour at the demo stations, bookable via gamescom fastlane — and the show brought a release date: Sept 29, with pre-orders open. Double-decker photo op."
       }
     },
     "xbox-business": {
@@ -1473,24 +1485,24 @@
       ]
     },
     "4divinity": {
-      "description": "GCL's publishing arm, showing six titles across three stands: the main one in Hall 7.1, a second in Hall 6.1 and a business booth in Hall 4.2. The lineup spans a World War II shooter (The Defiant), NEKCOM's retro-Americana RPG Showa American Story, the occult-western Guns of Eschaton and three Chinese-mythology action RPGs. Which titles are hands-on rather than trailer-only has not been broken down.",
+      "description": "GCL's publishing arm, showing six titles across three stands: the main one in Hall 7.1, an outpost in Hall 6.1 and a business booth in Hall 4.2. Three are hands-on — The Defiant and Guns of Eschaton at the Hall 7.1 stand, Showa American Story at the 6.1 outpost — while the rest show as trailers.",
       "crowdNote": "A large Hall 7.1 stand beside Xbox, but a lineup still new to Western audiences — busy without AAA-scale queues.",
       "visitAdvice": "The two stands show different games: Showa American Story and The Defiant in Hall 6.1, Guns of Eschaton in Hall 7.1. Check which one you actually want before walking over.",
       "games": {
-        "The Defiant": "AAA World War II shooter from Hoothanes; shown at the Hall 6.1 stand.",
-        "Showa American Story": "NEKCOM's retro pop-culture RPG; shown at the Hall 6.1 stand.",
-        "Guns of Eschaton": "Occult-western soulslike shooter from Eschatology Entertainment; shown at the Hall 7.1 stand.",
-        "A Whisper of Fall: Jinyiwei": "Ming-dynasty action RPG from CangMo Game Entertainment.",
-        "Genigods: Nezha": "Chinese-mythology action RPG from Genigods Lab — also on Xbox's Hall 7.1 stand.",
-        "Sword Sage: Awakening": "Myth-driven action RPG from Sword Panda."
+        "The Defiant": "15-minute hands-on demo at the Hall 7.1 B021 stand — the WWII shooter's first playable in the West.",
+        "Showa American Story": "Hands-on demo at the Hall 6.1 outpost (stand A030) — NEKCOM's retro pop-culture RPG, due 2026.",
+        "Guns of Eschaton": "Playable at the main Hall 7.1 stand — and a Best PC Game nominee at the gamescom award.",
+        "A Whisper of Fall: Jinyiwei": "Ming-dynasty action RPG from CangMo Game Entertainment — showcase presence, no demo station reported.",
+        "Genigods: Nezha": "The hands-on runs at the platform booths — play it at Xbox's Hall 7.1 stand; shown as part of the showcase here.",
+        "Sword Sage: Awakening": "Myth-driven action RPG from Sword Panda — showcase presence, no demo station reported."
       }
     },
     "secret-mode": {
-      "description": "Sumo Group's publishing label takes a Hall 6.1 stand at B040. It files under racing games, and its booth page now names one title: STAR WARS: Galactic Racer.",
+      "description": "Sumo Group's publishing label takes a Hall 6.1 stand at B040, and its one game is playable: STAR WARS: Galactic Racer, run as time-trial races with a daily fastest-lap prize.",
       "crowdNote": "A small stand for an indie-scale publisher — walk-up.",
       "visitAdvice": "A Star Wars racer on a small stand could draw more than the stand can absorb. Nothing hands-on is announced yet, so look before you commit to a queue.",
       "games": {
-        "STAR WARS: Galactic Racer": "The one title on Secret Mode's gamescom booth page; no hands-on announced."
+        "STAR WARS: Galactic Racer": "Playable — time-trial races with a prize for the fastest daily time. Fuse Games (Burnout veterans); out October 2026."
       }
     },
     "pawprint-aniimo": {
@@ -1498,13 +1510,16 @@
       "crowdNote": "Creature-collectors draw steady interest and this is a mid-size stand — expect a short rotating line.",
       "visitAdvice": "Sits in the same Hall 6.1 aisle as Elementa Games and Secret Mode, so the three make one short detour off the publisher row.",
       "games": {
-        "Aniimo": "Open-world creature-collecting RPG; the booth is registered under this brand rather than the studio name."
+        "Aniimo": "Playable on GeForce RTX demo stations — and the launch dates landed at the show: Sept 16 on PC and consoles, Sept 23 on mobile."
       }
     },
     "elementa-games": {
-      "description": "Singapore developer Elementa, with a Hall 6.1 stand at C021 and a business booth in Hall 2.2. Trade press lists Silver Palace for the show; the gamescom entry files the studio under action/adventure and role-playing and names no titles.",
+      "description": "Singapore developer Elementa, with a Hall 6.1 stand at C021 and a business booth in Hall 2.2. Silver Palace is playable in a demo area with four daily stage shows, photo spots and merch — the PS5 version and 'House of Greed' multiplayer were revealed at the show.",
       "crowdNote": "Small stand with an all-but-unannounced lineup — low queues.",
-      "visitAdvice": "A discovery stop rather than a planned one."
+      "visitAdvice": "A discovery stop rather than a planned one.",
+      "games": {
+        "Silver Palace": "Playable demo area plus four daily stage shows — PS5 version and 'House of Greed' multiplayer revealed at the show; a gamescom award Best Mobile Game nominee."
+      }
     },
     "huawei-appgallery": {
       "description": "Aspiegel SE — Huawei's European entity — running AppGallery and its GameCenter at Hall 7.1 B031. A mobile-platform stand rather than a games booth: it is filed under app stores, platforms and mobile phones.",
@@ -1517,9 +1532,12 @@
       "visitAdvice": "One of the few places in Hall 7 to sit down mid-hall. AMD's stand shares the same block at B041/C040, and Epic Games registered there too, as a co-exhibitor filing under Unreal Engine."
     },
     "mbc-game-studio": {
-      "description": "A large Hall 8.1 stand — roughly 610 m² at A011/B010, at the far end of the hall next to Square Enix — plus a business booth in Hall 2.1, for the British-Saudi studio, registered under the brand 'MGS'. Neither gamescom's listing nor the trade press names a game for it yet.",
+      "description": "A large Hall 8.1 stand — roughly 610 m² at A011/B010, at the far end of the hall next to Square Enix — plus a business booth in Hall 2.1, for the British-Saudi studio, registered under the brand 'MGS'. Its debut game arrived with ONL: 1001: Threads of Mizan, playable on the stand.",
       "crowdNote": "The booth size implies a real presence, but with no announced lineup the draw is unknown.",
-      "visitAdvice": "Worth a look on your first pass down Hall 8.1 — it is one of the hall's bigger unknowns."
+      "visitAdvice": "Worth a look on your first pass down Hall 8.1 — it is one of the hall's bigger unknowns.",
+      "games": {
+        "1001: Threads of Mizan": "MBC's debut, revealed at ONL with a playable demo on the show floor — three-player co-op action rooted in Arabic folklore, from a team with Fortnite veterans. No release window yet."
+      }
     },
     "mbc-game-studio-business": {
       "description": "MBC Game Studio's business-hall stand, separate from its large Hall 8.1 showcase. Publishing and partnership meetings for the British-Saudi studio.",
@@ -1535,7 +1553,7 @@
       "visitAdvice": "Come for a scheduled session rather than wandering in. The P8 outdoor half is straight out the back of Hall 8 and also holds CD Projekt Red's Apollo Tent, the Red Bull bar and the gamescom Beach.",
       "games": {
         "Clutch": "Maverick Games' open-world driving game, hands-on all five days in the P8 outdoor half.",
-        "Star Wars Galactic Racer": "Listed at HP/HyperX in the P8 outdoor half in the trade-press games list; no detail published.",
+        "Star Wars Galactic Racer": "A pre-show trade-press line placed it at HP/HyperX in the P8 outdoor half, but day-1 sources don't corroborate it — the game's official gamescom page names only Secret Mode's Hall 6.1 stand, the sure place to play it.",
         "EA Sports FC 27": "Red Bull runs an FC 27 tournament at its booth in the P8 outdoor area — separate from EA's own Hall 6.1 stand."
       }
     },
@@ -1551,7 +1569,7 @@
       "games": {
         "He-Man and the Masters of the Universe: Dragon Pearl of Destruction": "The one PC/console title on the stand — Bitmap Bureau's retro brawler, out since April.",
         "Skeletor: Until Next Time!": "Mattel Game Studios' first self-published game, an endless runner already on iOS and Android.",
-        "Barbie Rewind": "Registered on Mattel's gamescom booth page after the six playable titles were announced; no hands-on announced."
+        "Barbie Rewind": "Presented on the day-1 booth stage ('Play Through the Decades', with Digital Eclipse) — a live look, not a demo station; launches Nov 12."
       }
     },
     "jbl-quantum": {
@@ -1670,20 +1688,16 @@
       "visitAdvice": "A quick look if you're already in the area."
     },
     "shueisha-games": {
-      "description": "The games arm of manga publisher Shueisha (Shonen Jump), on a shared Hall 10.2 stand block. Its booth page now names ten titles, from the Jujutsu Kaisen action game and a KochiKame spin-off to small original work like ATMOSFAR and Wild Wild Eden. None is announced as hands-on.",
+      "description": "The games arm of manga publisher Shueisha (Shonen Jump), on a shared Hall 10.2 stand block — a six-title lineup with five hands-on, headlined by the first public reveal of the 5X strategy game Conquista. The Jujutsu Kaisen game its booth page once registered isn't at the show; its playable debut is Tokyo Game Show.",
       "crowdNote": "A browsing stand in the indie half of Hall 10.2 — short waits, if any.",
       "visitAdvice": "Worth a pass if you follow Shonen Jump. It sits a few stands from the Indie Arena Booth, so fold it into that walk.",
       "games": {
-        "BAKUDO": "On Shueisha Games' gamescom booth page; no hands-on announced.",
-        "Chronoscript: The Endless End": "On Shueisha Games' gamescom booth page; no hands-on announced.",
-        "UN:Me": "On Shueisha Games' gamescom booth page; no hands-on announced.",
-        "Schrödinger's Call": "On Shueisha Games' gamescom booth page; no hands-on announced.",
-        "JUJUTSU KAISEN RUMBLE: SURVIVATON": "The Jujutsu Kaisen title on the booth page — the best-known name on the stand; no hands-on announced.",
-        "KochiKame: Ryo-san's Billion-yen Beat": "Spin-off of the long-running Shueisha manga; no hands-on announced.",
-        "ATMOSFAR": "On Shueisha Games' gamescom booth page; no hands-on announced.",
-        "Seasons of Books and Keys": "On Shueisha Games' gamescom booth page; no hands-on announced.",
-        "YAKOH SHINOBI OPS": "On Shueisha Games' gamescom booth page; no hands-on announced.",
-        "Wild Wild Eden": "On Shueisha Games' gamescom booth page; no hands-on announced."
+        "BAKUDO": "New playable demo — boss-rush action with competitive ball-sport mechanics, by SAYIL Games.",
+        "Chronoscript: The Endless End": "New playable demo — exploration action-adventure where you play an editor inside a broken manuscript.",
+        "UN:Me": "Playable build plus a new gameplay trailer — a psychological adventure about a girl carrying multiple souls; PS5, Switch 2 and Steam in 2026.",
+        "Schrödinger's Call": "In the six-title lineup, the only one without a demo call-out — the end-of-the-world visual novel released in May.",
+        "Wild Wild Eden": "First public hands-on demo — open-world survival-crafting in a primitive fantasy setting; Steam Early Access spring 2027.",
+        "Conquista": "First public reveal, with a hands-on demo — a 5X strategy game of conquest, expansion and colony management by Microsimulation."
       }
     },
     "metanet": {
