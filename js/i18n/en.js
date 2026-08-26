@@ -402,7 +402,7 @@ window.GC_STRINGS.en = {
   "plan.sub.day":
     "Give each saved booth and game a day, then put the day in the order you'll walk it — the arrows move a stop up or down. Unassigned items sit at the top until you place them.",
   "plan.sub.hall":
-    "Your stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls. The arrows set the order inside a hall, which is the order the map numbers its pins in.",
+    "Your stops grouped by hall, in hall-number order — work down the list to avoid criss-crossing the halls. The arrows set the order inside a hall, which is the order the map numbers its pins in, and the day chips give a stop its day without leaving that order.",
   "plan.arrangeAria": "Arrange your plan",
   "plan.lensDay": "By day",
   "plan.lensHall": "By hall",
@@ -421,6 +421,8 @@ window.GC_STRINGS.en = {
   "plan.move.down": "Move {name} down",
   "plan.resetOrderTitle": "Sort the plan by queue index again, busiest first",
   "plan.assignAria": "Assign {name} to a day",
+  "plan.assignStopAria":
+    "Assign {name} to a day — the booth and everything you saved there move together",
   "plan.assignToDay": "Assign to {day}",
   "plan.removeFromDay": "Remove from {day}",
   "plan.dayTradeSuffix": "{action} (trade & media only)",
@@ -451,7 +453,8 @@ window.GC_STRINGS.en = {
     "Nothing saved yet — hit + on a booth or game over on the Exhibitors tab, and your stops will line up here hall by hall.",
   "route.emptyAllPlayed": "Every stop here is played — nice work.",
   "route.emptyAllAssigned": "Every stop on your list has a day — flip to By day to review the plan.",
-  "route.emptyForDay": "Nothing planned for {day} yet. Assign stops to days in the By day view.",
+  "route.emptyForDay":
+    "Nothing planned for {day} yet — show all days and tap {day} on the stops you want here.",
   "route.emptyStale": "No current stops match your saved list — the exhibitor data may have changed.",
 
   /* ---------- queue priority ---------- */
@@ -583,6 +586,7 @@ window.GC_STRINGS.en = {
   "share.addAction": "Add to my list",
   "share.added": "Added {items} from the shared link.",
   "toast.orderReset": "Plan back in queue order.",
+  "toast.dayMoved": "{name} is all on {day} now.",
   "toast.moveUndone": "Move undone.",
   "toast.importUndone": "Shared list import undone.",
   "moved.withList": "The guide has moved to hallgui.de. Your list comes with you.",

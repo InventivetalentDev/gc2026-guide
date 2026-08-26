@@ -381,3 +381,86 @@ Beyond section 6, all against `python3 -m http.server 8000`:
     drops only that stop's position.
 18. `localStorage.setItem('gc2026.planorder.v1','garbage')` → no console
     error, plan sorts automatically.
+
+## 8. Follow-up: assigning a day from the hall lens
+
+The two lenses were not symmetrical. The day lens could say *when* and read
+the halls back; the hall lens could say *where* and only read the days back —
+its stops wore day tags but had no control, so "actually, Capcom is a Friday
+thing" meant flipping to By day, finding the stop in a list grouped by
+something else, and flipping back. The empty-for-a-day copy said as much out
+loud: *assign stops to days in the By day view*. That is a lens telling you to
+leave it.
+
+So the hall lens grew the same chips.
+
+### Design decisions
+
+- **The chips are the day lens's chips**, markup and all — `.it-days` with
+  one `.day-chip` per show day, the trade dash and the closed-doors strike
+  included. A second visual language for "put this on Thursday" would be a
+  second thing to learn for one decision.
+- **A chip moves the whole stop.** A day-lens row is a plan item, so its chip
+  moves that item. A hall-lens row is a *booth* — one walk to one stand — and
+  what stands there is the booth, when you saved it, plus every saved game
+  shown at it (`stopElements`). Moving them one at a time would make a
+  publisher showing four games you saved into four decisions about a single
+  visit. It also means a game shown at two booths moves in both rows at once,
+  which follows from the itinerary storing one day per item rather than per
+  stand — the rule the day lens has always worked by.
+- **Split stops light partially** (`stopDayState` → `all` / `some` / `none`).
+  Two saved games at one booth on two different days is a real plan, and a
+  row that read as unplaced would invite a press that quietly flattened it.
+  A washed chip instead of a filled one says "some of this is here", and the
+  press that follows is the one that pulls the rest across.
+- **That press is the only lossy move, so it is undoable.** Clearing needs no
+  toast — the chip you just pressed puts it back — and neither does placing
+  an unassigned stop. Pulling a split stop together forgets which game was on
+  which day, so it hands that back through the toast, the way **Reset order**
+  hands back an arrangement. Only the newest one stands: unlike the reset,
+  this is a control you press over and over, and an Undo left over from two
+  stops ago is an answer to a question nobody is asking.
+- **The day tags come off** with the chips going on, `routeDayTags` and its
+  `.route-day` styling with them. A pressed chip says "planned for Thursday"
+  as plainly as the tag did, and two renderings of one fact on one row is one
+  too many. Nothing else showed them: they were an all-days-view thing, and
+  Today has always passed a day filter.
+- **Today gets no chips** (`days: false`, the default, exactly as it already
+  passes `move: false`). It is one fixed day's list with the played stops
+  folded away, and a control that moves a stop off that day would be acting
+  on a plan the screen is not showing. Arranging and assigning both belong to
+  the plan, which shows the whole of it.
+- **A new attribute pair, not the day lens's.** `data-stop-ex` /
+  `data-stop-day` rather than `data-it-kind` / `data-it-key` / `data-it-day`,
+  because the delegated handler has to tell "this plan item" from "everything
+  at this booth" — the same reason `keepingFocus` needs its own selector
+  branch to put focus back on the chip that was pressed.
+- **One CSS scoping fix.** The tablet block's `.it-days` fold carried a
+  `grid-row: 3`, which the hall row inherited through the shared class and
+  which put its chips above the "Saved here" line at one breakpoint and below
+  it at another. It is a rule about the day row's four-column fold, so it is
+  now `.it-item .it-days`.
+
+### Verification
+
+Beyond sections 6 and 7:
+
+19. Flip to By hall with a booth and a game saved → every stop carries five
+    day chips under it, no day tags beside the name. Press one → the chip
+    fills, the day board's count moves, and By day shows the stop under that
+    day's heading.
+20. Save two games at one booth, place them on different days → both chips
+    read part-way in the hall lens. Press one → the whole stop moves and the
+    toast offers Undo; take it → the split is back exactly as it was.
+21. Press a filled chip → the stop goes back to unassigned, in both lenses
+    and in `gc2026.itinerary.v1`.
+22. Move two split stops together in a row → only the second Undo is on
+    screen, and it undoes the second stop.
+23. Filter the hall lens to Thursday and give a stop Sunday → the row leaves
+    the board, Sunday joins the filter row, Thursday stays selected.
+24. Keyboard: Tab to a chip, Enter → the day changes and focus stays on that
+    same chip.
+25. A business-hall booth → Wednesday dashed, Saturday and Sunday struck
+    through, and struck-through-but-chosen renders amber, the same three
+    states the day lens shows.
+26. Today, on a day with stops → rows, no chips.

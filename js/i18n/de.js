@@ -375,7 +375,7 @@ window.GC_STRINGS.de = {
   "plan.sub.day":
     "Gib jedem gemerkten Stand und Spiel einen Tag und bring den Tag dann in die Reihenfolge, in der du ihn abläufst — die Pfeile schieben einen Stopp nach oben oder unten. Nicht zugeordnetes steht oben, bis du es einsortierst.",
   "plan.sub.hall":
-    "Deine Stopps sind nach Hallen gruppiert und nach Hallennummer sortiert — arbeite die Liste ab, dann läufst du nicht kreuz und quer. Die Pfeile legen die Reihenfolge innerhalb einer Halle fest, und genau so nummeriert die Karte ihre Punkte.",
+    "Deine Stopps sind nach Hallen gruppiert und nach Hallennummer sortiert — arbeite die Liste ab, dann läufst du nicht kreuz und quer. Die Pfeile legen die Reihenfolge innerhalb einer Halle fest, und genau so nummeriert die Karte ihre Punkte; die Tages-Chips geben einem Stopp seinen Tag, ohne diese Reihenfolge zu verlassen.",
   "plan.arrangeAria": "Deinen Plan anordnen",
   "plan.lensDay": "Nach Tag",
   "plan.lensHall": "Nach Halle",
@@ -394,6 +394,8 @@ window.GC_STRINGS.de = {
   "plan.move.down": "{name} nach unten schieben",
   "plan.resetOrderTitle": "Den Plan wieder nach Andrang sortieren, stärkster zuerst",
   "plan.assignAria": "{name} einem Tag zuordnen",
+  "plan.assignStopAria":
+    "{name} einem Tag zuordnen — der Stand und alles, was du dort gemerkt hast, wandern gemeinsam",
   "plan.assignToDay": "{day} zuordnen",
   "plan.removeFromDay": "Von {day} entfernen",
   "plan.dayTradeSuffix": "{action} (nur Fach- und Medienbesucher)",
@@ -427,7 +429,7 @@ window.GC_STRINGS.de = {
   "route.emptyAllAssigned":
     "Jeder Stopp auf deiner Liste hat einen Tag — wechsle zur Ansicht „Nach Tag“, um den Plan durchzugehen.",
   "route.emptyForDay":
-    "Für {day} ist noch nichts geplant. Ordne Stopps in der Ansicht „Nach Tag“ zu.",
+    "Für {day} ist noch nichts geplant — zeige alle Tage und tippe bei den gewünschten Stopps auf {day}.",
   "route.emptyStale":
     "Keine aktuellen Stopps passen zu deiner Liste — die Ausstellerdaten haben sich vermutlich geändert.",
 
@@ -547,6 +549,7 @@ window.GC_STRINGS.de = {
   "share.addAction": "Zu meiner Liste hinzufügen",
   "share.added": "Du hast {items} aus dem geteilten Link hinzugefügt.",
   "toast.orderReset": "Plan wieder in Andrang-Reihenfolge.",
+  "toast.dayMoved": "{name} liegt jetzt komplett auf {day}.",
   "toast.moveUndone": "Übernahme rückgängig gemacht.",
   "toast.importUndone": "Hinzufügen aus dem geteilten Link rückgängig gemacht.",
   "moved.withList": "Der Guide ist auf hallgui.de umgezogen. Deine Liste kommt mit.",
