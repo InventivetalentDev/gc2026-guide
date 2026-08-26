@@ -584,7 +584,7 @@
       { "title": "Honor of Kings: ACE", "status": "expected", "playable": null, "platforms": [] },
       { "title": "Rust Mobile", "status": "expected", "playable": null, "platforms": ["Mobile"] },
       { "title": "Roco Kingdom", "status": "expected", "playable": null, "onl": true, "platforms": ["Mobile"] },
-      { "title": "Animula Nook", "status": "expected", "playable": null, "platforms": [] }
+      { "title": "Animula Nook", "status": "confirmed", "playable": true, "platforms": [] }
     ],
     "tags": ["art", "exhibition", "offsite", "mobile"],
     "crowd": 3,
@@ -593,9 +593,10 @@
       "https://exhibitors.gamescom.global/exhibitor/tencent_games/",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
       "https://www.gamescom.global/en/exhibitor/tencentgames",
-      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
+      "https://www.prnewswire.com/news-releases/cozy-life-sim-animula-nook-brings-a-new-beta-to-gamescom-2026--playable-hands-on-demos-at-the-tencent-games-booth-302858631.html"
     ],
-    "lastUpdated": "2026-08-25"
+    "lastUpdated": "2026-08-26"
   },
   {
     "id": "netease",
@@ -863,9 +864,10 @@
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
       "https://exhibitors.gamescom.global/en/exhibitor/webedia/",
-      "https://www.gamescom.global/en/exhibitor/webedia-gmbh"
+      "https://www.gamescom.global/en/exhibitor/webedia-gmbh",
+      "https://exhibitors.gamescom.global/en/exhibitor/epic_games_commerce/"
     ],
-    "lastUpdated": "2026-08-24"
+    "lastUpdated": "2026-08-26"
   },
   {
     "id": "mbc-game-studio",
@@ -889,7 +891,7 @@
     "name": "MBC Game Studio — business booth",
     "type": "trade",
     "hall": "2.1",
-    "booth": "C034/D035",
+    "booth": "C034/D035, A057",
     "locationConfirmed": true,
     "dirSlug": "mbc_game_studio_limi",
     "country": "Saudi Arabia",
@@ -900,7 +902,7 @@
       "https://exhibitors.gamescom.global/en/exhibitor/mbc_game_studio_limi/",
       "https://www.gamescom.global/en/info/hall-plan"
     ],
-    "lastUpdated": "2026-08-23"
+    "lastUpdated": "2026-08-26"
   },
   {
     "id": "the-district",
@@ -2740,6 +2742,45 @@
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
     ],
     "lastUpdated": "2026-08-15"
+  },
+  {
+    "id": "sega-business",
+    "businessOf": "sega-atlus",
+    "name": "SEGA — business booth",
+    "type": "trade",
+    "hall": "2.1",
+    "booth": "A056/C055",
+    "locationConfirmed": true,
+    "dirSlug": "sega_europe",
+    "country": "United Kingdom",
+    "access": "appointment",
+    "games": [],
+    "tags": ["closed stand"],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/sega_europe/",
+      "https://exhibitors.gamescom.global/en/exhibitor/the_junction_sega/",
+      "https://www.gamescom.global/en/info/hall-plan"
+    ],
+    "lastUpdated": "2026-08-26"
+  },
+  {
+    "id": "snail-games-business",
+    "businessOf": "snail-games",
+    "name": "Snail Games — business booth",
+    "type": "trade",
+    "hall": "3.2",
+    "booth": "B053",
+    "locationConfirmed": true,
+    "dirSlug": "snail_games_usa",
+    "country": "United States",
+    "access": "open",
+    "games": [],
+    "tags": ["publisher", "walk-up"],
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/snail_games_usa/",
+      "https://www.gamescom.global/en/info/hall-plan"
+    ],
+    "lastUpdated": "2026-08-26"
   },
   {
     "id": "cdpr-business",

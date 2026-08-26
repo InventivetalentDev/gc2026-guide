@@ -1,5 +1,15 @@
 [
   {
+    "date": "2026-08-26",
+    "revision": 55,
+    "changes": [
+      { "kind": "content", "text": "Animula Nook is playable at Tencent's Hall 8.1 stand: a new Beta of the cozy miniature life sim, in a themed corner with a four-metre inflatable Wupa." },
+      { "kind": "content", "text": "Two new trade-badge stops: SEGA's business booth in Hall 2.1 (A056/C055, closed and by appointment) and Snail Games' small trade table in Hall 3.2 (B053, walk-up)." },
+      { "kind": "content", "text": "MBC Game Studio's business booth holds a second Hall 2.1 stand, A057 — the card claims both now, so the map stops calling one of them uncovered." },
+      { "kind": "content", "text": "Epic Games has registered as a co-exhibitor on the Hall 7.1 block shared by Webedia's FYNG City and AMD, filing under Unreal Engine." }
+    ]
+  },
+  {
     "date": "2026-08-25",
     "revision": 54,
     "changes": [

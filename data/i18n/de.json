@@ -557,7 +557,7 @@
       }
     },
     "tencent-worlds-of-play": {
-      "description": "Tencent Games zeigt am Stand in Halle 8.1 Honor of Kings und Arena of Valor mit Cosplayern und Wettbewerben, und die Standseite nennt fünf weitere Titel: Honor of Kings: World, Honor of Kings: ACE, Rust Mobile, Roco Kingdom und Animula Nook. Das Unternehmen veranstaltet außerdem die Ausstellung „Worlds of Play: The Game Art Exhibition“ außerhalb des Geländes in der Wassermannhalle (27.–29.8.): fünf thematische Zonen mit Artworks aus 40 Titeln, Entwicklertalks und Cosplay-Showcases. Tencents übrige spielbare Titel stehen bei Level Infinite in Halle 6.1.",
+      "description": "Tencent Games zeigt am Stand in Halle 8.1 Honor of Kings und Arena of Valor mit Cosplayern und Wettbewerben, die Standseite nennt vier weitere Titel — Honor of Kings: World, Honor of Kings: ACE, Rust Mobile und Roco Kingdom — und Animula Nook, ein gemütlicher Miniatur-Lebenssimulator, bringt eine spielbare neue Beta in eine eigens gestaltete Ecke des Stands. Das Unternehmen veranstaltet außerdem die Ausstellung „Worlds of Play: The Game Art Exhibition“ außerhalb des Geländes in der Wassermannhalle (27.–29.8.): fünf thematische Zonen mit Artworks aus 40 Titeln, Entwicklertalks und Cosplay-Showcases. Tencents übrige spielbare Titel stehen bei Level Infinite in Halle 6.1.",
       "crowdNote": "Die kuratierte Ausstellung liegt abseits der Haupthallen und arbeitet mit Zeitfenstern. Rechne mit mittlerem Andrang; bei Level Infinite ist deutlich mehr los.",
       "visitAdvice": "Ein ruhigerer Ausgleich zwischen zwei Hallenrunden; prüf kurz vor der Messe, ob du dich für ein kostenloses Zeitfenster anmelden musst.",
       "games": {
@@ -568,7 +568,7 @@
         "Honor of Kings: ACE": "Registriert auf Tencent Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
         "Rust Mobile": "Registriert auf Tencent Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
         "Roco Kingdom": "Registriert auf Tencent Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt.",
-        "Animula Nook": "Registriert auf Tencent Games' gamescom-Standseite; ein Hands-on ist nicht angekündigt."
+        "Animula Nook": "Spielbar: eine neue Beta des gemütlichen Miniatur-Lebenssimulators, in einer thematisch gestalteten Ecke des Stands mit einem vier Meter hohen aufblasbaren Wupa. Seit Februar über 10 Millionen Vorregistrierungen."
       }
     },
     "netease": {
@@ -1302,6 +1302,22 @@
         "Termine mit der Fachpresse"
       ]
     },
+    "sega-business": {
+      "description": "SEGA Europe ist für Termine mit einem geschlossenen Stand in Halle 2.1 vertreten — quer über das Gelände vom Publikumsstand in Halle 7.1, wo die Spiele spielbar sind. Es geht um Lizenzen, Vertrieb und Partnergespräche.",
+      "accessNote": "446 m² und geschlossen. Die beiden Nachbarstände — E054 und C050/E051, zusammen weitere 830 m² — laufen auf The Junction / SEGA, sodass die ganze Ecke ein Bereich nur nach Termin ist.",
+      "offers": [
+        "Lizenz- und Vertriebstermine",
+        "Publishing- und Partnertermine"
+      ]
+    },
+    "snail-games-business": {
+      "description": "Der ARK-Publisher hat zusätzlich zum Publikumsstand in Halle 8.1 einen kleinen Stand für Fachbesucher in Halle 3.2. Dort geht es um Publishing, Lizenzen und Plattformgespräche.",
+      "accessNote": "15 m² mit nur einem Nutzer — ein Tischstand, an den du einfach herantreten kannst, kein Besprechungsraum.",
+      "offers": [
+        "Publishing- und Lizenztermine",
+        "Plattform- und Vertriebsgespräche"
+      ]
+    },
     "cdpr-business": {
       "description": "CD Projekt S.A. — die Muttergesellschaft von CD Projekt Red und GOG — hat einen großen geschlossenen Stand in Halle 4.2. Dort finden Partner- und Pressetermine statt; der Publikumsstand steht in Halle 8.1.",
       "accessNote": "432 m², alleiniger Nutzer; registriert unter der Muttergesellschaft statt unter CD Projekt Red oder GOG. Die geführten Präsentationen zu Songs of the Past von CD Projekt Red laufen hier nur vom 26.–28. Aug., nach Termin.",
@@ -1498,7 +1514,7 @@
     "webedia-fyng-city": {
       "description": "FYNG City, das Medien-Dorf, das Webedia in Halle 7.1 aufbaut: über 1.500 m² auf drei Ständen — B051/C050, B041/C040 und C052 — mit den Redaktionen von GameStar und MeinMMO vor Ort und Mercedes-Benz als Hauptpartner. Webedias registrierte Marken hier sind unter anderem GameStar, GamePro, MeinMMO, Moviepilot und Filmstarts.",
       "crowdNote": "Eher Aufenthaltsfläche als Demo-Schlange — voll, aber in Bewegung.",
-      "visitAdvice": "Eine der wenigen Gelegenheiten in Halle 7, sich mittendrin hinzusetzen. Der AMD-Stand liegt im selben Block bei B041/C040."
+      "visitAdvice": "Eine der wenigen Gelegenheiten in Halle 7, sich mittendrin hinzusetzen. Der AMD-Stand liegt im selben Block bei B041/C040, und auch Epic Games ist dort als Mitaussteller registriert — gemeldet unter Unreal Engine."
     },
     "mbc-game-studio": {
       "description": "Ein großer Stand in Halle 8.1 — rund 610 m² bei A011/B010, am hinteren Hallenende neben Square Enix — dazu ein Business-Stand in Halle 2.1, für das britisch-saudische Studio, registriert unter der Marke „MGS“. Weder das gamescom-Verzeichnis noch die Fachpresse nennt bislang ein Spiel dafür.",

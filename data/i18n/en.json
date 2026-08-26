@@ -557,7 +557,7 @@
       }
     },
     "tencent-worlds-of-play": {
-      "description": "Tencent Games' Hall 8.1 stand shows Honor of Kings and Arena of Valor with cosplayers and competitions, and its booth page adds five more: Honor of Kings: World, Honor of Kings: ACE, Rust Mobile, Roco Kingdom and Animula Nook. The company also runs the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27-29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's other playable games are at Level Infinite in Hall 6.1.",
+      "description": "Tencent Games' Hall 8.1 stand shows Honor of Kings and Arena of Valor with cosplayers and competitions, its booth page adds four more — Honor of Kings: World, Honor of Kings: ACE, Rust Mobile and Roco Kingdom — and cozy life sim Animula Nook brings a playable new Beta to a themed corner of the stand. The company also runs the offsite 'Worlds of Play: The Game Art Exhibition' at the Wassermannhalle (Aug 27-29): five themed zones spanning art from 40 titles, developer talks and cosplay showcases. Tencent's other playable games are at Level Infinite in Hall 6.1.",
       "crowdNote": "Timed/curated and off the main floor — moderate queues; the real crowds gather at Level Infinite.",
       "visitAdvice": "A calmer palate-cleanser between hall sessions; check whether entry needs free time-slot registration closer to the show.",
       "games": {
@@ -568,7 +568,7 @@
         "Honor of Kings: ACE": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
         "Rust Mobile": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
         "Roco Kingdom": "Registered on Tencent Games' gamescom booth page; no hands-on announced.",
-        "Animula Nook": "Registered on Tencent Games' gamescom booth page; no hands-on announced."
+        "Animula Nook": "Hands-on: a new Beta of the cozy miniature life sim, in a themed corner of the stand with a four-metre inflatable Wupa. 10 million pre-registrations since February."
       }
     },
     "netease": {
@@ -1302,6 +1302,22 @@
         "Trade press appointments"
       ]
     },
+    "sega-business": {
+      "description": "SEGA Europe's meeting side of the show: a closed stand in Hall 2.1, halfway across the grounds from the Hall 7.1 booth where its games are playable. Licensing, distribution and partner talks.",
+      "accessNote": "446 m² and closed. The two stands next to it — E054 and C050/E051, another 830 m² — are filed to The Junction / SEGA, so the whole corner is one appointment-only compound.",
+      "offers": [
+        "Licensing and distribution meetings",
+        "Publishing and partner appointments"
+      ]
+    },
+    "snail-games-business": {
+      "description": "The ARK publisher's trade-side table in Hall 3.2, added to its show alongside the Hall 8.1 consumer booth. Publishing, licensing and platform talks.",
+      "accessNote": "15 m² with a single occupant — a table booth you can walk up to, not a meeting room.",
+      "offers": [
+        "Publishing and licensing meetings",
+        "Platform and distribution talks"
+      ]
+    },
     "cdpr-business": {
       "description": "CD Projekt S.A. — the group above CD Projekt Red and GOG — on a large closed stand in Hall 4.2. Partner and press meetings; the consumer booth is in Hall 8.1.",
       "accessNote": "432 m², sole occupant, filed to the parent company rather than to CD Projekt Red or GOG. CD Projekt Red's guided Songs of the Past presentations run here Aug 26–28 only, by appointment.",
@@ -1498,7 +1514,7 @@
     "webedia-fyng-city": {
       "description": "FYNG City, the games-media village Webedia builds in Hall 7.1: over 1,500 m² across three stands — B051/C050, B041/C040 and C052 — with the GameStar and MeinMMO editorial teams on site and Mercedes-Benz as main partner. Webedia's registered brands here include GameStar, GamePro, MeinMMO, Moviepilot and Filmstarts.",
       "crowdNote": "A hangout area rather than a demo queue — busy but flowing.",
-      "visitAdvice": "One of the few places in Hall 7 to sit down mid-hall. AMD's stand shares the same block at B041/C040."
+      "visitAdvice": "One of the few places in Hall 7 to sit down mid-hall. AMD's stand shares the same block at B041/C040, and Epic Games registered there too, as a co-exhibitor filing under Unreal Engine."
     },
     "mbc-game-studio": {
       "description": "A large Hall 8.1 stand — roughly 610 m² at A011/B010, at the far end of the hall next to Square Enix — plus a business booth in Hall 2.1, for the British-Saudi studio, registered under the brand 'MGS'. Neither gamescom's listing nor the trade press names a game for it yet.",
