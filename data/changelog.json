@@ -1,6 +1,27 @@
 [
   {
     "date": "2026-08-26",
+    "revision": 56,
+    "changes": [
+      { "kind": "content", "text": "Nintendo's booth list is complete: Star Fox, Mario Kart World, Donkey Kong Bananza, Yoshi and the Mysterious Book, Super Mario Bros. Wonder, Super Mario Galaxy + Super Mario Galaxy 2 and Minecraft join the lineup — 16 playable stations, with daily tournaments." },
+      { "kind": "content", "text": "All five KRAFTON titles are hands-on: PUBG: DED.NET, Project ZETA, Age Twisters and TARAE: The Unbound join NO LAW across the two Hall 9 stands." },
+      { "kind": "content", "text": "MicroProse's stand is a demo floor, not a display: 15 of its 18 games are playable, Combat Air Patrol 2 is flown from a Boeing-branded motion flight seat, and Gunship Origins joins the lineup." },
+      { "kind": "content", "text": "GIANTS Software's booth is all playable — the Beans & Alpacas expansion premieres before its Oct 27 launch, next to Farming Simulator 26, the Switch 2 Signature Edition and Project Motor Racing hotlaps." },
+      { "kind": "content", "text": "Tencent's stand is a playable Honor of Kings universe: Honor of Kings, Arena of Valor, Honor of Kings: World, and a world-first Honor of Kings: ACE hands-on. Rust Mobile plays at the gamescom Camp tent in the Jugendpark instead." },
+      { "kind": "content", "text": "Shueisha Games' official lineup is six titles, five playable — led by the new 5X reveal Conquista with BAKUDO, Chronoscript: The Endless End, UN:Me and Wild Wild Eden. Off the card: the Jujutsu Kaisen game (TGS debuts it), KochiKame, ATMOSFAR, Seasons of Books and Keys and YAKOH SHINOBI OPS." },
+      { "kind": "content", "text": "Aerosoft's stand splits into play and show: Notruf 112, Notaufnahme Simulator, Heavy Cargo, Forensics and the new Global Rescue are playable; Winter Resort 3, Professional Ship Simulator and the first-shown Autobahn Police Simulator 4 are display-only." },
+      { "kind": "content", "text": "Hands-on confirmed across the halls: STAR WARS: Galactic Racer at Secret Mode, Aniimo (launching Sept 16), Silver Palace, Escape From Duckov, Weeny Wise, Stage Tour on its arcade cabinets, Cronos: Lazarus' first public build, and SCS Software's rigs with exclusive expansion builds." },
+      { "kind": "content", "text": "Sea of Remnants is hands-on at NetEase's own Hall 7 booth with a December beta; Once Human's next expansion got its name at ONL — Isles of Abyss, out October; Ananta stays trailer-only, dated Jan 15." },
+      { "kind": "content", "text": "New rows: 1001: Threads of Mizan — MBC Game Studio's ONL-revealed debut — is playable at its Hall 8.1 stand, Valheim's devs join Coffee Stain's stand ahead of 1.0, and Elta: Defy All Gods and STAR WARS Zero Company land on Focus' and EA's booth pages." },
+      { "kind": "content", "text": "Exterminauts is registered at Level Infinite's stand, not Behaviour's — whose Dead by Daylight presence is now officially confirmed, program still unannounced." },
+      { "kind": "content", "text": "Confirmed but not playable: Nodusfall (official one-word spelling) runs as a trailer at HoYoverse, ONTOS is a staged 'Experiment' at Kepler Interactive, SAW: Genesis a walk-through scare corridor, Barbie Rewind a stage presentation, Love and Deepspace an activity booth." },
+      { "kind": "content", "text": "Out of the lineups: THE FINALS isn't at Embark's booth, skate. and the 2K catalog never materialized, Rainbow Six Tactics stayed an ONL-only reveal, Edge of Memories was never Focus' game (it's NACON's), and Kuro Games sat the year out." },
+      { "kind": "content", "text": "LEGO's stand: the life-size Rave Cave build is a photo op, not a playable demo — and LEGO Skylines drops back to rumored: it's Paradox-published, and nothing puts it at the booth. The Batman DLC shows at the stand before Sept 18." },
+      { "kind": "content", "text": "Getting there: KVB lines 1, 7 and 9 can't cross the Deutzer Brücke through Sept 2 — take lines 3 or 4 via the Severinsbrücke to the Koelnmesse stop, or walk from the Hauptbahnhof over the Hohenzollernbrücke to Deutz." }
+    ]
+  },
+  {
+    "date": "2026-08-26",
     "revision": 55,
     "changes": [
       { "kind": "content", "text": "Animula Nook is playable at Tencent's Hall 8.1 stand: a new Beta of the cozy miniature life sim, in a themed corner with a four-metre inflatable Wupa." },
