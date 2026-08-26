@@ -609,7 +609,7 @@
       { "title": "Marvel Rivals", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
       { "title": "Where Winds Meet", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Mobile"] },
       { "title": "Sea of Remnants", "status": "confirmed", "playable": null, "onl": true, "platforms": ["PC", "Consoles"] },
-      { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "Once Human next expansion + unannounced title", "status": "expected", "playable": true, "onl": true, "platforms": ["PC", "Consoles"] },
       { "title": "Ananta", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Mobile"] }
     ],
     "tags": ["live-service", "shooter", "RPG"],
@@ -622,7 +622,8 @@
       "https://exhibitors.gamescom.global/exhibitor/uk_netease_interacti/",
       "https://www.siliconera.com/ananta-will-finally-show-up-again-at-gamescom-2026/",
       "https://gamingbolt.com/ananta-will-be-showcased-at-gamescom-opening-night-live-2026",
-      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
+      "https://x.com/OnceHuman_JP/status/2090967196490989913"
     ],
     "lastUpdated": "2026-08-25"
   },
@@ -1179,7 +1180,7 @@
     "officialUrl": "https://www.gamescom.global/en/exhibitor/behaviour-interactive",
     "games": [
       { "title": "Dead by Daylight", "status": "expected", "playable": null, "platforms": ["PC", "Consoles", "Mobile"] },
-      { "title": "Exterminauts", "status": "expected", "playable": null, "onl": true, "platforms": ["TBA"] }
+      { "title": "Exterminauts", "status": "expected", "playable": null, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
     ],
     "tags": ["horror", "multiplayer", "community"],
     "crowd": 3,

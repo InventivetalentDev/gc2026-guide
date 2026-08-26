@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-25",
+    "revision": 54,
+    "changes": [
+      { "kind": "content", "text": "Once Human's ONL moment was its console launch — free on PS5 and Xbox with cross-play — so NetEase's row wears the ONL mark too." },
+      { "kind": "content", "text": "Exterminauts' platforms filled in: PC, PS5 and Xbox Series — Behaviour Interactive's ONL reveal is published by Level Infinite." }
+    ]
+  },
+  {
+    "date": "2026-08-25",
     "revision": 53,
     "changes": [
       { "kind": "content", "text": "Opening Night Live wrap: every game the show featured is marked ONL in its booth's lineup — 49 entries across 30 booths, Gears of War: E-Day to The Witcher 3: Songs of the Past." },
