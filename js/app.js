@@ -5488,13 +5488,41 @@ function worstOpenTrustedQueue(ex) {
   );
 }
 
+/* How near a deadline has to be to be worth stating before the day has turned.
+   Wide enough to cross the site and still join the line: the walk over is part
+   of the decision, and a warning that leaves only the queue's own margin has
+   already cost you the stop it was warning about. */
+const DEADLINE_NEAR_MIN = 90;
+
+/* The last moment you can join this booth's line and still be let in — stated
+   only once it is a moment to act on.
+
+   Every measured stop has one, and at half past ten most of them sit hours
+   away. A column of "Join by 18:40" down the whole board is arithmetic nobody
+   asked for, and the one line that does matter is read as more of the same. So
+   the moment is given when it is close, when the day has turned past the
+   halfway point of its own hours and closing time is what every remaining stop
+   is now measured against, or when it has already passed — "too late" being
+   the entire reason for working the moment out. */
 function stopDeadline(ex, day, now) {
   const entry = worstOpenTrustedQueue(ex);
   if (!entry) return null;
 
-  const minutes = clockMinutes(day.close) - Math.round(Number(entry.live.est) || 0);
-  if (minutes < clockMinutes(day.open)) return null;
-  return { at: hhmm(minutes), minutes, late: now.minutes > minutes };
+  const open = clockMinutes(day.open);
+  const close = clockMinutes(day.close);
+  if (open === null || close === null) return null;
+
+  const minutes = close - Math.round(Number(entry.live.est) || 0);
+  /* A line longer than the day itself. No moment gets you in, and one dated
+     before the doors open would only pretend otherwise. */
+  if (minutes < open) return null;
+
+  const late = now.minutes > minutes;
+  const near = minutes - now.minutes <= DEADLINE_NEAR_MIN;
+  const afternoon = now.minutes >= open + (close - open) / 2;
+  if (!late && !near && !afternoon) return null;
+
+  return { at: hhmm(minutes), minutes, late };
 }
 
 function todayFit(groups, day, now) {
