@@ -157,7 +157,10 @@ operator-facing and always fetched fresh.</p>
   inputs behind it. <b>closureClaims</b> lists recent &ldquo;queue closed&rdquo;
   reports with the arrivals rebutting them and whether the rule closes it
   (<code>would_close</code>). <b>aheadAnomalies</b> and <b>manyQueueClients</b> are
-  the cheap tells for one device making things up.</p>
+  the cheap tells for one device making things up. <b>statsHourly</b> is the
+  anonymous per-queue, per-hour aggregate the rollup keeps past the 24-hour
+  sweep &mdash; the show-long metrics, and what feeds the &ldquo;yesterday&rdquo;
+  estimates.</p>
 </section>
 <script>
 (() => {
@@ -435,6 +438,15 @@ export async function handleAdminData(env, now, live) {
        FROM report_events WHERE at >= ? GROUP BY client HAVING queues >= 3
        ORDER BY queues DESC, reports DESC, newest DESC LIMIT 50`
     ).bind(now - 15 * 60),
+    /* The show-long aggregate the hourly rollup keeps past the 24-hour sweep:
+       per queue and hour, counts and medians, no client ids. Newest first so
+       the current day reads at the top of the JSON view. */
+    env.QUEUE_DB.prepare(
+      `SELECT hour, exhibitor, game, joined_n, update_n, entered_n, left_n, closed_n,
+              clients_n, ahead_n, ahead_med, wait_n, wait_med
+       FROM queue_stats_hourly
+       ORDER BY hour DESC, entered_n DESC, joined_n DESC LIMIT 400`
+    ),
   ]);
   return json({
     at: now,
@@ -452,6 +464,7 @@ export async function handleAdminData(env, now, live) {
     closureClaims: results[9].results,
     overrides: results[5].results,
     adminLog: results[3].results,
+    statsHourly: results[11].results,
   });
 }
 

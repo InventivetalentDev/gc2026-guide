@@ -198,9 +198,11 @@
     <p>Server and security logs are retained by Cloudflare for a short period, typically a few days
     to a few weeks, and then deleted. Analytics data is aggregated and holds nothing that could
     identify you. Queue sessions, updates, closure votes and moderation event data are pruned within
-    24 hours. Queue-mechanics votes, device-id denylist entries and the moderation audit log are kept
-    only through the show, after which the complete queue database is deleted. Data in your browser
-    stays until you clear it.</p>
+    24 hours. Before deletion they are condensed into hourly per-queue statistics &mdash; report
+    counts and median waits, with no device id attached &mdash; which power the &ldquo;yesterday&rdquo;
+    estimates shown when a queue has no current reports. Those statistics, queue-mechanics votes,
+    device-id denylist entries and the moderation audit log are kept only through the show, after
+    which the complete queue database is deleted. Data in your browser stays until you clear it.</p>
 
     <h2>Your rights</h2>
     <p>You have the right to access (Art. 15), rectification (Art. 16), erasure (Art. 17), restriction
@@ -322,10 +324,13 @@
     <h2>Speicherdauer</h2>
     <p>Cloudflare bewahrt Server- und Sicherheitsprotokolle kurz auf, typischerweise einige Tage bis
     wenige Wochen. Analysedaten sind zusammengefasst. Warteschlangensitzungen, Aktualisierungen,
-    Schließungsstimmen und Moderationsereignisse werden innerhalb von 24 Stunden gelöscht. Stimmen zur
-    Warteschlangen-Mechanik, Einträge gesperrter Geräte-IDs und das Moderationsprotokoll bleiben nur bis
-    zum Ende der Messe; danach wird die gesamte Warteschlangen-Datenbank gelöscht. Browserdaten bleiben
-    bis zu deiner Löschung.</p>
+    Schließungsstimmen und Moderationsereignisse werden innerhalb von 24 Stunden gelöscht. Vor der
+    Löschung werden sie zu stündlichen Statistiken pro Warteschlange zusammengefasst &mdash;
+    Meldungszahlen und mittlere Wartezeiten, ohne Geräte-ID &mdash;, aus denen die
+    &bdquo;Gestern&ldquo;-Schätzungen entstehen, wenn zu einer Warteschlange nichts Aktuelles gemeldet
+    ist. Diese Statistiken, Stimmen zur Warteschlangen-Mechanik, Einträge gesperrter Geräte-IDs und das
+    Moderationsprotokoll bleiben nur bis zum Ende der Messe; danach wird die gesamte
+    Warteschlangen-Datenbank gelöscht. Browserdaten bleiben bis zu deiner Löschung.</p>
 
     <h2>Deine Rechte</h2>
     <p>Du hast Rechte auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung

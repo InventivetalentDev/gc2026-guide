@@ -13,5 +13,6 @@ beforeEach(async () => {
     env.QUEUE_DB.prepare("DELETE FROM denylist"),
     env.QUEUE_DB.prepare("DELETE FROM admin_log"),
     env.QUEUE_DB.prepare("DELETE FROM report_events"),
+    env.QUEUE_DB.prepare("DELETE FROM queue_stats_hourly"),
   ]);
 });

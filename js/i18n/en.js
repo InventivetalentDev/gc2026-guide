@@ -169,6 +169,12 @@ window.GC_STRINGS.en = {
      projection past the ceiling is discarded rather than clamped. */
   "queue.live.doneCapped": "{n} h+ for people just in",
   "queue.live.closed": "Queue closed",
+  /* Nothing reported today: the server pools yesterday's measured waits for
+     this queue instead of showing nothing. Worded as yesterday's figure, and
+     the detail line says "from yesterday" where the age would stand. */
+  "queue.live.typical": "Yesterday: ~{n} min",
+  "queue.live.typicalCapped": "Yesterday: {n} h+",
+  "queue.typicalAge": "from yesterday",
   "queue.liveUnavailable": "Live queue unavailable",
   "queue.reports": "{n} report|{n} reports",
   "queue.ageNow": "just now",

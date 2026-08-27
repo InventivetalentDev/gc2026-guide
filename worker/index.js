@@ -3,10 +3,12 @@ import {
   BATCH_BUCKETS,
   CLAIMED_BUCKETS,
   QUEUE_TYPES,
+  aggregateHourlyStats,
   buildQueueAllowlist,
   deferredReceiptDeadline,
   estimateLive,
   eventAccess,
+  previousDayWindow,
   queueToken,
 } from "./core.js";
 import {
@@ -475,6 +477,7 @@ export async function handleReport(request, env, site, now = nowSeconds()) {
 }
 
 export async function readEstimatorInput(env, now) {
+  const yesterday = previousDayWindow(event, now);
   const results = await env.QUEUE_DB.batch([
     env.QUEUE_DB.prepare(
       `SELECT s.id AS session, s.exhibitor, s.game, u.ahead, u.reported_at
@@ -511,6 +514,13 @@ export async function readEstimatorInput(env, now) {
       `SELECT exhibitor, game, forced_closed, expires_at, updated_at
        FROM queue_overrides WHERE expires_at > ?`
     ).bind(now),
+    /* Yesterday's hourly aggregates, for queues nobody has reported today.
+       The raw rows behind them are long swept — this table is what the hourly
+       job saved before deleting them. */
+    env.QUEUE_DB.prepare(
+      `SELECT exhibitor, game, hour, wait_n, wait_med FROM queue_stats_hourly
+       WHERE hour >= ? AND hour < ? AND wait_n > 0`
+    ).bind(yesterday?.from ?? 0, yesterday?.to ?? 0),
   ]);
   return {
     initial: results[0].results,
@@ -521,6 +531,7 @@ export async function readEstimatorInput(env, now) {
     counters: results[5].results,
     meta: results[6].results,
     overrides: results[7].results,
+    typical: results[8].results,
   };
 }
 
@@ -594,9 +605,79 @@ async function routeAdmin(request, env, ctx, now) {
   return hiddenAdminResponse();
 }
 
+/* Condense everything the sweep is about to be allowed to delete into
+   queue_stats_hourly, before it can. Recomputed every tick over the whole
+   window whose raw rows are provably still complete — at ≥ now − 23h can
+   never have been swept, since every past sweep's cutoff lies at or below
+   it — so late arrivals (a deferred completion backdated into yesterday
+   evening) and moderation deletions both correct the aggregates for as long
+   as the raw rows live, and a missed or failed tick costs nothing that the
+   next one does not rewrite. Delete-then-insert per window rather than
+   upsert, so a purge that emptied a queue-hour empties its aggregate too. */
+export async function runRollup(env, now = nowSeconds()) {
+  const fromHour = Math.ceil((now - 23 * 60 * 60) / 3600) * 3600;
+  const toHour = Math.floor(now / 3600) * 3600;
+  if (toHour <= fromHour) return null;
+  const [events, waits] = await env.QUEUE_DB.batch([
+    env.QUEUE_DB.prepare(
+      `SELECT client, exhibitor, game, kind, ahead, at FROM report_events
+       WHERE at >= ? AND at < ?`
+    ).bind(fromHour, toHour),
+    env.QUEUE_DB.prepare(
+      `SELECT exhibitor, game, joined_at, closed_at FROM sessions
+       WHERE outcome = 'entered' AND closed_at >= ? AND closed_at < ?`
+    ).bind(fromHour, toHour),
+  ]);
+  const rows = aggregateHourlyStats(
+    { events: events.results, waits: waits.results },
+    fromHour,
+    toHour,
+    now
+  );
+  const statements = [
+    env.QUEUE_DB.prepare(`DELETE FROM queue_stats_hourly WHERE hour >= ? AND hour < ?`).bind(
+      fromHour,
+      toHour
+    ),
+    ...rows.map((row) =>
+      env.QUEUE_DB.prepare(
+        `INSERT INTO queue_stats_hourly
+         (hour, exhibitor, game, joined_n, update_n, entered_n, left_n, closed_n,
+          meta_n, clients_n, ahead_n, ahead_med, wait_n, wait_med, computed_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        row.hour,
+        row.exhibitor,
+        row.game,
+        row.joined_n,
+        row.update_n,
+        row.entered_n,
+        row.left_n,
+        row.closed_n,
+        row.meta_n,
+        row.clients_n,
+        row.ahead_n,
+        row.ahead_med,
+        row.wait_n,
+        row.wait_med,
+        row.computed_at
+      )
+    ),
+  ];
+  /* Bounded chunks rather than one giant batch: a spike day multiplied by 23
+     hours must not produce a request the platform refuses, because this runs
+     ahead of the sweep that keeps the retention promise. */
+  for (let index = 0; index < statements.length; index += 50) {
+    await env.QUEUE_DB.batch(statements.slice(index, index + 50));
+  }
+  return rows.length;
+}
+
 export async function runCleanup(env, now = nowSeconds()) {
   // The job runs hourly. A 23-hour cutoff guarantees deletion no later than
   // the public 24-hour retention promise even with an almost-full cron tick.
+  // queue_stats_hourly is deliberately absent here: those rows carry no
+  // client ids and are kept through the show (see the 0004 migration).
   const cutoff = now - 23 * 60 * 60;
   return env.QUEUE_DB.batch([
     env.QUEUE_DB.prepare(
@@ -689,7 +770,25 @@ export default {
   },
 
   async scheduled(controller, env, ctx) {
-    const task = runCleanup(env, Math.floor(controller.scheduledTime / 1000)).catch((error) => {
+    const now = Math.floor(controller.scheduledTime / 1000);
+    const task = (async () => {
+      /* Aggregate first, so the sweep only ever deletes raw rows the stats
+         table has already absorbed — and sweep even when aggregation fails:
+         the public 24-hour promise outranks the metrics, and the rollup's
+         idempotent full-window recompute means a failed tick loses nothing
+         the next successful one does not restore. */
+      try {
+        await runRollup(env, now);
+      } catch (error) {
+        console.error(
+          JSON.stringify({
+            message: "queue stats rollup failed",
+            error: error instanceof Error ? error.message : String(error),
+          })
+        );
+      }
+      await runCleanup(env, now);
+    })().catch((error) => {
       console.error(
         JSON.stringify({
           message: "queue cleanup failed",
