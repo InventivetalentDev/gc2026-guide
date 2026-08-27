@@ -2755,6 +2755,25 @@
     "lastUpdated": "2026-08-15"
   },
   {
+    "id": "epic-games-biz",
+    "name": "Epic Games",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "D033",
+    "locationConfirmed": true,
+    "dirSlug": "epic_games_commerce",
+    "country": "Switzerland",
+    "access": "appointment",
+    "games": [],
+    "tags": ["closed stand", "engine", "commerce"],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/epic_games_commerce/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/epic_games_commerce/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-27"
+  },
+  {
     "id": "capcom-business",
     "businessOf": "capcom",
     "name": "Capcom — business booth",
