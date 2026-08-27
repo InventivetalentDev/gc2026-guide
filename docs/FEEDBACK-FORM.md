@@ -330,16 +330,32 @@ files rather than one bilingual form, because the app has two slots for them:
 the English one goes in `url`, the German one in `urlDe`.
 
 The import is AI-driven rather than schema-driven — Tally reads the file and
-drafts a form from it — so it is a starting point, not a guarantee. Three things
-to check on the draft before publishing, because they are the ones an importer
-gets wrong:
+drafts a form from it — so it carries **wording and structure, not settings.**
+That is not a caveat, it is the observed result: importing these two files in
+August 2026 got every question and every option verbatim and correct, and got
+four things wrong in both languages. Fix them in the editor; re-importing hits
+the same four.
 
-- **Q1 is a linear scale**, 1–5, with both anchors labelled — not a multiple
-  choice with five options in it.
-- **Q3 caps at 3.** The cap lives in block settings → maximum number of choices,
-  and it is the difference between an answer and a shrug.
-- **The `source` hidden field is hidden.** If it came in as a visible question,
-  delete it and re-add it with `/hidden`.
+- **Everything arrives required.** All eleven questions came in with *Required*
+  on, including five free-text fields. The design is the opposite — Q1 and Q2
+  required, the other nine optional — and it matters more than it looks: a form
+  that will not submit until you have written five paragraphs is a form
+  abandoned in a hall with two bars of signal.
+- **The scale arrives 0–10 and unlabelled.** Q1's `min`/`max`/`minLabel`/
+  `maxLabel` were dropped: it becomes a bare 0–10 with no anchors, which is a
+  different question — people read an unlabelled 0–10 as an NPS score. Set it
+  back to 1–5 and label both ends.
+- **The maximum-choices cap is dropped.** Both checkbox groups came in
+  uncapped, and Q3's title lost its "(up to 3)" along with it. Without the cap
+  people tick nine boxes, the answer is "everything", and it decides nothing.
+- **Question order is not guaranteed.** The English form imported in order; the
+  German one put Q5 and Q6 at the top, above the intro text, so it opened by
+  asking how you found it. Read the draft top to bottom before publishing
+  rather than spot-checking it.
+
+What did survive, and is worth not re-doing by hand: every question title, all
+42 options in each language, the intro paragraph, the thank-you page,
+and the `source` hidden field.
 
 Then set what no file can carry: no respondent email collection, no
 per-respondent limit (those need an account and turn away more answers than they
@@ -347,9 +363,13 @@ protect), and the after-submission message — *Thanks. That's genuinely useful.
 *Danke. Das hilft wirklich.*
 
 Publish, take the `tally.so/r/…` link, append `?source=app`, and paste it into
-`data/event.json`. Then answer it yourself on a phone before you ship the link: a
-form nobody has walked through on the device it will be answered on always has
-exactly one broken question.
+`data/event.json`. The 2026 forms are already there:
+`tally.so/r/5BPO5v` (EN) and `tally.so/r/xX5o0d` (DE).
+
+Then answer it yourself on a phone before you trust it — one submission, then
+delete it from the responses. It is the only way to see that `source` really
+arrives as `app`, and a form nobody has walked through on the device it will be
+answered on always has exactly one broken question.
 
 ### The manual way
 
