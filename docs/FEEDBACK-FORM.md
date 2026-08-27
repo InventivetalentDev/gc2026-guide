@@ -321,6 +321,38 @@ will use it.
 
 ## Building it in Tally
 
+### The quick way: import the JSON
+
+`docs/feedback-form.en.json` and `docs/feedback-form.de.json` hold the questions
+below in the shape Tally's importer reads. **+ New form → Import from → JSON**,
+one file per form, and you get a draft with the blocks already laid out. Two
+files rather than one bilingual form, because the app has two slots for them:
+the English one goes in `url`, the German one in `urlDe`.
+
+The import is AI-driven rather than schema-driven — Tally reads the file and
+drafts a form from it — so it is a starting point, not a guarantee. Three things
+to check on the draft before publishing, because they are the ones an importer
+gets wrong:
+
+- **Q1 is a linear scale**, 1–5, with both anchors labelled — not a multiple
+  choice with five options in it.
+- **Q3 caps at 3.** The cap lives in block settings → maximum number of choices,
+  and it is the difference between an answer and a shrug.
+- **The `source` hidden field is hidden.** If it came in as a visible question,
+  delete it and re-add it with `/hidden`.
+
+Then set what no file can carry: no respondent email collection, no
+per-respondent limit (those need an account and turn away more answers than they
+protect), and the after-submission message — *Thanks. That's genuinely useful.* /
+*Danke. Das hilft wirklich.*
+
+Publish, take the `tally.so/r/…` link, append `?source=app`, and paste it into
+`data/event.json`. Then answer it yourself on a phone before you ship the link: a
+form nobody has walked through on the device it will be answered on always has
+exactly one broken question.
+
+### The manual way
+
 Blocks are inserted by typing `/` and the block name, so the list below reads
 the way the editor does.
 
@@ -346,11 +378,7 @@ the way the editor does.
    answers than they protect.
 4. Settings → **After submission**: *Thanks. That's genuinely useful.* /
    *Danke. Das hilft wirklich.*
-5. Publish, take the `tally.so/r/…` link, append `?source=app`, and paste it
-   into `data/event.json` as `url`.
-6. Answer it yourself on a phone before you ship the link. A form nobody has
-   walked through on the device it will be answered on always has exactly one
-   broken question.
+5. Publish and wire the link up as above.
 
 The app only ever wants a URL, so none of this is load-bearing: CryptPad Forms,
 LimeSurvey, Formbricks or a form you host yourself all work the same way. Prefer
