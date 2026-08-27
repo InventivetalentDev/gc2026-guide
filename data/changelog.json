@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-08-27",
+    "revision": 59,
+    "changes": [
+      { "kind": "content", "text": "Thursday and Friday have now sold out too — day, discounted and family tickets alike, and Thursday's 16:00 evening ticket with them. Only Sunday is still on sale in every class, plus Friday's evening ticket." }
+    ]
+  },
+  {
+    "date": "2026-08-27",
     "revision": 58,
     "changes": [
       { "kind": "content", "text": "Epic Games has taken a business-area stand — Hall 4.2 D033, a closed 264 m² meeting structure for Unreal Engine and Epic Games Store appointments. It only registered during show week, and it is trade-badge only." }
