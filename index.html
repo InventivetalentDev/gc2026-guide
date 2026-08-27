@@ -431,6 +431,23 @@
   </header>
 
   <main class="wrap" id="main">
+
+    <!-- ============ Feedback prompt ============
+         Outside the views, so it is on screen whichever tab the visitor is
+         on — the question is about the guide, not about the exhibitor grid.
+         Everything about it is off until data/event.json carries a feedback
+         URL: no form, no card. See docs/FEEDBACK-FORM.md, and renderFeedback
+         in js/app.js for the date gate and the once-only memory. -->
+    <aside class="feedback-card" id="feedback-card" role="region" aria-labelledby="feedback-card-title" hidden>
+      <div class="feedback-copy">
+        <span class="overline" id="feedback-card-title" data-i18n="feedback.title">How did the guide do?</span>
+        <p data-i18n="feedback.lede">Five questions on whether this was any use, and whether it should come back for 2027. About a minute, anonymous.</p>
+      </div>
+      <div class="feedback-actions">
+        <a class="feedback-open" id="feedback-open" href="#" target="_blank" rel="noopener"><span data-i18n="feedback.open">Answer them</span><span class="sr-only" data-i18n="a11y.newTab">, opens in a new tab</span></a>
+        <button class="feedback-dismiss" id="feedback-dismiss" type="button" data-i18n="feedback.dismiss">Not now</button>
+      </div>
+    </aside>
     <!-- ============ Today view ============
          The walking route scoped to the day it actually is, played stops
          folded away. Everything in it is rendered by js/app.js (renderToday)
@@ -711,6 +728,11 @@
         <p data-i18n="footer.storage">Your saved list stays in this browser. Queue reports are optional; only the queue facts and a random device ID are sent to the live service.</p>
         <p data-i18n-html="footer.createdBy">Created by <a class="subtle-link" href="https://inventivetalent.org">inventivetalent</a> with Claude Code. <a class="subtle-link" href="https://github.com/InventivetalentDev/gc2026-guide">Open Source</a>.</p>
         <p data-i18n-html="footer.feedback">Something wrong, missing or out of date? Send corrections to <a class="subtle-link" href="mailto:content@hallgui.de?subject=gamescom%20guide%20feedback">content@hallgui.de</a>.</p>
+        <!-- The survey, kept apart from the corrections address above: "hall
+             9.1 is wrong" wants a reply and a data push, not a survey row.
+             Hidden until data/event.json names a form, and unlike the card it
+             has no memory — this is the one somebody comes back to. -->
+        <p class="hidden" id="feedback-footer"><span data-i18n="footer.feedbackFormLede">Used the guide at the show?</span> <a class="subtle-link" id="feedback-footer-link" href="#" target="_blank" rel="noopener"><span data-i18n="footer.feedbackFormLink">Answer five questions about it →</span><span class="sr-only" data-i18n="a11y.newTab">, opens in a new tab</span></a></p>
         <!-- Imprint stays English while privacy follows the selected language.
              The links themselves are localized: "Impressum" is the word a
              German visitor looks for, and § 5 DDG is about it being easy to

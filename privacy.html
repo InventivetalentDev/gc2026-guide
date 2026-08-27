@@ -103,6 +103,8 @@
       <li><code>gc2026.prefs.v1</code> — view preferences, e.g. age filter and “hide played”</li>
       <li><code>gc2026.queue.v1</code> — a random, resettable queue-reporting id, active local timers
       and a completion waiting to reconnect, if you choose to report</li>
+      <li><code>gc2026.feedback.v1</code> — that you answered or dismissed the feedback card, so it is
+      not offered again</li>
     </ul>
     <p>The saved, played, itinerary and preference entries are never transmitted to me or to anyone
     else. Queue data is the explicit exception: only when you use a queue-report button are the
@@ -143,6 +145,20 @@
     obvious abuse. The legal basis is Art. 6 (1) (f) GDPR — the legitimate interests in operating this
     optional fan service securely and helping visitors make time-sensitive choices. Fixed coarse
     buckets, short retention, no account and an easily reset id limit the impact.</p>
+
+    <h2>Optional feedback form</h2>
+    <p>After the show the guide may show a card, and a footer link, offering a short feedback form.
+    That form is hosted by a third party — currently Google Forms (Google Ireland Limited, Gordon
+    House, Barrow Street, Dublin 4, Ireland) — and is a separate website with its own privacy policy.
+    Nothing is sent to it unless you tap the link and answer it. The guide does not attach your saved
+    list, itinerary, device id or any identifier to that link, and it receives no notification that you
+    opened or submitted the form.</p>
+    <p>The form asks for opinions, not identity: it requests no name, no email address and no account,
+    and answering it is entirely optional. Whatever you type into it is processed by its provider under
+    that provider's terms, and reaches me as an anonymous response. The legal basis for processing what
+    you choose to write is Art. 6 (1) (a) GDPR — your consent, given by submitting the form. Dismissing
+    the card stores a single local flag so you are not asked again; that flag stays in your browser like
+    everything else under “What stays in your browser”.</p>
 
     <h2>Hosting and delivery</h2>
     <p>The site runs on Cloudflare Workers and is delivered over Cloudflare's network (Cloudflare, Inc.,
@@ -189,6 +205,9 @@
     <p>Cloudflare is a US company and may process connection data outside the EU. It is certified under
     the EU–US Data Privacy Framework and additionally relies on the European Commission's Standard
     Contractual Clauses, which is the legal basis for these transfers under Art. 44 ff. GDPR.</p>
+    <p>The feedback form's provider may likewise process your answers outside the EU under the same
+    framework. That processing happens on their site, after you have chosen to go there, and only for
+    what you type in.</p>
 
     <h2>Links to other sites</h2>
     <p>The guide links out to gamescom's official pages, exhibitor websites and similar. Following such
@@ -248,6 +267,8 @@
       <li><code>gc2026.prefs.v1</code> — Ansichts- und Spracheinstellungen</li>
       <li><code>gc2026.queue.v1</code> — falls du meldest: eine zufällige, zurücksetzbare Geräte-ID,
       laufende lokale Timer und eine auf Verbindung wartende Abschlussmeldung</li>
+      <li><code>gc2026.feedback.v1</code> — dass du die Feedback-Karte beantwortet oder weggetippt
+      hast, damit sie nicht erneut erscheint</li>
     </ul>
     <p>Merkliste, gespielt-Markierungen, Reiseplan und Einstellungen werden nie übertragen.
     Warteschlangendaten sind die ausdrückliche Ausnahme: Erst ein Klick auf eine Melde-Schaltfläche
@@ -283,6 +304,22 @@
     erleichtern. Grobe feste Auswahlstufen, kurze Aufbewahrung, kein Konto und eine leicht
     zurücksetzbare ID begrenzen die Auswirkungen.</p>
 
+    <h2>Freiwilliges Feedback-Formular</h2>
+    <p>Nach der Messe zeigt der Guide unter Umständen eine Karte und einen Link im Fußbereich, die auf
+    ein kurzes Feedback-Formular verweisen. Dieses Formular wird von einem Dritten betrieben – derzeit
+    Google Forms (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland) – und ist eine
+    eigene Website mit eigener Datenschutzerklärung. Es wird nichts dorthin übertragen, solange du den
+    Link nicht antippst und das Formular ausfüllst. Der Guide hängt weder Merkliste noch Tagesplan,
+    Geräte-ID oder eine sonstige Kennung an diesen Link an und erfährt nicht, ob du das Formular
+    geöffnet oder abgeschickt hast.</p>
+    <p>Das Formular fragt nach Meinungen, nicht nach Identität: kein Name, keine E-Mail-Adresse, kein
+    Konto, und das Ausfüllen ist vollständig freiwillig. Was du dort einträgst, verarbeitet der Anbieter
+    nach seinen eigenen Bedingungen; bei mir kommt es als anonyme Antwort an. Rechtsgrundlage für die
+    Verarbeitung dessen, was du schreibst, ist Art. 6 Abs. 1 lit. a DSGVO – deine Einwilligung, erteilt
+    durch das Absenden des Formulars. Wenn du die Karte wegtippst, wird lokal ein einzelner Merker
+    gesetzt, damit nicht erneut gefragt wird; dieser bleibt wie alles unter „Was in deinem Browser
+    bleibt“ in deinem Browser.</p>
+
     <h2>Hosting und Auslieferung</h2>
     <p>Die Website läuft auf Cloudflare Workers und wird über das Netz von Cloudflare, Inc., 101
     Townsend St., San Francisco, CA 94107, USA, ausgeliefert und gegen Angriffe geschützt. Dafür werden
@@ -316,6 +353,9 @@
     <p>Cloudflare ist ein US-Unternehmen und kann Verbindungsdaten außerhalb der EU verarbeiten. Das
     Unternehmen ist nach dem EU–US Data Privacy Framework zertifiziert und verwendet ergänzend die
     Standardvertragsklauseln der Europäischen Kommission (Art. 44 ff. DSGVO).</p>
+    <p>Der Anbieter des Feedback-Formulars kann deine Antworten auf derselben Grundlage ebenfalls
+    außerhalb der EU verarbeiten. Das geschieht auf dessen Website, nachdem du dich dafür entschieden
+    hast, und nur für das, was du dort einträgst.</p>
 
     <h2>Links zu anderen Websites</h2>
     <p>Links führen unter anderem zu offiziellen gamescom-Seiten und Aussteller-Websites. Dort gilt die

@@ -940,6 +940,84 @@ function offerMove() {
   );
 }
 
+/* The end-of-show survey lives on a hosted form rather than behind /api/,
+   and the reason is a schedule rather than a preference: this guide's own API
+   is torn down after the show — bindings removed, D1 deleted, 410 to
+   everything — while feedback arrives on the opposite one, a little on the
+   last day and most of it in the week after. A table there would be deleted
+   in the middle of its own collection window. docs/FEEDBACK-FORM.md has the
+   questions and the rest of the argument.
+
+   Two surfaces, both dark until data/event.json names a URL: this card, which
+   asks once and remembers the answer, and the footer link, which is always
+   there and remembers nothing. */
+const FEEDBACK_KEY = "gc2026.feedback.v1";
+
+function feedbackAnswered() {
+  try {
+    return localStorage.getItem(FEEDBACK_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function rememberFeedback() {
+  try {
+    localStorage.setItem(FEEDBACK_KEY, "1");
+  } catch {
+    /* storage blocked (Safari private mode) — the card returns next load,
+       which is the harmless direction for this one to fail in */
+  }
+}
+
+/* The form for the language being read, or null for "no form configured" —
+   which is also the answer for a malformed one. http(s) only: the URL comes
+   from a data file the app already trusts for booth numbers, but it is the
+   one value in it that becomes a navigation, and a data push should not be
+   able to put a javascript: href on the page. */
+function feedbackUrl() {
+  const cfg = state.event?.feedback;
+  const raw = (GCI18N.lang === "de" && cfg?.urlDe) || cfg?.url || "";
+  if (!raw) return null;
+  try {
+    const url = new URL(String(raw), location.href);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function renderFeedback() {
+  const url = feedbackUrl();
+  const footer = $("#feedback-footer");
+  const card = $("#feedback-card");
+  /* Both guarded: a service-worker transition can pair this script with a
+     cached index.html written before the feature, and being asked for
+     feedback is not worth failing a boot over. */
+  if (footer) {
+    footer.classList.toggle("hidden", !url);
+    if (url) $("#feedback-footer-link").href = url;
+  }
+  if (!card) return;
+  const from = state.event?.feedback?.from;
+  /* Cologne's date, not the device's: a phone still set to Los Angeles would
+     otherwise be asked how the last day went halfway through Friday. No end
+     date on purpose — after the show is when the answers come in. */
+  const due = !from || showNow().date >= String(from);
+  card.hidden = !url || !due || feedbackAnswered();
+  if (card.hidden) return;
+  const open = $("#feedback-open");
+  open.href = url;
+  /* Answering counts as being asked, so the tab that comes back does not
+     carry the question again. The footer link is the way back to it. */
+  const settle = () => {
+    rememberFeedback();
+    card.hidden = true;
+  };
+  open.onclick = settle;
+  $("#feedback-dismiss").onclick = settle;
+}
+
 function parseHash() {
   const raw = location.hash.slice(1);
   const i = raw.indexOf("?");
@@ -8329,6 +8407,10 @@ async function main() {
   bindControls();
   renderCountdown();
   renderFreshness();
+  /* Before first paint, with the rest of the chrome: the card sits above the
+     views, so a later render would push the grid down under whoever is
+     already reading it. */
+  renderFeedback();
   /* Ahead of the landing render: Today's own render may be an idle slot away,
      and both of these have to be on screen from the first paint — the tab on a
      show day, and the banner whenever the clock has been moved, whatever view

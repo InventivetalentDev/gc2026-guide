@@ -12,6 +12,7 @@
     { "date": "2026-08-30", "open": "09:00", "close": "20:00", "business": "closed", "trade": false }
   ],
   "onl": { "time": "20:00 CEST" },
+  "feedback": { "url": "", "urlDe": "", "from": "2026-08-29" },
   "areas": [
     { "name": "Entertainment area", "hall": "5–10" },
     { "name": "Business area", "hall": "2–4" },
