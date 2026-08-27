@@ -4,11 +4,13 @@ import exhibitors from "../data/exhibitors.json";
 import event from "../data/event.json";
 import {
   BOOTH_QUEUE,
+  aggregateHourlyStats,
   buildQueueAllowlist,
   deferredReceiptDeadline,
   estimateLive,
   eventAccess,
   normalizeGameKey,
+  previousDayWindow,
   queueToken,
 } from "../worker/core.js";
 
@@ -266,5 +268,151 @@ describe("live estimator", () => {
       300
     );
     expect(result.xbox.fable).toMatchObject({ qtype: "wave", batch: 75, n: 2, newest: 200 });
+  });
+
+  it("falls back to yesterday's pooled aggregate only when nothing was said today", () => {
+    const now = 50_000;
+    /* Two hours of yesterday's aggregates: 10 minutes across 2 waits and
+       20 minutes across 4. Weighted pool: 1000 s ≈ 17 min → 15 on the grid. */
+    const typical = [
+      row({ hour: 1_000, wait_n: 2, wait_med: 600 }),
+      row({ hour: 4_600, wait_n: 4, wait_med: 1200 }),
+      /* Hours that measured nothing carry no weight, whatever they counted. */
+      row({ hour: 8_200, wait_n: 0, wait_med: null }),
+    ];
+    const quiet = estimateLive({ typical }, now);
+    expect(quiet.xbox.fable).toEqual({ est: 15, how: "typical", n: 6, newest: now });
+
+    /* Any measured tier from today outranks yesterday. */
+    const busy = estimateLive(
+      {
+        typical,
+        completed: [row({ session: 1, joined_at: now - 4_000, closed_at: now - 1_000 })],
+      },
+      now
+    );
+    expect(busy.xbox.fable).toMatchObject({ how: "done", est: 50 });
+
+    /* So does a crowd-closed queue: closed is the higher-consequence answer. */
+    const closed = estimateLive(
+      {
+        typical,
+        closures: [
+          row({ client: "a", reported_at: now - 100 }),
+          row({ client: "b", reported_at: now - 90 }),
+        ],
+      },
+      now
+    );
+    expect(closed.xbox.fable).toMatchObject({ closed: true });
+
+    /* An aggregate with only counts behind it is not an estimate. */
+    expect(
+      estimateLive({ typical: [row({ hour: 1_000, wait_n: 0, wait_med: null })] }, now).xbox
+    ).toBeUndefined();
+
+    /* Yesterday's clamp reads as a floor, exactly like a live measured one,
+       and a mechanics vote still decorates the fallback tier. */
+    const extreme = estimateLive(
+      {
+        typical: [row({ hour: 1_000, wait_n: 3, wait_med: 5 * 3600 })],
+        meta: [row({ qtype: "wave", batch: 50, client: "a", reported_at: 10 })],
+      },
+      now
+    );
+    expect(extreme.xbox.fable).toMatchObject({
+      est: 240,
+      capped: true,
+      how: "typical",
+      n: 3,
+      qtype: "wave",
+    });
+  });
+});
+
+describe("hourly aggregation", () => {
+  const queue = { exhibitor: "xbox", game: "fable" };
+  const row = (extra) => ({ ...queue, ...extra });
+
+  it("condenses events and waits into anonymous per-hour rows", () => {
+    const fromHour = 7_200;
+    const toHour = 14_400;
+    const rows = aggregateHourlyStats(
+      {
+        events: [
+          row({ client: "a", kind: "joined", ahead: 30, at: 7_300 }),
+          row({ client: "a", kind: "update", ahead: 10, at: 7_400 }),
+          row({ client: "b", kind: "joined", ahead: 50, at: 7_500 }),
+          /* An outcome carries no ahead and must not skew the length median. */
+          row({ client: "b", kind: "entered", ahead: null, at: 7_600 }),
+          row({ client: "c", kind: "closed", ahead: null, at: 7_700 }),
+          row({ client: "c", kind: "meta", ahead: null, at: 7_800 }),
+          row({ client: "d", kind: "left", ahead: null, at: 11_000 }),
+          /* Outside [fromHour, toHour): never counted, so a bucket is only
+             ever written from a complete raw window. */
+          row({ client: "e", kind: "joined", ahead: 100, at: 7_100 }),
+          row({ client: "e", kind: "joined", ahead: 100, at: 14_500 }),
+        ],
+        waits: [
+          row({ joined_at: 6_000, closed_at: 7_600 }),
+          row({ joined_at: 8_400, closed_at: 12_000 }),
+          row({ joined_at: 20_000, closed_at: 14_600 }),
+        ],
+      },
+      fromHour,
+      toHour,
+      99_999
+    );
+    expect(rows).toEqual([
+      {
+        hour: 7_200,
+        exhibitor: "xbox",
+        game: "fable",
+        joined_n: 2,
+        update_n: 1,
+        entered_n: 1,
+        left_n: 0,
+        closed_n: 1,
+        meta_n: 1,
+        clients_n: 3,
+        ahead_n: 3,
+        ahead_med: 30,
+        wait_n: 1,
+        wait_med: 1_600,
+        computed_at: 99_999,
+      },
+      {
+        hour: 10_800,
+        exhibitor: "xbox",
+        game: "fable",
+        joined_n: 0,
+        update_n: 0,
+        entered_n: 0,
+        left_n: 1,
+        closed_n: 0,
+        meta_n: 0,
+        clients_n: 1,
+        ahead_n: 0,
+        ahead_med: null,
+        wait_n: 1,
+        wait_med: 3_600,
+        computed_at: 99_999,
+      },
+    ]);
+    /* Nothing device-linked leaves this function: counts and medians only. */
+    for (const value of rows) expect(Object.keys(value)).not.toContain("client");
+  });
+
+  it("frames yesterday as the previous calendar day in the event's zone", () => {
+    const window = previousDayWindow(event, berlin("2026-08-27T07:45:00+02:00"));
+    expect(window).toEqual({
+      from: berlin("2026-08-26T00:00:00+02:00"),
+      to: berlin("2026-08-27T00:00:00+02:00"),
+    });
+    /* Month boundaries are date arithmetic, not string arithmetic. */
+    expect(previousDayWindow(event, berlin("2026-09-01T10:00:00+02:00"))).toEqual({
+      from: berlin("2026-08-31T00:00:00+02:00"),
+      to: berlin("2026-09-01T00:00:00+02:00"),
+    });
   });
 });

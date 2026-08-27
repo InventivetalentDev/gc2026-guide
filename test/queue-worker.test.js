@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import exhibitors from "../data/exhibitors.json";
 import event from "../data/event.json";
 import worker, {
+  getUncachedLive,
   handleLive,
   handleReport,
   loadSiteData,
@@ -543,6 +544,86 @@ describe("retention and routing", () => {
     expect(await env.QUEUE_DB.prepare(`SELECT COUNT(*) AS n FROM sessions`).first("n")).toBe(0);
     expect(await env.QUEUE_DB.prepare(`SELECT COUNT(*) AS n FROM report_events`).first("n")).toBe(0);
     expect(await env.QUEUE_DB.prepare(`SELECT COUNT(*) AS n FROM queue_meta`).first("n")).toBe(1);
+  });
+
+  it("keeps yesterday as an anonymous aggregate across the sweep and serves it as today's fallback", async () => {
+    /* Day 1, mid-afternoon: one visitor joins seeing ~30 ahead and gets in
+       after 45 minutes. This is the raw, device-linked history the 24-hour
+       promise will delete. */
+    const joinedAt = at("2026-08-26T15:00:00+02:00");
+    await handleReport(report({ kind: "joined", ahead: 30 }), testEnv(), site, joinedAt);
+    await handleReport(report({ kind: "entered" }), testEnv(), site, joinedAt + 45 * 60);
+
+    /* The ordinary evening tick — the production path, not the helpers —
+       condenses the afternoon into a stats row before anything expires. */
+    const evening = createExecutionContext();
+    await worker.scheduled(
+      { scheduledTime: at("2026-08-26T17:00:00+02:00") * 1000 },
+      testEnv(),
+      evening
+    );
+    await waitOnExecutionContext(evening);
+    const stored = await env.QUEUE_DB.prepare(
+      `SELECT hour, joined_n, entered_n, clients_n, ahead_med, wait_n, wait_med
+       FROM queue_stats_hourly WHERE exhibitor = ? AND game = ?`
+    ).bind(queue.exhibitor, queue.game).all();
+    expect(stored.results).toEqual([
+      { hour: joinedAt, joined_n: 1, entered_n: 1, clients_n: 1, ahead_med: 30, wait_n: 1, wait_med: 2700 },
+    ]);
+
+    /* Next afternoon, nobody has reported this queue today: the estimator
+       answers from yesterday, clearly labelled, anchored at estimate time. */
+    const morningAfter = at("2026-08-27T15:05:00+02:00");
+    const fallback = await getUncachedLive(testEnv(), morningAfter);
+    expect(fallback[queue.exhibitor][queue.game]).toEqual({
+      est: 45,
+      how: "typical",
+      n: 1,
+      newest: morningAfter,
+    });
+
+    /* The tick that crosses the 24-hour horizon sweeps every raw row — and
+       its own rollup, recomputing only hours whose raw window is still
+       complete, must not wipe the aggregate saved by earlier ticks. */
+    const horizon = createExecutionContext();
+    await worker.scheduled(
+      { scheduledTime: at("2026-08-27T15:00:01+02:00") * 1000 },
+      testEnv(),
+      horizon
+    );
+    await waitOnExecutionContext(horizon);
+    expect(await env.QUEUE_DB.prepare(`SELECT COUNT(*) AS n FROM sessions`).first("n")).toBe(0);
+    expect(await env.QUEUE_DB.prepare(`SELECT COUNT(*) AS n FROM report_events`).first("n")).toBe(0);
+    expect(
+      await env.QUEUE_DB.prepare(`SELECT COUNT(*) AS n FROM queue_stats_hourly`).first("n")
+    ).toBe(1);
+    const survived = await getUncachedLive(testEnv(), morningAfter + 10 * 60);
+    expect(survived[queue.exhibitor][queue.game]).toMatchObject({ est: 45, how: "typical" });
+
+    /* The first live report today outranks yesterday immediately. */
+    await handleReport(report({ kind: "joined", ahead: 20 }), testEnv(), site, morningAfter + 11 * 60);
+    const busy = await getUncachedLive(testEnv(), morningAfter + 12 * 60);
+    expect(busy[queue.exhibitor][queue.game].how).not.toBe("typical");
+  });
+
+  it("hands the console the show-long aggregate, newest hour first", async () => {
+    await env.QUEUE_DB.batch(
+      [3_600, 7_200].map((hour) =>
+        env.QUEUE_DB.prepare(
+          `INSERT INTO queue_stats_hourly (hour, exhibitor, game, wait_n, wait_med, computed_at)
+           VALUES (?, ?, ?, 2, 1800, ?)`
+        ).bind(hour, queue.exhibitor, queue.game, 10_000)
+      )
+    );
+    const response = await handleAdminData(testEnv(), 30_000, {});
+    const data = await response.json();
+    expect(data.statsHourly.map((row) => row.hour)).toEqual([7_200, 3_600]);
+    expect(data.statsHourly[0]).toMatchObject({
+      exhibitor: queue.exhibitor,
+      game: queue.game,
+      wait_n: 2,
+      wait_med: 1800,
+    });
   });
 
   it("never authorizes a non-empty wrong admin token and hides the route", async () => {

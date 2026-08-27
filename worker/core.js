@@ -113,6 +113,24 @@ export function deferredReceiptDeadline(event) {
   return close === null ? null : close + 24 * 60 * 60;
 }
 
+/* Yesterday as a pair of epoch instants: midnight to midnight of the previous
+   calendar day in the event's own zone. This is the window the estimator's
+   "yesterday" fallback reads aggregates from — calendar-day rather than
+   now-minus-24-hours, because a visitor asking "what was this queue like
+   yesterday" means the show day, not a rolling window that would blend this
+   morning into it. */
+export function previousDayWindow(event, epochSeconds) {
+  const timeZone = event?.timeZone || "Europe/Berlin";
+  const today = clockParts(epochSeconds, timeZone).date;
+  const [year, month, day] = today.split("-").map(Number);
+  if (![year, month, day].every(Number.isFinite)) return null;
+  const previous = new Date(Date.UTC(year, month - 1, day - 1));
+  const date = `${previous.getUTCFullYear()}-${String(previous.getUTCMonth() + 1).padStart(2, "0")}-${String(previous.getUTCDate()).padStart(2, "0")}`;
+  const from = epochForZonedMinute(date, 0, timeZone);
+  const to = epochForZonedMinute(today, 0, timeZone);
+  return from === null || to === null ? null : { from, to };
+}
+
 /**
  * Classify an instant against the event in its own IANA time zone.
  * `phase` is stable enough for routing: only `after` maps to HTTP 410.
@@ -244,6 +262,87 @@ function addNested(output, exhibitor, game, value) {
   output[exhibitor][game] = value;
 }
 
+const STAT_KINDS = Object.freeze(["joined", "update", "entered", "left", "closed", "meta"]);
+
+/**
+ * Condense raw rows into the per-queue, per-hour aggregate the retention
+ * sweep is allowed to keep. Pure, like the estimator: `events` are
+ * report_events rows and `waits` are completed sessions, both already
+ * bounded by the query; only rows whose hour bucket falls wholly inside
+ * [fromHour, toHour) are counted, so a bucket is only ever written from a
+ * complete raw window and recomputing it is idempotent.
+ *
+ * The output carries counts and medians and nothing else — no client ids —
+ * which is what lets it outlive the 24-hour promise on the privacy page.
+ */
+export function aggregateHourlyStats(input, fromHour, toHour, computedAt) {
+  const buckets = new Map();
+  const bucketFor = (at) => Math.floor(Number(at) / 3600) * 3600;
+  const ensure = (hour, exhibitor, game) => {
+    const key = `${hour} ${queueToken(exhibitor, game)}`;
+    if (!buckets.has(key)) {
+      buckets.set(key, {
+        hour,
+        exhibitor,
+        game,
+        counts: Object.fromEntries(STAT_KINDS.map((kind) => [kind, 0])),
+        clients: new Set(),
+        aheads: [],
+        waits: [],
+      });
+    }
+    return buckets.get(key);
+  };
+
+  for (const row of input.events || []) {
+    const hour = bucketFor(row.at);
+    if (hour < fromHour || hour + 3600 > toHour || !STAT_KINDS.includes(row.kind)) continue;
+    const bucket = ensure(hour, row.exhibitor, row.game);
+    bucket.counts[row.kind] += 1;
+    bucket.clients.add(row.client);
+    if (row.ahead !== null && row.ahead !== undefined && (row.kind === "joined" || row.kind === "update")) {
+      bucket.aheads.push(Number(row.ahead));
+    }
+  }
+  /* Measured waits come from the sessions themselves rather than the event
+     stream, bucketed by when they finished — a deferred completion that lands
+     hours later still files under the hour the visitor actually got in. */
+  for (const row of input.waits || []) {
+    const hour = bucketFor(row.closed_at);
+    if (hour < fromHour || hour + 3600 > toHour) continue;
+    ensure(hour, row.exhibitor, row.game).waits.push(
+      Math.max(0, Number(row.closed_at) - Number(row.joined_at))
+    );
+  }
+
+  return [...buckets.values()]
+    .sort(
+      (a, b) =>
+        a.hour - b.hour || a.exhibitor.localeCompare(b.exhibitor) || a.game.localeCompare(b.game)
+    )
+    .map((bucket) => {
+      const aheadMedian = median(bucket.aheads);
+      const waitMedian = median(bucket.waits);
+      return {
+        hour: bucket.hour,
+        exhibitor: bucket.exhibitor,
+        game: bucket.game,
+        joined_n: bucket.counts.joined,
+        update_n: bucket.counts.update,
+        entered_n: bucket.counts.entered,
+        left_n: bucket.counts.left,
+        closed_n: bucket.counts.closed,
+        meta_n: bucket.counts.meta,
+        clients_n: bucket.clients.size,
+        ahead_n: bucket.aheads.length,
+        ahead_med: aheadMedian === null ? null : Math.round(aheadMedian),
+        wait_n: bucket.waits.length,
+        wait_med: waitMedian === null ? null : Math.round(waitMedian),
+        computed_at: computedAt,
+      };
+    });
+}
+
 /**
  * Pure estimator. Every row timestamp is an integer epoch second and all
  * rolling-window filtering has already happened in the database query.
@@ -255,6 +354,7 @@ export function estimateLive(input, now) {
   const closures = groupByQueue(input.closures || []);
   const counters = groupByQueue(input.counters || []);
   const metadata = groupByQueue(input.meta || []);
+  const typical = groupByQueue(input.typical || []);
   const overrides = new Map(
     (input.overrides || []).map((row) => [queueToken(row.exhibitor, row.game), row])
   );
@@ -308,6 +408,7 @@ export function estimateLive(input, now) {
     ...closures.keys(),
     ...metadata.keys(),
     ...overrides.keys(),
+    ...typical.keys(),
   ]);
   const output = {};
 
@@ -427,6 +528,31 @@ export function estimateLive(input, now) {
           how: "sofar",
           n: new Set(openRows.map((row) => String(row.session))).size,
           newest: Math.max(...openRows.map((row) => Number(row.updated_at))),
+        };
+      }
+    }
+    /* Nobody has said anything today: fall back to what yesterday measured.
+       Rows here are the hourly aggregates (queue_stats_hourly) for the
+       previous show day, pooled across its hours weighted by how many
+       measured waits stand behind each — a day-level figure, clearly labelled
+       as yesterday's by the client rather than dressed up as live. `newest`
+       is the estimate time, not yesterday: the underlying data is a day old
+       by definition, and what freshness has to bound is how long a phone may
+       keep showing this figure after it stops hearing from the server. */
+    if (!value) {
+      const typicalRows = (typical.get(key) || []).filter(
+        (row) => Number(row.wait_n) > 0 && row.wait_med !== null && row.wait_med !== undefined
+      );
+      const measured = typicalRows.reduce((sum, row) => sum + Number(row.wait_n), 0);
+      if (measured > 0) {
+        const pooledSeconds =
+          typicalRows.reduce((sum, row) => sum + Number(row.wait_med) * Number(row.wait_n), 0) /
+          measured;
+        value = {
+          ...measuredMinutes(pooledSeconds / 60),
+          how: "typical",
+          n: measured,
+          newest: now,
         };
       }
     }

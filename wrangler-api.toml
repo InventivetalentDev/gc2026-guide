@@ -45,8 +45,11 @@ database_name = "gc2026-queues"
 database_id = "424b7933-9013-471a-8bae-e8927f406ede"
 migrations_dir = "worker/migrations"
 
-# Hourly retention sweep. Rows live 23 hours, so an hourly cron keeps the
-# 24-hour promise on the privacy page with an hour to spare.
+# Hourly rollup + retention sweep. Each tick first condenses raw rows into
+# anonymous per-queue hourly aggregates (queue_stats_hourly — no client ids,
+# kept through the show), then deletes device-linked rows older than 23 hours,
+# so an hourly cron keeps the 24-hour promise on the privacy page with an hour
+# to spare while the statistics survive it.
 [triggers]
 crons = ["0 * * * *"]
 

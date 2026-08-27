@@ -2333,6 +2333,12 @@ function queueLiveMain(live) {
   }
   if (live?.how === "done") return t("queue.live.done", { n: estimate });
   if (live?.how === "sofar") return t("queue.live.sofar", { n: estimate });
+  /* Yesterday's measured waits, pooled — shown only when nothing has been
+     reported today, and worded as yesterday's figure rather than a live one. */
+  if (live?.how === "typical" && live.capped) {
+    return t("queue.live.typicalCapped", { n: Math.max(1, Math.round(estimate / 60)) });
+  }
+  if (live?.how === "typical") return t("queue.live.typical", { n: estimate });
   return "";
 }
 
@@ -2347,9 +2353,13 @@ function queueLiveMarkup(queue, { compact = false } = {}) {
   if (!main) return "";
   const reports = t("queue.reports", { n: Number(live.n) || 0 });
   const mechanics = queueMechanics(live);
+  /* A typical figure's age is by definition a day, and "just now" would claim
+     the opposite; the slot says where the reports are from instead. The span
+     keeps data-live-age so the tick handler still notices it expiring. */
+  const age = live.how === "typical" ? t("queue.typicalAge") : queueAge(live.age);
   const detail = `<span class="queue-live-detail${compact ? " sr-only" : ""}">
     <span>${esc(reports)}</span><span aria-hidden="true">·</span>
-    <span data-live-age ${queueAttrs(queue)}>${esc(queueAge(live.age))}</span>${
+    <span data-live-age ${queueAttrs(queue)}>${esc(age)}</span>${
       QUEUES?.paused?.()
         ? `<span aria-hidden="true">·</span><span>${esc(t("power.paused"))}</span>`
         : ""
@@ -6893,7 +6903,7 @@ function updateQueueTimes() {
   let freshnessExpired = false;
   $$('[data-live-age]').forEach((el) => {
     const live = QUEUES.live(queueFromElement(el));
-    if (live) el.textContent = queueAge(live.age);
+    if (live) el.textContent = live.how === "typical" ? t("queue.typicalAge") : queueAge(live.age);
     else freshnessExpired = true;
   });
   /* Ticks normally touch text nodes only. Crossing a tier's freshness

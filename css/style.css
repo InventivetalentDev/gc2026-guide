@@ -1370,6 +1370,8 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .queue-live[data-tier="done"] .queue-live-main { color: var(--ok); }
 .queue-live[data-tier="sofar"] .queue-live-main { color: var(--warn); }
 .queue-live[data-tier="closed"] .queue-live-main { color: var(--alert); }
+/* Yesterday's pooled figure — deliberately not a live colour. */
+.queue-live[data-tier="typical"] .queue-live-main { color: var(--ink-mid); }
 .queue-live-detail {
   display: inline-flex;
   align-items: baseline;

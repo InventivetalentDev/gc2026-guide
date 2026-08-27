@@ -49,7 +49,11 @@ const GCQueues = (() => {
      here so the offer can be withdrawn once it is spent, rather than sending a
      report that can only come back 409. */
   const META_WINDOW_SECONDS = 24 * 60 * 60;
-  const FRESH_SECONDS = { flow: 900, sofar: 900, done: 3600, closed: 3600 };
+  /* "typical" is yesterday's aggregate, so its underlying data is a day old
+     by design; the two-hour bound is on how long a phone that stopped hearing
+     from the server may keep saying "yesterday around now" while "now" drifts
+     away from the hours the figure was computed for. */
+  const FRESH_SECONDS = { flow: 900, sofar: 900, done: 3600, closed: 3600, typical: 7200 };
   const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   let eventData = null;
