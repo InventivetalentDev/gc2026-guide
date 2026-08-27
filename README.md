@@ -378,6 +378,14 @@ collection window. Free text would also be the first thing the guide ever stored
 that the 24-hour sweep and the anonymous hourly aggregates were not designed
 around.
 
+The host is [Tally](https://tally.so) — Belgian, EU servers — and not Google
+Forms, which would have undone on the last page a visitor sees what the fonts
+and the missing analytics are for everywhere else. `privacy.html` names Tally BV
+in both languages as the processor. The one thing the link carries is a
+`?source=` word baked into it by hand, so "the card works, the Reddit post
+doesn't" is a fact rather than a guess; no script runs and nothing is read off
+the device to build it.
+
 Everything about it is off until `data/event.json` names a URL, so it ships dark
 and goes live with a data push rather than a deploy:
 

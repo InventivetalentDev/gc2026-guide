@@ -25,8 +25,34 @@ keeping paragraphs of visitor prose would mean a different retention promise, a
 moderation surface and a rewrite of both languages of `privacy.html`. For five
 questions asked once, a hosted form is the proportionate answer.
 
-So: the form lives wherever you like (Google Forms is the assumed default), and
-the app carries the link. Nothing is sent anywhere until a visitor taps it.
+So: the form is hosted, and the app carries the link. Nothing is sent anywhere
+until a visitor taps it.
+
+## Why Tally, and not Google Forms
+
+The guide already refuses Google twice over — no Analytics, and the fonts are
+served from this domain precisely so that reading the guide does not hand every
+visitor's IP to Google (see `README.md` under Design, and the "What this site
+does not do" list in `privacy.html`). Ending the show by sending everyone who
+liked it to a Google form would undo that on the last page they see.
+
+[Tally](https://tally.so) is the default here instead: a Belgian company, form
+data on EU servers, and every question below expressible as written — it has a
+linear-scale block with labelled anchors, and checkboxes that enforce a maximum
+number of choices, which is the one thing Google Forms needs a validation rule
+for. Tally BV is a processor, so it wants the usual: a DPA, and its name in the
+privacy page. Both are done — `privacy.html` names it in English and German.
+
+If you want the stronger version of this, [CryptPad
+Forms](https://cryptpad.org/apps/form/) is end-to-end encrypted: the host cannot
+read the answers at all, which is a claim no processor agreement can match, and
+it shortens the privacy section rather than lengthening it. It costs two things,
+both small but real — there is no scale question type, so Q1 becomes a five-way
+choice, and no maximum-choices setting, so Q3's cap is an instruction rather than
+a rule — plus a heavier page load for whoever is answering. **Build it under a
+free registered account if you go this way:** a CryptPad document that lives in
+no drive is destroyed after 90 days of inactivity, which is a bad thing to
+discover about a form you left collecting answers.
 
 ## Wiring the link into the app
 
@@ -64,12 +90,17 @@ Corrections keep their own line in the footer and their own mail address —
 
 ### Tagging where a response came from
 
-Google Forms' **Get pre-filled link** produces a URL with the answers baked into
-it as query parameters. Put a "Where did you open this from?" question at the
-end of the form, generate a pre-filled link with it answered "In the app", and
-paste *that* as `url`. Responses opened from the card and the footer then arrive
-pre-tagged, and the ones from a Reddit post do not — no code, no analytics, and
-nothing about the device travels with it.
+Type `/hidden` in the Tally editor to add a **hidden field** — call it `source`
+— and it is filled from a query parameter on the link. Paste
+`https://tally.so/r/XXXXXX?source=app` into `data/event.json` as `url`, and post
+`?source=reddit` on Reddit. Responses then arrive knowing which door they came
+through, and "the card works, the Reddit post doesn't" becomes a fact rather
+than a guess.
+
+That is the whole of the tracking, and it is worth being clear about what it is
+not: the value is a constant you wrote into a link, identical for every visitor.
+No script runs, nothing about the device travels with it, and the guide never
+learns that anyone opened the form.
 
 ## The questions
 
@@ -161,8 +192,8 @@ form: it is where "I wanted X and there was no X" gets written down.
 
 ### Q3 · What you liked most
 
-Checkboxes, **pick up to 3** (Google Forms: *Response validation → Select at
-most → 3*). Optional.
+Checkboxes, **pick up to 3** (Tally: block settings → maximum number of
+choices). Optional.
 
 The cap is the point. Without it people tick nine boxes and the answer is
 "everything", which decides nothing about what to build first.
@@ -206,7 +237,7 @@ Short answer, optional:
 
 ### Q4 · Problems
 
-Checkboxes, optional. Put "It worked fine" first — Google Forms cannot make an
+Checkboxes, optional. Put "It worked fine" first — no builder here makes an
 option exclusive, and first is where people stop reading when the answer is no.
 
 > **EN** — Did anything go wrong?
@@ -288,35 +319,51 @@ lawful basis, a line in `privacy.html`, and deletion when you are done with it.
 The footer already carries a mail address for anyone who wants a reply, and they
 will use it.
 
-## Building it in Google Forms
+## Building it in Tally
 
-1. New form, titled **gamescom 2026 guide — feedback**, description = the intro
-   above. If you build one bilingual form, put both languages in the title and
-   description and pair each question's wording the way this file does.
-2. Add the questions in order. Types: Q0 multiple choice · Q1 linear scale 1–5
-   with both anchors labelled · Q2 multiple choice · Q3 checkboxes with
-   *select at most 3* · Q4 checkboxes · Q5 multiple choice · the follow-ups as
-   short answer or paragraph.
-3. Settings → **Responses**: collect email addresses **off**, limit to 1
-   response **off** (it needs a Google account and turns half the responses
-   away), progress bar on, shuffle off.
-4. Settings → **Presentation**: confirmation message — *Thanks. That's genuinely
-   useful.* / *Danke. Das hilft wirklich.*
-5. Link to Sheets so the answers are somewhere you can sort them.
-6. Send → link → **Shorten URL**, and paste it into `data/event.json` as
-   `url`.
-7. Open it on a phone once and answer it yourself. A form nobody has walked
-   through on the device it will be answered on always has one broken question.
+Blocks are inserted by typing `/` and the block name, so the list below reads
+the way the editor does.
 
-If you would rather not use Google: anything that hands back a public URL works
-— Tally, Framaforms, LimeSurvey, a Cloudflare Pages form. The app only wants the
-link. Prefer an EU-hosted one and the privacy note below gets shorter.
+1. New form, titled **gamescom 2026 guide — feedback**. Open with a `/text`
+   block carrying the intro above. If you build one bilingual form, pair each
+   question's two wordings the way this file does rather than making the reader
+   pick a language first.
+2. Add the questions in order:
+
+   | | Block | Settings |
+   |---|---|---|
+   | Q0 | `/multiple choice` | — |
+   | Q1 | `/linear scale` | 1–5, both anchors labelled. Required |
+   | Q2 | `/multiple choice` | Required |
+   | Q3 | `/checkboxes` | **maximum 3 choices** |
+   | Q4 | `/checkboxes` | — |
+   | Q5 | `/multiple choice` | — |
+   | follow-ups | `/short answer`, `/long answer` | — |
+   | source tag | `/hidden` | named `source`, see above |
+
+3. Settings → **Privacy**: leave respondent email collection off, and do not
+   turn on any per-respondent limit — those need an account and turn away more
+   answers than they protect.
+4. Settings → **After submission**: *Thanks. That's genuinely useful.* /
+   *Danke. Das hilft wirklich.*
+5. Publish, take the `tally.so/r/…` link, append `?source=app`, and paste it
+   into `data/event.json` as `url`.
+6. Answer it yourself on a phone before you ship the link. A form nobody has
+   walked through on the device it will be answered on always has exactly one
+   broken question.
+
+The app only ever wants a URL, so none of this is load-bearing: CryptPad Forms,
+LimeSurvey, Formbricks or a form you host yourself all work the same way. Prefer
+an EU-hosted one and the privacy note below stays short.
 
 ## Before you paste the URL in
 
-- `privacy.html` already names the form in both languages as a third-party site
-  opened by tapping, with nothing sent automatically. If you pick a host other
-  than Google, correct the provider named there.
+- `privacy.html` names **Tally BV** in both languages as the processor, with its
+  address, EU hosting and the fact that nothing reaches it until someone taps
+  the link. Pick a different host and that is the paragraph to correct — in
+  both languages, and the transfers-outside-the-EU note with it.
+- Accept Tally's DPA on the account that owns the form. You are the controller
+  for whatever people write in it; they are the processor.
 - Add a `data/changelog.json` entry and bump `revision` in `data/meta.json`, so
   the Updates tab mentions it. Nothing announces it before then — that is
   deliberate, so the feature can ship dark and go live with a data push.
