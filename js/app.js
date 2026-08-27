@@ -6581,11 +6581,6 @@ function queueRowMarkup(entry) {
   if (pending) {
     actions = `<span class="queue-session-time">${esc(t("queue.pendingCompletion"))}</span>`;
   } else if (active) {
-    /* How the line moves is the one report you often cannot make at the moment
-       you join — twenty minutes in is when a wave queue reveals itself, and by
-       then the join dialog is long closed. So the mechanics vote gets a button
-       of its own on the line you are in, for as long as it is unspent. */
-    const mechanics = canReport && !queueMetaReported(queue);
     actions = `${queueElapsedMarkup(queue, active)}
       <span class="queue-session-actions">
         ${
@@ -6598,14 +6593,6 @@ function queueRowMarkup(entry) {
           aria-label="${esc(t("queue.action.enteredAria", { queue: name }))}">${esc(t("queue.action.entered"))}</button>
         <button class="queue-action" type="button" data-queue-action="left" ${queueAttrs(queue)}
           aria-label="${esc(t("queue.action.leftAria", { queue: name }))}">${esc(t("queue.action.left"))}</button>
-        ${
-          mechanics
-            ? `<button class="queue-action" type="button" data-queue-action="details" ${queueAttrs(queue)}
-                aria-label="${esc(t("queue.action.detailsAria", { queue: name }))}">${esc(
-                  t("queue.action.details")
-                )}</button>`
-            : ""
-        }
       </span>`;
   } else if (canReport) {
     actions = `<span class="queue-session-actions">
@@ -6920,14 +6907,24 @@ function queueAheadLabel(value) {
   return value === 200 ? t("queue.ahead.200") : t("queue.ahead.value", { n: value });
 }
 
+/* The bucket this device last reported is marked, and the question changes
+   with it: the second answer is a correction of the first, and a line that has
+   moved is the whole reason to be back here. Marked, not selected — these chips
+   report on tap, so the mark is history rather than a pending choice. */
 function queueDialogAhead() {
+  /* `lastAhead` is null until a count is actually reported, and Number(null)
+     is 0 — which would mark nothing and ask the wrong question. */
+  const reported = QUEUES.session(queueDialogState?.queue)?.lastAhead;
+  const last = reported === null || reported === undefined ? NaN : Number(reported);
+  const again = Number.isFinite(last);
   return `<div class="queue-dialog-step">
-    <p class="queue-dialog-question">${esc(t("queue.aheadQuestion"))}</p>
+    <p class="queue-dialog-question">${esc(t(again ? "queue.aheadQuestionAgain" : "queue.aheadQuestion"))}</p>
     <div class="queue-choice-row" role="group" aria-label="${esc(t("queue.aheadAria"))}">
       ${QUEUE_AHEAD.map(
-        (value) => `<button class="queue-choice" type="button" data-queue-dialog-action="ahead" data-value="${value}">${esc(
-          queueAheadLabel(value)
-        )}</button>`
+        (value) => `<button class="queue-choice${value === last ? " queue-choice-last" : ""}" type="button"
+          data-queue-dialog-action="ahead" data-value="${value}"${
+            value === last ? ' aria-current="true"' : ""
+          }>${esc(queueAheadLabel(value))}</button>`
       ).join("")}
       <button class="queue-choice" type="button" data-queue-dialog-action="ahead-none">${esc(
         t("queue.aheadSkip")
@@ -6936,8 +6933,14 @@ function queueDialogAhead() {
   </div>`;
 }
 
-/* The chips themselves, without the frame around them: the join flow tucks
-   them behind a disclosure, the standalone mechanics dialog is nothing else. */
+/* No save button of its own: "Done" at the foot of the dialog commits whatever
+   is picked here. It used to have one, and the two buttons read as a choice —
+   the instinct is to reach for the primary action at the bottom, which closed
+   the dialog and dropped the mechanics on the floor. That is also why Done
+   appears on this step and no earlier: a black button under the count chips is
+   a way to leave without answering them. Chips cannot report on tap the way the
+   claim and count rows do, because `meta` is one report per device and queue a
+   day: the type and its batch size have to travel together. */
 function queueDialogMechanics() {
   const selected = queueDialogState?.qtype || "";
   const wantsBatch = selected === "group" || selected === "wave";
@@ -6962,21 +6965,6 @@ function queueDialogMechanics() {
         </div>`
       : ""
   }`;
-}
-
-/* No save button of its own: "Done" at the foot of the dialog commits whatever
-   is picked here. It used to have one, and the two buttons read as a choice —
-   the instinct is to reach for the primary action at the bottom, which closed
-   the dialog and dropped the mechanics on the floor. Chips cannot submit on tap
-   the way the claim and ahead rows do, because `meta` is one report per device
-   and queue per day: the type and its batch size have to travel together. */
-function queueDialogDetails() {
-  if (queueDialogState?.metaSaved || queueMetaReported(queueDialogState?.queue)) return "";
-  return `<details class="queue-details"${queueDialogState.detailsOpen ? " open" : ""}>
-    <summary>${esc(t("queue.details"))}</summary>
-    <p>${esc(t("queue.detailsHelp"))}</p>
-    ${queueDialogMechanics()}
-  </details>`;
 }
 
 function renderQueueDialog() {
@@ -7013,28 +7001,22 @@ function renderQueueDialog() {
         ).join("")}
       </div>
     </div>`;
-  } else if (queueDialogState.mode === "update") {
-    flow.innerHTML = queueDialogAhead();
-  } else if (queueDialogState.mode === "mechanics") {
-    /* Asked for on purpose from a line you are already standing in, so the
-       disclosure the join flow hides the chips behind would be a lid on the
-       one thing this dialog is. */
+  } else if (queueDialogState.mode === "meta") {
+    /* The step the count leads to, in both flows: by the time you have counted
+       the heads in front of you, you have also watched the line move. */
     flow.innerHTML = `<div class="queue-dialog-step">
       <p class="queue-dialog-question">${esc(t("queue.detailsQuestion"))}</p>
+      <p class="queue-dialog-note">${esc(t("queue.detailsHelp"))}</p>
       ${queueDialogMechanics()}
     </div>`;
   } else {
-    flow.innerHTML = `${queueDialogState.aheadDone ? "" : queueDialogAhead()}${queueDialogDetails()}`;
+    flow.innerHTML = queueDialogAhead();
   }
   flow.querySelectorAll("button").forEach((button) => {
     button.disabled = button.disabled || queueDialogState.busy;
   });
-  const details = flow.querySelector(".queue-details");
-  details?.addEventListener("toggle", () => {
-    if (queueDialogState) queueDialogState.detailsOpen = details.open;
-  });
   $("#queue-dialog-status").textContent = queueDialogState.status || "";
-  $("#queue-dialog-done").hidden = !["details", "mechanics"].includes(queueDialogState.mode);
+  $("#queue-dialog-done").hidden = queueDialogState.mode !== "meta";
 }
 
 let queueDialogInvoker = null;
@@ -7047,6 +7029,9 @@ function otherOpenSession(queue) {
   );
 }
 
+/* Modes are named for the report each step produces — join, update, meta —
+   with "switch" the one that reports nothing, and each step moves to the next
+   only once its own report has landed. */
 function openQueueDialog(queue, mode, invoker = null, held = null) {
   const dialog = $("#queue-dialog");
   if (!dialog || !queue) return;
@@ -7057,10 +7042,8 @@ function openQueueDialog(queue, mode, invoker = null, held = null) {
     mode,
     busy: false,
     status: "",
-    aheadDone: false,
     qtype: "",
     batch: null,
-    detailsOpen: false,
     metaSaved: false,
   };
   renderQueueDialog();
@@ -7151,18 +7134,22 @@ async function submitQueueDialog(action, value) {
   try {
     if (action === "claim") {
       requireQueueDelivery(await QUEUES.report(stateAtSubmit.queue, "joined", { claimed: Number(value) }));
-      stateAtSubmit.mode = "details";
+      stateAtSubmit.mode = "update";
       stateAtSubmit.status = t("queue.joinedSuccess");
     } else if (action === "ahead" || action === "ahead-none") {
       const body = action === "ahead" ? { ahead: Number(value) } : {};
       requireQueueDelivery(await QUEUES.report(stateAtSubmit.queue, "update", body));
-      if (stateAtSubmit.mode === "update") {
+      /* The count is in; ask the thing the count taught you. Every check-in
+         reaches this until the day's mechanics vote is spent, and stops asking
+         the moment it is — the Worker takes one per device and queue a day, so
+         a second offer could only be refused. */
+      if (queueMetaReported(stateAtSubmit.queue)) {
         const dialog = $("#queue-dialog");
         if (queueDialogState === stateAtSubmit && dialog.open) dialog.close();
         showToast(t("queue.updatedSuccess"));
         return;
       }
-      stateAtSubmit.aheadDone = true;
+      stateAtSubmit.mode = "meta";
       stateAtSubmit.status = t("queue.updatedSuccess");
     } else if (action === "done") {
       const body = { qtype: stateAtSubmit.qtype };
@@ -7182,12 +7169,10 @@ async function submitQueueDialog(action, value) {
       stateAtSubmit.busy = false;
       renderQueueDialog();
       if ($("#queue-dialog").open) {
-        if (failed) {
-          $("#queue-dialog-flow button:not([disabled])")?.focus();
-        } else if (action === "claim") $("#queue-dialog-flow .queue-choice")?.focus();
-        else if (action === "ahead" || action === "ahead-none" || action === "meta") {
-          $("#queue-dialog-done")?.focus();
-        }
+        if (failed) $("#queue-dialog-flow button:not([disabled])")?.focus();
+        /* Every successful step opens another question, so focus lands on its
+           first chip rather than on Done at the foot. */
+        else $("#queue-dialog-flow .queue-choice")?.focus();
       }
     }
   }
@@ -7199,17 +7184,14 @@ async function runQueueAction(queue, action, source = null) {
   const actionGroup = action === "entered" || action === "left" ? "outcome" : action;
   const pendingKey = `${QUEUES.queueKey(queue.exhibitor, queue.game)}:${actionGroup}`;
   if (pendingQueueActions.has(pendingKey)) return;
-  if (action === "join" || action === "update" || action === "details") {
+  if (action === "join" || action === "update") {
     queuePromptKey = null;
     renderQueuePrompt(false);
     /* One line at a time. Joining closes whatever else is open — the Worker
        does that regardless — so say which line is about to end rather than
        ending it behind their back. */
     const held = action === "join" ? otherOpenSession(queue) : null;
-    /* "details" opens the mechanics chips alone: the vote the join dialog
-       tucks away, asked for later from the line it is about. */
-    const mode = action === "details" ? "mechanics" : held ? "switch" : action;
-    openQueueDialog(queue, mode, source, held);
+    openQueueDialog(queue, held ? "switch" : action, source, held);
     return;
   }
   pendingQueueActions.add(pendingKey);

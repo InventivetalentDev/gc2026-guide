@@ -2601,20 +2601,13 @@ a.area-hall::after { content: ""; position: absolute; inset: -6px -8px; }
 .queue-dialog-flow { display: flex; flex-direction: column; gap: 16px; }
 .queue-dialog-step { display: flex; flex-direction: column; gap: 9px; }
 .queue-dialog-question { color: var(--ink-mid); font-size: .88rem; }
+.queue-dialog-note { margin-top: -3px; color: var(--ink-dim); font-size: .8rem; }
 .queue-choice-row { display: flex; gap: 7px; flex-wrap: wrap; }
 .queue-choice { min-width: 70px; }
-.queue-details {
-  margin-top: 5px;
-  padding-top: 13px;
-  border-top: 1px solid var(--rule-soft);
-}
-.queue-details summary {
-  color: var(--signal);
-  font-weight: 700;
-  cursor: pointer;
-}
-.queue-details > p { margin: 9px 0; color: var(--ink-dim); font-size: .8rem; }
-.queue-details .queue-choice-row + .queue-dialog-question { margin-top: 12px; }
+/* The count this device last reported. Deliberately not `.active`, which on a
+   mechanics chip means "picked, and Done will send it": these chips send on
+   tap, so the mark is a record of the last answer, not a pending one. */
+.queue-choice-last { border-color: var(--signal); color: var(--ink); }
 .queue-dialog-status {
   min-height: 1.5em;
   margin-top: 14px;

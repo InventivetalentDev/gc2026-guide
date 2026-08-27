@@ -197,11 +197,6 @@ window.GC_STRINGS.en = {
   "queue.action.leftAria": "Report that you left the queue for {queue}",
   "queue.action.closed": "Queue closed",
   "queue.action.closedAria": "Report that the queue for {queue} is closed",
-  /* The mechanics vote, reachable from a line you are already in. Shorter
-     than the disclosure it mirrors ("Queue details"), because here it sits in
-     a row of buttons rather than above the chips it opens. */
-  "queue.action.details": "How it moves",
-  "queue.action.detailsAria": "Report how the queue for {queue} moves",
   "queue.dialogOverline": "Live queue",
   "queue.dialogTitle": "Queue report",
   "queue.closeAria": "Close queue report",
@@ -224,13 +219,16 @@ window.GC_STRINGS.en = {
   "queue.claim.90": "~1½ h",
   "queue.claim.120": "2 h+",
   "queue.aheadQuestion": "Roughly how many people are ahead of you?",
+  /* The second answer and after: the line has moved, which is why you are
+     back. The chip you last reported is marked, so this reads as a
+     correction rather than the same question asked twice. */
+  "queue.aheadQuestionAgain": "How many are ahead of you now?",
   "queue.aheadAria": "People ahead in this queue",
   "queue.ahead.value": "~{n}",
   "queue.ahead.200": "200+",
   "queue.aheadSkip": "Not sure / skip",
-  "queue.details": "Queue details",
   "queue.detailsQuestion": "How does this queue move?",
-  "queue.detailsHelp": "Optional: add how this queue moves if you can tell, then hit Done.",
+  "queue.detailsHelp": "Optional — tap what you can tell by now, then Done.",
   "queue.typeAria": "How this queue moves",
   "queue.type.single": "One by one",
   "queue.type.pairs": "Pairs",
@@ -240,7 +238,7 @@ window.GC_STRINGS.en = {
   "queue.batchAria": "Approximate group or wave size",
   "queue.detailsSaved": "Queue details saved. Thank you.",
   "queue.sending": "Sending…",
-  "queue.joinedSuccess": "Timer started. The count and details below are optional.",
+  "queue.joinedSuccess": "Timer started. Everything from here is optional.",
   "queue.updatedSuccess": "Queue update sent. Thank you.",
   "queue.enteredSuccess": "Wait completed — thank you for reporting it.",
   "queue.leftSuccess": "Queue session closed.",

@@ -389,34 +389,40 @@ Just joined · waiting ~10 · ~20 · ~30 · ~45 · ~1 h · ~1½ h · 2 h+
 ```
 
 one tap opens the session (the non-first chips are the late-starter claim),
-then an optional second row — "roughly how many ahead of you?" — and, tucked
-behind a "queue details" disclosure for those who know: mechanics chips
-(one-by-one / pairs / groups / waves) and batch size. The disclosure ordering
-*is* the settled design decision: elapsed first, mechanics only ever
-optional, because you can be twenty minutes into a wave queue before
-learning it moves in waves.
+then an optional second step — "roughly how many ahead of you?" — and then,
+once that is answered, the mechanics chips (one-by-one / pairs / groups /
+waves) and batch size. The ordering *is* the settled design decision: elapsed
+first, mechanics only ever optional, because you can be twenty minutes into a
+wave queue before learning it moves in waves.
 
-That last sentence is also why the disclosure cannot be the *only* way to cast
-the vote. The join dialog is closed within seconds of the timer starting —
-that is the point of it — and the fact it asks for often arrives long after:
-the queue splits into pairs at the stanchion, or fifty people go in at once
-and the shape of the thing is suddenly obvious. So the same chips are reachable
-from the row of any line you are in, as a fourth button ("How it moves") beside
-the three below, and they are the whole dialog when opened that way rather than
-something folded away inside it. The offer is withdrawn once the vote is spent:
-`meta` is one report per device and queue a day, so the client records the vote
-in its own store (`meta`, keyed like `sessions`, expiring on the Worker's own
-24-hour rule) and stops offering what the server can only refuse. A 409 for a
-vote this device does not remember — cleared storage, a second tab — records
-itself from the response's `Retry-After` and withdraws the offer too.
+Which is why the sheet that starts the timer cannot be the only place they are
+asked. It is closed within seconds — that is the point of it — and what it asks
+for arrives long after: the line splits into pairs at the stanchion, or fifty
+people go in at once and the shape of the thing is suddenly obvious. So **the
+check-in walks the same steps the join does**, without the claim: "Still
+waiting" (from the row or from the prompt bar) → "how many are ahead of you
+now?" → "how does this queue move?" → Done. Every check-in reaches that last
+question until the day's vote is spent, and stops asking the moment it is: `meta` is one report per device and queue a day, so
+the client records the vote in its own store (`meta`, keyed like `sessions`,
+expiring on the Worker's own 24-hour rule) and never offers what the server
+could only refuse — a check-in on a queue whose mechanics this device has
+already reported is the one tap it always was. A 409 for a vote this device
+does not remember — cleared storage, a second tab — records itself from the
+response's `Retry-After` and stops the asking too.
+
+Two smaller consequences of the same idea, that a check-in is a *revision* of
+what you said last time rather than the same question asked twice: the count
+step marks the bucket this device last reported (marked, not selected — these
+chips report on tap) and asks "how many are ahead of you **now**" once there is
+one. And Done appears only on the mechanics step, never under the count chips,
+because a primary button beneath a question is a way to leave without
+answering it — the same reason the mechanics chips do not report on tap.
 
 **Living with a session.** The client keeps the active session in
 localStorage (`gc2026.queue.v1`): queue, joined-at, last-ahead. While it is
 open, its row in the queues view is a live timer with three buttons — **Still
-waiting** (optionally re-asking the ahead bucket), **I'm in!**, **I left** —
-and a fourth, **How it moves**, for as long as the day's mechanics vote on that
-queue is unspent. Its booth's card link reads "You're in 1 line here", and, the
-load-bearing nudge: whenever the app is reopened or the tab refocuses with a
+waiting** (the check-in above), **I'm in!**, **I left** — its booth's card link
+reads "You're in 1 line here", and, the load-bearing nudge: whenever the app is reopened or the tab refocuses with a
 session past ~10 min, a quiet prompt bar surfaces it:
 "Still queueing for Fable? 23 min · [Still waiting] [I'm in!] [I left]".
 That reopen moment is when ground truth gets captured or lost — no
