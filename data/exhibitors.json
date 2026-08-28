@@ -67,7 +67,6 @@
       { "title": "Orbitals", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Pokémon Pokopia (Expansion Pass)", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Splatoon Raiders", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
-      { "title": "Elden Ring: Tarnished Edition", "status": "confirmed", "playable": true, "age": 16, "ageStatus": "expected", "platforms": ["Switch 2"] },
       { "title": "Star Fox", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Mario Kart World", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Donkey Kong Bananza", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
@@ -85,12 +84,12 @@
       "https://www.gamescom.global/en/info/gamescom-cares",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
-      "https://x.com/BandaiNamcoEU/status/1955615446180184138",
       "https://www.gamescom.global/en/exhibitor/nintendo-of-europe-se",
       "https://www.nintendo.com/de-at/News/2026/August/Nintendo-auf-der-gamescom-2026-3145761.html",
-      "https://nintendo-online.de/news/nintendo-auf-der-gamescom-2026-diese-16-spiele-sind-am-stand-spielbar"
+      "https://nintendo-online.de/news/nintendo-auf-der-gamescom-2026-diese-16-spiele-sind-am-stand-spielbar",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
     ],
-    "lastUpdated": "2026-08-26"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "playstation",
@@ -205,10 +204,9 @@
       "https://en.bandainamcoent.eu/dawnwalker/the-blood-of-dawnwalker",
       "https://www.gamescom.global/en/info/gamescom-cares",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
-      "https://x.com/BandaiNamcoEU/status/1955615446180184138",
       "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-25"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "konami",
