@@ -1842,11 +1842,13 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/lego-gmbh",
     "games": [
-      { "title": "LEGO Batman: Legacy of the Dark Knight", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
-      { "title": "LEGO Fortnite", "status": "confirmed", "playable": false, "platforms": ["PC", "Consoles"] },
-      { "title": "LEGO Skylines", "status": "rumored", "playable": null, "onl": true, "platforms": ["PC", "Consoles"] }
+      { "title": "LEGO Batman: Legacy of the Dark Knight", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
+      { "title": "LEGO Fortnite", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "LEGO Skylines", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
+      { "title": "Minecraft Dungeons II", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC", "Switch 2", "PS5"] },
+      { "title": "Forza Horizon 6", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"] }
     ],
-    "tags": ["family-friendly", "photo ops"],
+    "tags": ["family-friendly", "photo ops", "playable demos"],
     "crowd": 4,
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
@@ -1860,9 +1862,11 @@
       "https://www.brickfanatics.com/what-to-expect-from-lego-at-gamescom-2026",
       "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
       "https://www.brick-tracker.de/blog/news/lego-auf-der-gamescom-2026-fortnite-pokemon-moegliche-spiele-news/",
-      "https://www.notebookcheck.com/LEGO-Batman-DLC-Trailer-zeigt-Joker-Kampagne-und-Switch-2-Bundle.1379139.0.html"
+      "https://www.notebookcheck.com/LEGO-Batman-DLC-Trailer-zeigt-Joker-Kampagne-und-Switch-2-Bundle.1379139.0.html",
+      "https://jaysbrickblog.com/news/legos-gamescom-2026-booth-celebrates-all-things-gaming/",
+      "https://insider-gaming.com/lego-skylines-revealed-gamescom-2026/"
     ],
-    "lastUpdated": "2026-08-26"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "wizards-of-the-coast",
@@ -1908,14 +1912,22 @@
     "hall": "9.1",
     "booth": "B020/C029",
     "locationConfirmed": true,
-    "games": [],
-    "tags": ["hardware", "monitors"],
-    "crowd": 3,
+    "games": [
+      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"] },
+      { "title": "Cronos: The New Dawn", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Cyberpunk 2077", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+    ],
+    "tags": ["hardware", "monitors", "playable demos", "shooter"],
+    "crowd": 4,
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
-      "https://exhibitors.gamescom.global/exhibitor/samsungtechwin/"
+      "https://exhibitors.gamescom.global/exhibitor/samsungtechwin/",
+      "https://news.samsung.com/global/samsung-introduces-new-odyssey-lineup-for-fast-paced-gaming-at-gamescom-2026",
+      "https://news.samsung.com/global/samsung-announces-partnership-with-call-of-duty-modern-warfare-4",
+      "https://www.ghacks.net/2026/08/19/samsung-and-activision-partner-on-call-of-duty-modern-warfare-4-with-odyssey-g9-display-tie-in/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "razer",
@@ -3403,6 +3415,26 @@
       "https://www.gamescom.global/en/exhibitor/iiyama-benelux-bv"
     ],
     "lastUpdated": "2026-08-25"
+  },
+  {
+    "id": "retro-area",
+    "name": "Retro Area (Haus der Computerspiele)",
+    "type": "experience",
+    "hall": "10.2",
+    "booth": "C010/B019, B020/A029, B010/A019, A011, A024, A010, A022",
+    "locationConfirmed": true,
+    "dirSlug": "haus_der_c",
+    "games": [],
+    "tags": ["retro", "exhibition", "family-friendly", "playable demos", "hands-on"],
+    "crowd": 3,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/haus_der_c/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/program/areas/retro-and-family",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-retro-area-230826/",
+      "https://www.gaming-insider.de/gamescom-2026-die-highlights-der-retro-area-in-halle-10-2-im-ueberblick/"
+    ],
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "retro-games",

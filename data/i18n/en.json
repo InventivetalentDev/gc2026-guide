@@ -904,13 +904,15 @@
       "visitAdvice": "Skip it unless you're job-hunting or studying. It is, however, a genuinely calm place to sit down mid-day, and the accessibility and youth-work stands are worth a look."
     },
     "lego": {
-      "description": "Multi-stand block in Hall 9.1 next to Nintendo. The headline is LEGO Batman: Legacy of the Dark Knight, whose Mayhem Collection DLC gets its first public showing here ahead of a September 18 release, alongside a LEGO Fortnite section built around a life-size recreation of the Rave Cave set.",
-      "crowdNote": "Family magnet in the same hall as Nintendo — photo-op and demo lines get long on the weekend.",
-      "visitAdvice": "Weekday mornings; weekends are dominated by families. LEGO has not said whether the Batman DLC is hands-on or shown on screens, so treat a demo station as a bonus rather than the reason to queue.",
+      "description": "Multi-stand block in Hall 9.1 next to Nintendo, walked as a ring of themed zones. Four things are playable: the Mayhem Collection DLC for LEGO Batman: Legacy of the Dark Knight, the LEGO Fortnite modes, Minecraft Dungeons II, and Forza Horizon 6 from brick-built racing rigs. The rest is display and photo ops — LEGO Skylines, Super Mario, Pokémon, One Piece — plus a shop selling sets at 20% off.",
+      "crowdNote": "Family magnet in the same hall as Nintendo — four demo zones and as many photo ops, and the lines get long on the weekend.",
+      "visitAdvice": "Weekday mornings; weekends are dominated by families. There is more hands-on here than the booth looks, and most of it rewards you: high scores at the Batman demo win a full set, the Forza rigs have prizes for beating target times, and a stamp rally passport from the shop counter redeems a gold LEGO charm once you have collected stamps across the zones.",
       "games": {
-        "LEGO Batman: Legacy of the Dark Knight": "First public look at the Mayhem Collection DLC at the stand before its Sept 18 release — the Switch 2 version lands the same day; whether it's playable is still unstated.",
-        "LEGO Fortnite": "The booth's main draw — a life-size Rave Cave build and photo ops, not a playable demo.",
-        "LEGO Skylines": "Revealed at ONL — but it's Paradox-published (Iceflake), and a LEGO-booth showing remains unconfirmed; German LEGO press calls it speculation."
+        "LEGO Batman: Legacy of the Dark Knight": "Playable demo of the Mayhem Collection DLC before its Sept 18 release — the Switch 2 version lands the same day. Everyone gets the Retro Video Game Batman minifigure; a high score wins a full LEGO Batman set.",
+        "LEGO Fortnite": "Playable: demos of the various modes, entered through a life-size recreation of the Rave Cave set, with Loot Llama and Cuddle Team Leader builds and a dance photo station.",
+        "LEGO Skylines": "Announced at Opening Night Live and given its own zone here, but not playable — a LEGO construction-zone photo op and a prize wheel handing out stickers, bags, lanyards and small Technic sets.",
+        "Minecraft Dungeons II": "Playable demos in the LEGO Minecraft zone, beside the physical sets and a very large Creeper build.",
+        "Forza Horizon 6": "Played sitting in brick-built racing sim rigs in the middle of the booth, with prizes for beating the target times."
       }
     },
     "wizards-of-the-coast": {
@@ -927,9 +929,14 @@
       "visitAdvice": "Morning visit if you want hands-on time with the ROG Ally handhelds."
     },
     "samsung": {
-      "description": "Odyssey gaming monitors and SSDs with partner-game demo stations in Hall 9.1. Samsung is also co-registered at Pearl Abyss's B010/C011 stand nearby, which it powers with 6K Odyssey G8 displays.",
-      "crowdNote": "Big footprint and Hall 9 foot traffic keep it busy, but station turnover is fast.",
-      "visitAdvice": "Combine with your Nintendo Hall 9 visit; no need to rush it at opening."
+      "description": "Odyssey gaming monitors and SSDs in Hall 9.1, built around a hands-on demo zone: Call of Duty: Modern Warfare 4 playable two months before its Oct 23 release, on the 2027 Odyssey line — a 49-inch 360 Hz OLED G9, a 42-inch curved OLED G7, a 4K OLED G8 and a 1,100 Hz G6. Samsung is also co-registered at Pearl Abyss's B010/C011 stand nearby, which it powers with 6K Odyssey G8 displays.",
+      "crowdNote": "An early hands-on with Modern Warfare 4 in Hall 9's foot traffic makes this busier than a monitor stand would normally be, though station turnover is fast.",
+      "visitAdvice": "Combine with your Nintendo Hall 9 visit — but come early in the day if Modern Warfare 4 is the point, because Samsung raffles 500 Vault Edition game codes to booth visitors.",
+      "games": {
+        "Call of Duty: Modern Warfare 4": "Playable here as well as at Xbox, ahead of the Oct 23 release, on Odyssey monitors under Samsung's HDR10+ GAMING deal with Activision. 500 Vault Edition codes are raffled at the booth.",
+        "Cronos: The New Dawn": "One of the titles Samsung runs on the Odyssey panels; whether you can play it here is not stated.",
+        "Cyberpunk 2077": "A showcase title for the OLED panels; whether you can play it here is not stated."
+      }
     },
     "razer": {
       "description": "Two locations: the consumer stand in Hall 10.2 and a business stand in Hall 2.2. Hands-on with the 2026 peripheral line from its big CES slate, plus esports events and merch drops.",
@@ -1649,6 +1656,11 @@
       "description": "Gaming monitors from the established display brand — shares a stand with Diablo Chairs in Hall 10.1's hardware row.",
       "crowdNote": "A quiet component stand, not a destination booth.",
       "visitAdvice": "A quick look if you're already working the hardware row."
+    },
+    "retro-area": {
+      "description": "The exhibition half of the Retro & Family Area: about 2,000 m² across seven Hall 10.2 stands, put together by René Meyer's Haus der Computerspiele with around 50 collectors, clubs and institutions, Berlin's Computerspielemuseum among them. Working consoles, arcade cabinets and home computers from five decades — Pong, the 80s arcades, C64 and Amiga, Super Nintendo — most of them there to be played, plus pinball, dance cabinets and a stage.",
+      "crowdNote": "Hundreds of machines over a lot of floor, so it absorbs a crowd — but the headline cabinets and the stage seats fill up at the weekend.",
+      "visitAdvice": "Nothing here has a queue worth planning around, so treat it as browsing time — an hour goes quickly. Check the stage schedule first: the German Classic Tetris Championship is played on it, alongside quizzes, interviews and live music, with Commodore's Petro Tyschtschenko and composers Chris Hülsbeck and David Wise among the guests. The world's largest Pac-Man cabinet and a Vectrex Mini prototype are what people come to photograph. The separate collectors' stand at A020 next door is worth the extra few minutes."
     },
     "retro-games": {
       "description": "Officially licensed retro-console recreations — THEC64 Mini, TheA500 Mini and similar — from the UK brand behind them, in Hall 10.2's retro corner.",
