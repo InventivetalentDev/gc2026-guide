@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-28",
+    "revision": 62,
+    "changes": [
+      { "kind": "content", "text": "New card for NCSOFT's ONL line-up, which had been missing from the guide: Cinder City, AION 2 and Like or Die all premiered at Opening Night Live, and none of the three is on the public floor." },
+      { "kind": "content", "text": "Cinder City is BigFire Games' open-world third-person shooter set in a fallen near-future Seoul, still undated; AION 2 launches Oct 5; Project Bonfire was revealed as Like or Die. NCSOFT's only stand is the closed business booth in Hall 4.2." }
+    ]
+  },
+  {
+    "date": "2026-08-28",
     "revision": 61,
     "changes": [
       { "kind": "content", "text": "LEGO's Hall 9.1 booth turns out to be hands-on: playable stations for the LEGO Batman: Legacy of the Dark Knight Mayhem DLC, LEGO Fortnite and Minecraft Dungeons II, plus Forza Horizon 6 played sitting in brick-built racing rigs." },

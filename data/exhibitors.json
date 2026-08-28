@@ -2118,6 +2118,32 @@
     "lastUpdated": "2026-08-25"
   },
   {
+    "id": "ncsoft",
+    "name": "NCSOFT",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": false,
+    "games": [
+      { "title": "AION 2", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC"] },
+      { "title": "Cinder City", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Like or Die", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC"] }
+    ],
+    "tags": ["not exhibiting", "MMO", "shooter", "world premiere"],
+    "crowd": 1,
+    "sources": [
+      "https://www.analogstickgaming.com/news/nc-to-showcase-three-upcoming-titles-at-gamescom-2026",
+      "https://www.invenglobal.com/articles/25303/ncsoft-unveils-new-lineup-at-gamescom-2026",
+      "https://gamesbeat.com/cinder-city-gets-new-trailer-at-gamescom-2026-opening-night-live/",
+      "https://gamesbeat.com/nc-reveal-like-or-die-at-gamescom-2026/",
+      "https://www.mmorpg.com/news/aion-2-officially-gets-october-5th-release-date-2000138791",
+      "https://store.steampowered.com/app/4651830/",
+      "https://store.steampowered.com/app/4559400/",
+      "https://exhibitors.gamescom.global/exhibitor/ncsoft/"
+    ],
+    "lastUpdated": "2026-08-28"
+  },
+  {
     "id": "paradox-urban",
     "name": "Paradox / Urban Games",
     "type": "publisher",
@@ -3034,7 +3060,8 @@
   },
   {
     "id": "ncsoft-business",
-    "name": "NCSOFT",
+    "businessOf": "ncsoft",
+    "name": "NCSOFT — business booth",
     "type": "trade",
     "hall": "4.2",
     "booth": "B050/A051",
