@@ -1,0 +1,125 @@
+{
+  "title": "gamescom 2026 guide — feedback",
+  "description": "Thanks for using the unofficial gamescom 2026 guide. Five questions, about a minute. Anonymous — no account, no email needed, and nothing here is passed on to anyone.",
+  "language": "en",
+  "questions": [
+    {
+      "type": "multiple choice",
+      "title": "How did you use the guide?",
+      "required": false,
+      "options": [
+        "Planning before the show",
+        "On my phone at the show",
+        "Both",
+        "I looked at it but didn't really use it",
+        "I didn't go to gamescom"
+      ]
+    },
+    {
+      "type": "linear scale",
+      "title": "How useful was the guide to you?",
+      "required": true,
+      "min": 1,
+      "max": 5,
+      "minLabel": "Not useful",
+      "maxLabel": "Very useful"
+    },
+    {
+      "type": "short answer",
+      "title": "What made it useful — or what didn't?",
+      "required": false
+    },
+    {
+      "type": "multiple choice",
+      "title": "Would you want this guide back for gamescom 2027?",
+      "required": true,
+      "options": [
+        "Yes, definitely",
+        "Yes, if it covers what I need",
+        "Maybe — no strong feeling",
+        "No"
+      ]
+    },
+    {
+      "type": "long answer",
+      "title": "What would make it better next year?",
+      "required": false
+    },
+    {
+      "type": "checkboxes",
+      "title": "Which parts did you get the most out of? (up to 3)",
+      "required": false,
+      "maxChoices": 3,
+      "options": [
+        "Exhibitor list — who's there, what they're showing, booth numbers",
+        "Search and filters — hall, playable demos, ONL, 18+",
+        "Saved list, and sharing it to another device or a friend",
+        "Your plan — stops by day or by hall, in walking order",
+        "The hall map — booths drawn, your stops pinned",
+        "Live queue times",
+        "Today — the day's route while you're standing in it",
+        "Crowd forecasts and visit advice",
+        "Event info — hours, tickets, entrances",
+        "Works offline / installed to the home screen",
+        "Trade-badge exhibitors and the business halls",
+        "The full directory — all 1,785 exhibitors, including uncarded ones",
+        "Something else (say below)"
+      ]
+    },
+    {
+      "type": "short answer",
+      "title": "Anything else you used a lot?",
+      "required": false
+    },
+    {
+      "type": "checkboxes",
+      "title": "Did anything go wrong?",
+      "required": false,
+      "options": [
+        "No, it worked fine",
+        "A booth number or hall was wrong or out of date",
+        "An exhibitor or game was missing",
+        "Queue times were wrong, missing, or never appeared",
+        "The map was hard to read or hard to use",
+        "Slow, froze, or crashed",
+        "It didn't work offline when I needed it to",
+        "Hard to find my way around it",
+        "Something in the German was wrong or missing",
+        "Installing it / adding it to the home screen didn't work",
+        "Something else (say below)"
+      ]
+    },
+    {
+      "type": "long answer",
+      "title": "If you can, what happened and where? (which booth, which hall, what you were doing)",
+      "required": false
+    },
+    {
+      "type": "multiple choice",
+      "title": "How did you come across the guide?",
+      "required": false,
+      "options": [
+        "Reddit",
+        "Twitter / X",
+        "A link someone sent me",
+        "Someone showed me at the show, or held up the QR code",
+        "Discord",
+        "Google or another search engine",
+        "Bluesky or Mastodon",
+        "TikTok, Instagram or YouTube",
+        "Somewhere else (say below)"
+      ]
+    },
+    {
+      "type": "long answer",
+      "title": "Anything else you want to say?",
+      "required": false
+    },
+    {
+      "type": "hidden field",
+      "name": "source",
+      "note": "Not shown to anyone answering. Filled from ?source= on the link."
+    }
+  ],
+  "thankYouMessage": "Thanks. That's genuinely useful."
+}

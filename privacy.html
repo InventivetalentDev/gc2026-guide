@@ -103,6 +103,8 @@
       <li><code>gc2026.prefs.v1</code> — view preferences, e.g. age filter and “hide played”</li>
       <li><code>gc2026.queue.v1</code> — a random, resettable queue-reporting id, active local timers
       and a completion waiting to reconnect, if you choose to report</li>
+      <li><code>gc2026.feedback.v1</code> — that you answered or dismissed the feedback card, so it is
+      not offered again</li>
     </ul>
     <p>The saved, played, itinerary and preference entries are never transmitted to me or to anyone
     else. Queue data is the explicit exception: only when you use a queue-report button are the
@@ -143,6 +145,23 @@
     obvious abuse. The legal basis is Art. 6 (1) (f) GDPR — the legitimate interests in operating this
     optional fan service securely and helping visitors make time-sensitive choices. Fixed coarse
     buckets, short retention, no account and an easily reset id limit the impact.</p>
+
+    <h2>Optional feedback form</h2>
+    <p>After the show the guide may show a card, and a footer link, offering a short feedback form.
+    That form is hosted by Tally BV (Sint-Pietersnieuwstraat 11, 9000 Gent, Belgium), which states that
+    it stores form data on servers within the European Union. It is a separate website with its own
+    privacy policy, and it is reached only by tapping: opening the guide sends nothing to it, no script
+    of theirs runs on these pages, and I receive no notification that you opened or submitted anything.</p>
+    <p>The link may carry a single query parameter, <code>source</code>, saying which door the form was
+    opened from — the app, or a post somewhere. It is a fixed word I write into the link myself,
+    identical for every visitor. The guide adds nothing to it at all: no saved list, no itinerary, no
+    day plan, no queue device id, no language, and nothing read off your device.</p>
+    <p>The form asks for opinions, not identity: no name, no email address and no account, and answering
+    it is entirely optional. Whatever you type is processed by Tally as my processor under a data
+    processing agreement, and reaches me as an anonymous response. The legal basis for processing what
+    you choose to write is Art. 6 (1) (a) GDPR — your consent, given by submitting the form. Dismissing
+    the card stores a single local flag so you are not asked again; that flag stays in your browser like
+    everything else under “What stays in your browser”.</p>
 
     <h2>Hosting and delivery</h2>
     <p>The site runs on Cloudflare Workers and is delivered over Cloudflare's network (Cloudflare, Inc.,
@@ -189,6 +208,9 @@
     <p>Cloudflare is a US company and may process connection data outside the EU. It is certified under
     the EU–US Data Privacy Framework and additionally relies on the European Commission's Standard
     Contractual Clauses, which is the legal basis for these transfers under Art. 44 ff. GDPR.</p>
+    <p>The feedback form is the other way round: its provider is established in Belgium and states that
+    it stores form data within the EU, so answering it does not itself involve a transfer to a third
+    country.</p>
 
     <h2>Links to other sites</h2>
     <p>The guide links out to gamescom's official pages, exhibitor websites and similar. Following such
@@ -248,6 +270,8 @@
       <li><code>gc2026.prefs.v1</code> — Ansichts- und Spracheinstellungen</li>
       <li><code>gc2026.queue.v1</code> — falls du meldest: eine zufällige, zurücksetzbare Geräte-ID,
       laufende lokale Timer und eine auf Verbindung wartende Abschlussmeldung</li>
+      <li><code>gc2026.feedback.v1</code> — dass du die Feedback-Karte beantwortet oder weggetippt
+      hast, damit sie nicht erneut erscheint</li>
     </ul>
     <p>Merkliste, gespielt-Markierungen, Reiseplan und Einstellungen werden nie übertragen.
     Warteschlangendaten sind die ausdrückliche Ausnahme: Erst ein Klick auf eine Melde-Schaltfläche
@@ -283,6 +307,27 @@
     erleichtern. Grobe feste Auswahlstufen, kurze Aufbewahrung, kein Konto und eine leicht
     zurücksetzbare ID begrenzen die Auswirkungen.</p>
 
+    <h2>Freiwilliges Feedback-Formular</h2>
+    <p>Nach der Messe zeigt der Guide unter Umständen eine Karte und einen Link im Fußbereich, die auf
+    ein kurzes Feedback-Formular verweisen. Dieses Formular wird von Tally BV (Sint-Pietersnieuwstraat
+    11, 9000 Gent, Belgien) betrieben; nach eigenen Angaben speichert Tally Formulardaten auf Servern
+    innerhalb der Europäischen Union. Es ist eine eigene Website mit eigener Datenschutzerklärung und
+    wird nur durch Antippen erreicht: Das Öffnen des Guides überträgt nichts dorthin, es läuft kein
+    Skript von Tally auf diesen Seiten, und ich erfahre nicht, ob du etwas geöffnet oder abgeschickt
+    hast.</p>
+    <p>Der Link kann einen einzigen Parameter tragen, <code>source</code>, der festhält, über welchen
+    Weg das Formular geöffnet wurde – aus der App oder von einem Beitrag irgendwo. Es ist ein festes
+    Wort, das ich selbst in den Link schreibe, für alle identisch. Der Guide hängt überhaupt nichts an:
+    keine Merkliste, keinen Tagesplan, keine Reihenfolge, keine Warteschlangen-Geräte-ID, keine Sprache,
+    und es wird nichts von deinem Gerät ausgelesen.</p>
+    <p>Das Formular fragt nach Meinungen, nicht nach Identität: kein Name, keine E-Mail-Adresse, kein
+    Konto, und das Ausfüllen ist vollständig freiwillig. Was du dort einträgst, verarbeitet Tally als
+    mein Auftragsverarbeiter auf Grundlage eines Auftragsverarbeitungsvertrags; bei mir kommt es als
+    anonyme Antwort an. Rechtsgrundlage für die Verarbeitung dessen, was du schreibst, ist Art. 6
+    Abs. 1 lit. a DSGVO – deine Einwilligung, erteilt durch das Absenden des Formulars. Wenn du die
+    Karte wegtippst, wird lokal ein einzelner Merker gesetzt, damit nicht erneut gefragt wird; dieser
+    bleibt wie alles unter „Was in deinem Browser bleibt“ in deinem Browser.</p>
+
     <h2>Hosting und Auslieferung</h2>
     <p>Die Website läuft auf Cloudflare Workers und wird über das Netz von Cloudflare, Inc., 101
     Townsend St., San Francisco, CA 94107, USA, ausgeliefert und gegen Angriffe geschützt. Dafür werden
@@ -316,6 +361,9 @@
     <p>Cloudflare ist ein US-Unternehmen und kann Verbindungsdaten außerhalb der EU verarbeiten. Das
     Unternehmen ist nach dem EU–US Data Privacy Framework zertifiziert und verwendet ergänzend die
     Standardvertragsklauseln der Europäischen Kommission (Art. 44 ff. DSGVO).</p>
+    <p>Beim Feedback-Formular ist es umgekehrt: Der Anbieter sitzt in Belgien und speichert
+    Formulardaten nach eigenen Angaben innerhalb der EU, sodass das Ausfüllen für sich genommen keine
+    Übermittlung in ein Drittland bedeutet.</p>
 
     <h2>Links zu anderen Websites</h2>
     <p>Links führen unter anderem zu offiziellen gamescom-Seiten und Aussteller-Websites. Dort gilt die

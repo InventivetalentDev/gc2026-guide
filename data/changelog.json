@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-08-28",
+    "revision": 64,
+    "changes": [
+      { "kind": "feature", "text": "Tell me how the guide did — five questions on whether it was any use and whether it should come back for gamescom 2027. The link is in the footer, and a card offers it once from Saturday. Anonymous, about a minute." }
+    ]
+  },
+  {
+    "date": "2026-08-28",
     "revision": 63,
     "changes": [
       { "kind": "content", "text": "The gamescom award 2026 winners are in. The jury named CD Projekt Red's Witcher 3: Songs of the Past theatre in Hall 8.1 Best Booth, visitors voted Gryphline's Arknights: Endfield stand in the same hall their Best Booth, and SEGA took Best Lineup." },

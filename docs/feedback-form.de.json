@@ -1,0 +1,125 @@
+{
+  "title": "gamescom 2026 Guide — Feedback",
+  "description": "Danke, dass du den inoffiziellen gamescom-2026-Guide benutzt hast. Fünf Fragen, ungefähr eine Minute. Anonym — kein Konto, keine E-Mail-Adresse nötig, und nichts davon wird weitergegeben.",
+  "language": "de",
+  "questions": [
+    {
+      "type": "multiple choice",
+      "title": "Wie hast du den Guide benutzt?",
+      "required": false,
+      "options": [
+        "Zur Planung vor der Messe",
+        "Auf dem Handy vor Ort",
+        "Beides",
+        "Angesehen, aber nicht wirklich benutzt",
+        "Ich war nicht auf der gamescom"
+      ]
+    },
+    {
+      "type": "linear scale",
+      "title": "Wie nützlich war der Guide für dich?",
+      "required": true,
+      "min": 1,
+      "max": 5,
+      "minLabel": "Gar nicht nützlich",
+      "maxLabel": "Sehr nützlich"
+    },
+    {
+      "type": "short answer",
+      "title": "Was war daran nützlich — oder was nicht?",
+      "required": false
+    },
+    {
+      "type": "multiple choice",
+      "title": "Möchtest du den Guide für die gamescom 2027 wieder haben?",
+      "required": true,
+      "options": [
+        "Ja, auf jeden Fall",
+        "Ja, wenn er abdeckt, was ich brauche",
+        "Vielleicht — mir egal",
+        "Nein"
+      ]
+    },
+    {
+      "type": "long answer",
+      "title": "Was würde ihn nächstes Jahr besser machen?",
+      "required": false
+    },
+    {
+      "type": "checkboxes",
+      "title": "Was hat dir am meisten gebracht? (bis zu 3)",
+      "required": false,
+      "maxChoices": 3,
+      "options": [
+        "Ausstellerliste — wer da ist, was gezeigt wird, Standnummern",
+        "Suche und Filter — Halle, spielbare Demos, ONL, 18+",
+        "Merkliste, und sie auf ein anderes Gerät oder zu Freunden schicken",
+        "Dein Plan — Stopps nach Tag oder nach Halle, in Laufreihenfolge",
+        "Der Hallenplan — Stände eingezeichnet, deine Stopps markiert",
+        "Live-Wartezeiten",
+        "Heute — die Route des Tages, während du drinsteckst",
+        "Andrangsprognosen und Besuchstipps",
+        "Messe-Infos — Öffnungszeiten, Tickets, Eingänge",
+        "Funktioniert offline / auf dem Homescreen installiert",
+        "Fachbesucher-Aussteller und die Businesshallen",
+        "Das vollständige Verzeichnis — alle 1.785 Aussteller",
+        "Etwas anderes (unten sagen)"
+      ]
+    },
+    {
+      "type": "short answer",
+      "title": "Noch etwas, das du viel benutzt hast?",
+      "required": false
+    },
+    {
+      "type": "checkboxes",
+      "title": "Ist etwas schiefgegangen?",
+      "required": false,
+      "options": [
+        "Nein, hat funktioniert",
+        "Eine Standnummer oder Halle war falsch oder veraltet",
+        "Ein Aussteller oder Spiel hat gefehlt",
+        "Wartezeiten waren falsch, fehlten oder kamen nie",
+        "Der Hallenplan war schwer zu lesen oder zu bedienen",
+        "Langsam, hängen geblieben oder abgestürzt",
+        "Hat offline nicht funktioniert, als ich es gebraucht habe",
+        "Ich habe mich darin nicht zurechtgefunden",
+        "Etwas auf Deutsch war falsch oder hat gefehlt",
+        "Installieren / zum Homescreen hinzufügen hat nicht geklappt",
+        "Etwas anderes (unten sagen)"
+      ]
+    },
+    {
+      "type": "long answer",
+      "title": "Wenn du magst: Was ist passiert und wo? (welcher Stand, welche Halle, was du gerade gemacht hast)",
+      "required": false
+    },
+    {
+      "type": "multiple choice",
+      "title": "Wie bist du auf den Guide gestoßen?",
+      "required": false,
+      "options": [
+        "Reddit",
+        "Twitter / X",
+        "Jemand hat mir den Link geschickt",
+        "Jemand hat ihn mir vor Ort gezeigt oder den QR-Code hochgehalten",
+        "Discord",
+        "Google oder eine andere Suchmaschine",
+        "Bluesky oder Mastodon",
+        "TikTok, Instagram oder YouTube",
+        "Woanders (unten sagen)"
+      ]
+    },
+    {
+      "type": "long answer",
+      "title": "Möchtest du sonst noch etwas loswerden?",
+      "required": false
+    },
+    {
+      "type": "hidden field",
+      "name": "source",
+      "note": "Wird niemandem angezeigt, der antwortet. Wird aus ?source= im Link gefüllt."
+    }
+  ],
+  "thankYouMessage": "Danke. Das hilft wirklich."
+}

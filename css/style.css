@@ -2105,6 +2105,67 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .preview-exit:hover, .preview-exit:focus-visible { color: var(--ink); }
 
 /* ============================================================
+   feedback prompt
+   ============================================================ */
+/* The end-of-show question, above whichever view is open. It sits inside the
+   content column rather than bleeding full-width like the preview bar: this
+   is a request, not an admission, and it must read as quieter than the guide
+   it is asking about. Hence --rule on the left edge and not --signal — the
+   only orange on the card is the link that answers it.
+
+   Hidden by the attribute until renderFeedback finds a URL, a date past the
+   gate and no remembered answer, so a cached shell that predates the feature
+   simply has an empty aside. */
+.feedback-card {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-bottom: 26px;
+  padding: 13px 15px;
+  background: var(--ground-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--ink-dim);
+  border-radius: var(--radius);
+}
+.feedback-card[hidden] { display: none; }
+.feedback-copy { flex: 1 1 260px; min-width: 0; }
+.feedback-copy p { margin-top: 3px; font-size: .84rem; color: var(--ink-mid); }
+.feedback-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.feedback-open {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 13px;
+  border: 1px solid var(--signal);
+  border-radius: var(--radius-sm);
+  background: var(--signal);
+  color: var(--signal-ink);
+  font-size: .76rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.feedback-open:hover, .feedback-open:focus-visible { filter: brightness(1.1); }
+.feedback-dismiss {
+  min-height: 44px;
+  padding: 8px 11px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-dim);
+  font: inherit;
+  font-size: .76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.feedback-dismiss:hover { color: var(--ink-mid); border-color: var(--rule); }
+
+/* ============================================================
    today
    ============================================================ */
 /* The show-day mode. It reuses the hall lens's board wholesale — same
@@ -3215,6 +3276,9 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .queue-prompt-copy { flex-basis: auto; }
   .queue-prompt-actions { display: grid; grid-template-columns: repeat(3, 1fr); }
   .queue-prompt .queue-action { padding-inline: 6px; }
+  .feedback-card { align-items: stretch; flex-direction: column; }
+  .feedback-copy { flex-basis: auto; }
+  .feedback-actions { justify-content: space-between; }
   .share-qr { grid-template-columns: 1fr; }
   .share-qr-image { max-width: 280px; margin: 0 auto; }
   .share-qr p { text-align: center; }

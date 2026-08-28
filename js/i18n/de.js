@@ -606,6 +606,10 @@ window.GC_STRINGS.de = {
   "footer.imprint": "Impressum",
   "footer.privacy": "Datenschutz",
   "footer.statusKey": "Legende zum Spielstatus",
+  /* Die Umfrage, bewusst anders formuliert als die Korrekturadresse darüber:
+     die eine will einen Daten-Push, die andere eine Meinung. */
+  "footer.feedbackFormLede": "Den Guide auf der Messe benutzt?",
+  "footer.feedbackFormLink": "Fünf Fragen dazu beantworten →",
   "legend.confirmed":
     '<span class="dot" data-status="confirmed"></span> <b>Bestätigt</b> — offiziell für die gamescom angekündigt',
   "legend.expected":
@@ -614,6 +618,17 @@ window.GC_STRINGS.de = {
     '<span class="dot" data-status="rumored"></span> <b>Vermutet</b> — unsere Einschätzung, unbestätigt',
   "legend.age":
     '<span class="badge badge-age" data-age-status="confirmed">18+</span> — Demo ist altersbeschränkt, Ausweis und rotes Bändchen nötig',
+
+  /* ---------- feedback prompt ----------
+     Die Karte über allen Ansichten, sobald die Messe fast vorbei ist. Sie
+     muss sagen, was sie kostet, bevor jemand tippt — ein Link auf ein
+     unbekanntes Formular lehnt man auf einem Handy mit zwei Balken sonst
+     grundsätzlich ab. */
+  "feedback.title": "Wie war der Guide?",
+  "feedback.lede":
+    "Fünf Fragen dazu, ob er etwas gebracht hat und ob es ihn 2027 wieder geben soll. Ungefähr eine Minute, anonym.",
+  "feedback.open": "Beantworten",
+  "feedback.dismiss": "Später",
 
   /* ---------- install & offline (js/pwa.js) ---------- */
   "pwa.install": "App installieren",

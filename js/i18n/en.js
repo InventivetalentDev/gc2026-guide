@@ -643,6 +643,10 @@ window.GC_STRINGS.en = {
   "footer.imprint": "Imprint",
   "footer.privacy": "Privacy",
   "footer.statusKey": "Game status key",
+  /* The survey, deliberately worded as a different thing from the corrections
+     address above it: one wants a data push, the other wants an opinion. */
+  "footer.feedbackFormLede": "Used the guide at the show?",
+  "footer.feedbackFormLink": "Answer five questions about it →",
   "legend.confirmed":
     '<span class="dot" data-status="confirmed"></span> <b>Confirmed</b> — officially announced for gamescom',
   "legend.expected":
@@ -651,6 +655,16 @@ window.GC_STRINGS.en = {
     '<span class="dot" data-status="rumored"></span> <b>Rumored</b> — our guess, unverified',
   "legend.age":
     '<span class="badge badge-age" data-age-status="confirmed">18+</span> — demo is age-gated, ID and red wristband needed',
+
+  /* ---------- feedback prompt ----------
+     The card above every view once the show is nearly over. It has to say
+     what it costs before it is tapped — a link to an unknown form on a phone
+     with two bars is a thing people decline by default. */
+  "feedback.title": "How did the guide do?",
+  "feedback.lede":
+    "Five questions on whether this was any use, and whether it should come back for 2027. About a minute, anonymous.",
+  "feedback.open": "Answer them",
+  "feedback.dismiss": "Not now",
 
   /* ---------- install & offline (js/pwa.js) ---------- */
   "pwa.install": "Install app",
