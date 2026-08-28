@@ -1010,6 +1010,16 @@
         "Game of Thrones: War for Westeros": "Gameplay reveal trailer at ONL Aug 25 — four playable factions, PC only, early 2027. Stream only, no demo at the show."
       }
     },
+    "ncsoft": {
+      "description": "Three NC (NCSOFT) games premiered at Opening Night Live on Aug 25 and none of them reaches the public floor: AION 2 took an Oct 5 launch date, Cinder City got a story trailer, and Project Bonfire was revealed as Like or Die. NC's only stand at the show is the closed business booth in Hall 4.2, where the lineup was shown to press and industry by appointment.",
+      "crowdNote": "No consumer booth to queue for.",
+      "visitAdvice": "Nothing to plan a floor stop around — the three trailers are in the ONL stream from Tuesday evening, and Cinder City and Like or Die both have Steam pages if you want to follow them.",
+      "games": {
+        "AION 2": "Launch date at ONL Aug 25: the AION sequel goes live Oct 5 on Steam and NC's own PURPLE, with five days of head start for Founder's Pack owners from Sept 30. Stream only, no show-floor demo.",
+        "Cinder City": "Story-and-setting trailer at ONL Aug 25 — BigFire Games' open-world cinematic third-person shooter, set in a fallen near-future Seoul and still without a release date. Shown to press and industry at NC's business booth; nothing to play on the public floor.",
+        "Like or Die": "World premiere at ONL Aug 25, where Project Bonfire got its name: a team-based survival FPS whose streamers reshape the map with blocks mid-match. PC via Steam, no date. Stream only, no show-floor demo."
+      }
+    },
     "paradox-urban": {
       "description": "No booth of its own: Paradox co-presents Transport Fever 3 with Urban Games, whose stand is in Hall 8.1 at B053a — complete with a London double-decker bus as the eye-catcher. Paradox is separately registered at Level Infinite's shared Hall 6.1 stand, with nothing announced there.",
       "crowdNote": "Niche-but-devoted audience — steady sim fans rather than mass queues.",
