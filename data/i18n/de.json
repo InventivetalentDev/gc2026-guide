@@ -904,13 +904,15 @@
       "visitAdvice": "Überspring es, außer du suchst einen Job oder ein Studium. Es ist allerdings ein wirklich ruhiger Ort, um sich mittags hinzusetzen, und die Stände zu Barrierefreiheit und Jugendarbeit sind einen Blick wert."
     },
     "lego": {
-      "description": "Mehrere zusammenhängende Stände neben Nintendo in Halle 9.1. Im Mittelpunkt steht LEGO Batman: Legacy of the Dark Knight, dessen Mayhem-Collection-DLC hier vor dem Release am 18. September erstmals öffentlich gezeigt wird — dazu ein LEGO-Fortnite-Bereich rund um einen lebensgroßen Nachbau des Rave-Cave-Sets.",
-      "crowdNote": "Familienmagnet in derselben Halle wie Nintendo — Foto- und Demo-Schlangen werden am Wochenende lang.",
-      "visitAdvice": "Vormittags unter der Woche; am Wochenende dominieren Familien. LEGO hat nicht gesagt, ob der Batman-DLC spielbar ist oder nur auf Bildschirmen läuft — sieh eine Demo-Station also als Zugabe und nicht als Grund zum Anstellen.",
+      "description": "Mehrere zusammenhängende Stände neben Nintendo in Halle 9.1, die du als Ring aus Themenbereichen abläufst. Vier Sachen sind spielbar: der Mayhem-Collection-DLC zu LEGO Batman: Legacy of the Dark Knight, die Modi von LEGO Fortnite, Minecraft Dungeons II und Forza Horizon 6 in Rennsitzen aus Steinen. Der Rest ist Ausstellung und Foto-Spot — LEGO Skylines, Super Mario, Pokémon, One Piece — dazu ein Shop mit 20 % Rabatt auf Sets.",
+      "crowdNote": "Familienmagnet in derselben Halle wie Nintendo — vier Demo-Bereiche und ebenso viele Foto-Spots, und am Wochenende werden die Schlangen lang.",
+      "visitAdvice": "Vormittags unter der Woche; am Wochenende dominieren Familien. Hier ist mehr spielbar, als der Stand aussehen lässt, und das meiste davon lohnt sich: Für einen Highscore an der Batman-Demo gibt es ein komplettes Set, an den Forza-Rigs winken Preise für Bestzeiten, und mit einem Stempelpass von der Shop-Theke bekommst du eine goldene LEGO-Anhängerfigur, sobald du in den Bereichen genug Stempel gesammelt hast.",
       "games": {
-        "LEGO Batman: Legacy of the Dark Knight": "Erster öffentlicher Blick auf den Mayhem-Collection-DLC am Stand, vor dem Release am 18. September — die Switch-2-Version erscheint am selben Tag; ob er spielbar ist, bleibt offen.",
-        "LEGO Fortnite": "Der Hauptanziehungspunkt des Stands — ein lebensgroßer Nachbau der Rave Cave und Foto-Spots, keine spielbare Demo.",
-        "LEGO Skylines": "Bei der ONL enthüllt — aber es erscheint bei Paradox (Iceflake), und ein Auftritt am LEGO-Stand ist unbestätigt; die deutsche LEGO-Presse nennt ihn Spekulation."
+        "LEGO Batman: Legacy of the Dark Knight": "Spielbare Demo des Mayhem-Collection-DLC vor dem Release am 18. September — die Switch-2-Version erscheint am selben Tag. Alle bekommen die Retro-Video-Game-Batman-Minifigur, für einen Highscore gibt es ein komplettes LEGO-Batman-Set.",
+        "LEGO Fortnite": "Spielbar: Demos der verschiedenen Modi, durch einen lebensgroßen Nachbau des Rave-Cave-Sets betreten, dazu Bauwerke von Loot Llama und Cuddle Team Leader und ein Tanz-Foto-Spot.",
+        "LEGO Skylines": "Bei Opening Night Live enthüllt und hier mit einem eigenen Bereich vertreten, aber nicht spielbar — ein LEGO-Bauplatz als Foto-Spot und ein Glücksrad mit Stickern, Taschen, Lanyards und kleinen Technic-Sets.",
+        "Minecraft Dungeons II": "Spielbare Demos im LEGO-Minecraft-Bereich, neben den Sets und einem sehr großen Creeper-Bauwerk.",
+        "Forza Horizon 6": "Du spielst es sitzend in Rennsimulator-Rigs aus Steinen mitten im Stand, mit Preisen für Bestzeiten."
       }
     },
     "wizards-of-the-coast": {
@@ -927,9 +929,14 @@
       "visitAdvice": "Vormittags hingehen, wenn du Zeit mit den ROG-Ally-Handhelds willst."
     },
     "samsung": {
-      "description": "Odyssey-Gaming-Monitore und SSDs mit Demo-Stationen von Partnerspielen in Halle 9.1. Samsung ist außerdem am nahen Stand B010/C011 von Pearl Abyss mitregistriert, den es mit 6K-Displays der Odyssey-G8-Reihe ausstattet.",
-      "crowdNote": "Die große Fläche und der Besucherandrang in Halle 9 halten den Stand gut besucht, aber die Plätze an den Stationen werden schnell frei.",
-      "visitAdvice": "Kombinier es mit deinem Nintendo-Besuch in Halle 9; du musst nicht zur Öffnung hetzen."
+      "description": "Odyssey-Gaming-Monitore und SSDs in Halle 9.1, aufgebaut um eine Demo-Zone zum Anspielen: Call of Duty: Modern Warfare 4 zwei Monate vor dem Release am 23. Oktober, auf der Odyssey-Reihe für 2027 — ein 49-Zoll-OLED-G9 mit 360 Hz, ein gebogener 42-Zoll-OLED-G7, ein 4K-OLED-G8 und ein G6 mit 1.100 Hz. Samsung ist außerdem am nahen Stand B010/C011 von Pearl Abyss mitregistriert, den es mit 6K-Displays der Odyssey-G8-Reihe ausstattet.",
+      "crowdNote": "Modern Warfare 4 vorab anspielen zu können, macht den Stand im Besucherstrom von Halle 9 voller als einen Monitorstand sonst — die Plätze an den Stationen werden aber schnell frei.",
+      "visitAdvice": "Kombinier es mit deinem Nintendo-Besuch in Halle 9 — komm aber früh am Tag, wenn es dir um Modern Warfare 4 geht: Samsung verlost 500 Codes für die Vault Edition an Standbesucher.",
+      "games": {
+        "Call of Duty: Modern Warfare 4": "Hier genauso spielbar wie bei Xbox, vor dem Release am 23. Oktober, auf Odyssey-Monitoren im Rahmen von Samsungs HDR10+-GAMING-Deal mit Activision. Am Stand werden 500 Codes für die Vault Edition verlost.",
+        "Cronos: The New Dawn": "Einer der Titel, die Samsung auf den Odyssey-Panels laufen lässt; ob du es hier anspielen kannst, ist nicht gesagt.",
+        "Cyberpunk 2077": "Ein Vorzeigetitel für die OLED-Panels; ob du es hier anspielen kannst, ist nicht gesagt."
+      }
     },
     "razer": {
       "description": "Zwei Standorte: der Publikumsstand in Halle 10.2 und ein Stand im Fachbesucherbereich in Halle 2.2. Am Publikumsstand kannst du die auf der CES gezeigten Peripherie-Neuheiten für 2026 ausprobieren; dazu gibt es Esports-Events und Merch-Aktionen.",
@@ -1649,6 +1656,11 @@
       "description": "Gaming-Monitore der etablierten Display-Marke — teilt sich einen Stand mit Diablo Chairs in der Hardware-Reihe von Halle 10.1.",
       "crowdNote": "Ein ruhiger Komponenten-Stand, kein Ziel für sich.",
       "visitAdvice": "Ein kurzer Blick, wenn du ohnehin die Hardware-Reihe abgehst."
+    },
+    "retro-area": {
+      "description": "Der Ausstellungsteil des Retro- und Familienbereichs: rund 2.000 m² auf sieben Ständen in Halle 10.2, zusammengestellt von René Meyers Haus der Computerspiele mit etwa 50 Sammlern, Vereinen und Institutionen, darunter das Berliner Computerspielemuseum. Funktionierende Konsolen, Spielautomaten und Heimcomputer aus fünf Jahrzehnten — Pong, die Arcades der 80er, C64 und Amiga, Super Nintendo — die meisten davon zum Spielen, dazu Flipper, Tanzautomaten und eine Bühne.",
+      "crowdNote": "Hunderte Geräte auf viel Fläche, das schluckt einiges an Andrang — die bekanntesten Automaten und die Sitzplätze an der Bühne sind am Wochenende aber voll.",
+      "visitAdvice": "Nichts hier hat eine Schlange, um die du herumplanen müsstest — nimm es dir als Zeit zum Stöbern, eine Stunde ist schnell weg. Schau zuerst auf den Bühnenplan: Dort läuft die Deutsche Classic-Tetris-Meisterschaft, dazu Quizrunden, Interviews und Livemusik, und zu Gast sind unter anderem Commodore-Urgestein Petro Tyschtschenko und die Komponisten Chris Hülsbeck und David Wise. Fotografiert werden vor allem der größte Pac-Man-Automat der Welt und ein Vectrex-Mini-Prototyp. Der eigenständige Sammlerstand nebenan bei A020 ist die paar Minuten extra wert."
     },
     "retro-games": {
       "description": "Offiziell lizenzierte Retro-Konsolen-Neuauflagen — THEC64 Mini, TheA500 Mini und ähnliche — von der britischen Marke dahinter, in der Retro-Ecke von Halle 10.2.",

@@ -1,6 +1,16 @@
 [
   {
     "date": "2026-08-28",
+    "revision": 61,
+    "changes": [
+      { "kind": "content", "text": "LEGO's Hall 9.1 booth turns out to be hands-on: playable stations for the LEGO Batman: Legacy of the Dark Knight Mayhem DLC, LEGO Fortnite and Minecraft Dungeons II, plus Forza Horizon 6 played sitting in brick-built racing rigs." },
+      { "kind": "content", "text": "LEGO Skylines is confirmed at the LEGO booth after its Opening Night Live reveal — but as a construction-zone photo op and a prize wheel, not a playable demo." },
+      { "kind": "content", "text": "Samsung Odyssey in Hall 9.1 is a demo booth, not just a monitor wall: Call of Duty: Modern Warfare 4 is playable there two months before release, and 500 Vault Edition codes are raffled to visitors." },
+      { "kind": "content", "text": "New card: the Retro Area in Hall 10.2 — around 2,000 m² of playable consoles, arcade cabinets and home computers from five decades, with a stage running the German Classic Tetris Championship, quizzes and live music." }
+    ]
+  },
+  {
+    "date": "2026-08-28",
     "revision": 60,
     "changes": [
       { "kind": "content", "text": "Fixed: Elden Ring: Tarnished Edition is not playable at Nintendo's booth — that listing came from Bandai Namco's gamescom 2025 post, and Nintendo's own 2026 lineup is the 16 stations now on the card." }
