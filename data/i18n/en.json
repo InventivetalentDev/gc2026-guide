@@ -5,10 +5,10 @@
   "event": {
     "location": "Koelnmesse, Cologne",
     "dates": "Aug 26–30, 2026",
-    "tickets": "Online-only via the official gamescom shop — no on-site box office. Sunday is the only day still on sale in every class: day ticket €31.50 (discounted €22.50), family €69.50, evening ticket from 16:00 €10.50. Thursday, Friday and Saturday are sold out — day, discounted and family alike, plus Thursday's and Saturday's evening tickets; Friday's 16:00 evening ticket (€10.50) is the one thing left on those days. The Wednesday Wildcard (€65.50), the Superfan bundles and Opening Night Live sold out long before the show. The gamescom congress day ticket for Thursday is €111.00 (€40.00 discounted) and does not include entry to gamescom itself. Day tickets include free VRS public transport in the Cologne region.",
+    "tickets": "Online-only via the official gamescom shop — no on-site box office. Sunday is the only day still on sale in every class: day ticket €31.50 (discounted €22.50), family €69.50, evening ticket from 16:00 €10.50. Wednesday through Saturday are sold out on day, discounted and family tickets; Saturday's 16:00 evening ticket (€13.00) is the one thing left before Sunday. The Wednesday Wildcard (€65.50), the Superfan bundles and Opening Night Live sold out long before the show. The gamescom congress day ticket for Thursday was €111.00 (€40.00 discounted) and did not include entry to gamescom itself. Day tickets include free VRS public transport in the Cologne region.",
     "crowdTips": [
       "The show floor itself has sold out to exhibitors for the first time in gamescom's 18-edition history — 233,000 m² and 1,600+ exhibitors. Expect this to be the busiest gamescom yet.",
-      "Thursday, Friday and Saturday are all sold out now — day, discounted and family tickets on every one of them, and the 16:00 evening ticket on Thursday and Saturday too. Without a ticket already in hand or a trade badge, Friday evening and Sunday are the only ways in.",
+      "Two days left, and both are close to full: Thursday, Friday and Saturday are sold out on day, discounted and family tickets. Saturday's 16:00 evening ticket (€13.00) and Sunday in every class are the only ways in without a ticket already in hand or a trade badge.",
       "Wednesday's Wildcard and Thursday's low-crowd morning were the quietest ways into the hottest demos, and both are behind us. Of what is still on sale, Sunday morning is the calmest — 09:00 doors, and the weekend crowd thins as booths wind down.",
       "On trade Wednesday, a trade badge doesn't open every door: several AAA booths run invited-press-only previews in the morning or skip the day entirely (Xbox 2026: booth opens Thursday; Capcom 2025: press-only until ~11:00). Check a booth's own channels before planning your Wednesday around it.",
       "Arrive well before doors open and pick the entrance nearest your first must-play booth — big booths build 2–4 h queues within the first hour. North is shortest for halls 6–9, East for Hall 10, South for the business halls; see Entrances on the Info tab.",
@@ -20,7 +20,7 @@
       "Take public transport — day tickets include free VRS travel in the Cologne region and parking at the grounds is not worth the attempt. Check your line before you set off, though: Cologne's Rhine bridge works run straight through show week.",
       "Stadtbahn lines 1, 7 and 9 do not cross the Rhine until early September: 1 and 9 terminate at Heumarkt, 7 at Neumarkt, with replacement buses from Neumarkt to Koelnmesse taking 10–20 minutes. Lines 3 and 4 still run to the East entrance and are the dependable way in.",
       "On the rail side, RE 1, RE 5, S 1 and S 6 are cut back between Düsseldorf and Köln-Mülheim from Aug 21, and some trains skip Köln Hauptbahnhof and Köln Messe/Deutz entirely. Check your connection the morning you travel; coming from Düsseldorf, RE 6 is the recommended way round.",
-      "Evening tickets (from 16:00, €10.50) are a cheap second visit and queues shrink in the last 2–3 hours — Friday's and Sunday's are still on sale; Thursday's and Saturday's have gone.",
+      "Evening tickets (from 16:00) are a cheap second visit and queues shrink in the last 2–3 hours — Saturday's (€13.00) and Sunday's (€10.50) are both still on sale.",
       "Do gamescom epix quests — completing all chapters can earn a free Sunday ticket.",
       "Inside Cologne, KVB lines 1, 7 and 9 can't cross the Deutzer Brücke until Sept 2 — take lines 3 or 4 via Severinsbrücke to the Koelnmesse stop instead, or walk over the Hohenzollernbrücke from the Hauptbahnhof to Deutz."
     ],
@@ -42,12 +42,12 @@
       "2026-08-28": {
         "access": "public",
         "hours": "Entertainment 10:00–20:00 (09:00 on a trade badge)",
-        "note": "Day tickets are gone — only the 16:00 evening ticket is still on sale for this day. Fills up over the day; mornings still workable for big booths. Trade badges again get in at 09:00, and it is the last day of the business area. gamescom GDQ speedrun showcase starts (Congress Center North)."
+        "note": "Day tickets sold out ahead of the day; only the 16:00 evening ticket was left. The business area closed for the year at 20:00. gamescom GDQ speedrun showcase started (Congress Center North), and the gamescom award winners were announced at midday."
       },
       "2026-08-29": {
         "access": "public",
         "hours": "Entertainment 09:00–20:00 (business area closed)",
-        "note": "Busiest day of the show and now sold out in every class, evening ticket included — unless you already hold a Saturday ticket or a trade badge, you are not getting in. If you are going, avoid it for hands-on play. City Festival in the evening."
+        "note": "Busiest day of the show. Day, discounted and family tickets are gone, but the 16:00 evening ticket (€13.00) is still on sale — it is the only way in without a ticket already in hand or a trade badge. If you are going, avoid it for hands-on play. City Festival in the evening."
       },
       "2026-08-30": {
         "access": "public",
@@ -296,10 +296,10 @@
         "Gears of War: E-Day": "First public campaign hands-on ahead of the Oct 6, 2026 release.",
         "Fable": "Live gameplay theater by Playground Games — not hands-on (reported release Feb 23, 2027).",
         "Minecraft Dungeons II": "First public playable build.",
-        "METRO 2039": "First hands-on anywhere; also at Plaion's Hall 9 booth.",
+        "METRO 2039": "First hands-on anywhere; also at Plaion's Hall 9 booth. Won Best Visuals at the gamescom award 2026.",
         "Stranger Than Heaven": "Sega/RGG Studio — also at SEGA's Hall 7 booth.",
         "Halo: Campaign Evolved": "Campaign remaster hands-on.",
-        "Forza Horizon 6": "Drift Attack mode demo.",
+        "Forza Horizon 6": "Drift Attack mode demo. Won Best Xbox Game at the gamescom award 2026.",
         "Microsoft Flight Simulator 2024": "National Championship Air Races content.",
         "Alien: Isolation 2": "Also at SEGA's booth — compare queues.",
         "Alien Deathstorm": "Gameplay demo.",
@@ -365,20 +365,20 @@
       "games": {
         "Dragon's Dogma 2: Dark Arisen": "World-first public hands-on of the expansion (launches Oct 9, 2026).",
         "Mega Man: Dual Override": "First playable demo of the 12th mainline Mega Man.",
-        "Onimusha: Way of the Sword": "Playable weeks before its late-September release — likely the booth's biggest draw.",
+        "Onimusha: Way of the Sword": "Playable weeks before its late-September release — likely the booth's biggest draw. Won Best Gameplay and Best PlayStation Game at the gamescom award 2026.",
         "Street Fighter 6": "Casual play stations and community matches."
       }
     },
     "sega-atlus": {
-      "description": "SEGA's trademark themed booth in Hall 7: Alien: Isolation 2's European hands-on debut in a claustrophobic sci-fi set, Persona 4 Revival in a recreated Junes shopping center, and Stranger Than Heaven staged as an underground jazz club.",
+      "description": "SEGA's trademark themed booth in Hall 7: Alien: Isolation 2's European hands-on debut in a claustrophobic sci-fi set, Persona 4 Revival in a recreated Junes shopping center, and Stranger Than Heaven staged as an underground jazz club. The jury gave it Best Lineup of gamescom 2026.",
       "crowdNote": "Three first-time hands-ons — long individual queues but the load spreads across a big varied lineup.",
       "visitAdvice": "Prioritize Alien: Isolation 2 or Persona 4 Revival first thing in the morning (Alien is also at Xbox — check both queues). Sonic and Crazy Taxi turn over fast and suit afternoons.",
       "games": {
-        "Alien: Isolation 2": "European hands-on debut of the prologue; also at the Xbox booth — compare queues.",
+        "Alien: Isolation 2": "European hands-on debut of the prologue; also at the Xbox booth — compare queues. Won Best Audio at the gamescom award 2026.",
         "Persona 4 Revival": "First Western public hands-on, in a Junes-themed area.",
         "Stranger Than Heaven": "First public hands-on of RGG Studio's new game; jazz-club themed area.",
         "Crazy Taxi: World Tour": "Early hands-on with a brand-new city map.",
-        "Total War: Warhammer 40,000": "Hands-on debut with three Space Marine scenarios.",
+        "Total War: Warhammer 40,000": "Hands-on debut with three Space Marine scenarios. Won Best PC Game at the gamescom award 2026.",
         "Sonic Racing: CrossWorlds": "Latest build incl. the TMNT pack.",
         "Sonic Pico Park": "New co-op Sonic title.",
         "Metaphor: ReFantazio (Switch 2)": "Also at Nintendo's Hall 9 booth.",
@@ -411,7 +411,7 @@
       "crowdNote": "One playable title plus a lounge format — moderate queues, no giant new AAA hands-on this year.",
       "visitAdvice": "Rayman queues are manageable before noon on weekdays. The lounge splits its programme: some slots are meet-and-greets and dev sessions you have to be there for, the rest are streamed and lose nothing if you watch later. Each day's schedule goes up on screens at the stand. Ubisoft's own summary says the lounge opens Thursday, but its published schedule lists in-person sessions on trade Wednesday too.",
       "games": {
-        "Rayman Legends Retold": "Demo: opening level, a new dragon-ride sequence and a classic musical level.",
+        "Rayman Legends Retold": "Demo: opening level, a new dragon-ride sequence and a classic musical level. Won Best Nintendo Switch 2 Game at the gamescom award 2026.",
         "Assassin's Creed Black Flag Resynced": "Community Lounge showcase of the Black Flag remake.",
         "Assassin's Creed Shadows": "Community Lounge developer talk, not a demo station.",
         "Anno 117: Pax Romana": "Community Lounge sessions.",
@@ -445,7 +445,7 @@
       }
     },
     "cdpr": {
-      "description": "CDPR's first gamescom booth since 2019: extended theater presentations of The Witcher 3: Wild Hunt — Songs of the Past (the third Witcher 3 expansion, due 2027), running Wed–Sun after its trailer debut at Opening Night Live.",
+      "description": "CDPR's first gamescom booth since 2019: extended theater presentations of The Witcher 3: Wild Hunt — Songs of the Past (the third Witcher 3 expansion, due 2027), running Wed–Sun after its trailer debut at Opening Night Live. The jury named it Best Booth of gamescom 2026, and visitors voted its merch and its trailer the show's best.",
       "crowdNote": "CDPR theaters historically generate multi-hour lines (see Cyberpunk 2077 in 2019); a new Witcher reveal right after ONL will be a hall-wide magnet.",
       "visitAdvice": "Treat it like a timed show: queue at Hall 8 opening on your first day (Wednesday on a trade badge, otherwise Thursday), or try the final showings late Sunday. Hall 8 sits at the North entrance — enter there, not via the Boulevard.",
       "games": {
@@ -453,7 +453,7 @@
       }
     },
     "gryphline": {
-      "description": "Hypergryph's global publishing brand returns with a much bigger Arknights: Endfield presence across two Hall 8.1 stand blocks: expanded interactive installations and photo spots, plus Boss Speedrun Challenges with exclusive event rewards.",
+      "description": "Hypergryph's global publishing brand returns with a much bigger Arknights: Endfield presence across two Hall 8.1 stand blocks: expanded interactive installations and photo spots, plus Boss Speedrun Challenges with exclusive event rewards. Visitors voted it Best Booth of gamescom 2026 in the public poll — three room-height boss installations and wraparound LED walls.",
       "crowdNote": "Endfield's community is huge and last year's smaller booth was packed; challenge stations are the bottleneck.",
       "visitAdvice": "Do the speedrun challenge first thing — reward stock and queue caps bite by midday; the photo installations stay accessible all day.",
       "games": {
@@ -477,7 +477,7 @@
       "crowdNote": "A single high-profile shooter concentrates demand, but dual-location availability splits the queues.",
       "visitAdvice": "Compare queues at Plaion (Hall 9) vs Xbox (Hall 7) — Xbox's 140 stations often move faster.",
       "games": {
-        "METRO 2039": "Focus title; also at Xbox's Hall 7 stand."
+        "METRO 2039": "Focus title; also at Xbox's Hall 7 stand. Won Best Visuals at the gamescom award 2026."
       }
     },
     "krafton": {
@@ -583,7 +583,7 @@
       "visitAdvice": "Marvel Rivals seats 12 per cycle, so lines move in bursts — join right after a session starts. Sea of Remnants is at a separate booth (A051) from Marvel Rivals and Where Winds Meet (B050), both in Hall 7.1 near Xbox.",
       "games": {
         "Marvel Rivals": "Multi-station 6v6 setups; Season 9.5 content at booth B050.",
-        "Where Winds Meet": "Wuxia open-world RPG; Hidden Mountain finale content at booth B050.",
+        "Where Winds Meet": "Wuxia open-world RPG; Hidden Mountain finale content at booth B050. Won Best Mobile Game at the gamescom award 2026.",
         "Sea of Remnants": "Hands-on at booth A051 — Orbtopia city and archipelago demo, puppet customization, daily cosplay shows; closed beta in December.",
         "Once Human next expansion + unannounced title": "The expansion got its name at ONL: Isles of Abyss, an ocean region arriving October. Hands-on preview stays at NetEase's business-area stand (Hall 4.2, D050) — trade & media only — and the second title is still unnamed. The ONL segment was also the console launch: Once Human is now free on PS5 and Xbox, with cross-play.",
         "Ananta": "Registered on NetEase's booth profile with its ONL trailer — a trailer showing, no hands-on anywhere at the show. Launches Jan 15, 2027."
@@ -638,7 +638,7 @@
       "crowdNote": "High-profile trailer buzz but a single-title booth — moderate lines, spiking after any ONL appearance.",
       "visitAdvice": "If it appears at Opening Night Live, queue early the next morning before word spreads.",
       "games": {
-        "Tides of Annihilation": "Expanded event-exclusive demo, Hall 6.1, booth B050, running Aug 27–30."
+        "Tides of Annihilation": "Expanded event-exclusive demo, Hall 6.1, booth B050, running Aug 27–30. Won Most Epic at the gamescom award 2026."
       }
     },
     "indie-arena-booth": {
@@ -1323,7 +1323,7 @@
       ]
     },
     "ubisoft-business": {
-      "description": "Ubisoft's German entity on a large closed stand in the publisher row of Hall 4.2, separate from its consumer booths across the grounds in 6.1.",
+      "description": "Ubisoft's German entity on a large closed stand in the publisher row of Hall 4.2, separate from its consumer booths across the grounds in 6.1. The jury named the Ubisoft Business Lounge the show's Best Business Booth.",
       "accessNote": "403 m², sole occupant. Nothing on show from the aisle — the two Hall 6.1 stands are the public ones.",
       "offers": [
         "Publisher, retail and partner meetings",

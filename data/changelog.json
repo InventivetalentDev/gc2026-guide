@@ -1,6 +1,17 @@
 [
   {
     "date": "2026-08-28",
+    "revision": 63,
+    "changes": [
+      { "kind": "content", "text": "The gamescom award 2026 winners are in. The jury named CD Projekt Red's Witcher 3: Songs of the Past theatre in Hall 8.1 Best Booth, visitors voted Gryphline's Arknights: Endfield stand in the same hall their Best Booth, and SEGA took Best Lineup." },
+      { "kind": "content", "text": "Category wins are now on the booth lineups: METRO 2039 took Best Visuals, Alien: Isolation 2 Best Audio, and Total War: Warhammer 40,000 Best PC Game." },
+      { "kind": "content", "text": "Also winners: Onimusha: Way of the Sword (Best Gameplay and Best PlayStation Game), Forza Horizon 6 (Best Xbox Game), Rayman Legends Retold (Best Switch 2 Game), Where Winds Meet (Best Mobile Game) and Tides of Annihilation (Most Epic)." },
+      { "kind": "content", "text": "Fixed: Saturday's 16:00 evening ticket (€13.00) is still on sale — the guide had it down as sold out. With Friday over, that and Sunday in every class are the only two ways left into the show." },
+      { "kind": "content", "text": "Ubisoft's Business Lounge in Hall 4.2 was voted Best Business Booth by the jury." }
+    ]
+  },
+  {
+    "date": "2026-08-28",
     "revision": 62,
     "changes": [
       { "kind": "content", "text": "New card for NCSOFT's ONL line-up, which had been missing from the guide: Cinder City, AION 2 and Like or Die all premiered at Opening Night Live, and none of the three is on the public floor." },
