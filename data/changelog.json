@@ -1,9 +1,59 @@
 [
   {
+    "date": "2026-08-28",
+    "revision": 64,
+    "changes": [
+      { "kind": "feature", "text": "Tell me how the guide did — five questions on whether it was any use and whether it should come back for gamescom 2027. The link is in the footer, and a card offers it once from Saturday. Anonymous, about a minute." }
+    ]
+  },
+  {
+    "date": "2026-08-28",
+    "revision": 63,
+    "changes": [
+      { "kind": "content", "text": "The gamescom award 2026 winners are in. The jury named CD Projekt Red's Witcher 3: Songs of the Past theatre in Hall 8.1 Best Booth, visitors voted Gryphline's Arknights: Endfield stand in the same hall their Best Booth, and SEGA took Best Lineup." },
+      { "kind": "content", "text": "Category wins are now on the booth lineups: METRO 2039 took Best Visuals, Alien: Isolation 2 Best Audio, and Total War: Warhammer 40,000 Best PC Game." },
+      { "kind": "content", "text": "Also winners: Onimusha: Way of the Sword (Best Gameplay and Best PlayStation Game), Forza Horizon 6 (Best Xbox Game), Rayman Legends Retold (Best Switch 2 Game), Where Winds Meet (Best Mobile Game) and Tides of Annihilation (Most Epic)." },
+      { "kind": "content", "text": "Fixed: Saturday's 16:00 evening ticket (€13.00) is still on sale — the guide had it down as sold out. With Friday over, that and Sunday in every class are the only two ways left into the show." },
+      { "kind": "content", "text": "Ubisoft's Business Lounge in Hall 4.2 was voted Best Business Booth by the jury." }
+    ]
+  },
+  {
+    "date": "2026-08-28",
+    "revision": 62,
+    "changes": [
+      { "kind": "content", "text": "New card for NCSOFT's ONL line-up, which had been missing from the guide: Cinder City, AION 2 and Like or Die all premiered at Opening Night Live, and none of the three is on the public floor." },
+      { "kind": "content", "text": "Cinder City is BigFire Games' open-world third-person shooter set in a fallen near-future Seoul, still undated; AION 2 launches Oct 5; Project Bonfire was revealed as Like or Die. NCSOFT's only stand is the closed business booth in Hall 4.2." }
+    ]
+  },
+  {
+    "date": "2026-08-28",
+    "revision": 61,
+    "changes": [
+      { "kind": "content", "text": "LEGO's Hall 9.1 booth turns out to be hands-on: playable stations for the LEGO Batman: Legacy of the Dark Knight Mayhem DLC, LEGO Fortnite and Minecraft Dungeons II, plus Forza Horizon 6 played sitting in brick-built racing rigs." },
+      { "kind": "content", "text": "LEGO Skylines is confirmed at the LEGO booth after its Opening Night Live reveal — but as a construction-zone photo op and a prize wheel, not a playable demo." },
+      { "kind": "content", "text": "Samsung Odyssey in Hall 9.1 is a demo booth, not just a monitor wall: Call of Duty: Modern Warfare 4 is playable there two months before release, and 500 Vault Edition codes are raffled to visitors." },
+      { "kind": "content", "text": "New card: the Retro Area in Hall 10.2 — around 2,000 m² of playable consoles, arcade cabinets and home computers from five decades, with a stage running the German Classic Tetris Championship, quizzes and live music." }
+    ]
+  },
+  {
+    "date": "2026-08-28",
+    "revision": 60,
+    "changes": [
+      { "kind": "content", "text": "Fixed: Elden Ring: Tarnished Edition is not playable at Nintendo's booth — that listing came from Bandai Namco's gamescom 2025 post, and Nintendo's own 2026 lineup is the 16 stations now on the card." }
+    ]
+  },
+  {
+    "date": "2026-08-27",
+    "revision": 59,
+    "changes": [
+      { "kind": "content", "text": "Thursday and Friday have now sold out too — day, discounted and family tickets alike, and Thursday's 16:00 evening ticket with them. Only Sunday is still on sale in every class, plus Friday's evening ticket." }
+    ]
+  },
+  {
     "date": "2026-08-27",
     "revision": 58,
     "changes": [
-      { "kind": "feature", "text": "Tell me how the guide did — five questions on whether it was any use and whether it should come back for gamescom 2027. The link is in the footer, and a card offers it once from Saturday. Anonymous, about a minute." }
+      { "kind": "content", "text": "Epic Games has taken a business-area stand — Hall 4.2 D033, a closed 264 m² meeting structure for Unreal Engine and Epic Games Store appointments. It only registered during show week, and it is trade-badge only." }
     ]
   },
   {

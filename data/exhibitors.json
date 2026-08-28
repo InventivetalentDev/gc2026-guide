@@ -45,9 +45,11 @@
       "https://www.drwindows.de/news/die-gamescom-2025-mein-persoenlicher-rueckblick",
       "https://businessmirror.com.ph/2026/08/15/xbox-to-feature-25-upcoming-games-at-gamescom-2026/",
       "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
-      "https://gamerant.com/fable-gamescom-gameplay-demo-8-26-2026/"
+      "https://gamerant.com/fable-gamescom-gameplay-demo-8-26-2026/",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/"
     ],
-    "lastUpdated": "2026-08-26"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "nintendo",
@@ -67,7 +69,6 @@
       { "title": "Orbitals", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Pokémon Pokopia (Expansion Pass)", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Splatoon Raiders", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
-      { "title": "Elden Ring: Tarnished Edition", "status": "confirmed", "playable": true, "age": 16, "ageStatus": "expected", "platforms": ["Switch 2"] },
       { "title": "Star Fox", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Mario Kart World", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
       { "title": "Donkey Kong Bananza", "status": "confirmed", "playable": true, "platforms": ["Switch 2"] },
@@ -85,12 +86,12 @@
       "https://www.gamescom.global/en/info/gamescom-cares",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
-      "https://x.com/BandaiNamcoEU/status/1955615446180184138",
       "https://www.gamescom.global/en/exhibitor/nintendo-of-europe-se",
       "https://www.nintendo.com/de-at/News/2026/August/Nintendo-auf-der-gamescom-2026-3145761.html",
-      "https://nintendo-online.de/news/nintendo-auf-der-gamescom-2026-diese-16-spiele-sind-am-stand-spielbar"
+      "https://nintendo-online.de/news/nintendo-auf-der-gamescom-2026-diese-16-spiele-sind-am-stand-spielbar",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/"
     ],
-    "lastUpdated": "2026-08-26"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "playstation",
@@ -152,9 +153,11 @@
     "sources": [
       "https://www.gematsu.com/2026/06/capcom-announces-gamescom-2026-lineup-including-playable-dragons-dogma-ii-dark-arisen-and-mega-man-dual-override",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
-      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/"
     ],
-    "lastUpdated": "2026-08-25"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "sega-atlus",
@@ -181,9 +184,11 @@
       "https://sega.prezly.com/sega-announces-huge-gamescom-2026-line-up",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-7-aussteller-spiele-240726/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
-      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/"
     ],
-    "lastUpdated": "2026-08-25"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "bandai-namco",
@@ -205,10 +210,9 @@
       "https://en.bandainamcoent.eu/dawnwalker/the-blood-of-dawnwalker",
       "https://www.gamescom.global/en/info/gamescom-cares",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-6-aussteller-spiele-230726/",
-      "https://x.com/BandaiNamcoEU/status/1955615446180184138",
       "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
-    "lastUpdated": "2026-08-25"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "konami",
@@ -264,9 +268,11 @@
       "https://news.ubisoft.com/en-us/article/1bJOlV0elnCLWK0qZSqg3N/ubisoft-gamescom-lineup-tune-in-for-rainbow-six-siege-the-division-anno-morbid-metal-and-more",
       "https://noisypixel.net/heroes-of-might-and-magic-3-remake-2027/",
       "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
-      "https://news.ubisoft.com/en-us/article/5wTVuqG9AnmMI0uJwAL1rF/rainbow-six-tactics-revealed-a-turnbased-tactical-experience"
+      "https://news.ubisoft.com/en-us/article/5wTVuqG9AnmMI0uJwAL1rF/rainbow-six-tactics-revealed-a-turnbased-tactical-experience",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/"
     ],
-    "lastUpdated": "2026-08-26"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "ea",
@@ -334,9 +340,11 @@
       "https://press.cdprojektred.com/en/news/1835/the-witcher-3-wild-hunt-songs-of-the-past-at-gamescom-2026",
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-aussteller-spiele-halle-8-220726/",
       "https://www.gamescom.global/en/exhibitor/cd-projekt-red",
-      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/"
     ],
-    "lastUpdated": "2026-08-25"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "gryphline",
@@ -354,9 +362,12 @@
     "sources": [
       "https://exhibitors.gamescom.global/exhibitor/gryphline/",
       "https://www.gamespress.com/en-US/Arknights-Endfield-to-Make-Anime-NYC-Debut-and-Return-to-gamescom-with",
-      "https://cogconnected.com/2026/07/arknights-endfield-heads-to-anime-nyc-and-returns-to-gamescom-this-year/"
+      "https://cogconnected.com/2026/07/arknights-endfield-heads-to-anime-nyc-and-returns-to-gamescom-this-year/",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/",
+      "https://www.gamespress.com/es/GRYPHLINEs-Arknights-Endfield-Wins-Best-Booth-at-gamescom-2026"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "snail-games",
@@ -399,9 +410,11 @@
     "sources": [
       "https://www.gameswirtschaft.de/gamescom/gamescom-2026-halle-9-aussteller-spiele-290726/",
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
-      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/"
     ],
-    "lastUpdated": "2026-08-25"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "krafton",
@@ -651,9 +664,11 @@
       "https://x.com/OnceHuman_JP/status/2090967196490989913",
       "https://www.neteasegames.com/news/20260811/37000_1310671.html",
       "https://www.invenglobal.com/articles/25154/once-human-launches-console-version-on-august-26-unveils-october-expansion-isles-of-abyss",
-      "https://massivelyop.com/2026/08/26/gamescom-2026-netease-announces-january-launch-for-ananta-and-december-beta-for-sea-of-remnants/"
+      "https://massivelyop.com/2026/08/26/gamescom-2026-netease-announces-january-launch-for-ananta-and-december-beta-for-sea-of-remnants/",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/"
     ],
-    "lastUpdated": "2026-08-26"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "pearl-abyss",
@@ -772,9 +787,11 @@
       "https://worthplaying.com/article/2026/7/15/news/150452",
       "https://exhibitors.gamescom.global/exhibitor/eclipse_glow_games/",
       "https://www.gamescom.global/en/exhibitor/eclipse-glow-games",
-      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
+      "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/"
     ],
-    "lastUpdated": "2026-08-25"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "4divinity",
@@ -1844,11 +1861,13 @@
     "locationConfirmed": true,
     "officialUrl": "https://www.gamescom.global/en/exhibitor/lego-gmbh",
     "games": [
-      { "title": "LEGO Batman: Legacy of the Dark Knight", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
-      { "title": "LEGO Fortnite", "status": "confirmed", "playable": false, "platforms": ["PC", "Consoles"] },
-      { "title": "LEGO Skylines", "status": "rumored", "playable": null, "onl": true, "platforms": ["PC", "Consoles"] }
+      { "title": "LEGO Batman: Legacy of the Dark Knight", "status": "confirmed", "playable": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
+      { "title": "LEGO Fortnite", "status": "confirmed", "playable": true, "platforms": ["PC", "Consoles"] },
+      { "title": "LEGO Skylines", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S", "Switch 2"] },
+      { "title": "Minecraft Dungeons II", "status": "confirmed", "playable": true, "platforms": ["Xbox", "PC", "Switch 2", "PS5"] },
+      { "title": "Forza Horizon 6", "status": "confirmed", "playable": true, "platforms": ["Xbox Series X|S", "PC"] }
     ],
-    "tags": ["family-friendly", "photo ops"],
+    "tags": ["family-friendly", "photo ops", "playable demos"],
     "crowd": 4,
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
@@ -1862,9 +1881,11 @@
       "https://www.brickfanatics.com/what-to-expect-from-lego-at-gamescom-2026",
       "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/",
       "https://www.brick-tracker.de/blog/news/lego-auf-der-gamescom-2026-fortnite-pokemon-moegliche-spiele-news/",
-      "https://www.notebookcheck.com/LEGO-Batman-DLC-Trailer-zeigt-Joker-Kampagne-und-Switch-2-Bundle.1379139.0.html"
+      "https://www.notebookcheck.com/LEGO-Batman-DLC-Trailer-zeigt-Joker-Kampagne-und-Switch-2-Bundle.1379139.0.html",
+      "https://jaysbrickblog.com/news/legos-gamescom-2026-booth-celebrates-all-things-gaming/",
+      "https://insider-gaming.com/lego-skylines-revealed-gamescom-2026/"
     ],
-    "lastUpdated": "2026-08-26"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "wizards-of-the-coast",
@@ -1910,14 +1931,22 @@
     "hall": "9.1",
     "booth": "B020/C029",
     "locationConfirmed": true,
-    "games": [],
-    "tags": ["hardware", "monitors"],
-    "crowd": 3,
+    "games": [
+      { "title": "Call of Duty: Modern Warfare 4", "status": "confirmed", "playable": true, "age": 18, "ageStatus": "expected", "platforms": ["Xbox Series X|S", "PC", "PS5", "Switch 2"] },
+      { "title": "Cronos: The New Dawn", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Cyberpunk 2077", "status": "confirmed", "playable": null, "platforms": ["PC", "PS5", "Xbox Series X|S"] }
+    ],
+    "tags": ["hardware", "monitors", "playable demos", "shooter"],
+    "crowd": 4,
     "sources": [
       "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
-      "https://exhibitors.gamescom.global/exhibitor/samsungtechwin/"
+      "https://exhibitors.gamescom.global/exhibitor/samsungtechwin/",
+      "https://news.samsung.com/global/samsung-introduces-new-odyssey-lineup-for-fast-paced-gaming-at-gamescom-2026",
+      "https://news.samsung.com/global/samsung-announces-partnership-with-call-of-duty-modern-warfare-4",
+      "https://www.ghacks.net/2026/08/19/samsung-and-activision-partner-on-call-of-duty-modern-warfare-4-with-odyssey-g9-display-tie-in/",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-spiele-liste-170626/"
     ],
-    "lastUpdated": "2026-08-12"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "razer",
@@ -2106,6 +2135,32 @@
       "https://www.destructoid.com/gamescom-opening-night-live-2026-all-announcements/"
     ],
     "lastUpdated": "2026-08-25"
+  },
+  {
+    "id": "ncsoft",
+    "name": "NCSOFT",
+    "type": "publisher",
+    "hall": null,
+    "booth": null,
+    "locationConfirmed": false,
+    "games": [
+      { "title": "AION 2", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC"] },
+      { "title": "Cinder City", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC", "PS5", "Xbox Series X|S"] },
+      { "title": "Like or Die", "status": "confirmed", "playable": false, "onl": true, "platforms": ["PC"] }
+    ],
+    "tags": ["not exhibiting", "MMO", "shooter", "world premiere"],
+    "crowd": 1,
+    "sources": [
+      "https://www.analogstickgaming.com/news/nc-to-showcase-three-upcoming-titles-at-gamescom-2026",
+      "https://www.invenglobal.com/articles/25303/ncsoft-unveils-new-lineup-at-gamescom-2026",
+      "https://gamesbeat.com/cinder-city-gets-new-trailer-at-gamescom-2026-opening-night-live/",
+      "https://gamesbeat.com/nc-reveal-like-or-die-at-gamescom-2026/",
+      "https://www.mmorpg.com/news/aion-2-officially-gets-october-5th-release-date-2000138791",
+      "https://store.steampowered.com/app/4651830/",
+      "https://store.steampowered.com/app/4559400/",
+      "https://exhibitors.gamescom.global/exhibitor/ncsoft/"
+    ],
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "paradox-urban",
@@ -2755,6 +2810,25 @@
     "lastUpdated": "2026-08-15"
   },
   {
+    "id": "epic-games-biz",
+    "name": "Epic Games",
+    "type": "trade",
+    "hall": "4.2",
+    "booth": "D033",
+    "locationConfirmed": true,
+    "dirSlug": "epic_games_commerce",
+    "country": "Switzerland",
+    "access": "appointment",
+    "games": [],
+    "tags": ["closed stand", "engine", "commerce"],
+    "officialUrl": "https://exhibitors.gamescom.global/en/exhibitor/epic_games_commerce/",
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/epic_games_commerce/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+    ],
+    "lastUpdated": "2026-08-27"
+  },
+  {
     "id": "capcom-business",
     "businessOf": "capcom",
     "name": "Capcom — business booth",
@@ -2788,9 +2862,11 @@
     "tags": ["closed stand"],
     "sources": [
       "https://exhibitors.gamescom.global/en/exhibitor/ubisoft/",
-      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/"
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/hall-plan/",
+      "https://nintendo-connect.de/events/gamescom/gamescom-award-2026-das-sind-die-gewinner-299315/",
+      "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/"
     ],
-    "lastUpdated": "2026-08-15"
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "bandai-namco-business",
@@ -3005,7 +3081,8 @@
   },
   {
     "id": "ncsoft-business",
-    "name": "NCSOFT",
+    "businessOf": "ncsoft",
+    "name": "NCSOFT — business booth",
     "type": "trade",
     "hall": "4.2",
     "booth": "B050/A051",
@@ -3386,6 +3463,26 @@
       "https://www.gamescom.global/en/exhibitor/iiyama-benelux-bv"
     ],
     "lastUpdated": "2026-08-25"
+  },
+  {
+    "id": "retro-area",
+    "name": "Retro Area (Haus der Computerspiele)",
+    "type": "experience",
+    "hall": "10.2",
+    "booth": "C010/B019, B020/A029, B010/A019, A011, A024, A010, A022",
+    "locationConfirmed": true,
+    "dirSlug": "haus_der_c",
+    "games": [],
+    "tags": ["retro", "exhibition", "family-friendly", "playable demos", "hands-on"],
+    "crowd": 3,
+    "sources": [
+      "https://exhibitors.gamescom.global/en/exhibitor/haus_der_c/",
+      "https://exhibitors.gamescom.global/en/gamescom-exhibitors/list-of-exhibitors/",
+      "https://www.gamescom.global/en/program/areas/retro-and-family",
+      "https://www.gameswirtschaft.de/gamescom/gamescom-2026-retro-area-230826/",
+      "https://www.gaming-insider.de/gamescom-2026-die-highlights-der-retro-area-in-halle-10-2-im-ueberblick/"
+    ],
+    "lastUpdated": "2026-08-28"
   },
   {
     "id": "retro-games",
