@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-08-29",
+    "revision": 65,
+    "changes": [
+      { "kind": "content", "text": "Fixed: the gamescom cosplay contest final is not in the Cosplay Village. On-site prejudging runs from 11:00 Saturday, and the final show is 17:00\u201319:00 on the Event Arena stage in Hall 1." },
+      { "kind": "content", "text": "Saturday and Sunday now list the day's stage programme: PietSmiet's gamescom Cup 14:00\u201316:50 and the cosplay final in Hall 1, Equal Esports Cup from 13:00 at The District, gamescom GDQ both days, and the City Festival downtown from 17:00." },
+      { "kind": "content", "text": "Xbox's three unnamed booth slots stayed unnamed through both booth broadcasts, so the published 22-game lineup is very likely all of it. Battlefield 6, Warhammer 40,000: Space Marine 3 and Attack on Titan 3 have shown no sign of themselves across four days and are marked as such." }
+    ]
+  },
+  {
     "date": "2026-08-28",
     "revision": 64,
     "changes": [

@@ -8,7 +8,7 @@
     "tickets": "Nur online über den offiziellen gamescom-Shop — keine Tageskasse vor Ort. Nur der Sonntag ist noch in allen Kategorien zu haben: Tagesticket 31,50 € (ermäßigt 22,50 €), Familienticket 69,50 €, Abendticket ab 16:00 Uhr 10,50 €. Mittwoch bis Samstag sind bei Tages-, Ermäßigten- und Familientickets ausverkauft; das Samstags-Abendticket ab 16:00 Uhr (13,00 €) ist vor dem Sonntag das Einzige, was übrig ist. Die Mittwochs-Wildcard (65,50 €), die Superfan-Bundles und Opening Night Live waren schon lange vor der Messe weg. Das gamescom-congress-Tagesticket für Donnerstag kostete 111,00 € (ermäßigt 40,00 €) und enthielt keinen Eintritt zur gamescom selbst. Tagestickets enthalten die kostenlose Fahrt mit Bus und Bahn im VRS-Gebiet.",
     "crowdTips": [
       "Die Ausstellungsfläche selbst ist zum ersten Mal in den 18 Jahren der gamescom komplett ausgebucht — 233.000 m² und über 1.600 Aussteller. Rechne mit der bisher vollsten gamescom.",
-      "Noch zwei Tage, und beide sind fast voll: Donnerstag, Freitag und Samstag sind bei Tages-, Ermäßigten- und Familientickets ausverkauft. Ohne bereits gekauftes Ticket oder Business-Ticket kommst du nur noch mit dem Samstags-Abendticket ab 16:00 Uhr (13,00 €) oder am Sonntag in allen Kategorien rein.",
+      "Samstag und Sonntag sind alles, was von der Messe noch übrig ist, und beide sind fast voll: Mittwoch bis Samstag sind bei Tages-, Ermäßigten- und Familientickets ausverkauft. Ohne bereits gekauftes Ticket oder Business-Ticket kommst du nur noch mit dem Samstags-Abendticket ab 16:00 Uhr (13,00 €) oder am Sonntag in allen Kategorien rein.",
       "Die Mittwochs-Wildcard und der Donnerstagmorgen mit wenig Andrang waren die ruhigsten Wege zu den heißesten Demos — beide liegen hinter uns. Von dem, was noch zu haben ist, ist der Sonntagmorgen der ruhigste: Einlass ab 09:00 Uhr, und der Andrang lässt nach, während die Stände auslaufen.",
       "Auch mit einem Business-Ticket kommst du am Mittwoch nicht überall hinein: Mehrere AAA-Stände lassen vormittags nur geladene Presse zu oder bleiben den ganzen Tag geschlossen (Xbox 2026: Stand öffnet erst Donnerstag; Capcom 2025: bis ca. 11:00 Uhr nur Presse). Schau auf die Kanäle des Standes, bevor du deinen Mittwoch danach planst.",
       "Sei deutlich vor Türöffnung da und nimm den Eingang, der deinem ersten Muss-Stand am nächsten liegt — große Stände bauen in der ersten Stunde 2–4 h Wartezeit auf. Nord ist am kürzesten für die Hallen 6–9, Ost für Halle 10, Süd für die Business-Hallen; siehe Eingänge unter Event-Infos.",
@@ -47,19 +47,19 @@
       "2026-08-29": {
         "access": "öffentlich",
         "hours": "Entertainment 09:00–20:00 (Business-Bereich geschlossen)",
-        "note": "Vollster Tag der Messe. Tages-, Ermäßigten- und Familientickets sind weg, das Abendticket ab 16:00 Uhr (13,00 €) gibt es aber noch — ohne bereits gekauftes Ticket oder Business-Ticket ist das der einzige Weg rein. Wenn du hingehst: zum Anspielen lieber meiden. Abends City Festival."
+        "note": "Vollster Tag der Messe. Tages-, Ermäßigten- und Familientickets sind weg, das Abendticket ab 16:00 Uhr (13,00 €) gibt es aber noch — ohne bereits gekauftes Ticket oder Business-Ticket ist das der einzige Weg rein. Wenn du hingehst: zum Anspielen lieber meiden. Die Bühne in Halle 1 trägt den Tag: PietSmiets gamescom Cup 14:00–16:50 Uhr und das Finale des gamescom cosplay contest 17:00–19:00 Uhr. Equal Esports Cup ab 13:00 Uhr bei The District in Halle 8, gamescom GDQ den ganzen Tag im Congress Center Nord, und ab 17:00 Uhr City Festival in der Innenstadt."
       },
       "2026-08-30": {
         "access": "öffentlich",
         "hours": "Entertainment 09:00–20:00 (Business-Bereich geschlossen)",
-        "note": "Der einzige Tag, den es noch in allen Kategorien zu kaufen gibt, und der entspannteste der Messe — am späten Nachmittag fahren die Stände langsam runter. Freier Eintritt über abgeschlossene gamescom-epix-Quests möglich."
+        "note": "Der einzige Tag, den es noch in allen Kategorien zu kaufen gibt, und der entspannteste der Messe — am späten Nachmittag fahren die Stände langsam runter. Freier Eintritt über abgeschlossene gamescom-epix-Quests möglich. Abschlusstag von gamescom GDQ im Congress Center Nord; auf der Bühne in Halle 1 läuft von 13:00 bis 14:30 Uhr eine Anime-Vorführung, und das City Festival in der Innenstadt hat ab 17:00 Uhr seinen letzten Abend."
       }
     },
     "areas": {
       "Entertainment area": "Die Publikumsmesse: große Publisher-Stände, spielbare Demos, Bühnen und Gratisaktionen.",
       "Business area": "Nur Fachbesucher, Presse und akkreditierte Creator (Mi–Fr, Mi 09:00–19:00 / Do–Fr 09:00–20:00); Sa/So geschlossen. Die Hallen liegen am Eingang Süd, aber über West kommst du ruhiger rein — siehe Eingänge.",
-      "Event Arena": "Große Bühnenshows, Konzerte und Esports (u. a. die Prime-League-Offline-Finals).",
-      "Cosplay Village": "Cosplay-Wettbewerb, Fotoecken, Workshops und die Artist Area.",
+      "Event Arena": "Große Bühnenshows, Konzerte und Esports (u. a. die Prime-League-Offline-Finals) — und die Bühne, auf der das Finale des gamescom cosplay contest läuft, Samstag 17:00–19:00 Uhr, nicht im Cosplay Village.",
+      "Cosplay Village": "Der eigene Bereich der Cosplay-Community: Fotoecken, Workshops und die Artist Area. Der Wettbewerb selbst läuft woanders — Vorjury ab 11:00 Uhr am Samstag, danach die Finalshow um 17:00 Uhr in der Event Arena in Halle 1.",
       "Merchandise Area": "Der einzige Bereich, in dem Aussteller Waren verkaufen dürfen — hier findest du die meisten Merch-Stände.",
       "Cards & Boards Area": "Communities und Händler rund um Karten- und Brettspiele.",
       "Indie Area / Indie Arena Booth": "Rund 200 Indie-Spiele von 182 Entwicklerteams — siehe den Ausstellereintrag zum Indie Arena Booth.",
@@ -314,7 +314,7 @@
         "Terrible Lizards": "Demo am Stand.",
         "Armatus": "Steht im offiziellen Xbox-Wire-Lineup des Stands.",
         "Bad Magpie": "Indie-Titel am Stand.",
-        "Unannounced titles (~3 slots)": "Xbox nennt 25 Spiele, hat aber erst ~22 benannt — die letzten Slots blieben auch nach der ONL offen; achte auf die Stand-Streams am 26./27. August."
+        "Unannounced titles (~3 slots)": "Xbox nennt 25 Spiele, hat aber erst ~22 benannt — die letzten Slots blieben nach der ONL und auch nach beiden Stand-Streams am 26./27. August offen; die veröffentlichte Liste dürfte damit alles sein."
       }
     },
     "nintendo": {
@@ -427,7 +427,7 @@
       "visitAdvice": "FC hat viele Stationen und kurze Runden — mittags völlig okay.",
       "games": {
         "EA Sports FC 27": "Für den Stand bestätigt; erscheint wenige Wochen nach der gamescom. Die Switch-2-Fassung ist separat für Nintendos Stand bestätigt.",
-        "Battlefield 6 (seasonal content)": "Die deutsche Fachpresse schrieb, BF6 'könnte eine Rolle spielen' — Tag 1 brachte keine Spur davon, und EAs Stand-Seite registriert nur FC 27 und Zero Company.",
+        "Battlefield 6 (seasonal content)": "Die deutsche Fachpresse schrieb, BF6 'könnte eine Rolle spielen' — vier Messetage haben keine Spur davon gebracht, und EAs Stand-Seite registriert weiterhin nur FC 27 und Zero Company.",
         "STAR WARS Zero Company": "Auf EAs Stand-Seite registriert, vor dem Release am 27. August mitten in der Messe; die bestätigten Anspiel-Stationen stehen am Xbox-Stand in Halle 7."
       }
     },
@@ -532,7 +532,7 @@
       "visitAdvice": "Stell dich für Resonance am Xbox-Stand an, wo es bestätigt spielbar ist. Focus zeigt am eigenen Stand außerdem Road Kings und BioEden, sagt aber nicht, welches der drei du dort selbst spielen kannst.",
       "games": {
         "Resonance: A Plague Tale Legacy": "Spielbare Demo die ganze Messe über, am eigenen Stand und am Xbox-Stand; Release am 27. August, mitten in der Messe.",
-        "Warhammer 40,000: Space Marine 3": "Zu früh für ein Hands-on; ein Trailer-Auftritt ist möglich.",
+        "Warhammer 40,000: Space Marine 3": "Als in Entwicklung angekündigt und zu früh für ein Hands-on; über die ganze Messe ist am Stand nichts davon aufgetaucht.",
         "Road Kings": "Sabers 40-Tonnen-Speditions-Sim, auf der Stand-Seite von Focus — der ONL-Trailer setzte den Release auf den 11. März 2027; kein Hands-on angekündigt.",
         "BioEden": "Gemütliches Ökosystem-Management, ab 3. September auf PC (Konsolen später) — eine kostenlose Steam-Demo ist schon da; auf der Stand-Seite präsentiert, ohne angekündigtes Hands-on.",
         "Elta: Defy All Gods": "Science-Fantasy-Action-Platformer vom Dreamscaper-Team, bei der ONL für Anfang 2027 enthüllt — auf der Stand-Seite von Focus, Steam-Demo am 1. Oktober; Stand-Präsenz unbestätigt."
@@ -678,7 +678,7 @@
       "crowdNote": "Kleiner Stand in der Indie- und Merch-Halle — Laufkundschaft, solange nichts Spielbares auftaucht.",
       "visitAdvice": "Prüf es vor Ort: Eine spielbare Station zu Attack on Titan 3 oder Nioh 3 würde sich schnell füllen; sonst ein kurzer Stopp auf deiner Indie-Arena-Booth-Runde.",
       "games": {
-        "Attack on Titan 3": "Der Winter-Release (10. Dez.) machte einen Auftritt plausibel, aber anspielbar ist es auf der TGS im September, und für diesen Stand ist nichts angekündigt — unsere Einschätzung, und sie wird täglich wackliger."
+        "Attack on Titan 3": "Der Winter-Release (10. Dez.) machte einen Auftritt plausibel, aber anspielbar ist es auf der TGS im September, und über die ganze Messe ist an diesem Stand nichts aufgetaucht — unsere Einschätzung, und die Messe hat sie so gut wie beantwortet."
       }
     },
     "bilibili": {
