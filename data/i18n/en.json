@@ -1,15 +1,15 @@
 {
   "meta": {
-    "note": "Booth numbers and lineups will keep changing until the show; unconfirmed locations are marked. See the Updates tab for what changed."
+    "note": "gamescom 2026 closes Sunday, Aug 30. Booth numbers and lineups are final; see the Updates tab for what changed."
   },
   "event": {
     "location": "Koelnmesse, Cologne",
     "dates": "Aug 26–30, 2026",
-    "tickets": "Online-only via the official gamescom shop — no on-site box office. Sunday is the only day still on sale in every class: day ticket €31.50 (discounted €22.50), family €69.50, evening ticket from 16:00 €10.50. Wednesday through Saturday are sold out on day, discounted and family tickets; Saturday's 16:00 evening ticket (€13.00) is the one thing left before Sunday. The Wednesday Wildcard (€65.50), the Superfan bundles and Opening Night Live sold out long before the show. The gamescom congress day ticket for Thursday was €111.00 (€40.00 discounted) and did not include entry to gamescom itself. Day tickets include free VRS public transport in the Cologne region.",
+    "tickets": "Online-only via the official gamescom shop — no on-site box office. Sunday, the closing day, is the last one on sale, and it is on sale in every class: day ticket €31.50 (discounted €22.50), family €69.50, evening ticket from 16:00 €10.50. Wednesday through Saturday have all been and gone, every one of them sold out on day, discounted and family tickets. The Wednesday Wildcard (€65.50), the Superfan bundles and Opening Night Live sold out long before the show. The gamescom congress day ticket for Thursday was €111.00 (€40.00 discounted) and did not include entry to gamescom itself. Day tickets include free VRS public transport in the Cologne region.",
     "crowdTips": [
       "The show floor itself has sold out to exhibitors for the first time in gamescom's 18-edition history — 233,000 m² and 1,600+ exhibitors. Expect this to be the busiest gamescom yet.",
-      "Saturday and Sunday are all that is left of the show, and both are close to full: Wednesday through Saturday are sold out on day, discounted and family tickets. Saturday's 16:00 evening ticket (€13.00) and Sunday in every class are the only ways in without a ticket already in hand or a trade badge.",
-      "Wednesday's Wildcard and Thursday's low-crowd morning were the quietest ways into the hottest demos, and both are behind us. Of what is still on sale, Sunday morning is the calmest — 09:00 doors, and the weekend crowd thins as booths wind down.",
+      "Sunday is all that is left of the show, and it is the one day you can still simply buy a ticket for — every class is on sale. Four sold-out days are behind it, so expect a full house from doors, but Sunday is the calmest of the weekend and thins further through the afternoon.",
+      "Wednesday's Wildcard and Thursday's low-crowd morning were the quietest ways into the hottest demos, and both are behind us. Sunday morning is what is left and it is the best of the rest — be at the gate for the 09:00 doors, and expect booths to start winding down through the late afternoon.",
       "On trade Wednesday, a trade badge doesn't open every door: several AAA booths run invited-press-only previews in the morning or skip the day entirely (Xbox 2026: booth opens Thursday; Capcom 2025: press-only until ~11:00). Check a booth's own channels before planning your Wednesday around it.",
       "Arrive well before doors open and pick the entrance nearest your first must-play booth — big booths build 2–4 h queues within the first hour. North is shortest for halls 6–9, East for Hall 10, South for the business halls; see Entrances on the Info tab.",
       "On a trade badge the entertainment halls open at 09:00 every day — an hour before the public on Thursday and Friday. Spend that hour on the one demo you most want to play; it is the closest thing to an empty show floor you will get.",
@@ -20,7 +20,7 @@
       "Take public transport — day tickets include free VRS travel in the Cologne region and parking at the grounds is not worth the attempt. Check your line before you set off, though: Cologne's Rhine bridge works run straight through show week.",
       "Stadtbahn lines 1, 7 and 9 do not cross the Rhine until early September: 1 and 9 terminate at Heumarkt, 7 at Neumarkt, with replacement buses from Neumarkt to Koelnmesse taking 10–20 minutes. Lines 3 and 4 still run to the East entrance and are the dependable way in.",
       "On the rail side, RE 1, RE 5, S 1 and S 6 are cut back between Düsseldorf and Köln-Mülheim from Aug 21, and some trains skip Köln Hauptbahnhof and Köln Messe/Deutz entirely. Check your connection the morning you travel; coming from Düsseldorf, RE 6 is the recommended way round.",
-      "Evening tickets (from 16:00) are a cheap second visit and queues shrink in the last 2–3 hours — Saturday's (€13.00) and Sunday's (€10.50) are both still on sale.",
+      "Evening tickets (from 16:00) are a cheap second visit and queues shrink in the last 2–3 hours — Sunday's (€10.50) is the last one on sale.",
       "Do gamescom epix quests — completing all chapters can earn a free Sunday ticket.",
       "Inside Cologne, KVB lines 1, 7 and 9 can't cross the Deutzer Brücke until Sept 2 — take lines 3 or 4 via Severinsbrücke to the Koelnmesse stop instead, or walk over the Hohenzollernbrücke from the Hauptbahnhof to Deutz."
     ],
@@ -47,19 +47,19 @@
       "2026-08-29": {
         "access": "public",
         "hours": "Entertainment 09:00–20:00 (business area closed)",
-        "note": "Busiest day of the show. Day, discounted and family tickets are gone, but the 16:00 evening ticket (€13.00) is still on sale — it is the only way in without a ticket already in hand or a trade badge. If you are going, avoid it for hands-on play. The Hall 1 stage carries the day: PietSmiet's gamescom Cup 14:00–16:50 and the gamescom cosplay contest final 17:00–19:00. Equal Esports Cup from 13:00 at The District in Hall 8, gamescom GDQ all day in the Congress Center North, and City Festival downtown from 17:00."
+        "note": "The busiest day of the show, and it is over — the halls closed at 20:00. Day, discounted and family tickets had gone well in advance; the 16:00 evening ticket (€13.00) was the last way in. The Hall 1 stage carried the day: PietSmiet's gamescom Cup 14:00–16:50 and the gamescom cosplay contest final 17:00–19:00, with the Equal Esports Cup at The District in Hall 8 and gamescom GDQ in the Congress Center North. The City Festival downtown runs on into the evening."
       },
       "2026-08-30": {
         "access": "public",
         "hours": "Entertainment 09:00–20:00 (business area closed)",
-        "note": "The only day still on sale in every class, and the most relaxed of the show — booths start winding down late afternoon. Free entry possible via completed gamescom epix quests. Closing day for gamescom GDQ in the Congress Center North; the Hall 1 stage runs an anime screening 13:00–14:30, and the City Festival downtown has its last evening from 17:00."
+        "note": "Closing day, and the only one still on sale in every class — the most relaxed of the show, though that is relative after four sold-out days. Doors at 09:00, and booths start winding down through the late afternoon, so do your must-play stops first. Free entry is possible via completed gamescom epix quests. Last day for gamescom GDQ in the Congress Center North; the Hall 1 stage runs an anime screening 13:00–14:30, and the City Festival downtown has its final evening from 17:00."
       }
     },
     "areas": {
       "Entertainment area": "The consumer show: big publisher booths, playable demos, stages, giveaways.",
       "Business area": "Trade visitors, press and accredited creators only (Wed–Fri, 09:00–19:00 Wed / 09:00–20:00 Thu–Fri); closed Sat/Sun. The halls sit at the South entrance, but West is the quieter way in — see Entrances.",
-      "Event Arena": "Big stage shows, concerts and esports (incl. Prime League offline finals) — and the stage the gamescom cosplay contest final is run on, Saturday 17:00–19:00, rather than the Cosplay Village.",
-      "Cosplay Village": "The cosplay community's own space: photo booths, workshops and the Artist Area. The contest itself happens elsewhere — on-site prejudging from 11:00 on Saturday, then the final show at 17:00 in the Event Arena in Hall 1.",
+      "Event Arena": "Big stage shows, concerts and esports (incl. Prime League offline finals) — and the stage the gamescom cosplay contest final was run on, Saturday 17:00–19:00, rather than the Cosplay Village.",
+      "Cosplay Village": "The cosplay community's own space: photo booths, workshops and the Artist Area. The contest itself happened elsewhere — on-site prejudging from 11:00 on Saturday, then the final show at 17:00 in the Event Arena in Hall 1.",
       "Merchandise Area": "The only area where exhibitors may sell goods — main merch shopping halls.",
       "Cards & Boards Area": "Card and board game communities and vendors.",
       "Indie Area / Indie Arena Booth": "~200 indie games from 182 developers — see the Indie Arena Booth exhibitor entry.",

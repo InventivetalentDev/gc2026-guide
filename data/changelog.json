@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-08-29",
+    "revision": 66,
+    "changes": [
+      { "kind": "content", "text": "Saturday is done \u2014 the halls closed at 20:00 and the guide now reads for the last day. Sunday, Aug 30 is the only day left and the only one still on sale, in every class: day \u20ac31.50 (discounted \u20ac22.50), family \u20ac69.50, evening from 16:00 \u20ac10.50." },
+      { "kind": "content", "text": "Closing-day advice: doors at 09:00, do your must-play stops first, and expect booths to wind down through the late afternoon. Last day for gamescom GDQ, an anime screening on the Hall 1 stage 13:00\u201314:30, and the City Festival\u2019s final evening downtown from 17:00." }
+    ]
+  },
+  {
+    "date": "2026-08-29",
     "revision": 65,
     "changes": [
       { "kind": "content", "text": "Fixed: the gamescom cosplay contest final is not in the Cosplay Village. On-site prejudging runs from 11:00 Saturday, and the final show is 17:00\u201319:00 on the Event Arena stage in Hall 1." },
