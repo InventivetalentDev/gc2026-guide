@@ -1,5 +1,13 @@
 [
   {
+    "date": "2026-08-30",
+    "revision": 67,
+    "changes": [
+      { "kind": "content", "text": "Sunday's Hall 1 stage programme corrected: three Animekino screenings, not one \u2014 BELLE with a Lara Loft Q&A 11:00\u201313:30, Digimon Adventure: Last Evolution Kizuna 14:00\u201316:30, and Yu-Gi-Oh! Bonds Beyond Time 17:00\u201318:00." },
+      { "kind": "content", "text": "Closing-day timings: gamescom GDQ ends with its finale at 19:30 in the Congress Center North, and the Cosplay Village stage and the Signing Area run through to 20:00." }
+    ]
+  },
+  {
     "date": "2026-08-29",
     "revision": 66,
     "changes": [
