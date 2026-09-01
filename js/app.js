@@ -240,6 +240,11 @@ function mergeStrings(exhibitors, event, meta, strings) {
   event.dates = ev.dates || "";
   event.tickets = ev.tickets || "";
   event.crowdTips = ev.crowdTips || [];
+  /* Next year's edition. The name is a proper noun and stays in the base
+     data beside this year's; only the date range is prose, and it is written
+     without a year because the name already carries one — "gamescom 2027,
+     Aug 23–29" rather than the same number twice. */
+  if (event.next) event.next.dates = ev.nextDates || "";
   if (event.onl) {
     event.onl.date = ev.onl?.date || "";
     event.onl.note = ev.onl?.note || "";
@@ -1016,6 +1021,108 @@ function renderFeedback() {
   };
   open.onclick = settle;
   $("#feedback-dismiss").onclick = settle;
+}
+
+/* ---------- the end of the show ----------
+
+   Once the last doors have shut the guide stops being advice and becomes a
+   record, and it has to say so. Every present tense left in it — sold-out
+   tickets, which entrance to use, be at the gate for the 09:00 doors — was
+   true on the day it was written and is read on a page somebody may open in
+   November. None of that prose is rewritten: it is what the show was, and a
+   guide edited into the past tense afterwards is a worse record than one
+   that is honestly dated. The notice above it is what dates it.
+
+   The other half is the only thing a visitor can still act on: there will be
+   a guide for next year, and this is where it gets announced. No mailing
+   list — nothing here has ever asked for an address and the last screen of
+   the year is not the place to start (the queue API's own database is
+   deleted after the show; see docs/DEPLOYING.md). Two accounts the author
+   already posts from cost nothing to keep and nothing to leave.
+
+   Two surfaces again, the same split the feedback prompt uses: this card,
+   which only exists once the show is over, and a footer line that is there
+   year-round because "where do updates get posted" is not a question that
+   waits for Sunday night. Both are dark until data/event.json names the
+   accounts, so a handle change is a data push. */
+
+/* The accounts, validated the way feedbackUrl() validates its form: this is
+   the other value in a data file that becomes a navigation, and a data push
+   should not be able to put a javascript: href on the page. Anything without
+   a usable http(s) URL and a handle to name it is dropped rather than
+   rendered as a dead chip. */
+function followAccounts() {
+  return (state.event?.follow || [])
+    .map((account) => {
+      if (!account?.handle || !account?.url) return null;
+      try {
+        /* Resolved against the page, so a relative value is still a real URL
+           — but only after the empty string has been rejected above, which
+           resolves to the guide itself and would link the account to us. */
+        const url = new URL(String(account.url), location.href);
+        if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+        return { handle: String(account.handle), network: String(account.network || ""), href: url.href };
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+}
+
+/* One chip. `full` names the network above the handle, for the card, where
+   there is room to say which service this is; the footer runs as prose and
+   takes the handle alone — "u/" and "@" carry that much on their own — with
+   the network moved into the accessible name, so a screen reader is not left
+   choosing between two links that read as punctuation.
+
+   The new-tab warning every outbound link in the guide carries goes into that
+   label rather than beside it: an aria-label replaces the whole accessible
+   name, and would otherwise silence an sr-only span next to it. */
+function followLink(account, full) {
+  const named =
+    account.network
+      ? t("follow.on", { handle: account.handle, network: account.network })
+      : account.handle;
+  const aria = full ? "" : ` aria-label="${esc(named + t("a11y.newTab"))}"`;
+  return `<a class="follow-link" href="${esc(account.href)}" target="_blank" rel="noopener"${aria}>${
+    full && account.network ? `<span class="follow-net">${esc(account.network)}</span>` : ""
+  }<span class="follow-handle">${esc(account.handle)}</span>${
+    full ? `<span class="sr-only">${esc(t("a11y.newTab"))}</span>` : ""
+  }</a>`;
+}
+
+/* Between two handles in the footer sentence. A separator inside either link
+   would be underlined and clickable, and read out as part of the name. */
+const FOLLOW_SEP = '<span class="follow-sep" aria-hidden="true"> · </span>';
+
+function renderClosed() {
+  const accounts = followAccounts();
+  const footer = $("#follow-footer");
+  const card = $("#closed-card");
+  /* Both guarded, as the feedback pair is: a service-worker transition can
+     pair this script with a cached index.html written before the feature,
+     and a missing sign-off is not worth failing a boot over. */
+  if (footer) {
+    footer.classList.toggle("hidden", !accounts.length);
+    if (accounts.length)
+      $("#follow-footer-links").innerHTML = accounts
+        .map((a) => followLink(a, false))
+        .join(FOLLOW_SEP);
+  }
+  if (!card) return;
+  card.hidden = !showIsOver();
+  if (card.hidden) return;
+  const next = state.event?.next;
+  /* The line about next year is dropped rather than half-written when the
+     data has no name for it. "The show is over" is still worth saying on its
+     own; "there will be a guide for , " is not. */
+  $("#closed-next").textContent =
+    next?.name && next?.dates ? t("closed.next", { name: next.name, dates: next.dates }) : "";
+  const follow = $("#closed-follow");
+  follow.innerHTML = accounts.length
+    ? `<p class="closed-follow-lede">${esc(t("closed.follow"))}</p>
+       <div class="follow-links">${accounts.map((a) => followLink(a, true)).join("")}</div>`
+    : "";
 }
 
 function parseHash() {
@@ -5600,6 +5707,27 @@ function showNow() {
    the year. Every "does Today exist" test in the app goes through this. */
 const showDay = () => dayByDate(showNow().date);
 
+/* Behind us, rather than merely not-today: the last day's doors have shut.
+   Read off the same `days` list and the same Cologne clock as everything
+   else, so the end-of-show notice can never appear an hour early on a phone
+   still set to another timezone — nor on Sunday afternoon, which is a day the
+   guide is still being walked around with.
+
+   Deliberately not `startDate`-aware. "Before the show" is a different state
+   with its own answers all over the guide (a countdown, a queues panel naming
+   the opening day), and this asks only about the end.
+
+   The clock is taken as an argument and handed on to dayStatus so both halves
+   of the answer are read from one instant: reading it twice can straddle
+   20:00 on the last evening and decide the day is both today and finished. */
+function showIsOver(now = showNow()) {
+  const days = state.event?.days || [];
+  const last = days[days.length - 1];
+  if (!last) return false;
+  if (now.date > last.date) return true;
+  return now.date === last.date && dayStatus(last, now).state === "after";
+}
+
 const clockMinutes = (hhmm) => {
   const [h, m] = String(hhmm || "").split(":").map(Number);
   return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : null;
@@ -8137,6 +8265,12 @@ function bindControls() {
        showView, which already owns the "is there a Today" rule and sends a
        dead one to the planner. */
     if (state.view === "today" && !showDay()) showView("today");
+    /* The same turn of the clock, seen from the other side: that phone woke
+       up on the first morning the guide is a record, and the notice saying so
+       is the one piece of chrome that has to arrive without a reload. Cheap
+       enough to run on every wake — it reads two dates and, until that
+       morning, does nothing. */
+    renderClosed();
   });
   /* The lens chips are static markup, so a click never re-renders them out
      from under the pointer — only the board below swaps. */
@@ -8407,9 +8541,13 @@ async function main() {
   bindControls();
   renderCountdown();
   renderFreshness();
-  /* Before first paint, with the rest of the chrome: the card sits above the
+  /* Before first paint, with the rest of the chrome: the cards sit above the
      views, so a later render would push the grid down under whoever is
-     already reading it. */
+     already reading it. The sign-off goes first for the same reason it is
+     first in the markup — it is the state of the whole guide, and the
+     feedback ask under it is a question about a show it has just said is
+     over. */
+  renderClosed();
   renderFeedback();
   /* Ahead of the landing render: Today's own render may be an idle slot away,
      and both of these have to be on screen from the first paint — the tab on a

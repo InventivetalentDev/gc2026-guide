@@ -1,5 +1,13 @@
 [
   {
+    "date": "2026-09-01",
+    "revision": 68,
+    "changes": [
+      { "kind": "content", "text": "That is gamescom 2026. The guide stays up exactly as it stood on the last day — saved lists, plans and the hall map all keep working — and now says so at the top rather than leaving five days of present tense to be read as current." },
+      { "kind": "feature", "text": "There will be a guide for gamescom 2027, Aug 23–29. No mailing list: it gets announced on @inventivtalent and u/InventivetalentDev, both linked from the notice at the top and from the footer." }
+    ]
+  },
+  {
     "date": "2026-08-30",
     "revision": 67,
     "changes": [

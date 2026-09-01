@@ -498,6 +498,19 @@ keep different opening hours.
     }
   ],
   "onl": { "time": "20:00 CEST" },
+  "next": { "name": "gamescom 2027" },   // next year's edition, named in the
+                                   // end-of-show notice. Its date range is
+                                   // prose (`event.nextDates` in the i18n
+                                   // files); drop the key and the notice
+                                   // drops the line about next year
+  "follow": [                      // where the next guide gets announced.
+                                   // Empty or absent hides the card's links
+                                   // and the footer line entirely; `url` is
+                                   // validated as http(s) before it is
+                                   // rendered, and `network` is a brand name
+                                   // shown in every language
+    { "network": "X", "handle": "@inventivtalent", "url": "https://x.com/inventivtalent" }
+  ],
   "areas": [ { "name": "Indie Arena Booth", "hall": "10.2" } ],  // name is the
                                    // official one and the key for its description
   "entrances": {                   // optional; the Info tab drops the section without it
@@ -557,6 +570,9 @@ Same shape in both; `en.json` is the source you edit, `de.json` the translation.
   "meta":  { "note": "shown in the footer" },
   "event": {
     "dates": "Aug 26–30, 2026",
+    "nextDates": "Aug 23–29",                    // next year's, written
+                                                 // without a year: `next.name`
+                                                 // in event.json carries it
     "tickets": "summary incl. sold-out status",
     "onl":   { "date": "Tue, Aug 25", "note": "..." },
     "days":  { "2026-08-26": { "access": "trade & media only", "hours": "...", "note": "..." } },

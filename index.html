@@ -432,6 +432,25 @@
 
   <main class="wrap" id="main">
 
+    <!-- ============ End of the show ============
+         The sign-off, above every view and above the feedback card, because
+         it is the state of the whole guide rather than a request: everything
+         under it is written in the present tense about a show that has
+         finished, and this is the line that dates it. No dismiss button for
+         the same reason — the guide would go back to reading as though the
+         doors were open.
+
+         Empty and hidden until renderClosed in js/app.js finds the last
+         day's close behind us in Cologne; its links come from the accounts
+         in data/event.json, so there are none to hard-code here. -->
+    <aside class="closed-card" id="closed-card" role="region" aria-labelledby="closed-card-title" hidden>
+      <div class="closed-copy">
+        <span class="overline" id="closed-card-title" data-i18n="closed.title">The show is over</span>
+        <p data-i18n="closed.lede">gamescom 2026 closed on Sunday, Aug 30. Nothing here has changed since, and nothing will — this is the guide as it stood on the last day. Your saved list, your plan and the hall map still work; live queues closed with the show.</p>
+        <p class="closed-next" id="closed-next"></p>
+      </div>
+      <div class="closed-follow" id="closed-follow"></div>
+    </aside>
     <!-- ============ Feedback prompt ============
          Outside the views, so it is on screen whichever tab the visitor is
          on — the question is about the guide, not about the exhibitor grid.
@@ -733,6 +752,14 @@
              Hidden until data/event.json names a form, and unlike the card it
              has no memory — this is the one somebody comes back to. -->
         <p class="hidden" id="feedback-footer"><span data-i18n="footer.feedbackFormLede">Used the guide at the show?</span> <a class="subtle-link" id="feedback-footer-link" href="#" target="_blank" rel="noopener"><span data-i18n="footer.feedbackFormLink">Answer five questions about it →</span><span class="sr-only" data-i18n="a11y.newTab">, opens in a new tab</span></a></p>
+        <!-- Where the guide itself is announced, which is a different thing
+             again from the two lines above: not a correction and not an
+             opinion, but the answer to "will there be one next year". Not
+             date-gated the way the card at the top is — somebody reading the
+             footer in June is asking the same question — and filled by
+             renderClosed from data/event.json, so it stays dark until the
+             accounts are named there. -->
+        <p class="hidden" id="follow-footer"><span data-i18n="footer.followLede">Updates and next year's guide are posted here:</span> <span id="follow-footer-links"></span></p>
         <!-- Imprint stays English while privacy follows the selected language.
              The links themselves are localized: "Impressum" is the word a
              German visitor looks for, and § 5 DDG is about it being easy to

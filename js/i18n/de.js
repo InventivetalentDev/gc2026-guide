@@ -466,8 +466,11 @@ window.GC_STRINGS.de = {
 
   /* ---------- updates ---------- */
   "updates.title": "Daten-Updates",
+  /* Vergangenheitsform seit Rev. 68: Die Aktualisierungen haben mit der Messe
+     geendet, und ein Tab, der weiter alle paar Tage eine versprechen würde,
+     wäre die einzige Stelle im Guide, die ein Versprechen nicht mehr hält. */
   "updates.lede":
-    "Dieser Guide wird bis zur Messe alle paar Tage aktualisiert, sobald Aussteller ihre Spiele und Standorte bekannt geben. Was sich in welcher Revision geändert hat:",
+    "Dieser Guide wurde bis zum Ende der Messe alle paar Tage aktualisiert, sobald Aussteller ihre Spiele und Standorte bekannt gegeben haben. Was sich in welcher Revision geändert hat:",
   "updates.rev": "Rev. {n}",
   "updates.englishOnly": "Die Änderungsliste unten erscheint auf Englisch.",
   "updates.filterLabel": "Zeigen",
@@ -610,6 +613,10 @@ window.GC_STRINGS.de = {
      die eine will einen Daten-Push, die andere eine Meinung. */
   "footer.feedbackFormLede": "Den Guide auf der Messe benutzt?",
   "footer.feedbackFormLink": "Fünf Fragen dazu beantworten →",
+  /* Und noch einmal etwas anderes: keine Korrektur, keine Meinung, sondern
+     die Stelle, an der der nächste angekündigt wird. Ganzjährig, anders als
+     die Karte oben. */
+  "footer.followLede": "Updates und der Guide fürs nächste Jahr werden hier angekündigt:",
   "legend.confirmed":
     '<span class="dot" data-status="confirmed"></span> <b>Bestätigt</b> — offiziell für die gamescom angekündigt',
   "legend.expected":
@@ -629,6 +636,25 @@ window.GC_STRINGS.de = {
     "Fünf Fragen dazu, ob er etwas gebracht hat und ob es ihn 2027 wieder geben soll. Ungefähr eine Minute, anonym.",
   "feedback.open": "Beantworten",
   "feedback.dismiss": "Später",
+
+  /* ---------- end of the show ----------
+     Der Abschluss, und das Einzige, was noch zu tun bleibt. Zwei Aufgaben
+     auf einmal: alles darunter datieren, damit ein Ticketpreis im Präsens
+     im November als Aufzeichnung und nicht als Fehler gelesen wird — und
+     sagen, dass es wieder einen geben wird, ohne nach einer Adresse zu
+     fragen, an die man ihn schicken könnte.
+
+     „und es wird sich auch nichts mehr ändern“ trägt den Satz: viele Seiten
+     werden einfach still und überlassen es dem Lesenden herauszufinden, wie
+     alt sie sind. Offen zu sagen, dass hier Schluss ist, macht den Rest
+     erst glaubwürdig. */
+  "closed.title": "Die Messe ist vorbei",
+  "closed.lede":
+    "Die gamescom 2026 ist am Sonntag, 30. August, zu Ende gegangen. Seitdem hat sich hier nichts mehr geändert, und es wird sich auch nichts mehr ändern — das ist der Guide, wie er am letzten Messetag stand. Deine Merkliste, dein Plan und der Hallenplan funktionieren weiter; die Live-Wartezeiten sind mit der Messe geschlossen.",
+  "closed.next": "Für die {name}, {dates}, wird es wieder einen Guide geben.",
+  "closed.follow": "Kein Newsletter — angekündigt wird er hier:",
+  /* Der zugängliche Name eines Links, der nur ein Handle zeigt. */
+  "follow.on": "{handle} auf {network}",
 
   /* ---------- install & offline (js/pwa.js) ---------- */
   "pwa.install": "App installieren",

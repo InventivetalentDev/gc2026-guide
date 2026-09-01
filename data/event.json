@@ -13,6 +13,11 @@
   ],
   "onl": { "time": "20:00 CEST" },
   "feedback": { "url": "https://tally.so/r/5BPO5v?source=app", "urlDe": "https://tally.so/r/xX5o0d?source=app", "from": "2026-08-28" },
+  "next": { "name": "gamescom 2027" },
+  "follow": [
+    { "network": "X", "handle": "@inventivtalent", "url": "https://x.com/inventivtalent" },
+    { "network": "Reddit", "handle": "u/InventivetalentDev", "url": "https://www.reddit.com/user/InventivetalentDev/" }
+  ],
   "areas": [
     { "name": "Entertainment area", "hall": "5–10" },
     { "name": "Business area", "hall": "2–4" },
@@ -73,6 +78,8 @@
     "https://www.play3.de/2026/08/28/gamescom-award-2026-cd-projekt-red-sega-raeumen-ab-alle-gewinner-der-messe/",
     "https://cosplaycontest.gamescom.global/en/faqs",
     "https://www.gamescom.global/en/program/cosplay-contest",
-    "https://www.gamescom.global/en/program"
+    "https://www.gamescom.global/en/program",
+    "https://insider-gaming.com/gamescom-2027-dates-revealed-for-august-23-29/",
+    "https://news.instant-gaming.com/en/articles/21525-gamescom-2027-will-take-place-from-august-23-to-29"
   ]
 }
