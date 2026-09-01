@@ -641,18 +641,22 @@ window.GC_STRINGS.de = {
      Der Abschluss, und das Einzige, was noch zu tun bleibt. Zwei Aufgaben
      auf einmal: alles darunter datieren, damit ein Ticketpreis im Präsens
      im November als Aufzeichnung und nicht als Fehler gelesen wird — und
-     sagen, dass es wieder einen geben wird, ohne nach einer Adresse zu
-     fragen, an die man ihn schicken könnte.
+     sagen, dass es wieder einen geben wird.
 
      „und es wird sich auch nichts mehr ändern“ trägt den Satz: viele Seiten
      werden einfach still und überlassen es dem Lesenden herauszufinden, wie
      alt sie sind. Offen zu sagen, dass hier Schluss ist, macht den Rest
-     erst glaubwürdig. */
+     erst glaubwürdig.
+
+     closed.follow bleibt ein schlichter Verweis auf die Konten darunter.
+     Vorher stand dort der Newsletter, den es nicht gibt — ein Grund für
+     einen Codekommentar, nicht für eine Zeile auf der Karte: Wer sie las,
+     erfuhr zuerst von einer Lücke und erst danach von dem, was es gibt. */
   "closed.title": "Die Messe ist vorbei",
   "closed.lede":
     "Die gamescom 2026 ist am Sonntag, 30. August, zu Ende gegangen. Seitdem hat sich hier nichts mehr geändert, und es wird sich auch nichts mehr ändern — das ist der Guide, wie er am letzten Messetag stand. Deine Merkliste, dein Plan und der Hallenplan funktionieren weiter; die Live-Wartezeiten sind mit der Messe geschlossen.",
   "closed.next": "Für die {name}, {dates}, wird es wieder einen Guide geben.",
-  "closed.follow": "Kein Newsletter — angekündigt wird er hier:",
+  "closed.follow": "Folgen kannst du hier:",
   /* Der zugängliche Name eines Links, der nur ein Handle zeigt. */
   "follow.on": "{handle} auf {network}",
 

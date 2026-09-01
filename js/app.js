@@ -1034,11 +1034,16 @@ function renderFeedback() {
    that is honestly dated. The notice above it is what dates it.
 
    The other half is the only thing a visitor can still act on: there will be
-   a guide for next year, and this is where it gets announced. No mailing
-   list — nothing here has ever asked for an address and the last screen of
-   the year is not the place to start (the queue API's own database is
-   deleted after the show; see docs/DEPLOYING.md). Two accounts the author
-   already posts from cost nothing to keep and nothing to leave.
+   a guide for next year, and this is where it gets announced. There is no
+   mailing list behind that, and there is not going to be one — nothing here
+   has ever asked for an address, the queue API's own database is deleted
+   after the show precisely so that nothing is left holding anyone's data
+   (docs/DEPLOYING.md), and the last screen of the year is not the place to
+   start collecting some. Two accounts the author already posts from cost
+   nothing to keep and nothing to leave. The card does not say any of that:
+   it points at the accounts and stops. Naming the thing that does not exist
+   only told the reader about an absence before telling them about the thing
+   that does.
 
    Two surfaces again, the same split the feedback prompt uses: this card,
    which only exists once the show is over, and a footer line that is there

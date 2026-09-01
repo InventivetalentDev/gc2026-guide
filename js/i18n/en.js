@@ -676,16 +676,21 @@ window.GC_STRINGS.en = {
      The sign-off, and the one thing left to act on. It has to do two jobs at
      once: date everything under it, so a present-tense ticket price read in
      November is understood as a record rather than a mistake, and say that
-     there will be another one — without asking for an address to send it to.
+     there will be another one.
 
      "Nothing will" is load-bearing. Plenty of guides go quiet and leave the
      reader to work out how old the page is; saying outright that this one is
-     finished is what makes the rest of it trustworthy. */
+     finished is what makes the rest of it trustworthy.
+
+     closed.follow stays a plain pointer at the accounts under it. It named
+     the mailing list there is not, which is a reason for a code comment
+     rather than a line on the card: the reader was told about an absence
+     before being told about the thing that does exist. */
   "closed.title": "The show is over",
   "closed.lede":
     "gamescom 2026 closed on Sunday, Aug 30. Nothing here has changed since, and nothing will — this is the guide as it stood on the last day. Your saved list, your plan and the hall map still work; live queues closed with the show.",
   "closed.next": "There will be a guide for {name}, {dates}.",
-  "closed.follow": "No mailing list — it gets announced here:",
+  "closed.follow": "Follow along here:",
   /* The accessible name for a link showing only a handle. */
   "follow.on": "{handle} on {network}",
 

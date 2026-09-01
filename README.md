@@ -450,9 +450,12 @@ ever asked a visitor for an address; the queue API's own database is deleted
 after the show precisely so that nothing is left holding anyone's data
 (`docs/DEPLOYING.md`), and the last screen of the year is not the place to start
 collecting some. Two accounts that already exist cost nothing to keep and nothing
-to leave. `url` is validated as `http(s)` the same way the feedback form's is —
-it is the other value in a data file that becomes a navigation — and an entry
-without a usable one is dropped rather than rendered as a dead link.
+to leave. The card does not argue any of that — it reads *Follow along here* and
+points at them. Naming the absent thing put a reader in front of what the guide
+does not do before showing what it does. `url` is validated as `http(s)` the same
+way the feedback form's is — it is the other value in a data file that becomes a
+navigation — and an entry without a usable one is dropped rather than rendered as
+a dead link.
 
 Both fields ship dark: no `follow`, no links, on the card or in the footer.
 `next` without a `name` drops only the line about next year. The date range is
