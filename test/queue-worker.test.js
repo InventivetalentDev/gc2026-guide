@@ -801,10 +801,13 @@ describe("retention and routing", () => {
       realClockEnv(),
       ctx
     );
-    /* On the real clock this is 200 inside a show window and 403 outside one.
-       Either proves the route ran; which one it is says nothing about routing
-       and everything about the date the suite happens to run on. */
-    expect([200, 403]).toContain(live.status);
+    /* On the real clock this is 200 inside a show window, 403 outside one
+       during the show, and 410 now that the last day is behind us — the
+       intentional end-of-event answer handleLive gives once the phase is
+       "after". All three prove the route ran; which one it is says nothing
+       about routing and everything about the date the suite happens to run
+       on, which is why the assertion has always been a set. */
+    expect([200, 403, 410]).toContain(live.status);
     await waitOnExecutionContext(ctx);
   });
 

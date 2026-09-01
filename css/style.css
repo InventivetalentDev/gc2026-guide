@@ -2166,6 +2166,88 @@ a.dir-stand:focus-visible b { color: var(--signal); }
 .feedback-dismiss:hover { color: var(--ink-mid); border-color: var(--rule); }
 
 /* ============================================================
+   end of the show
+   ============================================================ */
+/* The sign-off, above the feedback card and above every view. It is the one
+   notice in the guide that is louder than the thing it sits on, because it
+   changes how everything below it should be read — so it takes the signal
+   colour on its left edge where the feedback card deliberately takes --rule,
+   and its overline is set in full ink rather than the dimmed grey every other
+   overline in the guide wears.
+
+   Still a card in the content column rather than a full-bleed bar: the
+   preview bar bleeds because it is saying the page is lying about the date,
+   and this one is not. */
+.closed-card {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  margin-bottom: 22px;
+  padding: 16px 18px;
+  background: var(--ground-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--signal);
+  border-radius: var(--radius);
+}
+.closed-card[hidden] { display: none; }
+.closed-copy { flex: 1 1 320px; min-width: 0; }
+.closed-copy .overline { color: var(--ink); }
+.closed-copy p { margin-top: 6px; font-size: .84rem; color: var(--ink-mid); }
+/* Next year is the one forward-looking line on a page about a finished
+   show, so it is the one line here set in full ink. */
+.closed-next:not(:empty) { color: var(--ink); font-weight: 600; }
+.closed-follow { flex: 0 1 auto; }
+.closed-follow-lede { font-size: .76rem; color: var(--ink-dim); margin-bottom: 8px; }
+.follow-links { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* One account. A hall plate's shape and behaviour — a bordered block with the
+   quiet label above the name it stands for — because that is what the guide
+   already means by "here is a thing, here is what it is called". */
+.follow-link {
+  min-height: 44px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--ground-3);
+  color: var(--ink);
+  text-decoration: none;
+}
+.follow-link:hover, .follow-link:focus-visible {
+  border-color: var(--signal);
+  color: var(--signal);
+}
+.follow-net {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.follow-link:hover .follow-net, .follow-link:focus-visible .follow-net { color: inherit; }
+.follow-handle { font-size: .82rem; font-weight: 700; }
+
+/* The footer copy runs as prose, so the same links read as prose there:
+   handles inline in the sentence, no plate, no minimum tap height fighting
+   the line box around them. */
+#follow-footer .follow-link {
+  min-height: 0;
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-dim);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+}
+#follow-footer .follow-handle { font-size: inherit; font-weight: inherit; }
+.follow-sep { color: var(--ink-dim); }
+
+/* ============================================================
    today
    ============================================================ */
 /* The show-day mode. It reuses the hall lens's board wholesale — same
@@ -3279,6 +3361,9 @@ html[data-standalone="true"] .site-footer { padding-bottom: calc(48px + env(safe
   .feedback-card { align-items: stretch; flex-direction: column; }
   .feedback-copy { flex-basis: auto; }
   .feedback-actions { justify-content: space-between; }
+  .closed-card { flex-direction: column; }
+  .closed-copy { flex-basis: auto; }
+  .follow-links { display: grid; grid-template-columns: 1fr 1fr; }
   .share-qr { grid-template-columns: 1fr; }
   .share-qr-image { max-width: 280px; margin: 0 auto; }
   .share-qr p { text-align: center; }

@@ -496,8 +496,11 @@ window.GC_STRINGS.en = {
 
   /* ---------- updates ---------- */
   "updates.title": "Data updates",
+  /* Past tense since rev 68: the refreshes stopped with the show, and a tab
+     that still promised one every few days would be the one page in the guide
+     making a promise it no longer keeps. */
   "updates.lede":
-    "This guide is refreshed every few days until the show as exhibitors announce lineups and booth locations. What changed in each revision:",
+    "This guide was refreshed every few days through the show as exhibitors announced lineups and booth locations. What changed in each revision:",
   "updates.rev": "rev {n}",
   /* Shown to German readers only — see data-i18n-only in index.html. */
   "updates.englishOnly": "",
@@ -647,6 +650,9 @@ window.GC_STRINGS.en = {
      address above it: one wants a data push, the other wants an opinion. */
   "footer.feedbackFormLede": "Used the guide at the show?",
   "footer.feedbackFormLink": "Answer five questions about it →",
+  /* And a third thing again: not a correction, not an opinion, but where the
+     next one gets announced. Year-round, unlike the card at the top. */
+  "footer.followLede": "Updates and next year's guide are posted here:",
   "legend.confirmed":
     '<span class="dot" data-status="confirmed"></span> <b>Confirmed</b> — officially announced for gamescom',
   "legend.expected":
@@ -665,6 +671,28 @@ window.GC_STRINGS.en = {
     "Five questions on whether this was any use, and whether it should come back for 2027. About a minute, anonymous.",
   "feedback.open": "Answer them",
   "feedback.dismiss": "Not now",
+
+  /* ---------- end of the show ----------
+     The sign-off, and the one thing left to act on. It has to do two jobs at
+     once: date everything under it, so a present-tense ticket price read in
+     November is understood as a record rather than a mistake, and say that
+     there will be another one.
+
+     "Nothing will" is load-bearing. Plenty of guides go quiet and leave the
+     reader to work out how old the page is; saying outright that this one is
+     finished is what makes the rest of it trustworthy.
+
+     closed.follow stays a plain pointer at the accounts under it. It named
+     the mailing list there is not, which is a reason for a code comment
+     rather than a line on the card: the reader was told about an absence
+     before being told about the thing that does exist. */
+  "closed.title": "The show is over",
+  "closed.lede":
+    "gamescom 2026 closed on Sunday, Aug 30. Nothing here has changed since, and nothing will — this is the guide as it stood on the last day. Your saved list, your plan and the hall map still work; live queues closed with the show.",
+  "closed.next": "There will be a guide for {name}, {dates}.",
+  "closed.follow": "Follow along here:",
+  /* The accessible name for a link showing only a handle. */
+  "follow.on": "{handle} on {network}",
 
   /* ---------- install & offline (js/pwa.js) ---------- */
   "pwa.install": "Install app",

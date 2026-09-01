@@ -120,8 +120,20 @@
    stand. data/directory.json joins the precache with it — the map now needs
    it in every hall rather than only in the business ones, and a stand you
    pinned a studio on has to come up lit in a hall with no reception, which
-   is the whole promise of precaching the hall plans beside it. */
-const VERSION = "v16";
+   is the whole promise of precaching the hall plans beside it.
+
+   v17 is the end-of-show notice, and it is the one bump made for reach
+   rather than for a broken pairing. Nothing here half-works without it: the
+   card in index.html stays hidden until js/app.js unhides it, so an old
+   script under the new markup shows nothing rather than something wrong.
+   But "nothing" is the whole failure. Every other shell change had loads
+   left to land in; this one is the last, and the people it is written for
+   are the ones who installed the guide for the show and will open it once
+   more afterwards. One load late is never, for most of them. Bumping makes
+   sw.js itself new, which is what turns a silent revalidation into the
+   Reload prompt js/pwa.js offers — so the sign-off lands on the visit it
+   was written for instead of the one after it. */
+const VERSION = "v17";
 const SHELL_CACHE = `gc2026-shell-${VERSION}`;
 const DATA_CACHE = `gc2026-data-${VERSION}`;
 const NAV_TIMEOUT = 4000;

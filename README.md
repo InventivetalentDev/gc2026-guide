@@ -2,6 +2,12 @@
 
 An unofficial, fan-made web guide to **gamescom 2026** (Cologne, Aug 26–30, 2026).
 
+**The show is over.** gamescom 2026 closed on Sunday, Aug 30. The site stays up
+as it stood on the last day and says so at the top of every view — see *After the
+show* below. There will be a guide for **gamescom 2027** (Aug 23–29); it gets
+announced on [@inventivtalent](https://x.com/inventivtalent) and
+[u/InventivetalentDev](https://www.reddit.com/user/InventivetalentDev/).
+
 **Features**
 
 - Overview of exhibitors with their announced (or rumored) games and products
@@ -401,6 +407,64 @@ it never returns on that device. The footer link has no memory, which is what
 someone coming back a week later needs. Corrections keep their own footer line and
 their own mail address — "hall 9.1 is wrong" wants a reply and a data push, not a
 survey row.
+
+## After the show
+
+The last doors shut and the guide stops being advice. Everything in it — sold-out
+ticket classes, which gate to use, *be there for the 09:00 doors* — was true on
+the day it was written and is now read on a page somebody may open in November,
+so the guide says at the top of every view that it is finished:
+
+> **The show is over.** gamescom 2026 closed on Sunday, Aug 30. Nothing here has
+> changed since, and nothing will — this is the guide as it stood on the last day.
+> Your saved list, your plan and the hall map still work; live queues closed with
+> the show.
+
+None of that prose is rewritten into the past tense. A record edited after the
+fact is a worse record than one that is honestly dated, and the notice is the
+date stamp. `data/i18n/*.json`'s `meta.note` makes the same claim in the footer,
+next to `lastUpdated`.
+
+The card appears when `showIsOver()` in `js/app.js` finds the last entry in
+`days` behind us **in Cologne** — the same clock the Today tab and the countdown
+read, so a phone still set to Los Angeles cannot see it an hour early, and
+Sunday afternoon still reads as a show day. It survives `?now=`, which is how to
+look at either side of it. It has no dismiss button: this is the state of the
+whole guide, not a request, and a dismissed one would leave the site reading as
+though the doors were open.
+
+The other half is the only thing left to act on. There will be a guide for
+gamescom 2027 (Aug 23–29, announced on the floor at gamescom 2026 — sources are
+in `data/event.json`), and this is where it will be said:
+
+```json
+"next": { "name": "gamescom 2027" },
+"follow": [
+  { "network": "X", "handle": "@inventivtalent", "url": "https://x.com/inventivtalent" },
+  { "network": "Reddit", "handle": "u/InventivetalentDev", "url": "https://www.reddit.com/user/InventivetalentDev/" }
+]
+```
+
+No mailing list, and that is a decision rather than an omission. Nothing here has
+ever asked a visitor for an address; the queue API's own database is deleted
+after the show precisely so that nothing is left holding anyone's data
+(`docs/DEPLOYING.md`), and the last screen of the year is not the place to start
+collecting some. Two accounts that already exist cost nothing to keep and nothing
+to leave. The card does not argue any of that — it reads *Follow along here* and
+points at them. Naming the absent thing put a reader in front of what the guide
+does not do before showing what it does. `url` is validated as `http(s)` the same
+way the feedback form's is — it is the other value in a data file that becomes a
+navigation — and an entry without a usable one is dropped rather than rendered as
+a dead link.
+
+Both fields ship dark: no `follow`, no links, on the card or in the footer.
+`next` without a `name` drops only the line about next year. The date range is
+prose and lives beside `event.dates` in `data/i18n/*.json` as `nextDates`,
+written without a year because `name` already carries one.
+
+Two surfaces, the same split the feedback prompt uses. The card exists only once
+the show is over; the footer line is there year-round, because *where do updates
+get posted* is not a question that waits for Sunday night.
 
 ## Architecture
 
